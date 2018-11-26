@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="header :: header-css"/>
+    <title>Generera noter</title>
+</head>
+
+<body>
+<div th:replace="header :: header"/>
+<div class="container-fluid">
+
+    <h1>Generera noter</h1>
+    Här kan du generera nya PDF-noter till Terrassorkesterns Google Drive. Antingen så väljer du alla
+    låtar (standard) eller så markerar du i listan vilka det gäller.
+    <br>
+    <br>
+    <form action="#" th:action="@{/noteConverter}" th:object="${noteConverterForm}" method="post">
+
+        <div class="form-group">
+            <select multiple class="form-control" th:field="*{selectedSongs}" id="sel1" >
+                <option th:each="song : ${songs}"
+                        th:value="${song.id}"
+                        th:text="${song.title}"></option>
+            </select>
+        </div>
+
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" th:field="*{allSongs}" value="" checked>Konvertera alla låtar
+            </label>
+        </div>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" th:field="*{upload}" value="" checked>Ladda upp till Google
+            </label>
+        </div>
+        <br>
+        <button class="btn btn-primary" type="submit">Generera noter!</button>
+    </form>
+
+</div>
+<div th:replace="footer :: footer"/>
+</body>
+</html>

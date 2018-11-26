@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="header :: header-css"/>
+    <title>Instrumentinfo</title>
+</head>
+<body>
+<div th:replace="header :: header"/>
+<div class="container">
+    <h1>Instrumentdetaljer</h1>
+<form>
+    <div class="form-group">
+        <label for="usr">Namn</label>
+        <input type="text" class="form-control" id="usr">
+    </div>
+    <div class="form-group">
+        <label for="usr">Förkortning:</label>
+        <input type="text" class="form-control" id="usr2">
+    </div>
+</form>
+</div>
+<div th:replace="footer :: footer"/>
+</body>
+</html>

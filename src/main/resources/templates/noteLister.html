@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="header :: header-css"/>
+    <title>Uppdatera notförteckning</title>
+</head>
+
+<body>
+<div th:replace="header :: header"/>
+<div class="container-fluid">
+
+    <h1>Uppdatera notförteckning</h1>
+Här kan du uppdatera notförteckningen på Terrassorkesters Google Drive. Den gamla filen skrivs över med uppdaterad data.
+    När du känner dig klar så tryck på knappen!
+    <br>
+    <a href="noteListerGenerate" class="btn btn-primary" role="button">Generera förteckning</a>
+
+</div>
+<div th:replace="footer :: footer"/>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header-css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+</head>
+<body>
+<div th:fragment="header">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand" th:href="@{/}">Notgen2</a>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/noteConverter}">Generera noter</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/noteLister}">Uppdatera förteckning</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/}">Repertoire</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/listInstruments}">Instrument</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>
