@@ -3,7 +3,7 @@
 <head>
     <div th:replace="header :: header-css"/>
 
-    <title>Instrument</title>
+    <title>Repertoire</title>
 </head>
 <body>
 <div th:replace="header :: header"/>
@@ -16,26 +16,22 @@
                 <thead>
                 <tr>
                     <th>Namn</th>
-                    <th>Förkortning</th>
-                    <th>Standard</th>
-                    <th>Ordning</th>
+                    <th>Genre</th>
                 </tr>
                 </thead>
 
-                <tr th:each="instrument : ${instruments}">
-                    <td th:text="${instrument.name}"></td>
-                    <td th:text="${instrument.shortName}"></td>
-                    <td th:text="#{|bool.${instrument.standard}|}">Ja</td>
-                    <td th:text="${instrument.sortOrder}"></td>
+                <tr th:each="song : ${songs}">
+                    <td th:text="${song.title}"></td>
+                    <td th:text="${song.genre}"></td>
                     <td>
-                        <a th:href="@{/instrument/edit(id=${instrument.id})}" class="btn btn-primary">Edit</a>
+                        <a th:href="@{/song/edit(id=${song.id})}" class="btn btn-primary">Edit</a>
                     </td>
                 </tr>
             </table>
             <hr/>
             <ul class="nav nav-pills">
-                <li class="nav-item" th:each="i : ${#numbers.sequence(0,instruments.totalPages-1)}">
-                    <a th:href="@{/instrument/list(page=${i})}" th:text="${i}" class="nav-link"
+                <li class="nav-item" th:each="i : ${#numbers.sequence(0,songs.totalPages-1)}">
+                    <a th:href="@{/song/list(page=${i})}" th:text="${i}" class="nav-link"
                        th:classappend="${currentPage}==${i}?'active':''"></a>
                 </li>
             </ul>

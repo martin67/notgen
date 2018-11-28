@@ -11,26 +11,46 @@
     <h1>Instrumentdetaljer</h1>
 
     <form role="form" th:action="@{/instrument/update}" th:object="${instrument}" th:method="post">
-        <div class="form-group">
-            <label for="id" class="col-form-label">ID:</label>
-            <input type="text" class="form-control" th:field="*{id}" th:value="${instrument.id}" id="id"/>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="id">ID</label>
+            <div class="col-sm-8">
+                <input type="text" readonly class="form-control-plaintext" th:field="*{id}" th:value="${instrument.id}" id="id"/>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="name" class="col-form-label">Namn:</label>
-            <input type="text" class="form-control" th:field="*{name}" th:value="${instrument.name}" id="name"/>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="name">Namn</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" th:field="*{name}" th:value="${instrument.name}" id="name"/>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="shortName" class="col-form-label">Förkortning:</label>
-            <input type="text" class="form-control" th:field="*{shortName}" th:value="${instrument.shortName}"
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="shortName">Förkortning</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" th:field="*{shortName}" th:value="${instrument.shortName}"
                    id="shortName"/>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="sortOrder" class="col-form-label">Sorteringsordning:</label>
-            <input type="text" class="form-control" th:field="*{sortOrder}" th:value="${instrument.sortOrder}"
+        <div class="form-group row">
+            <div class="col-sm-4">Standard</div>
+            <div class="col-sm-8">
+                <div class="form_check">
+                    <input class="form-check-input" type="checkbox" th:field="*{standard}" th:value="${instrument.standard}" id="standard">
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="sortOrder">Sorteringsordning</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" th:field="*{sortOrder}" th:value="${instrument.sortOrder}"
                    id="sortOrder"/>
+            </div>
         </div>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <input type="submit" class="btn btn-primary" value="save"/>
+        <div class="form-group row">
+            <div class="col-sm-8">
+                <button type="reset" class="btn btn-default">Avbryt</button>
+                <input type="submit" class="btn btn-primary" value="Spara"/>
+            </div>
+        </div>
     </form>
 </div>
 <div th:replace="footer :: footer"/>
