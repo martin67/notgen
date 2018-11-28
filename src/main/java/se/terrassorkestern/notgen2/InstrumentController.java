@@ -3,14 +3,11 @@ package se.terrassorkestern.notgen2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -22,13 +19,9 @@ public class InstrumentController {
     private InstrumentRepository instrumentRepository;
 
 
-    public InstrumentController () {}
-
-
     @RequestMapping("/instrument/list")
-    public String instrumentList(Model model, @RequestParam(defaultValue = "0") int page) {
-        model.addAttribute("instruments", instrumentRepository.findAll(PageRequest.of(page,5)));
-        model.addAttribute("currentPage", page);
+    public String instrumentList(Model model) {
+        model.addAttribute("instruments", instrumentRepository.findByOrderByStandardDescSortOrder());
         return "instrumentList";
     }
 
@@ -53,12 +46,6 @@ public class InstrumentController {
         return "redirect:/";
     }
 
-
-//    @ModelAttribute(value = "instrumentPost")
-//    public Instrument getInstrument()
-//    {
-//        return new Instrument();
-//    }
 
     @GetMapping("instrumentFind")
     @ResponseBody

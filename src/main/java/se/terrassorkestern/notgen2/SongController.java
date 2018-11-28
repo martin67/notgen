@@ -3,13 +3,13 @@ package se.terrassorkestern.notgen2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class SongController {
@@ -20,13 +20,9 @@ public class SongController {
     private SongRepository songRepository;
 
 
-    public SongController() {}
-
-
     @RequestMapping("/song/list")
-    public String songList(Model model, @RequestParam(defaultValue = "0") int page) {
-        model.addAttribute("songs", songRepository.findAll(PageRequest.of(page,5)));
-        model.addAttribute("currentPage", page);
+    public String songList(Model model) {
+        model.addAttribute("songs", songRepository.findByOrderByTitle());
         return "songList";
     }
 

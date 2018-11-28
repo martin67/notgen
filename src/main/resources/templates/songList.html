@@ -8,36 +8,28 @@
 <body>
 <div th:replace="header :: header"/>
 
-<div class="container">
+<div class="container-fluid">
     <br>
-    <div class="card">
-        <div class="card-block">
-            <table class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th>Namn</th>
-                    <th>Genre</th>
-                </tr>
-                </thead>
-
-                <tr th:each="song : ${songs}">
-                    <td th:text="${song.title}"></td>
-                    <td th:text="${song.genre}"></td>
-                    <td>
-                        <a th:href="@{/song/edit(id=${song.id})}" class="btn btn-primary">Edit</a>
-                    </td>
-                </tr>
-            </table>
-            <hr/>
-            <ul class="nav nav-pills">
-                <li class="nav-item" th:each="i : ${#numbers.sequence(0,songs.totalPages-1)}">
-                    <a th:href="@{/song/list(page=${i})}" th:text="${i}" class="nav-link"
-                       th:classappend="${currentPage}==${i}?'active':''"></a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <div th:replace="footer :: footer"/>
+    <table class="table table-bordered table-striped table-hover table-sm">
+        <thead>
+        <tr>
+            <th scope="col">Namn</th>
+            <th scope="col">Genre</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="song : ${songs}">
+            <td th:text="${song.title}"></td>
+            <td th:text="${song.genre}"></td>
+            <td>
+                <a th:href="@{/song/edit(id=${song.id})}"><i class="material-icons">mode_edit</i></a>
+                <a th:href="@{/song/delete(id=${song.id})}"><i class="material-icons">delete</i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div th:replace="footer :: footer"/>
 </body>
 </html>
