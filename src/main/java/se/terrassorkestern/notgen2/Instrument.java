@@ -5,6 +5,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="instrument")
 public class Instrument {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -39,7 +40,7 @@ public class Instrument {
         return id;
     }
 
-    private void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -47,7 +48,7 @@ public class Instrument {
         return name;
     }
 
-    void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -55,7 +56,7 @@ public class Instrument {
         return shortName;
     }
 
-    void setShortName(String shortName) {
+    public void setShortName(String shortName) {
         this.shortName = shortName;
     }
 
@@ -63,7 +64,7 @@ public class Instrument {
         return sortOrder;
     }
 
-    void setSortOrder(Integer sortOrder) {
+    public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
     }
 
@@ -71,7 +72,7 @@ public class Instrument {
         return standard;
     }
 
-    void setStandard(boolean standard) {
+    public void setStandard(boolean standard) {
         this.standard = standard;
     }
 

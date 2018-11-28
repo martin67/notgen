@@ -6,18 +6,32 @@
 </head>
 <body>
 <div th:replace="header :: header"/>
+
 <div class="container">
     <h1>Instrumentdetaljer</h1>
-<form>
-    <div class="form-group">
-        <label for="usr">Namn</label>
-        <input type="text" class="form-control" id="usr">
-    </div>
-    <div class="form-group">
-        <label for="usr">Förkortning:</label>
-        <input type="text" class="form-control" id="usr2">
-    </div>
-</form>
+
+    <form role="form" th:action="@{/instrument/update}" th:object="${instrument}" th:method="post">
+        <div class="form-group">
+            <label for="id" class="col-form-label">ID:</label>
+            <input type="text" class="form-control" th:field="*{id}" th:value="${instrument.id}" id="id"/>
+        </div>
+        <div class="form-group">
+            <label for="name" class="col-form-label">Namn:</label>
+            <input type="text" class="form-control" th:field="*{name}" th:value="${instrument.name}" id="name"/>
+        </div>
+        <div class="form-group">
+            <label for="shortName" class="col-form-label">Förkortning:</label>
+            <input type="text" class="form-control" th:field="*{shortName}" th:value="${instrument.shortName}"
+                   id="shortName"/>
+        </div>
+        <div class="form-group">
+            <label for="sortOrder" class="col-form-label">Sorteringsordning:</label>
+            <input type="text" class="form-control" th:field="*{sortOrder}" th:value="${instrument.sortOrder}"
+                   id="sortOrder"/>
+        </div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="save"/>
+    </form>
 </div>
 <div th:replace="footer :: footer"/>
 </body>

@@ -3,6 +3,7 @@
 <head th:fragment="header-css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
 </head>
 <body>
@@ -20,7 +21,10 @@
                 <a class="nav-link" th:href="@{/}">Repertoire</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/listInstruments}">Instrument</a>
+                <a class="nav-link" th:href="@{/instrument/list}">Instrument</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/playlistList}">Låtlistor</a>
             </li>
         </ul>
     </nav>
