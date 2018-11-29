@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <div th:replace="header :: header-css"/>
+<head th:replace="fragments/general :: header-css"/>
 
-    <title>Låtlistor</title>
-</head>
 <body>
-<div th:replace="header :: header"/>
+<div th:replace="fragments/general :: header"/>
+
 
 <div class="container-fluid">
     <br>
@@ -22,6 +20,7 @@
 
     </table>
 </div>
-<div th:replace="footer :: footer"/>
+
+<footer th:replace="fragments/general :: footer"/>
 </body>
 </html>

@@ -61,6 +61,14 @@ public class ScorePart implements Serializable {
         this.instrument = instrument;
     }
 
+    public Song getSong() {
+        return song;
+    }
+
+    public void setSong(Song song) {
+        this.song = song;
+    }
+
     @Override
     public String toString() {
         return "ScorePart{" +

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Controller
 public class SongController {
 
@@ -18,6 +20,15 @@ public class SongController {
 
     @Autowired
     private SongRepository songRepository;
+
+    @Autowired
+    private InstrumentRepository instrumentRepository;
+
+
+    @ModelAttribute("allInstruments")
+    public List<Instrument> populateInstruments() {
+        return this.instrumentRepository.findAll();
+    }
 
 
     @RequestMapping("/song/list")

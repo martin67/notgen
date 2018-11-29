@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <div th:replace="header :: header-css"/>
+<head th:replace="fragments/general :: header-css"/>
 
-    <title>Instrument</title>
-</head>
 <body>
-<div th:replace="header :: header"/>
+<div th:replace="fragments/general :: header"/>
 
-<div class="container">
+<div class="container-fluif">
     <br>
     <button class="btn btn-success nBtn">New</button>
     <div class="card">
@@ -89,7 +86,7 @@
 
     </div>
 
-    <div th:replace="footer :: footer"/>
+    <footer th:replace="fragments/general :: footer"/>
     <script type="text/javascript" th:src="@{js/main.js}" src="../static/js/main.js"></script>
 
 </body>

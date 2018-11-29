@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <div th:replace="header :: header-css"/>
-    <title>Generera noter</title>
-</head>
+<head th:replace="fragments/general :: header-css"/>
 
 <body>
-<div th:replace="header :: header"/>
+<div th:replace="fragments/general :: header"/>
+
 <div class="container-fluid">
 
     <h1>Generera noter</h1>
@@ -17,7 +15,7 @@
     <form action="#" th:action="@{/noteConverter}" th:object="${noteConverterForm}" method="post">
 
         <div class="form-group">
-            <select multiple class="form-control" th:field="*{selectedSongs}" id="sel1" >
+            <select multiple class="form-control" th:field="*{selectedSongs}" id="sel1">
                 <option th:each="song : ${songs}"
                         th:value="${song.id}"
                         th:text="${song.title}"></option>
@@ -26,12 +24,14 @@
 
         <div class="form-check">
             <label class="form-check-label">
-                <input type="checkbox" class="form-check-input" th:field="*{allSongs}" value="" checked>Konvertera alla låtar
+                <input type="checkbox" class="form-check-input" th:field="*{allSongs}" value="" checked>Konvertera alla
+                låtar
             </label>
         </div>
         <div class="form-check">
             <label class="form-check-label">
-                <input type="checkbox" class="form-check-input" th:field="*{upload}" value="" checked>Ladda upp till Google
+                <input type="checkbox" class="form-check-input" th:field="*{upload}" value="" checked>Ladda upp till
+                Google
             </label>
         </div>
         <br>
@@ -39,6 +39,7 @@
     </form>
 
 </div>
-<div th:replace="footer :: footer"/>
+
+<footer th:replace="fragments/general :: footer"/>
 </body>
 </html>

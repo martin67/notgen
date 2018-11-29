@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <div th:replace="header :: header-css"/>
-    <title>Instrumentinfo</title>
-</head>
+<head th:replace="fragments/general :: header-css"/>
+
 <body>
-<div th:replace="header :: header"/>
+<div th:replace="fragments/general :: header"/>
 
 <div class="container-fluid">
     <h1>Instrumentdetaljer</h1>
@@ -53,6 +51,7 @@
         </div>
     </form>
 </div>
-<div th:replace="footer :: footer"/>
+
+<footer th:replace="fragments/general :: footer"/>
 </body>
 </html>

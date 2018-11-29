@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <div th:replace="header :: header-css"/>
-    <title>Terrassorkesterns Notgenerator 2.0</title>
-</head>
+<head th:replace="fragments/general :: header-css"/>
 
 <body>
-<div th:replace="header :: header"/>
+<div th:replace="fragments/general :: header"/>
+
 <div class="container-fluid">
 
     <div class="starter-template">
         <h1>Terrassorkesterns Notgenerator 2.0</h1>
 
-        Bara att sätta igång och skapa snygga PDF:er! Men funkar verkligen live edit??
+        Bara att sätta igång och skapa snygga PDF:er! Men funkar verkligen live edit???
     </div>
 
 </div>
-<div th:replace="footer :: footer"/>
+
+<footer th:replace="fragments/general :: footer"/>
 </body>
 </html>

@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <div th:replace="header :: header-css"/>
-    <title>Låtinfo</title>
-</head>
+<head th:replace="fragments/general :: header-css"/>
+
 <body>
-<div th:replace="header :: header"/>
+<div th:replace="fragments/general :: header"/>
 
 <div class="container-fluid">
     <h1>Låtdetaljer</h1>
@@ -72,12 +70,29 @@
                     <th scope="col"><button type="submit" name="addrow">Lägg till</button></th>
                     </thead>
                     <tbody>
-                    <tr th:each="scorePart : ${song.scoreParts}">
-                        <td th:text="${scorePart.getInstrument().getName()}"></td>
-                        <td th:text="${scorePart.getPage()}"></td>
-                        <td th:text="${scorePart.getLength()}"></td>
-                        <td th:text="${scorePart.getComment()}"></td>
-                        <td><button type="submit" name="removeRow" th:value="${scorePart.page}" >Ta bort</button></td>
+                    <tr th:each="scorePart,rowStat : ${song.scoreParts}">
+                        <td th:text="${scorePart.instrument.name}"></td>
+                        <td th:text="${scorePart.page}"></td>
+                        <td th:text="${scorePart.length}"></td>
+                        <td th:text="${scorePart.comment}"></td>
+<!-- Too slow!!!
+                        <td>
+                        <select th:field="*{scoreParts[__${rowStat.index}__].instrument}">
+                            <option th:each="instrument : ${allInstruments}"
+                                    th:value="${instrument.id}"
+                                    th:text="${instrument.name}" />
+                        </select>
+                        </td>
+                        <td><input type="number" class="form-control" th:field="*{scoreParts[__${rowStat.index}__].page}" th:value="${scorePart.page}"/></td>
+                        <td><input type="number" class="form-control" th:field="*{scoreParts[__${rowStat.index}__].length}" th:value="${scorePart.length}"/></td>
+                        <td><input type="text" class="form-control" th:field="*{scoreParts[__${rowStat.index}__].comment}" th:value="${scorePart.comment}"/></td>
+-->
+                        <td>
+                            <!--<input type="hidden" th:field="*{scorePart.song}" th:value="${song}" />-->
+                            <!--<button type="submit" name="removeRow" th:value="${scorePart.page}" >Ta bort</button>-->
+                            <a th:href="@{/scorepart/edit(id=${song.id})}"><i class="material-icons">mode_edit</i></a>
+                            <a th:href="@{/scorepart/delete(id=${song.id})}"><i class="material-icons">delete</i></a>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -122,6 +137,7 @@
         </div>
     </form>
 </div>
-<div th:replace="footer :: footer"/>
+
+<footer th:replace="fragments/general :: footer"/>
 </body>
 </html>
