@@ -8,6 +8,7 @@ public class NoteConverterForm {
     private List<Integer> selectedSongs;
     private Boolean allSongs;
     private Boolean upload;
+    private Boolean async;
 
 
     NoteConverterForm() {}
@@ -35,5 +36,13 @@ public class NoteConverterForm {
 
     public void setUpload(Boolean upload) {
         this.upload = upload;
+    }
+
+    public Boolean getAsync() {
+        return async;
+    }
+
+    public void setAsync(Boolean async) {
+        this.async = async;
     }
 }

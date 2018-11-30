@@ -14,6 +14,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -29,6 +30,7 @@ import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 
@@ -89,6 +91,24 @@ public class NoteConverter {
         log.info("Finishing main convert loop");
     }
 
+    @Async
+    CompletableFuture<Integer> convertP(List<Song> songs, boolean upload) {
+        log.info("Starting main convert loop (parallel!)");
+
+        for (Song song : songs) {
+            log.info("Converting " + song.getId() + ", " + song.getTitle());
+            song.getScoreParts().sort((ScorePart s1, ScorePart s2) -> s1.getInstrument().getSortOrder().compareTo(s2.getInstrument().getSortOrder()));
+            this.download(song);
+            this.split(song);
+            this.imageProcess(song);
+            this.createFullScore(song, true, upload);
+            this.createFullScore(song, false, upload);
+            this.createInstrumentParts(song, upload);
+            this.cleanup();
+        }
+        log.info("Finishing main convert loop (parallel!)");
+        return CompletableFuture.completedFuture(1);
+    }
 
     private void createFullScore(Song song, boolean TOScore, boolean upload) {
         if (!Files.exists(tmpDir))

@@ -19,6 +19,8 @@ public class NoteConverterController {
     @Autowired
     private NoteConverter noteConverter;
     @Autowired
+    private NoteConverterRunner noteConverterRunner;
+    @Autowired
     private SongRepository songRepository;
     @Autowired
     private NoteConverterForm noteConverterForm;
@@ -45,9 +47,15 @@ public class NoteConverterController {
 
         // Starta konvertering!
         if (noteConverterForm.getAllSongs()) {
-            noteConverter.convert(songRepository.findByOrderByTitle(), noteConverterForm.getUpload());
+            if (noteConverterForm.getAsync())
+                noteConverterRunner.convert(songRepository.findByOrderByTitle(), noteConverterForm.getUpload());
+            else
+                noteConverter.convert(songRepository.findByOrderByTitle(), noteConverterForm.getUpload());
         } else {
-            noteConverter.convert(songRepository.findByIdInOrderByTitle(noteConverterForm.getSelectedSongs()), noteConverterForm.getUpload());
+            if (noteConverterForm.getAsync())
+                noteConverterRunner.convert(songRepository.findByIdInOrderByTitle(noteConverterForm.getSelectedSongs()), noteConverterForm.getUpload());
+            else
+                noteConverter.convert(songRepository.findByIdInOrderByTitle(noteConverterForm.getSelectedSongs()), noteConverterForm.getUpload());
         }
         return "noteConverter";
     }
