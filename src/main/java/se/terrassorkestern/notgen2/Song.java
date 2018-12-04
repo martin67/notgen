@@ -27,7 +27,7 @@ public class Song {
     @Column(name = "ar")
     private Integer year;
 
-    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScorePart> scoreParts;
 
     @Column(name = "inscannad")

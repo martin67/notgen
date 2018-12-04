@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-
 @Slf4j
 @Controller
 public class SongController {
@@ -23,12 +21,6 @@ public class SongController {
     private InstrumentRepository instrumentRepository;
 
 
-    @ModelAttribute("allInstruments")
-    public List<Instrument> populateInstruments() {
-        return this.instrumentRepository.findAll();
-    }
-
-
     @GetMapping("/song/list")
     public String songList(Model model) {
         model.addAttribute("songs", songRepository.findByOrderByTitle());
@@ -37,6 +29,7 @@ public class SongController {
 
     @GetMapping("/song/edit")
     public String songEdit(@RequestParam("id") Integer id, Model model) {
+        model.addAttribute("allInstruments", instrumentRepository.findAll());
         model.addAttribute("song", songRepository.findById(id).get());
         return "songEdit";
     }
@@ -44,6 +37,14 @@ public class SongController {
     @PostMapping("/song/update")
     public String songSave(@ModelAttribute Song song, BindingResult bindingResult, Model model) {
         log.info("Nu är vi i songSave");
+        // song sätts inte i formuläret
+        for (ScorePart scorePart : song.getScoreParts()) {
+            scorePart.setSong(song);
+            Instrument instrument = scorePart.getInstrument();
+            scorePart.setId(new ScorePartId(song.getId(), instrument.getId()));
+            // Det är bara id på instrumentet som kommer med, inte hela instrumentet...
+            scorePart.setInstrument(instrumentRepository.findById(instrument.getId()).get());
+        }
         songRepository.save(song);
         return "redirect:/song/list";
     }

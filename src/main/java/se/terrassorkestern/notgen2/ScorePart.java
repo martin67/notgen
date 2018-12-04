@@ -3,13 +3,23 @@ package se.terrassorkestern.notgen2;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
 @Data
 @Entity
 @Table(name="sattning")
-public class ScorePart implements Serializable {
+public class ScorePart {
+
+    @EmbeddedId
+    private ScorePartId id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("songId")
+    private Song song;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("instrumentId")
+    private Instrument instrument;
 
     @Column(name="sida")
     private int page;
@@ -18,19 +28,30 @@ public class ScorePart implements Serializable {
     @Column(name="kommentar")
     private String comment;
 
+/* Behövs inte om man kör standard
     @Id
     @ManyToOne
     @JoinColumn(name="repertoire_id")
     private Song song;
+*/
 
+/*
     @Id
     @ManyToOne
     @JoinColumn(name="instrument_id")
-//    @OrderBy(value="instrument.sortOrder")
     private Instrument instrument;
+*/
 
+// Nytt försök
 
-    ScorePart () {}
+    public ScorePart () {}
+
+    public ScorePart(Song song, Instrument instrument) {
+        this.song = song;
+        this.instrument = instrument;
+        this.id = new ScorePartId(song.getId(), instrument.getId());
+    }
+
 
     @Override
     public String toString() {
@@ -45,9 +66,9 @@ public class ScorePart implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ScorePart scorePart = (ScorePart) o;
-        return Objects.equals(song, scorePart.song) &&
-                Objects.equals(instrument, scorePart.instrument);
+        ScorePart that = (ScorePart) o;
+        return Objects.equals(song, that.song) &&
+                Objects.equals(instrument, that.instrument);
     }
 
     @Override

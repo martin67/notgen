@@ -23,7 +23,6 @@ public class Instrument {
 
     public Instrument() {}
 
-
     public Instrument(int id, String name, String shortName, int sortOrder, boolean standard) {
         this.setId(id);
         this.setName(name);
