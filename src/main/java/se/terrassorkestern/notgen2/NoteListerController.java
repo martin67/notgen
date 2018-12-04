@@ -1,16 +1,14 @@
 package se.terrassorkestern.notgen2;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
+@Slf4j
 @Controller
 public class NoteListerController {
-
-    private final Logger log = LoggerFactory.getLogger(NoteListerController.class);
 
     @Autowired
     private InstrumentRepository instrumentRepository;
@@ -21,7 +19,7 @@ public class NoteListerController {
         log.info("Constructor!");
     }
 
-    @RequestMapping("/noteLister")
+    @GetMapping("/noteLister")
     public String noteLister(Model model) {
         log.info("Nu är vi i noteLister(Model model)");
 
@@ -31,7 +29,7 @@ public class NoteListerController {
         return "noteLister";
     }
 
-    @RequestMapping("/noteListerGenerate")
+    @GetMapping("/noteListerGenerate")
     public String noteListerGenerate(Model model) {
         log.info("Nu är vi i noteListerGenerate");
 

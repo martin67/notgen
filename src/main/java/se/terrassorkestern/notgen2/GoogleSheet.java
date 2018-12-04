@@ -5,16 +5,14 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
+@Slf4j
 class GoogleSheet extends Google {
-
-    private final Logger log = LoggerFactory.getLogger(GoogleSheet.class);
     private Sheets service;
     private static final String GOOGLE_SPREADSHEET_ID = "1O5FEIPY2il6hPBwJRtzgjR8L4lYAII7heymn4DnVfZ4";
 

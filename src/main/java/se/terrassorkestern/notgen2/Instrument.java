@@ -1,7 +1,10 @@
 package se.terrassorkestern.notgen2;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
+@Data
 @Entity
 @Table(name="instrument")
 public class Instrument {
@@ -34,46 +37,6 @@ public class Instrument {
         this.setShortName(shortName);
         this.setSortOrder(sortOrder);
         this.setStandard(standard);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
-
-    public Integer getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public boolean isStandard() {
-        return standard;
-    }
-
-    public void setStandard(boolean standard) {
-        this.standard = standard;
     }
 
     @Override

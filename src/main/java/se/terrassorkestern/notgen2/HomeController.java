@@ -5,10 +5,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class HelloWorldController {
+public class HomeController {
 
     @RequestMapping("/")
-    public String helloWorld(Model model) {
-         return "index";
+    public String home(Model model) {
+         return "home";
     }
 }

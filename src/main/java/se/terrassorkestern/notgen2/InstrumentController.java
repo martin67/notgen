@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen2;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,10 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@Slf4j
 @Controller
 public class InstrumentController {
-
-    private final Logger log = LoggerFactory.getLogger(InstrumentController.class);
 
     @Autowired
     private InstrumentRepository instrumentRepository;

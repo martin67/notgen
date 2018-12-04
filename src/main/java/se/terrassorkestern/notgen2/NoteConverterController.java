@@ -1,20 +1,18 @@
 package se.terrassorkestern.notgen2;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 public class NoteConverterController {
-
-    private final Logger log = LoggerFactory.getLogger(NoteConverterController.class);
 
     @Autowired
     private NoteConverter noteConverter;
@@ -30,7 +28,8 @@ public class NoteConverterController {
         log.info("Constructor!");
     }
 
-    @RequestMapping("/noteConverter")
+
+    @GetMapping("/noteConverter")
     public String noteLister(Model model) {
         log.info("Nu är vi i noteConverter");
 
@@ -41,7 +40,7 @@ public class NoteConverterController {
         return "noteConverter";
     }
 
-    @RequestMapping(value="/noteConverter", method=RequestMethod.POST)
+    @PostMapping("/noteConverter")
     public String handlePost(@ModelAttribute("noteConverterForm") NoteConverterForm noteConverterForm) {
         log.info("Nu är vi i noteConverter post");
 
@@ -61,7 +60,7 @@ public class NoteConverterController {
     }
 
 
-    @RequestMapping("/noteConverterGenerate")
+    @GetMapping("/noteConverterGenerate")
     public String noteListerGenerate(Model model) {
         log.info("Nu är vi i noteConverterGenerate");
 

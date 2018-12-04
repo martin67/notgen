@@ -1,9 +1,12 @@
 package se.terrassorkestern.notgen2;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Data
 @Entity
 @Table(name="sattning")
 public class ScorePart implements Serializable {
@@ -28,46 +31,6 @@ public class ScorePart implements Serializable {
 
 
     ScorePart () {}
-
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public Instrument getInstrument() {
-        return instrument;
-    }
-
-    public void setInstrument(Instrument instrument) {
-        this.instrument = instrument;
-    }
-
-    public Song getSong() {
-        return song;
-    }
-
-    public void setSong(Song song) {
-        this.song = song;
-    }
 
     @Override
     public String toString() {

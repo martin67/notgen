@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen2;
 
 import com.google.common.net.UrlEscapers;
+import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
@@ -12,8 +13,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -46,10 +45,9 @@ import java.util.stream.Collectors;
 //
 // inuti noteConverter.convert så har man sedan anropo till olika interna metoder (som typ download)
 
+@Slf4j
 @Service
 public class NoteConverter {
-    private final Logger log = LoggerFactory.getLogger(NoteConverter.class);
-
     private static GoogleDrive googleDrive;
     private static final String GOOGLE_DRIVE_ID_FULLSCORE = "0B-ZpHPz-KfoJQUUxTU5JNWFHbWM";
     private static final String GOOGLE_DRIVE_ID_INSTRUMENT = "0B-ZpHPz-KfoJajZFSXV2dTZzZjQ";
@@ -78,8 +76,7 @@ public class NoteConverter {
         for (Song song : songs) {
             log.info("Converting " + song.getId() + ", " + song.getTitle());
             // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
-            song.getScoreParts().sort((ScorePart s1, ScorePart s2) -> s1.getInstrument().getSortOrder().compareTo(s2.getInstrument().getSortOrder()));
-            //song.getScoreParts().sort(Comparator.comparing(Instrument::getSortOrder));
+            song.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
             this.download(song);
             this.split(song);
             this.imageProcess(song);
@@ -97,7 +94,7 @@ public class NoteConverter {
 
         for (Song song : songs) {
             log.info("Converting " + song.getId() + ", " + song.getTitle());
-            song.getScoreParts().sort((ScorePart s1, ScorePart s2) -> s1.getInstrument().getSortOrder().compareTo(s2.getInstrument().getSortOrder()));
+            song.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
             this.download(song);
             this.split(song);
             this.imageProcess(song);
@@ -145,7 +142,7 @@ public class NoteConverter {
 
             // Ta först hand om framsidan om den finns och är i färg. Endast för fulla arr
             // Alltid första filen om den finns
-            if (song.isCover() && song.isColor() && !TOScore) {
+            if (song.getCover() && song.getColor() && !TOScore) {
                 PDPage page = new PDPage(PDRectangle.A4);
                 doc.addPage(page);
                 File file = new File(FilenameUtils.removeExtension(this.extractedFilesList.get(0).toString()) + ".jpg");
@@ -247,7 +244,7 @@ public class NoteConverter {
                     //ns.addNumberOfBytes(Files.size(path));
 
                     // Ladda också upp omslaget separat (bara om det är bildbehandlat och beskuret)
-                    if (song.isCover() && song.isColor() && song.isUpperleft()) {
+                    if (song.getCover() && song.getColor() && song.getUpperleft()) {
                         log.debug("Also uploading cover");
                         Path coverPath = Paths.get(this.extractedFilesList.get(0).toString() + "-cover.jpg");
                         NoteConverter.googleDrive.uploadFile(GOOGLE_DRIVE_ID_COVER, "image/jpeg", song.getTitle(), coverPath, null, null, false, null);
@@ -392,7 +389,7 @@ public class NoteConverter {
 
 
     private void imageProcess(Song song) {
-        if (!Files.exists(tmpDir) || !song.isImageProcess())
+        if (!Files.exists(tmpDir) || !song.getImageProcess())
             return;
 
         log.debug("Starting image processing");
@@ -443,7 +440,7 @@ public class NoteConverter {
                 // Om bilderna är inscannade med övre vänstra hörnet mot kanten så kan man beskära och förstora.
                 // Standard för sådant som jag scannar
                 //
-                if (song.isUpperleft()) {
+                if (song.getUpperleft()) {
                     if (image.getWidth() > 2000) {
                         // 300 DPI
                         cropWidth = 2036;
@@ -464,7 +461,7 @@ public class NoteConverter {
                     //
                     // Om det är ett omslag så skall det sparas en kopia separat här (innan det skalas om)
                     //
-                    if (firstPage && song.isCover() && song.isColor()) {
+                    if (firstPage && song.getCover() && song.getColor()) {
                         ImageIO.write(image, "jpg", new File(tmpDir.toFile(), basename + "-cover.jpg"));
                         //ns.addNumberOfCovers(1);
                     }
@@ -484,7 +481,7 @@ public class NoteConverter {
                 }
 
 
-                if (firstPage && song.isCover() && song.isColor()) {
+                if (firstPage && song.getCover() && song.getColor()) {
                     // Don't convert the first page to grey/BW
                     ImageIO.write(image, "jpg", new File(FilenameUtils.removeExtension(path.toString()) + ".jpg"));
                     firstPage = false;
@@ -494,10 +491,10 @@ public class NoteConverter {
                 //
                 // Change to grey
                 //
-                BufferedImage grey = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+                //BufferedImage grey = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
 
                 OtsuBinarize ob = new OtsuBinarize();
-                grey = ob.toGray(image);
+                BufferedImage grey = ob.toGray(image);
                 image = grey;
 
                 if (log.isDebugEnabled()) {
@@ -507,10 +504,11 @@ public class NoteConverter {
                 //
                 // Change to B/W
                 //
-                BufferedImage bw = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+                //BufferedImage bw = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 
-                bw = ob.binarize(grey);
-                image = bw;
+                //BufferedImage image = ob.binarize(grey);
+                //image = bw;
+                image = ob.binarize(grey);
 
                 if (log.isDebugEnabled()) {
                     ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-bw.png"));
@@ -595,7 +593,7 @@ public class NoteConverter {
 
     private void download(@NotNull Song song) {
         // if the song is not scanned  then just skip
-        if (!song.isScanned())
+        if (!song.getScanned())
             return;
 
         // Create temp directory

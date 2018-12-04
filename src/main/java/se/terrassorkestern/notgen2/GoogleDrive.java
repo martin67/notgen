@@ -6,8 +6,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,10 +14,8 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Map;
 
+@Slf4j
 class GoogleDrive extends Google {
-
-    private final Logger log = LoggerFactory.getLogger(GoogleDrive.class);
-
     private Drive service;
 
     GoogleDrive() throws IOException, GeneralSecurityException {

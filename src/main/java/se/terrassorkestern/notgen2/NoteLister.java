@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen2;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +14,11 @@ import java.util.List;
 //
 // Class to create a Google Sheet with all the songs
 //
+
+@Slf4j
 @Service
 class NoteLister {
 
-    private final Logger log = LoggerFactory.getLogger(NoteLister.class);
     private static GoogleSheet googleSheet;
 
     @Autowired
