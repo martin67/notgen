@@ -24,6 +24,7 @@ public class PlaylistController {
 
     @GetMapping("/edit")
     public String playlistEdit(@RequestParam("id") Integer id, Model model) {
+        Playlist playlist = playlistRepository.findById(id).get();
         model.addAttribute("playlist", playlistRepository.findById(id).get());
         return "playlistEdit";
     }

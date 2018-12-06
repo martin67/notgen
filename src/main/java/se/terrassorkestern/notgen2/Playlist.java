@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -20,4 +22,7 @@ public class Playlist {
     @Column(name="datum")
     private LocalDate date;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "playlist_id")
+    List<PlaylistEntry> playlistEntries = new ArrayList<>();
 }
