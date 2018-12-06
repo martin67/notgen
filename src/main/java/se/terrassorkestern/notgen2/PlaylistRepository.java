@@ -6,10 +6,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface InstrumentRepository extends JpaRepository<Instrument, Integer> {
+public interface PlaylistRepository extends JpaRepository<Playlist, Integer> {
 
     // custom query to search to blog post by title or content
-    List<Instrument> findByName(String text);
-    List<Instrument> findByOrderByStandardDescSortOrder();
-    List<Instrument> findByStandardIsTrueOrderBySortOrder();
+    List<Playlist> findByName(String text);
+
 }

@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <h1>Låtdetaljer</h1>
 
-    <form role="form" th:action="@{/song/update}" th:object="${song}" th:method="post">
+    <form role="form" th:action="@{/song/save}" th:object="${song}" th:method="post">
         <div class="form-group row">
             <label class="col-sm-2 col-form-label" for="id">ID</label>
             <div class="col-sm-10">
@@ -67,34 +67,37 @@
                     <th scope="col">Placering</th>
                     <th scope="col">Antal</th>
                     <th scope="col">Kommentar</th>
-                    <th scope="col"><button type="submit" name="addrow">Lägg till</button></th>
+                    <th><button class="btn btn-primary btn-sm" type="submit" name="addRow"><i class="material-icons">add_box</i></button></th>
                     </thead>
                     <tbody>
 
                     <tr th:each="scorePart,rowStat : ${song.scoreParts}">
-                        <!--
-                                                <td th:text="${scorePart.instrument.name}"></td>
-                                                <td th:text="${scorePart.page}"></td>
-                                                <td th:text="${scorePart.length}"></td>
-                                                <td th:text="${scorePart.comment}"></td>
-                        -->
                         <td>
-                        <select th:field="*{scoreParts[__${rowStat.index}__].instrument.id}">
-                            <option th:each="i2 : ${allInstruments}"
-                                    th:value="${i2.id}"
-                                    th:text="${i2.name}">bla</option>
-                        </select>
+                            <select th:field="*{scoreParts[__${rowStat.index}__].instrument.id}">
+                                <option th:each="i2 : ${allInstruments}"
+                                        th:value="${i2.id}"
+                                        th:text="${i2.name}">bla
+                                </option>
+                            </select>
 
                         </td>
-                        <td><input type="number" class="form-control" th:field="*{scoreParts[__${rowStat.index}__].page}" th:value="${scorePart.page}"/></td>
-                        <td><input type="number" class="form-control" th:field="*{scoreParts[__${rowStat.index}__].length}" th:value="${scorePart.length}"/></td>
-                        <td><input type="text" class="form-control" th:field="*{scoreParts[__${rowStat.index}__].comment}" th:value="${scorePart.comment}"/></td>
+                        <td><input type="number" class="form-control"
+                                   th:field="*{scoreParts[__${rowStat.index}__].page}" th:value="${scorePart.page}"/>
+                        </td>
+                        <td><input type="number" class="form-control"
+                                   th:field="*{scoreParts[__${rowStat.index}__].length}"
+                                   th:value="${scorePart.length}"/></td>
+                        <td><input type="text" class="form-control"
+                                   th:field="*{scoreParts[__${rowStat.index}__].comment}"
+                                   th:value="${scorePart.comment}"/></td>
 
                         <td>
                             <!--<input type="hidden" th:field="*{scorePart.song}" th:value="${song}" />-->
                             <!--<button type="submit" name="removeRow" th:value="${scorePart.page}" >Ta bort</button>-->
-                            <a th:href="@{/scorepart/edit(id=${song.id})}"><i class="material-icons">mode_edit</i></a>
-                            <a th:href="@{/scorepart/delete(id=${song.id})}"><i class="material-icons">delete</i></a>
+                            <!-- <a th:href="@{/scorepart/delete(id=${song.id})}"><i class="material-icons">delete</i></a>-->
+                            <!--<button class="btn btn-small btn-danger" type="submit" name="deleteRow" th:value="${rowStat.index}">Delete</button>-->
+                            <button class="btn btn-small btn-danger" type="submit" name="deleteRow" th:value="${rowStat.index}">
+                                <i class="material-icons md-18">delete</i></button>
                         </td>
                     </tr>
                     </tbody>
@@ -117,11 +120,13 @@
                     <label class="form-check-label">Förstasidan är i färg</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" th:field="*{upperleft}" th:value="${song.upperleft}"/>
+                    <input class="form-check-input" type="checkbox" th:field="*{upperleft}"
+                           th:value="${song.upperleft}"/>
                     <label class="form-check-label">Scanningen är linjerad med övre vänstra hörnet</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" th:field="*{imageProcess}" th:value="${song.imageProcess}"/>
+                    <input class="form-check-input" type="checkbox" th:field="*{imageProcess}"
+                           th:value="${song.imageProcess}"/>
                     <label class="form-check-label">Bildbehandla (beskär, fixa färger etc.)</label>
                 </div>
             </div>
@@ -134,7 +139,9 @@
         </div>
         <div class="form-group row">
             <div class="col-sm-10">
-                <button type="reset" class="btn btn-default">Avbryt</button>
+                <a class="btn btn-secondary" href="/song/list">Tillbaka</a>
+                <input type="reset" class="btn btn-default" value="Ångra"/>
+                <a class="btn btn-danger" th:href="@{/song/delete(id=${song.id})}">Ta bort</a>
                 <input type="submit" class="btn btn-primary" value="Spara"/>
             </div>
         </div>

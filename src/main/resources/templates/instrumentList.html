@@ -14,7 +14,7 @@
             <th>Förkortning</th>
             <th>Standard</th>
             <th>Ordning</th>
-            <th>Action</th>
+            <th><a th:href="@{/instrument/new}"><i class="material-icons">add_box</i></a></th>
         </tr>
         </thead>
 
@@ -25,7 +25,6 @@
             <td th:text="${instrument.sortOrder}"></td>
             <td>
                 <a th:href="@{/instrument/edit(id=${instrument.id})}"><i class="material-icons">mode_edit</i></a>
-                <a th:href="@{/instrument/delete(id=${instrument.id})}"><i class="material-icons">delete</i></a>
             </td>
         </tr>
     </table>

@@ -12,7 +12,7 @@
         <tr>
             <th scope="col">Namn</th>
             <th scope="col">Genre</th>
-            <th scope="col">Action</th>
+            <th scope="col"><a th:href="@{/song/new}"><i class="material-icons">add_box</i></a></th>
         </tr>
         </thead>
         <tbody>
@@ -21,7 +21,6 @@
             <td th:text="${song.genre}"></td>
             <td>
                 <a th:href="@{/song/edit(id=${song.id})}"><i class="material-icons">mode_edit</i></a>
-                <a th:href="@{/song/delete(id=${song.id})}"><i class="material-icons">delete</i></a>
             </td>
         </tr>
         </tbody>

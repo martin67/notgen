@@ -3,6 +3,7 @@ package se.terrassorkestern.notgen2;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,7 +18,7 @@ public class Song {
     @Column(name = "subtitel")
     private String subtitle;
     @Column(name = "genre")
-    private String genre;
+    private String genre = "Foxtrot";
     @Column(name = "musik")
     private String composer;
     @Column(name = "text")
@@ -25,26 +26,25 @@ public class Song {
     @Column(name = "arr")
     private String arranger;
     @Column(name = "ar")
-    private Integer year;
+    private Integer year = 1940;
 
     @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ScorePart> scoreParts;
+    private List<ScorePart> scoreParts = new ArrayList<>();
 
     @Column(name = "inscannad")
-    private Boolean scanned;
+    private Boolean scanned = true;
     @Column(name = "omslag")
-    private Boolean cover;
+    private Boolean cover = true;
     @Column(name = "bildbehandla")
-    private Boolean imageProcess;
-    private Boolean upperleft;
-    private Boolean color;
+    private Boolean imageProcess = true;
+    private Boolean upperleft = true;
+    private Boolean color = true;
 
     @Column(name = "filnamn")
     private String filename;
 
 
-    public Song() {
-    }
+    public Song() {}
 
 
     @Override

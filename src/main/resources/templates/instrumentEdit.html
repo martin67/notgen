@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <h1>Instrumentdetaljer</h1>
 
-    <form role="form" th:action="@{/instrument/update}" th:object="${instrument}" th:method="post">
+    <form role="form" th:action="@{/instrument/save}" th:object="${instrument}" th:method="post">
         <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="id">ID</label>
             <div class="col-sm-9">
@@ -46,6 +46,7 @@
         <div class="form-group row">
             <div class="col-sm-9">
                 <button type="reset" class="btn btn-default">Avbryt</button>
+                <a class="btn btn-danger" th:href="@{/instrument/delete(id=${instrument.id})}">Ta bort</a>
                 <input type="submit" class="btn btn-primary" value="Spara"/>
             </div>
         </div>

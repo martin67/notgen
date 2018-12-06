@@ -24,7 +24,7 @@ public class ScorePart {
     @Column(name="sida")
     private int page;
     @Column(name="antal")
-    private int length;
+    private int length = 1;
     @Column(name="kommentar")
     private String comment;
 
