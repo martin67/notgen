@@ -1,8 +1,6 @@
 package se.terrassorkestern.notgen2;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -16,34 +14,34 @@ import java.util.List;
 //
 
 @Slf4j
-@Service
+//@Service
 class NoteLister {
 
     private static GoogleSheet googleSheet;
 
-    @Autowired
+ /*   @Autowired
     private InstrumentRepository instrumentRepository;
     @Autowired
     private SongRepository songRepository;
-
+*/
 
     public NoteLister() {
-        log.info("Constructor!");
+        log.debug("Constructor!");
 
-        log.info("Google init");
-        try {
-            googleSheet = new GoogleSheet();
-        } catch (IOException | GeneralSecurityException e) {
-            e.printStackTrace();
+        if (googleSheet == null) {
+            log.debug("Google init");
+            try {
+                googleSheet = new GoogleSheet();
+            } catch (IOException | GeneralSecurityException e) {
+                e.printStackTrace();
+            }
+        } else {
+            log.debug("Google sheet already initialized");
         }
     }
 
-
-    void createList() {
+    void createList(List<Instrument> instruments, List<Song> songs) {
         log.info("Starting note listing");
-
-        List<Instrument> instruments = instrumentRepository.findByOrderByStandardDescSortOrder();
-        List<Song> songs = songRepository.findByOrderByTitle();
 
         List<List<Object>> repertoireRows = new ArrayList<>();
         List<List<Object>> instrumentRows = new ArrayList<>();

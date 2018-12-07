@@ -15,11 +15,9 @@ import java.util.List;
 public class NoteConverterController {
 
     @Autowired
-    private NoteConverter noteConverter;
-    @Autowired
     private SongRepository songRepository;
     @Autowired
-    private NoteConverterForm noteConverterForm;
+    private NoteConverterService noteConverterService;
 
 
     public NoteConverterController() {
@@ -33,7 +31,7 @@ public class NoteConverterController {
 
         List<Song> songs = songRepository.findByOrderByTitle();
         model.addAttribute("songs", songs);
-        model.addAttribute("noteConverterForm", noteConverterForm);
+        model.addAttribute("noteConverterForm", new NoteConverterForm());
 
         return "noteConverter";
     }
@@ -42,25 +40,11 @@ public class NoteConverterController {
     public String handlePost(@ModelAttribute("noteConverterForm") NoteConverterForm noteConverterForm) {
         log.info("Nu är vi i noteConverter post");
 
-        // Starta konvertering!
-        if (noteConverterForm.getAllSongs()) {
-            noteConverter.convert(songRepository.findByOrderByTitle(), noteConverterForm.getUpload());
-        } else {
-            noteConverter.convert(songRepository.findByIdInOrderByTitle(noteConverterForm.getSelectedSongs()),
-                    noteConverterForm.getUpload());
-        }
-        return "noteConverter";
+
+        noteConverterService.convert(noteConverterForm.getSelectedSongs(),
+                noteConverterForm.getAllSongs(), noteConverterForm.getUpload());
+
+        return "redirect:/noteConverter";
     }
 
-
-    @GetMapping("/noteConverterGenerate")
-    public String noteListerGenerate(Model model) {
-        log.info("Nu är vi i noteConverterGenerate");
-
-        noteConverter.convert(songRepository.findByOrderByTitle(), false);
-
-        //model.addAttribute("instruments", instruments);
-
-        return "noteConverter";
-    }
 }

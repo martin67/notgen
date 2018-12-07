@@ -11,20 +11,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class NoteListerController {
 
     @Autowired
-    private InstrumentRepository instrumentRepository;
-    @Autowired
-    private NoteLister noteLister;
+    NoteListerService noteListerService;
+
 
     public NoteListerController() {
         log.info("Constructor!");
     }
 
+
     @GetMapping("/noteLister")
     public String noteLister(Model model) {
         log.info("Nu är vi i noteLister(Model model)");
-
-
-        //model.addAttribute("instruments", instruments);
 
         return "noteLister";
     }
@@ -33,9 +30,7 @@ public class NoteListerController {
     public String noteListerGenerate(Model model) {
         log.info("Nu är vi i noteListerGenerate");
 
-        noteLister.createList();
-
-        //model.addAttribute("instruments", instruments);
+        noteListerService.createList();
 
         return "noteLister";
     }

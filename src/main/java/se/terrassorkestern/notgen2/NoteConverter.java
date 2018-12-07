@@ -13,7 +13,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -26,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.time.Instant;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,32 +44,39 @@ import java.util.stream.Collectors;
 // inuti noteConverter.convert så har man sedan anropo till olika interna metoder (som typ download)
 
 @Slf4j
-@Service
 public class NoteConverter {
     private static GoogleDrive googleDrive;
     private static final String GOOGLE_DRIVE_ID_FULLSCORE = "0B-ZpHPz-KfoJQUUxTU5JNWFHbWM";
     private static final String GOOGLE_DRIVE_ID_INSTRUMENT = "0B-ZpHPz-KfoJajZFSXV2dTZzZjQ";
     private static final String GOOGLE_DRIVE_ID_TOSCORE = "0B_STqkG31CToVmdfSGxlZ2M0ZXc";
     private static final String GOOGLE_DRIVE_ID_COVER = "0B_STqkG31CToVTlNOFlIRERZcjg";
+    private static final String NOTE_ARCHIVE_URL = "http://notarkiv.hagelin.nu/";
 
     private Path tmpDir;                            // Dir for extracting individual parts
     private ArrayList<Path> extractedFilesList;     // List of extracted files
+    private NoteConverterStats stats = new NoteConverterStats();
 
 
-    NoteConverter(){
+    NoteConverter() {
         log.info("Constructor!");
 
-        log.info("Google init");
-        try {
-            googleDrive = new GoogleDrive();
-        } catch (IOException | GeneralSecurityException e) {
-            e.printStackTrace();
+        if (googleDrive == null) {
+            try {
+                log.debug("Google init");
+                googleDrive = new GoogleDrive();
+            } catch (IOException | GeneralSecurityException e) {
+                e.printStackTrace();
+            }
+        } else {
+            log.debug("Google drive already initialized");
         }
+
     }
 
 
-    void convert(List<Song> songs, boolean upload) {
+    NoteConverterStats convert(List<Song> songs, boolean upload) {
         log.info("Starting main convert loop");
+        stats.setStartTime(Instant.now());
 
         for (Song song : songs) {
             log.info("Converting " + song.getId() + ", " + song.getTitle());
@@ -82,8 +89,11 @@ public class NoteConverter {
             this.createFullScore(song, false, upload);
             this.createInstrumentParts(song, upload);
             this.cleanup();
+            stats.incrementNumberOfSongs();
         }
         log.info("Finishing main convert loop");
+        stats.setEndTime(Instant.now());
+        return stats;
     }
 
 
@@ -170,7 +180,7 @@ public class NoteConverter {
             }
             doc.save(path.toFile());
             doc.close();
-            //ns.addNumberOfPdf(1);
+            stats.incrementNumberOfPdf();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -218,17 +228,17 @@ public class NoteConverter {
 
                 if (TOScore) {
                     googleDrive.uploadFile(GOOGLE_DRIVE_ID_TOSCORE, "application/pdf", song.getTitle(), path, null, description.toString(), false, map);
-                    //ns.addNumberOfBytes(Files.size(path));
+                    stats.addNumberOfBytes(Files.size(path));
                 } else {
                     googleDrive.uploadFile(GOOGLE_DRIVE_ID_FULLSCORE, "application/pdf", song.getTitle(), path, null, description.toString(), false, map);
-                    //ns.addNumberOfBytes(Files.size(path));
+                    stats.addNumberOfBytes(Files.size(path));
 
                     // Ladda också upp omslaget separat (bara om det är bildbehandlat och beskuret)
                     if (song.getCover() && song.getColor() && song.getUpperleft()) {
                         log.debug("Also uploading cover");
                         Path coverPath = Paths.get(this.extractedFilesList.get(0).toString() + "-cover.jpg");
                         NoteConverter.googleDrive.uploadFile(GOOGLE_DRIVE_ID_COVER, "image/jpeg", song.getTitle(), coverPath, null, null, false, null);
-                        //ns.addNumberOfBytes(Files.size(coverPath));
+                        stats.addNumberOfBytes(Files.size(coverPath));
                     }
                 }
             } catch (IOException e) {
@@ -293,7 +303,8 @@ public class NoteConverter {
                 }
                 doc.save(path.toFile());
                 doc.close();
-                //ns.addNumberOfPdf(1);
+                stats.incrementNumberOfPdf();
+
 
                 if (upload) {
                     try {
@@ -329,7 +340,7 @@ public class NoteConverter {
 
                         // Stämmor måste ha namn med .pdf så att forScore hittar den
                         NoteConverter.googleDrive.uploadFile(GOOGLE_DRIVE_ID_INSTRUMENT, "application/pdf", song.getTitle() + ".pdf", path, scorePart.getInstrument().getName(), description, false, map);
-                        //ns.addNumberOfBytes(Files.size(path));
+                        stats.addNumberOfBytes(Files.size(path));
 
                         // Sångstämmor skall också sparas som Google Docs (med OCR)
                         if (scorePart.getInstrument().getName().equals("Sång")) {
@@ -351,8 +362,8 @@ public class NoteConverter {
                                 }
 
                                 NoteConverter.googleDrive.uploadFile(GOOGLE_DRIVE_ID_INSTRUMENT, fileType, song.getTitle(), file.toPath(), "Sång - OCR", description, true, map);
-                                //ns.addNumberOfBytes(Files.size(file.toPath()));
-                                //ns.addNumberOfOCRs(1);
+                                stats.addNumberOfBytes(Files.size(file.toPath()));
+                                stats.incrementNumberOfOCRs();
                             } else {
                                 log.warn("More than one lyrics page for song " + song.getId() + ", skipping Google docs OCR upload");
                             }
@@ -377,7 +388,7 @@ public class NoteConverter {
         for (Path path : this.extractedFilesList) {
             try {
                 BufferedImage image = ImageIO.read(path.toFile());
-                //ns.addNumberOfImgProcess(1);
+                stats.incrementNumberOfImgProcess();
 
                 String basename = FilenameUtils.getName(path.toString());
                 log.debug("Image processing " + FilenameUtils.getName(path.toString()) + " (" + image.getWidth() + "x" + image.getHeight() + ")");
@@ -396,12 +407,6 @@ public class NoteConverter {
                     g2d.dispose();
                     // Spara i det format som den filen hade från början
                     ImageIO.write(rotated, FilenameUtils.getExtension(path.toString()), new File(path.toString()));
-
-//                    if (FilenameUtils.getExtension(path.toString()).equals("png")) {
-//                        ImageIO.write(rotated, "png", new File(FilenameUtils.removeExtension(path.toString()) + "-rot.png"));
-//                    } else {
-//                        ImageIO.write(rotated, "jpg", new File(FilenameUtils.removeExtension(path.toString()) + "-rot.jpg"));
-//                    }
                     continue;
                 }
 
@@ -434,7 +439,7 @@ public class NoteConverter {
                     g.drawImage(image, 0, 0, cropped.getWidth(), cropped.getHeight(), 0, 0, cropped.getWidth(), cropped.getHeight(), null);
                     g.dispose();
                     image = cropped;
-                    if (log.isDebugEnabled()) {
+                    if (log.isTraceEnabled()) {
                         ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-cropped.png"));
                     }
 
@@ -443,7 +448,7 @@ public class NoteConverter {
                     //
                     if (firstPage && song.getCover() && song.getColor()) {
                         ImageIO.write(image, "jpg", new File(tmpDir.toFile(), basename + "-cover.jpg"));
-                        //ns.addNumberOfCovers(1);
+                        stats.incrementNumberOfCovers();
                     }
 
                     // Resize
@@ -455,7 +460,7 @@ public class NoteConverter {
                     g.drawImage(image, 149, 0, 2402, 3501, 0, 0, image.getWidth(), image.getHeight(), null);
                     g.dispose();
                     image = resized;
-                    if (log.isDebugEnabled()) {
+                    if (log.isTraceEnabled()) {
                         ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-resized.png"));
                     }
                 }
@@ -477,7 +482,7 @@ public class NoteConverter {
                 BufferedImage grey = ob.toGray(image);
                 image = grey;
 
-                if (log.isDebugEnabled()) {
+                if (log.isTraceEnabled()) {
                     ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-grey.png"));
                 }
 
@@ -490,7 +495,7 @@ public class NoteConverter {
                 //image = bw;
                 image = ob.binarize(grey);
 
-                if (log.isDebugEnabled()) {
+                if (log.isTraceEnabled()) {
                     ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-bw.png"));
                 }
 
@@ -564,7 +569,7 @@ public class NoteConverter {
                     .filter(p -> (p.toString().toLowerCase().endsWith(".png") || p.toString().toLowerCase().endsWith(".jpg")))
                     .collect(Collectors.toCollection(ArrayList::new));
             Collections.sort(this.extractedFilesList);
-            //ns.addNumberOfSrcImg(notePartsList.size());
+            stats.addNumberOfSrcImg(this.extractedFilesList.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -589,7 +594,7 @@ public class NoteConverter {
         // Download note file to tmpDir
         URL url = null;
         try {
-            url = new URL("http://notarkiv.hagelin.nu/" + UrlEscapers.urlPathSegmentEscaper().escape(song.getFilename()));
+            url = new URL(NOTE_ARCHIVE_URL + UrlEscapers.urlPathSegmentEscaper().escape(song.getFilename()));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -601,7 +606,6 @@ public class NoteConverter {
             e.printStackTrace();
         }
 
-//        noteFilePath = Paths.get(tmpDir.toString() + File.separator + fileName);
     }
 
 
@@ -612,8 +616,8 @@ public class NoteConverter {
         log.debug("Cleaning up");
         this.extractedFilesList.clear();
 
-        // Remove the temp directory if we're not in debug mode
-        if (!log.isDebugEnabled()) {
+        // Remove the temp directory if we're not in trace mode
+        if (!log.isTraceEnabled()) {
             log.debug("Removing temp directory " + tmpDir.toString());
             try {
                 Files.walk(tmpDir)
