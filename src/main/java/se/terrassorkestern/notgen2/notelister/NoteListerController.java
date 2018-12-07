@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2;
+package se.terrassorkestern.notgen2.notelister;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

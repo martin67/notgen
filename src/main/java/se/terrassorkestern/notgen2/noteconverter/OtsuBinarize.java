@@ -5,7 +5,7 @@
 
  */
 
-package se.terrassorkestern.notgen2;
+package se.terrassorkestern.notgen2.noteconverter;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

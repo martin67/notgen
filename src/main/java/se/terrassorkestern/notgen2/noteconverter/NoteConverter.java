@@ -1,6 +1,7 @@
-package se.terrassorkestern.notgen2;
+package se.terrassorkestern.notgen2.noteconverter;
 
 import com.google.common.net.UrlEscapers;
+import io.micrometer.core.instrument.Metrics;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -13,6 +14,9 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.jetbrains.annotations.NotNull;
+import se.terrassorkestern.notgen2.GoogleDrive;
+import se.terrassorkestern.notgen2.song.ScorePart;
+import se.terrassorkestern.notgen2.song.Song;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -90,6 +94,7 @@ public class NoteConverter {
             this.createInstrumentParts(song, upload);
             this.cleanup();
             stats.incrementNumberOfSongs();
+            Metrics.counter("notte.songs").increment();
         }
         log.info("Finishing main convert loop");
         stats.setEndTime(Instant.now());

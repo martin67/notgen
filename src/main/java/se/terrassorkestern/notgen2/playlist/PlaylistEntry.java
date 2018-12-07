@@ -1,6 +1,7 @@
-package se.terrassorkestern.notgen2;
+package se.terrassorkestern.notgen2.playlist;
 
 import lombok.Data;
+import se.terrassorkestern.notgen2.song.Song;
 
 import javax.persistence.*;
 

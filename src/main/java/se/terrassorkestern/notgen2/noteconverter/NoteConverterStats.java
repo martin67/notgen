@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2;
+package se.terrassorkestern.notgen2.noteconverter;
 
 import lombok.Data;
 

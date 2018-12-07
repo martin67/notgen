@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2;
+package se.terrassorkestern.notgen2.song;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

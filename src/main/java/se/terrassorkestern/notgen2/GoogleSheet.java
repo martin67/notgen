@@ -12,11 +12,11 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 @Slf4j
-class GoogleSheet extends Google {
+public class GoogleSheet extends Google {
     private Sheets service;
     private static final String GOOGLE_SPREADSHEET_ID = "1O5FEIPY2il6hPBwJRtzgjR8L4lYAII7heymn4DnVfZ4";
 
-    GoogleSheet() throws IOException, GeneralSecurityException {
+    public GoogleSheet() throws IOException, GeneralSecurityException {
         log.debug("Creating GoogleSheet object");
 
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -26,7 +26,7 @@ class GoogleSheet extends Google {
     }
 
 
-    void addRows(String startPos, List<List<Object>> values) {
+    public void addRows(String startPos, List<List<Object>> values) {
         log.info("Uploading row to spreadsheet, startpos: " +  startPos);
 
         ValueRange body = new ValueRange().setValues(values);

@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2;
+package se.terrassorkestern.notgen2.song;
 
 import lombok.Data;
 

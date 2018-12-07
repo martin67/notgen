@@ -15,10 +15,10 @@ import java.util.Collections;
 import java.util.Map;
 
 @Slf4j
-class GoogleDrive extends Google {
+public class GoogleDrive extends Google {
     private Drive service;
 
-    GoogleDrive() throws IOException, GeneralSecurityException {
+    public GoogleDrive() throws IOException, GeneralSecurityException {
         log.debug("Creating GoogleDrive object");
 
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -28,7 +28,7 @@ class GoogleDrive extends Google {
     }
 
 
-    void uploadFile(String folderId,     // ID på mappen som det skall upp i
+    public void uploadFile(String folderId,     // ID på mappen som det skall upp i
                     String fileType,     // 'application/pdf' or 'image/jpeg'
                     String fileName,     // "Apertif" eller "Aperitif - sång.pdf". Extension behöver inte vara med.
                     Path uploadFile,     // Själva filen som skall laddas upp
