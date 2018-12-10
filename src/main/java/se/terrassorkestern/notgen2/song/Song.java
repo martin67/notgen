@@ -43,21 +43,4 @@ public class Song {
     @Column(name = "filnamn")
     private String filename;
 
-
-    public Song() {}
-
-
-    @Override
-    public String toString() {
-        return "Song{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", subtitle='" + subtitle + '\'' +
-                ", genre='" + genre + '\'' +
-                ", composer='" + composer + '\'' +
-                ", author='" + author + '\'' +
-                ", arranger='" + arranger + '\'' +
-                ", year=" + year +
-                '}';
-    }
 }

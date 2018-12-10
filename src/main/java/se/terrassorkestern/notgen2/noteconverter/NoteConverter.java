@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.Metrics;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.*;
@@ -54,10 +53,11 @@ public class NoteConverter {
     private static final String GOOGLE_DRIVE_ID_INSTRUMENT = "0B-ZpHPz-KfoJajZFSXV2dTZzZjQ";
     private static final String GOOGLE_DRIVE_ID_TOSCORE = "0B_STqkG31CToVmdfSGxlZ2M0ZXc";
     private static final String GOOGLE_DRIVE_ID_COVER = "0B_STqkG31CToVTlNOFlIRERZcjg";
+    private static final String GOOGLE_DRIVE_ID_ORIGINAL = "1wD37LV6ldjgt_LdRGz9VFbaa4Mrp_wGs";
     private static final String NOTE_ARCHIVE_URL = "http://notarkiv.hagelin.nu/";
 
     private Path tmpDir;                            // Dir for extracting individual parts
-    private ArrayList<Path> extractedFilesList;     // List of extracted files
+    private ArrayList<Path> extractedFilesList = new ArrayList<>();     // List of extracted files
     private NoteConverterStats stats = new NoteConverterStats();
 
 
@@ -103,7 +103,7 @@ public class NoteConverter {
 
 
     private void createFullScore(Song song, boolean TOScore, boolean upload) {
-        if (!Files.exists(tmpDir))
+        if (!Files.exists(tmpDir) || this.extractedFilesList.isEmpty())
             return;
 
         // Ta bort "0123 - " från det nya filnamnet
@@ -254,7 +254,7 @@ public class NoteConverter {
 
 
     private void createInstrumentParts(Song song, boolean upload) {
-        if (!Files.exists(tmpDir))
+        if (!Files.exists(tmpDir) || this.extractedFilesList.isEmpty())
             return;
 
         try {
@@ -385,7 +385,7 @@ public class NoteConverter {
 
 
     private void imageProcess(Song song) {
-        if (!Files.exists(tmpDir) || !song.getImageProcess())
+        if (!Files.exists(tmpDir) || !song.getImageProcess() || this.extractedFilesList.isEmpty())
             return;
 
         log.debug("Starting image processing");
@@ -519,7 +519,10 @@ public class NoteConverter {
         if (!Files.exists(tmpDir))
             return;
 
-        String inFile = new File(tmpDir.toFile(), song.getFilename()).toString();
+        File inFile = new File(tmpDir.toFile(), song.getFilename());
+        if (!inFile.exists())
+            return;
+        //String inFile = new File(tmpDir.toFile(), song.getFilename()).toString();
 
         // Unzip files into temp directory
         if (FilenameUtils.getExtension(song.getFilename()).toLowerCase().equals("zip")) {
@@ -539,7 +542,7 @@ public class NoteConverter {
             log.debug("Extracting " + inFile + " to " + tmpDir.toString());
 
             try {
-                PDDocument document = PDDocument.load(new File(inFile));
+                PDDocument document = PDDocument.load(new File(inFile.toString()));
                 PDPageTree list = document.getPages();
                 int i = 100;
                 for (PDPage page : list) {
@@ -605,8 +608,9 @@ public class NoteConverter {
         }
         try {
             assert url != null;
-            log.debug("Downloading " + url.toString());
-            FileUtils.copyURLToFile(url, new File(tmpDir.toFile(), song.getFilename()));
+            log.debug("Downloading " + song.getFilename());
+            // FileUtils.copyURLToFile(url, new File(tmpDir.toFile(), song.getFilename()));
+            googleDrive.downloadFile(GOOGLE_DRIVE_ID_ORIGINAL, song.getFilename(), tmpDir);
         } catch (IOException e) {
             e.printStackTrace();
         }

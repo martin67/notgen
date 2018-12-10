@@ -20,32 +20,4 @@ public class Instrument {
     private Integer sortOrder;
     private boolean standard;
 
-
-    public Instrument() {}
-
-    public Instrument(int id, String name, String shortName, int sortOrder, boolean standard) {
-        this.setId(id);
-        this.setName(name);
-        this.setShortName(shortName);
-        this.setSortOrder(sortOrder);
-        this.setStandard(standard);
-    }
-
-    public Instrument(String name, String shortName, int sortOrder, boolean standard) {
-        this.setName(name);
-        this.setShortName(shortName);
-        this.setSortOrder(sortOrder);
-        this.setStandard(standard);
-    }
-
-    @Override
-    public String toString() {
-        return "Instrument{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", shortName='" + shortName + '\'' +
-                ", sortOrder=" + sortOrder +
-                ", standard=" + standard +
-                '}';
-    }
 }

@@ -8,7 +8,9 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
@@ -29,13 +31,13 @@ public class GoogleDrive extends Google {
 
 
     public void uploadFile(String folderId,     // ID på mappen som det skall upp i
-                    String fileType,     // 'application/pdf' or 'image/jpeg'
-                    String fileName,     // "Apertif" eller "Aperitif - sång.pdf". Extension behöver inte vara med.
-                    Path uploadFile,     // Själva filen som skall laddas upp
-                    String instrument,   // Om det är ett instrument så skall det ner ytterligare en katalog, om inte sätt till nill
-                    String description,  // Beskrvining av lågten dvs, namn, kompoistör sättning etc.
-                    Boolean ocr,         // Om filen skall OCR:as och laddas upp som ett google docs istället
-                    Map<String, String> map)
+                           String fileType,     // 'application/pdf' or 'image/jpeg'
+                           String fileName,     // "Apertif" eller "Aperitif - sång.pdf". Extension behöver inte vara med.
+                           Path uploadFile,     // Själva filen som skall laddas upp
+                           String instrument,   // Om det är ett instrument så skall det ner ytterligare en katalog, om inte sätt till nill
+                           String description,  // Beskrvining av lågten dvs, namn, kompoistör sättning etc.
+                           Boolean ocr,         // Om filen skall OCR:as och laddas upp som ett google docs istället
+                           Map<String, String> map)
             throws IOException {
 
         // Måste först hitta eventuell gammal fil med samma namn
@@ -80,8 +82,8 @@ public class GoogleDrive extends Google {
 
         FileList result = service.files().list()
                 .setQ("'" + folderId + "' in parents and name = '" + fileName.replaceAll("'", "\\\\'") + "' and trashed=false")
-                .setPageSize(10)
-                .setFields("nextPageToken, files(id, name)")
+                .setSpaces("drive")
+                .setFields("files(id, name)")
                 .execute();
 
         // Delete any found files
@@ -112,5 +114,28 @@ public class GoogleDrive extends Google {
                 .execute();
         log.debug("File ID: " + file.getId());
     }
-}
 
+    public void downloadFile(String folderId, String fileName, Path downloadDir) throws IOException {
+        log.debug("Searching for file " + fileName);
+
+        FileList result = this.service.files().list()
+                .setQ("'" + folderId + "' in parents and name = '" + fileName.replaceAll("'", "\\\\'") + "'")
+                .setFields("files(id, name)")
+                .execute();
+
+        if (result.getFiles().size() == 0) {
+            log.warn("no file found for " + fileName);
+        } else if (result.getFiles().size() > 1) {
+            log.warn("multiple files found for " + fileName);
+        } else {
+            for (File f : result.getFiles()) {
+                log.debug("Downloading from Google Drive, file " + f.getName());
+                OutputStream outputStream = new FileOutputStream(new java.io.File(downloadDir.toFile(), fileName));
+                service.files().get(f.getId())
+                        .executeMediaAndDownloadTo(outputStream);
+            }
+
+        }
+
+    }
+}

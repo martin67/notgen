@@ -23,7 +23,7 @@ class Google {
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
-    private static final List<String> SCOPES = Arrays.asList(DriveScopes.DRIVE_FILE, SheetsScopes.SPREADSHEETS);
+    private static final List<String> SCOPES = Arrays.asList(DriveScopes.DRIVE, SheetsScopes.SPREADSHEETS);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
     static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
