@@ -58,7 +58,7 @@ public class NoteConverter {
 
     private Path tmpDir;                            // Dir for extracting individual parts
     private ArrayList<Path> extractedFilesList = new ArrayList<>();     // List of extracted files
-    private NoteConverterStats stats = new NoteConverterStats();
+    private final NoteConverterStats stats = new NoteConverterStats();
 
 
     NoteConverter() {

@@ -10,6 +10,8 @@ import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -70,7 +72,7 @@ public class SongController {
         return "redirect:/song/list";
     }
 
-    @PostMapping(value = "/update", params = {"addRow"})
+    @PostMapping(value = "/save", params = {"addRow"})
     public String addRow(final Song song, final BindingResult bindingResult, Model model) {
         song.getScoreParts().add(new ScorePart());
         model.addAttribute("allInstruments", instrumentRepository.findByOrderByStandardDescSortOrder());
@@ -78,13 +80,24 @@ public class SongController {
         return "songEdit";
     }
 
-    @PostMapping(value = "/update", params = {"deleteRow"})
+    @PostMapping(value = "/save", params = {"deleteRow"})
     public String deleteRow(final Song song, final BindingResult bindingResult, Model model, final HttpServletRequest req) {
         final Integer scorePartId = Integer.valueOf(req.getParameter("deleteRow"));
         song.getScoreParts().remove(scorePartId.intValue());
         model.addAttribute("allInstruments", instrumentRepository.findByOrderByStandardDescSortOrder());
         model.addAttribute("song", song);
         return "songEdit";
+    }
+
+    @GetMapping(value = "/get_song_suggestions.json")
+    public @ResponseBody
+    List<String> getUserFirstNameSuggestions() {
+        List<String> titles = new ArrayList<>();
+
+        for (Song song : songRepository.findAll()) {
+            titles.add(song.getTitle());
+        }
+        return titles;
     }
 
 }

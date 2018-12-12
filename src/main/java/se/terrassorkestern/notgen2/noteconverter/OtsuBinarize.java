@@ -102,7 +102,7 @@ class OtsuBinarize {
 
         BufferedImage avg_gray = new BufferedImage(original.getWidth(), original.getHeight(), original.getType());
         int[] avgLUT = new int[766];
-        for(int i=0; i<avgLUT.length; i++) avgLUT[i] = (int) (i / 3);
+        for(int i=0; i<avgLUT.length; i++) avgLUT[i] = i / 3;
 
         for(int i=0; i<original.getWidth(); i++) {
             for(int j=0; j<original.getHeight(); j++) {
@@ -138,7 +138,7 @@ class OtsuBinarize {
 
         BufferedImage des = new BufferedImage(original.getWidth(), original.getHeight(), original.getType());
         int[] desLUT = new int[511];
-        for(int i=0; i<desLUT.length; i++) desLUT[i] = (int) (i / 2);
+        for(int i=0; i<desLUT.length; i++) desLUT[i] = i / 2;
 
         for(int i=0; i<original.getWidth(); i++) {
             for(int j=0; j<original.getHeight(); j++) {
@@ -153,7 +153,7 @@ class OtsuBinarize {
                 pixel[1] = green;
                 pixel[2] = blue;
 
-                int newval = (int) (findMax(pixel) + findMin(pixel));
+                int newval = (findMax(pixel) + findMin(pixel));
                 newval = desLUT[newval];
 
                 // Return back to original format

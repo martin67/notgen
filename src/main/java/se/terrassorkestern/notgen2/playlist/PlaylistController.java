@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Slf4j
 @Controller
 @RequestMapping("/playlist")
@@ -50,4 +52,19 @@ public class PlaylistController {
         return "redirect:/playlist/list";
     }
 
+
+    @PostMapping(value = "/save", params = {"addRow"})
+    public String addRow(final Playlist playlist, final BindingResult bindingResult, Model model) {
+        playlist.getPlaylistEntries().add(new PlaylistEntry());
+        model.addAttribute("playlist", playlist);
+        return "playlistEdit";
+    }
+
+    @PostMapping(value = "/save", params = {"deleteRow"})
+    public String deleteRow(final Playlist playlist, final BindingResult bindingResult, Model model, final HttpServletRequest req) {
+        final Integer playlistPartId = Integer.valueOf(req.getParameter("deleteRow"));
+        playlist.getPlaylistEntries().remove(playlistPartId.intValue());
+        model.addAttribute("playlist", playlist);
+        return "playlistEdit";
+    }
 }

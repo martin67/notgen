@@ -3,6 +3,24 @@
 <head th:replace="fragments/general :: header-css"/>
 
 <body>
+<script>
+  var titles = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.whitespace,
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  // url points to a json file that contains an array of country names, see
+  // https://github.com/twitter/typeahead.js/blob/gh-pages/data/countries.json
+  prefetch: '/song/get_song_suggestions.json'
+});
+
+// passing in `null` for the `options` arguments will result in the default
+// options being used
+$('#prefetch .typeahead').typeahead(null, {
+  name: 'titles',
+  source: titles
+});
+
+</script>
+
 <div th:replace="fragments/general :: header"/>
 
 <div class="container-fluid">
@@ -12,7 +30,8 @@
         <div class="form-group row">
             <label class="col-sm-2 col-form-label" for="id">ID</label>
             <div class="col-sm-10">
-                <input type="number" readonly class="form-control-plaintext" th:field="*{id}" th:value="${playlist.id}" id="id"/>
+                <input type="number" readonly class="form-control-plaintext" th:field="*{id}" th:value="${playlist.id}"
+                       id="id"/>
             </div>
         </div>
         <div class="form-group row">
@@ -24,15 +43,16 @@
         <div class="form-group row">
             <label class="col-sm-2 col-form-label" for="date">Datum</label>
             <div class="col-sm-10">
-                <input type="date" class="form-control" min="2010-01-01" max="2100-12-31" th:field="*{date}" th:value="${playlist.date}"
-                   id="date"/>
+                <input type="date" class="form-control" min="2010-01-01" max="2100-12-31" th:field="*{date}"
+                       th:value="${playlist.date}"
+                       id="date"/>
             </div>
         </div>
         <div class="form-group row">
             <label class="col-sm-2 col-form-label" for="comment">Kommentar</label>
             <div class="col-sm-10">
                 <textarea class="form-control" th:field="*{comment}" th:value="${playlist.comment}"
-                   id="comment"/>
+                          id="comment"/>
             </div>
         </div>
 
@@ -44,16 +64,22 @@
                     <th scope="col">Låt</th>
                     <th scope="col">Text</th>
                     <th scope="col">Ordning</th>
-                    <th><button class="btn btn-primary btn-sm" type="submit" name="addRow"><i class="material-icons">add_box</i></button></th>
+                    <th>
+                        <button class="btn btn-primary btn-sm" type="submit" name="addRow"><i class="material-icons">add_box</i>
+                        </button>
+                    </th>
                     </thead>
                     <tbody>
 
                     <tr th:each="playlistEntry,rowStat : ${playlist.playlistEntries}">
+<!--
                         <td><input type="text" class="form-control"
                                    th:field="*{playlistEntries[__${rowStat.index}__].song.title}"
                                    th:value="${playlistEntry.song.title}"/>
                         </td>
-                        <td><input type="text" class="form-control"
+-->
+                        <td></td>
+                        <td><input type="text" class="typeahead" placeholder="titles"
                                    th:field="*{playlistEntries[__${rowStat.index}__].text}"
                                    th:value="${playlistEntry.text}"/></td>
                         <td><input type="number" class="form-control"
@@ -61,7 +87,8 @@
                                    th:value="${playlistEntry.sortOrder}"/></td>
 
                         <td>
-                            <button class="btn btn-small btn-danger" type="submit" name="deleteRow" th:value="${rowStat.index}">
+                            <button class="btn btn-small btn-danger" type="submit" name="deleteRow"
+                                    th:value="${rowStat.index}">
                                 <i class="material-icons md-18">delete</i></button>
                         </td>
                     </tr>
@@ -82,5 +109,6 @@
 </div>
 
 <footer th:replace="fragments/general :: footer"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
 </body>
 </html>
