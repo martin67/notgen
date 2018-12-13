@@ -3,6 +3,7 @@ package se.terrassorkestern.notgen2.song;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +15,13 @@ public class Song {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     @Column(name = "titel")
+    @NotBlank(message="Titel måste anges")
     private String title;
     @Column(name = "subtitel")
     private String subtitle;
     @Column(name = "genre")
-    private String genre = "Foxtrot";
+    @NotBlank(message="Genre måste anges")
+    private String genre;
     @Column(name = "musik")
     private String composer;
     @Column(name = "text")
@@ -43,4 +46,8 @@ public class Song {
     @Column(name = "filnamn")
     private String filename;
 
+    @Column(name = "orginal")
+    private Boolean archived = true;
+    @Column(name = "Arkivplats")
+    private String archiveLocation = "A";
 }

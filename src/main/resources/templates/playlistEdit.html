@@ -38,6 +38,7 @@ $('#prefetch .typeahead').typeahead(null, {
             <label class="col-sm-2 col-form-label" for="name">Namn</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" th:field="*{name}" th:value="${playlist.name}" id="name"/>
+                <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
             </div>
         </div>
         <div class="form-group row">
@@ -46,6 +47,7 @@ $('#prefetch .typeahead').typeahead(null, {
                 <input type="date" class="form-control" min="2010-01-01" max="2100-12-31" th:field="*{date}"
                        th:value="${playlist.date}"
                        id="date"/>
+                <span class="text-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</span>
             </div>
         </div>
         <div class="form-group row">

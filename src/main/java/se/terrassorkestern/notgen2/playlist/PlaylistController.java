@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @Slf4j
 @Controller
@@ -46,7 +48,10 @@ public class PlaylistController {
     }
 
     @PostMapping("/save")
-    public String playlistSave(@ModelAttribute Playlist playlist, BindingResult bindingResult, Model model) {
+    public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors) {
+        if (errors.hasErrors()) {
+            return "playlistEdit";
+        }
         log.info("Sparar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
         playlistRepository.save(playlist);
         return "redirect:/playlist/list";

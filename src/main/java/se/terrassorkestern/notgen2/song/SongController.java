@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +61,11 @@ public class SongController {
     }
 
     @PostMapping("/save")
-    public String songSave(@ModelAttribute Song song, BindingResult bindingResult, Model model) {
+    public String songSave(@Valid @ModelAttribute Song song, Errors errors, Model model) {
+        if (errors.hasErrors()) {
+            model.addAttribute("allInstruments", instrumentRepository.findByOrderByStandardDescSortOrder());
+            return "songEdit";
+        }
         log.info("Sparar låt " + song.getTitle() + " [" + song.getId() + "]");
         // scorPart måste fixas till efter formuläret
         for (ScorePart scorePart : song.getScoreParts()) {
