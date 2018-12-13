@@ -12,7 +12,6 @@ import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -97,13 +96,14 @@ public class SongController {
 
     @GetMapping(value = "/get_song_suggestions.json")
     public @ResponseBody
-    List<String> getUserFirstNameSuggestions() {
-        List<String> titles = new ArrayList<>();
+    List<String> getTitleSuggestions() {
+        return songRepository.getAllTitles();
+    }
 
-        for (Song song : songRepository.findAll()) {
-            titles.add(song.getTitle());
-        }
-        return titles;
+    @GetMapping(value = "/genres.json")
+    public @ResponseBody
+    List<String> getGenreSuggestions() {
+        return songRepository.getAllGenres();
     }
 
 }
