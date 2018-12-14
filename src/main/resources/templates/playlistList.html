@@ -13,7 +13,7 @@
             <th>Namn</th>
             <th>Datum</th>
             <th>Antal låtar</th>
-            <th><a th:href="@{/playlist/new}"><i class="material-icons">add_box</i></a></th>
+            <th><a th:href="@{/playlist/new}"><i class="material-icons" title="Lägg till låtlists">add_box</i></a></th>
         </tr>
         </thead>
 
@@ -22,7 +22,8 @@
             <td th:text="${playlist.date}"></td>
             <td></td>
             <td>
-                <a th:href="@{/playlist/edit(id=${playlist.id})}"><i class="material-icons">mode_edit</i></a>
+                <a th:href="@{/playlist/edit(id=${playlist.id})}"><i class="material-icons" title="Ändra låtlists">mode_edit</i></a>
+                <a th:href="@{/playlist/copy(id=${playlist.id})}"><i class="material-icons" title="Kopiera låtlista">file_copy</i></a>
             </td>
         </tr>
     </table>

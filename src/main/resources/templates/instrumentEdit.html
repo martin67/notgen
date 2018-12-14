@@ -5,6 +5,27 @@
 <body>
 <div th:replace="fragments/general :: header"/>
 
+<!-- Modal -->
+<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ta bort instrument</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Vill du verkligen ta bort detta instrument?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                <a class="btn btn-danger" th:href="@{/instrument/delete(id=${instrument.id})}">Ta bort</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid">
     <h1>Instrumentdetaljer</h1>
 
@@ -12,7 +33,8 @@
         <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="id">ID</label>
             <div class="col-sm-9">
-                <input type="number" readonly class="form-control-plaintext" th:field="*{id}" th:value="${instrument.id}" id="id"/>
+                <input type="number" readonly class="form-control-plaintext" th:field="*{id}"
+                       th:value="${instrument.id}" id="id"/>
             </div>
         </div>
         <div class="form-group row">
@@ -26,14 +48,15 @@
             <label class="col-sm-3 col-form-label" for="shortName">Förkortning</label>
             <div class="col-sm-9">
                 <input type="text" class="form-control" th:field="*{shortName}" th:value="${instrument.shortName}"
-                   id="shortName"/>
+                       id="shortName"/>
             </div>
         </div>
         <div class="form-group row">
             <div class="col-sm-3">Standard</div>
             <div class="col-sm-9">
                 <div class="form_check">
-                    <input class="form-check-input" type="checkbox" th:field="*{standard}" th:value="${instrument.standard}"/>
+                    <input class="form-check-input" type="checkbox" th:field="*{standard}"
+                           th:value="${instrument.standard}"/>
                 </div>
             </div>
         </div>
@@ -41,14 +64,16 @@
             <label class="col-sm-3 col-form-label" for="sortOrder">Sorteringsordning</label>
             <div class="col-sm-9">
                 <input type="number" class="form-control" th:field="*{sortOrder}" th:value="${instrument.sortOrder}"
-                   id="sortOrder"/>
-                <span class="text-danger" th:if="${#fields.hasErrors('sortOrder')}" th:errors="*{sortOrder}">Error</span>
+                       id="sortOrder"/>
+                <span class="text-danger" th:if="${#fields.hasErrors('sortOrder')}"
+                      th:errors="*{sortOrder}">Error</span>
             </div>
         </div>
         <div class="form-group row">
             <div class="col-sm-9">
                 <a class="btn btn-secondary" href="/instrument/list">Tillbaka</a>
-                <a class="btn btn-danger" th:href="@{/instrument/delete(id=${instrument.id})}">Ta bort</a>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
+                </button>
                 <input type="submit" class="btn btn-primary" value="Spara"/>
             </div>
         </div>

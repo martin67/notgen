@@ -5,6 +5,28 @@
 <body>
 <div th:replace="fragments/general :: header"/>
 
+<!-- Modal -->
+<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ta bort låtlista</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Vill du verkligen ta bort denna låtlista?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                <a class="btn btn-danger" th:href="@{/playlist/delete(id=${playlist.id})}">Ta bort</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="container-fluid">
     <h1>Låtlista</h1>
 
@@ -49,34 +71,33 @@
                     <th scope="col">Låt</th>
                     <th scope="col">Kommentar</th>
                     <th>
-                        <button class="btn btn-primary btn-sm" type="submit" name="addRow"><i class="material-icons">add_box</i>
-                        </button>
+                        <button class="btn btn-primary btn-sm" type="submit" name="addRow">Lägg till</button>
                     </th>
                     </thead>
-                    <tbody class="js-sortable-table">
+                    <tbody>
 
-                    <tr class="js-sortable-tr" th:each="playlistEntry,rowStat : ${playlist.playlistEntries}">
-                        <td><i class="material-icons">open_with</i></td>
+                    <tr th:each="playlistEntry,rowStat : ${playlist.playlistEntries}">
+                        <td class="align-middle"><i class="material-icons">open_with</i></td>
                         <td>
                             <div id="prefetch">
-                                <input type="text" class="form-control typeahead" autocomplete="off"
+                                <input type="text" class="form-control form-control-sm typeahead" autocomplete="off"
                                        th:field="*{playlistEntries[__${rowStat.index}__].text}"
                                        th:value="${playlistEntry.text}"/>
                             </div>
                         </td>
                         <td>
-                            <input type="text" class="form-control typeahead"
+                            <input type="text" class="form-control form-control-sm"
                                    th:field="*{playlistEntries[__${rowStat.index}__].comment}"
                                    th:value="${playlistEntry.comment}"/>
 
                         </td>
-                        <td>
+                        <td class="align-middle">
                             <input type="hidden" class="form-control"
                                    th:field="*{playlistEntries[__${rowStat.index}__].sortOrder}"
                                    th:value="${playlistEntry.sortOrder}"/>
-                            <button class="btn btn-small btn-danger" type="submit" name="deleteRow"
-                                    th:value="${rowStat.index}">
-                                <i class="material-icons md-18">delete</i></button>
+                            <button class="btn btn-sm btn-danger" type="submit" name="deleteRow"
+                                    th:value="${rowStat.index}">Ta bort
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -88,7 +109,8 @@
         <div class="form-group row">
             <div class="col-sm-9">
                 <a class="btn btn-secondary" href="/playlist/list">Tillbaka</a>
-                <a class="btn btn-danger" th:href="@{/playlist/delete(id=${playlist.id})}">Ta bort</a>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
+                </button>
                 <input type="submit" class="btn btn-primary" value="Spara"/>
             </div>
         </div>
@@ -114,6 +136,7 @@ $('#prefetch .typeahead').typeahead({
     limit: 10
 });
 }
+
 </script>
 
 <script>
@@ -126,6 +149,7 @@ $( "table tbody" ).sortable( {
 }
 });
 });
+
 </script>
 
 </body>

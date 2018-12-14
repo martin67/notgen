@@ -5,6 +5,27 @@
 <body>
 <div th:replace="fragments/general :: header"/>
 
+<!-- Modal -->
+<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ta bort låt</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Vill du verkligen ta bort denna låt?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                <a class="btn btn-danger" th:href="@{/song/delete(id=${song.id})}">Ta bort</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid">
     <h1>Låtdetaljer</h1>
 
@@ -70,15 +91,14 @@
                     <th scope="col">Placering</th>
                     <th scope="col">Antal</th>
                     <th scope="col">Kommentar</th>
-                    <th>
-                        <button class="btn btn-primary btn-sm" type="submit" name="addRow"><i class="material-icons">add_box</i>
-                        </button>
+                    <th scope="col">
+                        <button class="btn btn-primary btn-sm" type="submit" name="addRow">Lägg till</button>
                     </th>
                     </thead>
                     <tbody>
 
                     <tr th:each="scorePart,rowStat : ${song.scoreParts}">
-                        <td>
+                        <td class="align-middle">
                             <select th:field="*{scoreParts[__${rowStat.index}__].instrument.id}">
                                 <option th:each="i2 : ${allInstruments}"
                                         th:value="${i2.id}"
@@ -87,20 +107,23 @@
                             </select>
 
                         </td>
-                        <td><input type="number" class="form-control"
+                        <td>
+                            <input type="number" class="form-control form-control-sm"
                                    th:field="*{scoreParts[__${rowStat.index}__].page}" th:value="${scorePart.page}"/>
                         </td>
-                        <td><input type="number" class="form-control"
+                        <td>
+                            <input type="number" class="form-control form-control-sm"
                                    th:field="*{scoreParts[__${rowStat.index}__].length}"
                                    th:value="${scorePart.length}"/></td>
-                        <td><input type="text" class="form-control"
+                        <td>
+                            <input type="text" class="form-control form-control-sm"
                                    th:field="*{scoreParts[__${rowStat.index}__].comment}"
                                    th:value="${scorePart.comment}"/></td>
 
-                        <td>
-                            <button class="btn btn-small btn-danger" type="submit" name="deleteRow"
-                                    th:value="${rowStat.index}">
-                                <i class="material-icons md-18">delete</i></button>
+                        <td class="align-middle">
+                            <button class="btn btn-sm btn-danger" type="submit" name="deleteRow"
+                                    th:value="${rowStat.index}">Ta bort
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -159,7 +182,8 @@
         <div class="form-group row">
             <div class="col-sm-10">
                 <a class="btn btn-secondary" href="/song/list">Tillbaka</a>
-                <a class="btn btn-danger" th:href="@{/song/delete(id=${song.id})}">Ta bort</a>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
+                </button>
                 <input type="submit" class="btn btn-primary" value="Spara"/>
             </div>
         </div>
@@ -187,6 +211,11 @@ $('#prefetch .typeahead').typeahead({
     source: genres
 });
 }
+
+
+
+
+
 </script>
 
 </body>

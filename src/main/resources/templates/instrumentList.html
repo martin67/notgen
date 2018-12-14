@@ -14,7 +14,7 @@
             <th>Förkortning</th>
             <th>Standard</th>
             <th>Ordning</th>
-            <th><a th:href="@{/instrument/new}"><i class="material-icons">add_box</i></a></th>
+            <th><a th:href="@{/instrument/new}"><i class="material-icons" title="Lägg till instrument">add_box</i></a></th>
         </tr>
         </thead>
 
@@ -24,7 +24,7 @@
             <td><input type="checkbox" th:checked="${instrument.standard}" ? 'checked'></td>
             <td th:text="${instrument.sortOrder}"></td>
             <td>
-                <a th:href="@{/instrument/edit(id=${instrument.id})}"><i class="material-icons">mode_edit</i></a>
+                <a th:href="@{/instrument/edit(id=${instrument.id})}"><i class="material-icons" title="Ändra instrument">mode_edit</i></a>
             </td>
         </tr>
     </table>

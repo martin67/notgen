@@ -30,4 +30,20 @@ public class Playlist {
     @JoinColumn(name = "playlist_id", nullable = false)
     @OrderBy("sortOrder")
     List<PlaylistEntry> playlistEntries = new ArrayList<>();
+
+    public Playlist copy() {
+        Playlist newPlaylist = new Playlist();
+
+        newPlaylist.setName("Kopia av " + this.getName());
+        newPlaylist.setDate(this.getDate());
+        newPlaylist.setComment(this.getComment());
+        for(PlaylistEntry playlistEntry : this.getPlaylistEntries()) {
+            PlaylistEntry newPlaylistEntry = new PlaylistEntry();
+            newPlaylistEntry.setText(playlistEntry.getText());
+            newPlaylistEntry.setComment(playlistEntry.getComment());
+            newPlaylistEntry.setSortOrder(playlistEntry.getSortOrder());
+            newPlaylist.getPlaylistEntries().add(newPlaylistEntry);
+        }
+        return newPlaylist;
+    }
 }

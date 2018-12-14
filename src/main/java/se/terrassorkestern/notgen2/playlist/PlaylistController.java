@@ -46,6 +46,15 @@ public class PlaylistController {
         return "redirect:/playlist/list";
     }
 
+    @GetMapping("/copy")
+    public String playlistCopy(@RequestParam("id") Integer id, Model model) {
+        Playlist playlist = playlistRepository.findById(id).get();
+        log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+        Playlist newPlaylist = playlist.copy();
+        playlistRepository.save(newPlaylist);
+        return "redirect:/playlist/list";
+    }
+
     @PostMapping("/save")
     public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors) {
         if (errors.hasErrors()) {
