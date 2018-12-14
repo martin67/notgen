@@ -95,9 +95,17 @@
                             <input type="hidden" class="form-control"
                                    th:field="*{playlistEntries[__${rowStat.index}__].sortOrder}"
                                    th:value="${playlistEntry.sortOrder}"/>
+
                             <button class="btn btn-sm btn-danger" type="submit" name="deleteRow"
                                     th:value="${rowStat.index}">Ta bort
                             </button>
+
+<!--
+                            <button class="btn btn-sm btn-link" type="submit" name="deleteRow"
+                                    th:value="${rowStat.index}"><i class="material-icons"
+                                                                   title="Lägg till låtlists">add_box</i>
+                            </button>
+-->
                         </td>
                     </tr>
                     </tbody>
@@ -111,6 +119,7 @@
                 <a class="btn btn-secondary" href="/playlist/list">Tillbaka</a>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
                 </button>
+                <a class="button" th:href="@{/playlist/createPdf(id=${playlist.id})}">Skapa PDF</a>
                 <input type="submit" class="btn btn-primary" value="Spara"/>
             </div>
         </div>
@@ -137,6 +146,8 @@ $('#prefetch .typeahead').typeahead({
 });
 }
 
+
+
 </script>
 
 <script>
@@ -149,6 +160,8 @@ $( "table tbody" ).sortable( {
 }
 });
 });
+
+
 
 </script>
 

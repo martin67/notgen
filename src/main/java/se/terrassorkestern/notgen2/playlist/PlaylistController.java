@@ -2,6 +2,10 @@ package se.terrassorkestern.notgen2.playlist;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 
 @Slf4j
 @Controller
@@ -79,4 +84,22 @@ public class PlaylistController {
         model.addAttribute("playlist", playlist);
         return "playlistEdit";
     }
+
+    @GetMapping(value = "/createPdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> playlistCreatePdf(@RequestParam("id") Integer id, Model model) {
+        Playlist playlist = playlistRepository.findById(id).get();
+
+        //ByteArrayInputStream bis = GeneratePdfReport.citiesReport(cities);
+        ByteArrayInputStream bis = new PlaylistPdfCreator().create(playlist);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=playlist.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
 }

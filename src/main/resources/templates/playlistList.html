@@ -24,6 +24,7 @@
             <td>
                 <a th:href="@{/playlist/edit(id=${playlist.id})}"><i class="material-icons" title="Ändra låtlists">mode_edit</i></a>
                 <a th:href="@{/playlist/copy(id=${playlist.id})}"><i class="material-icons" title="Kopiera låtlista">file_copy</i></a>
+                <a th:href="@{/playlist/createPdf(id=${playlist.id})}"><i class="material-icons" title="Skriv ut">print</i></a>
             </td>
         </tr>
     </table>
