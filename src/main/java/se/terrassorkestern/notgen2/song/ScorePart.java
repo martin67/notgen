@@ -20,6 +20,7 @@ public class ScorePart {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("instrumentId")
+    @OrderBy("sortOrder")
     private Instrument instrument;
 
     @Column(name="sida")

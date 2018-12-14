@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen2.playlist;
 
 import lombok.Data;
-import se.terrassorkestern.notgen2.song.Song;
 
 import javax.persistence.*;
 
@@ -14,11 +13,8 @@ public class PlaylistEntry {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name="repertoire_id")
-    private Song song;
-
     @Column(name="sortorder")
     private Integer sortOrder;
     private String text;
+    private String comment;
 }

@@ -3,30 +3,12 @@
 <head th:replace="fragments/general :: header-css"/>
 
 <body>
-<script>
-  var titles = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.whitespace,
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  // url points to a json file that contains an array of country names, see
-  // https://github.com/twitter/typeahead.js/blob/gh-pages/data/countries.json
-  prefetch: '/song/get_song_suggestions.json'
-});
-
-// passing in `null` for the `options` arguments will result in the default
-// options being used
-$('#prefetch .typeahead').typeahead(null, {
-  name: 'titles',
-  source: titles
-});
-
-</script>
-
 <div th:replace="fragments/general :: header"/>
 
 <div class="container-fluid">
     <h1>Låtlista</h1>
 
-    <form role="form" th:action="@{/playlist/save}" th:object="${playlist}" th:method="post">
+    <form role="form" th:action="@{/playlist/save}" th:object="${playlist}" th:method="post" id="editPlaylist">
         <div class="form-group row">
             <label class="col-sm-2 col-form-label" for="id">ID</label>
             <div class="col-sm-10">
@@ -63,32 +45,35 @@ $('#prefetch .typeahead').typeahead(null, {
             <div class="col-sm-10">
                 <table class="table table-bordered table-sm">
                     <thead>
+                    <th></th>
                     <th scope="col">Låt</th>
-                    <th scope="col">Text</th>
-                    <th scope="col">Ordning</th>
+                    <th scope="col">Kommentar</th>
                     <th>
                         <button class="btn btn-primary btn-sm" type="submit" name="addRow"><i class="material-icons">add_box</i>
                         </button>
                     </th>
                     </thead>
-                    <tbody>
+                    <tbody class="js-sortable-table">
 
-                    <tr th:each="playlistEntry,rowStat : ${playlist.playlistEntries}">
-<!--
-                        <td><input type="text" class="form-control"
-                                   th:field="*{playlistEntries[__${rowStat.index}__].song.title}"
-                                   th:value="${playlistEntry.song.title}"/>
-                        </td>
--->
-                        <td></td>
-                        <td><input type="text" class="typeahead" placeholder="titles"
-                                   th:field="*{playlistEntries[__${rowStat.index}__].text}"
-                                   th:value="${playlistEntry.text}"/></td>
-                        <td><input type="number" class="form-control"
-                                   th:field="*{playlistEntries[__${rowStat.index}__].sortOrder}"
-                                   th:value="${playlistEntry.sortOrder}"/></td>
-
+                    <tr class="js-sortable-tr" th:each="playlistEntry,rowStat : ${playlist.playlistEntries}">
+                        <td><i class="material-icons">open_with</i></td>
                         <td>
+                            <div id="prefetch">
+                                <input type="text" class="form-control typeahead" autocomplete="off"
+                                       th:field="*{playlistEntries[__${rowStat.index}__].text}"
+                                       th:value="${playlistEntry.text}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control typeahead"
+                                   th:field="*{playlistEntries[__${rowStat.index}__].comment}"
+                                   th:value="${playlistEntry.comment}"/>
+
+                        </td>
+                        <td>
+                            <input type="hidden" class="form-control"
+                                   th:field="*{playlistEntries[__${rowStat.index}__].sortOrder}"
+                                   th:value="${playlistEntry.sortOrder}"/>
                             <button class="btn btn-small btn-danger" type="submit" name="deleteRow"
                                     th:value="${rowStat.index}">
                                 <i class="material-icons md-18">delete</i></button>
@@ -111,6 +96,37 @@ $('#prefetch .typeahead').typeahead(null, {
 </div>
 
 <footer th:replace="fragments/general :: footer"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+<script type="text/javascript">
+window.onload=function(){
+
+var songs = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.whitespace,
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: '../song/songs.json'
+});
+
+$('#prefetch .typeahead').typeahead({
+    highlight: true
+  },
+  {
+    name: 'Songs',
+    source: songs,
+    limit: 10
+});
+}
+</script>
+
+<script>
+    $(function() {
+$( "table tbody" ).sortable( {
+  update: function( event, ui ) {
+    $(this).children().each(function(index) {
+      $(this).find('td').last().find('input').val(index + 1)
+    });
+}
+});
+});
+</script>
+
 </body>
 </html>

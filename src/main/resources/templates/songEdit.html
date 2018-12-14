@@ -32,7 +32,8 @@
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Genre</label>
             <div class="col-sm-10" id="prefetch">
-                <input type="text" class="form-control typeahead" placeholder="genres" th:field="*{genre}" th:value="${song.genre}"/>
+                <input type="text" class="form-control typeahead" placeholder="genres" autocomplete="off"
+                       th:field="*{genre}" th:value="${song.genre}"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}">Error</span>
             </div>
         </div>

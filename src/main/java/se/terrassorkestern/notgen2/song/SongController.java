@@ -94,7 +94,7 @@ public class SongController {
         return "songEdit";
     }
 
-    @GetMapping(value = "/get_song_suggestions.json")
+    @GetMapping(value = "/songs.json")
     public @ResponseBody
     List<String> getTitleSuggestions() {
         return songRepository.getAllTitles();

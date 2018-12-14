@@ -28,7 +28,6 @@ public class PlaylistController {
 
     @GetMapping("/edit")
     public String playlistEdit(@RequestParam("id") Integer id, Model model) {
-        Playlist playlist = playlistRepository.findById(id).get();
         model.addAttribute("playlist", playlistRepository.findById(id).get());
         return "playlistEdit";
     }
@@ -56,7 +55,6 @@ public class PlaylistController {
         playlistRepository.save(playlist);
         return "redirect:/playlist/list";
     }
-
 
     @PostMapping(value = "/save", params = {"addRow"})
     public String addRow(final Playlist playlist, final BindingResult bindingResult, Model model) {

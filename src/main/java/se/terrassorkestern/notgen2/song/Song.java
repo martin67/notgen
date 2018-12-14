@@ -21,7 +21,7 @@ public class Song {
     private String subtitle;
     @Column(name = "genre")
     @NotBlank(message="Genre måste anges")
-    private String genre;
+    private String genre = "Foxtrot";
     @Column(name = "musik")
     private String composer;
     @Column(name = "text")

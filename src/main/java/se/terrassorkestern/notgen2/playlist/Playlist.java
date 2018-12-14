@@ -27,6 +27,7 @@ public class Playlist {
     private LocalDate date;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "playlist_id")
+    @JoinColumn(name = "playlist_id", nullable = false)
+    @OrderBy("sortOrder")
     List<PlaylistEntry> playlistEntries = new ArrayList<>();
 }
