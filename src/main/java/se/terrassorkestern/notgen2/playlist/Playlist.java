@@ -31,6 +31,7 @@ public class Playlist {
     @OrderBy("sortOrder")
     List<PlaylistEntry> playlistEntries = new ArrayList<>();
 
+
     public Playlist copy() {
         Playlist newPlaylist = new Playlist();
 

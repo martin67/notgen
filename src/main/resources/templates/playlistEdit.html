@@ -27,17 +27,12 @@
 </div>
 
 
-<div class="container-fluid">
+<div class="container">
     <h1>Låtlista</h1>
 
     <form role="form" th:action="@{/playlist/save}" th:object="${playlist}" th:method="post" id="editPlaylist">
-        <div class="form-group row">
-            <label class="col-sm-2 col-form-label" for="id">ID</label>
-            <div class="col-sm-10">
-                <input type="number" readonly class="form-control-plaintext" th:field="*{id}" th:value="${playlist.id}"
-                       id="id"/>
-            </div>
-        </div>
+        <input type="hidden" th:field="*{id}" th:value="${playlist.id}"/>
+
         <div class="form-group row">
             <label class="col-sm-2 col-form-label" for="name">Namn</label>
             <div class="col-sm-10">

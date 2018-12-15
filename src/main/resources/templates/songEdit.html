@@ -26,17 +26,12 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="container">
     <h1>Låtdetaljer</h1>
 
     <form role="form" th:action="@{/song/save}" th:object="${song}" th:method="post">
-        <div class="form-group row">
-            <label class="col-sm-2 col-form-label" for="id">ID</label>
-            <div class="col-sm-10">
-                <input type="number" readonly class="form-control-plaintext" th:field="*{id}" th:value="${song.id}"
-                       id="id"/>
-            </div>
-        </div>
+        <input type="hidden" th:field="*{id}" th:value="${song.id}"/>
+
         <div class="form-group row">
             <label class="col-sm-2 col-form-label" for="title">Titel</label>
             <div class="col-sm-10">
@@ -52,28 +47,31 @@
         </div>
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Genre</label>
-            <div class="col-sm-10" id="prefetch">
-                <input type="text" class="form-control typeahead" placeholder="genres" autocomplete="off"
+            <div class="col-sm-10" id="prefetch-genres">
+                <input type="text" class="form-control typeahead" autocomplete="off"
                        th:field="*{genre}" th:value="${song.genre}"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}">Error</span>
             </div>
         </div>
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Kompositör</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" th:field="*{composer}" th:value="${song.composer}"/>
+            <div class="col-sm-10" id="prefetch-composers">
+                <input type="text" class="form-control typeahead" autocomplete="off"
+                       th:field="*{composer}" th:value="${song.composer}"/>
             </div>
         </div>
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Författare</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" th:field="*{author}" th:value="${song.author}"/>
+            <div class="col-sm-10" id="prefetch-authors">
+                <input type="text" class="form-control typeahead" autocomplete="off"
+                       th:field="*{author}" th:value="${song.author}"/>
             </div>
         </div>
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Arrangör</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" th:field="*{arranger}" th:value="${song.arranger}"/>
+            <div class="col-sm-10" id="prefetch-arrangers">
+                <input type="text" class="form-control typeahead" autocomplete="off"
+                th:field=" *{arranger}" th:value="${song.arranger}"/>
             </div>
         </div>
         <div class="form-group row">
@@ -201,19 +199,57 @@ var genres = new Bloodhound({
   prefetch: '/song/genres.json'
 });
 
-// passing in `null` for the `options` arguments will result in the default
-// options being used
-$('#prefetch .typeahead').typeahead({
+var composers = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.whitespace,
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: '/song/composers.json'
+});
+
+var authors = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.whitespace,
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: '/song/authors.json'
+});
+
+var arrangers = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.whitespace,
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: '/song/arrangers.json'
+});
+
+$('#prefetch-genres .typeahead').typeahead({
     highlight: true
   },
   {
-    name: 'Genres',
+    name: 'genres',
     source: genres
 });
+
+$('#prefetch-composers .typeahead').typeahead({
+    highlight: true
+  },
+  {
+    name: 'composers',
+    source: composers
+});
+
+$('#prefetch-authors .typeahead').typeahead({
+    highlight: true
+  },
+  {
+    name: 'authors',
+    source: authors
+});
+
+$('#prefetch-arrangers .typeahead').typeahead({
+    highlight: true
+  },
+  {
+    name: 'arrangers',
+    source: arrangers
+});
+
 }
-
-
-
 
 
 </script>

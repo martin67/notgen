@@ -106,4 +106,22 @@ public class SongController {
         return songRepository.getAllGenres();
     }
 
+    @GetMapping(value = "/composers.json")
+    public @ResponseBody
+    List<String> getComposerSuggestions() {
+        return songRepository.getAllComposers();
+    }
+
+    @GetMapping(value = "/authors.json")
+    public @ResponseBody
+    List<String> getAuthorSuggestions() {
+        return songRepository.getAllAuthors();
+    }
+
+    @GetMapping(value = "/arrangers.json")
+    public @ResponseBody
+    List<String> getArrangerSuggestions() {
+        return songRepository.getAllArrangers();
+    }
+
 }

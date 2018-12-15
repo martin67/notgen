@@ -19,4 +19,14 @@ public interface SongRepository extends JpaRepository<Song, Integer> {
 
     @Query("SELECT DISTINCT s.genre FROM Song s ORDER BY s.genre")
     List<String> getAllGenres();
+
+    @Query("SELECT DISTINCT s.composer FROM Song s ORDER BY s.composer")
+    List<String> getAllComposers();
+
+    @Query("SELECT DISTINCT s.author FROM Song s ORDER BY s.author")
+    List<String> getAllAuthors();
+
+    @Query("SELECT DISTINCT s.arranger FROM Song s ORDER BY s.arranger")
+    List<String> getAllArrangers();
+
 }
