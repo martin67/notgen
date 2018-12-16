@@ -8,10 +8,12 @@
 <div class="container">
 
     <h1>Generera noter</h1>
-    Här kan du generera nya PDF-noter till Terrassorkesterns Google Drive. Antingen så väljer du alla
+    <p>Här kan du generera nya PDF-noter till Terrassorkesterns Google Drive. Antingen så väljer du alla
     låtar (standard) eller så markerar du i listan vilka det gäller.
-    <br>
-    <br>
+        </p>
+    <p>Det tar 2-3 minuter att konvertera en låt och skall man ta och konvertera alla (+400 stycken), så tar det
+        följaktligen över 12 timmar.
+    </p>
     <form action="#" th:action="@{/noteConverter}" th:object="${noteConverterForm}" method="post">
 
         <div class="form-group">

@@ -27,7 +27,7 @@ public class PlaylistController {
 
     @GetMapping("/list")
     public String playlistList(Model model) {
-        model.addAttribute("playlists", playlistRepository.findAll());
+        model.addAttribute("playlists", playlistRepository.findAllByOrderByDateDesc());
         return "playlistList";
     }
 
@@ -72,7 +72,9 @@ public class PlaylistController {
 
     @PostMapping(value = "/save", params = {"addRow"})
     public String addRow(final Playlist playlist, final BindingResult bindingResult, Model model) {
-        playlist.getPlaylistEntries().add(new PlaylistEntry());
+        PlaylistEntry playlistEntry = new PlaylistEntry();
+        playlistEntry.setSortOrder(playlist.getPlaylistEntries().size() + 1);
+        playlist.getPlaylistEntries().add(playlistEntry);
         model.addAttribute("playlist", playlist);
         return "playlistEdit";
     }

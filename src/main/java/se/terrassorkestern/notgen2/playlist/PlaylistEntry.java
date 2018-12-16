@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name="repertoire_playlist")
+@Table(name="song_playlist")
 public class PlaylistEntry {
 
     @Id
