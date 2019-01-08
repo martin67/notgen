@@ -6,7 +6,7 @@
     <groupId>se.terrassorkestern</groupId>
     <artifactId>notgen2</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>notgen2</name>
     <description>Terrassorkesterns notgenerator</description>
