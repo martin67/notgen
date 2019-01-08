@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 @Slf4j
 @Controller
@@ -92,7 +93,12 @@ public class PlaylistController {
         Playlist playlist = playlistRepository.findById(id).get();
 
         //ByteArrayInputStream bis = GeneratePdfReport.citiesReport(cities);
-        ByteArrayInputStream bis = new PlaylistPdfCreator().create(playlist);
+        ByteArrayInputStream bis = null;
+        try {
+            bis = new PlaylistPdfCreator().create(playlist);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=playlist.pdf");

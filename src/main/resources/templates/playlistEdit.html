@@ -64,6 +64,7 @@
                     <thead>
                     <th></th>
                     <th scope="col">Låt</th>
+                    <th scope="col">Fet</th>
                     <th scope="col">Kommentar</th>
                     <th>
                         <button class="btn btn-primary btn-sm" type="submit" name="addRow">Lägg till</button>
@@ -81,6 +82,13 @@
                             </div>
                         </td>
                         <td>
+                            <div class="form_check form-check-inline">
+                            <input type="checkbox" class="form-check-input"
+                                   th:field="*{playlistEntries[__${rowStat.index}__].bold}"
+                                   th:value="${playlistEntry.bold}"/>
+                            </div>
+                        </td>
+                        <td>
                             <input type="text" class="form-control form-control-sm"
                                    th:field="*{playlistEntries[__${rowStat.index}__].comment}"
                                    th:value="${playlistEntry.comment}"/>
@@ -95,12 +103,12 @@
                                     th:value="${rowStat.index}">Ta bort
                             </button>
 
-<!--
-                            <button class="btn btn-sm btn-link" type="submit" name="deleteRow"
-                                    th:value="${rowStat.index}"><i class="material-icons"
-                                                                   title="Lägg till låtlists">add_box</i>
-                            </button>
--->
+                            <!--
+                                                        <button class="btn btn-sm btn-link" type="submit" name="deleteRow"
+                                                                th:value="${rowStat.index}"><i class="material-icons"
+                                                                                               title="Lägg till låtlists">add_box</i>
+                                                        </button>
+                            -->
                         </td>
                     </tr>
                     </tbody>

@@ -16,5 +16,6 @@ public class PlaylistEntry {
     @Column(name="sortorder")
     private Integer sortOrder;
     private String text;
+    private Boolean bold;
     private String comment;
 }
