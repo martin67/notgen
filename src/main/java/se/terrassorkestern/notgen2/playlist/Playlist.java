@@ -41,6 +41,7 @@ public class Playlist {
         for(PlaylistEntry playlistEntry : this.getPlaylistEntries()) {
             PlaylistEntry newPlaylistEntry = new PlaylistEntry();
             newPlaylistEntry.setText(playlistEntry.getText());
+            newPlaylistEntry.setBold(playlistEntry.getBold());
             newPlaylistEntry.setComment(playlistEntry.getComment());
             newPlaylistEntry.setSortOrder(playlistEntry.getSortOrder());
             newPlaylist.getPlaylistEntries().add(newPlaylistEntry);
