@@ -28,7 +28,7 @@
 
 
 <div class="container">
-    <h1>Låtlista</h1>
+    <h1>Redigera låtlista</h1>
 
     <form role="form" th:action="@{/playlist/save}" th:object="${playlist}" th:method="post" id="editPlaylist">
         <input type="hidden" th:field="*{id}" th:value="${playlist.id}"/>
@@ -102,13 +102,6 @@
                             <button class="btn btn-sm btn-danger" type="submit" name="deleteRow"
                                     th:value="${rowStat.index}">Ta bort
                             </button>
-
-                            <!--
-                                                        <button class="btn btn-sm btn-link" type="submit" name="deleteRow"
-                                                                th:value="${rowStat.index}"><i class="material-icons"
-                                                                                               title="Lägg till låtlists">add_box</i>
-                                                        </button>
-                            -->
                         </td>
                     </tr>
                     </tbody>
@@ -119,10 +112,10 @@
 
         <div class="form-group row">
             <div class="col-sm-9">
-                <a class="btn btn-secondary" href="/playlist/list">Tillbaka</a>
+                <a class="btn btn-secondary" th:href="@{/playlist/list}">Tillbaka</a>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
                 </button>
-                <a class="button" th:href="@{/playlist/createPdf(id=${playlist.id})}">Skapa PDF</a>
+                <a class="btn btn-secondary" th:href="@{/playlist/createPdf(id=${playlist.id})}">Skapa PDF</a>
                 <input type="submit" class="btn btn-primary" value="Spara"/>
             </div>
         </div>

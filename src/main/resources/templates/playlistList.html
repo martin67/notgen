@@ -5,6 +5,28 @@
 <body>
 <div th:replace="fragments/general :: header"/>
 
+<!-- Modal -->
+<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ta bort låtlista</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Vill du verkligen ta bort denna låtlista?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                <button class="btn btn-danger" data-dismiss="modal">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="container">
     <br>
     <table class="table table-bordered table-striped table-hover table-sm">
@@ -25,6 +47,29 @@
                 <a th:href="@{/playlist/edit(id=${playlist.id})}"><i class="material-icons" title="Ändra låtlists">mode_edit</i></a>
                 <a th:href="@{/playlist/copy(id=${playlist.id})}"><i class="material-icons" title="Kopiera låtlista">file_copy</i></a>
                 <a th:href="@{/playlist/createPdf(id=${playlist.id})}"><i class="material-icons" title="Skriv ut">print</i></a>
+                <a href="#deleteModal" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${playlist.id}">
+                    <i class="material-icons" title="Ta bort">delete</i></a>
+                <!-- Modal -->
+                <div class="modal" th:id="deleteModal+${playlist.id}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Ta bort låtlista</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Vill du verkligen ta bort denna låtlista?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                                <a class="btn btn-danger" th:href="@{/playlist/delete(id=${playlist.id})}">Ta bort</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </td>
         </tr>
     </table>
