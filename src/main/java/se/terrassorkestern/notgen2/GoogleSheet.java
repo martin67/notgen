@@ -19,8 +19,8 @@ public class GoogleSheet extends Google {
   public GoogleSheet() throws IOException, GeneralSecurityException {
     log.debug("Creating GoogleSheet object");
 
-    final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-    service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+    final NetHttpTransport netHttpTransport = GoogleNetHttpTransport.newTrustedTransport();
+    service = new Sheets.Builder(netHttpTransport, JSON_FACTORY, getCredentials(netHttpTransport))
         .setApplicationName(APPLICATION_NAME)
         .build();
   }

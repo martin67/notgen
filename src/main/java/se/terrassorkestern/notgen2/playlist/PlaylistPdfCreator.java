@@ -50,7 +50,8 @@ public class PlaylistPdfCreator {
         contents.showText(playlist.getComment());
         contents.endText();
      */
-    float ypos = drawMultiLineText(playlist.getComment(), 75,740, 475, page, contents, commentFont, 10, 15) - 20;
+    float ypos = drawMultiLineText(playlist.getComment(), 75,740, 475, 
+        page, contents, commentFont, 10, 15) - 20;
 
     //float ypos = 750;
     for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
@@ -123,7 +124,8 @@ public class PlaylistPdfCreator {
     String myLine = "";
 
     // get all words from the text
-    // keep in mind that words are separated by spaces -> "Lorem ipsum!!!!:)" -> words are "Lorem" and "ipsum!!!!:)"
+    // keep in mind that words are separated by spaces -> "Lorem ipsum!!!!:)" -> words 
+    // are "Lorem" and "ipsum!!!!:)"
     String[] words = text.split(" ");
     for (String word : words) {
 
@@ -134,7 +136,8 @@ public class PlaylistPdfCreator {
       // test the width of the current line + the current word
       int size = (int) (fontSize * font.getStringWidth(myLine + word) / 1000);
       if (size > allowedWidth) {
-        // if the line would be too long with the current word, add the line without the current word
+        // if the line would be too long with the current word, add the line without the current
+        // word
         lines.add(myLine);
 
         // and start a new line with the current word

@@ -112,7 +112,7 @@ public class NoteConverter {
   }
 
 
-  private void createFullScore(Song song, boolean TOScore, boolean upload) {
+  private void createFullScore(Song song, boolean toScore, boolean upload) {
     if (!Files.exists(tmpDir) || this.extractedFilesList.isEmpty()) {
       return;
     }
@@ -120,7 +120,7 @@ public class NoteConverter {
     // Ta bort "0123 - " från det nya filnamnet
     Path path = Paths.get(tmpDir.toString(), FilenameUtils.getBaseName(song.getFilename()).substring(7) + ".pdf");
 
-    if (TOScore) {
+    if (toScore) {
       log.debug("Creating TO score " + path.toString());
     } else {
       log.debug("Creating full score " + path.toString());
@@ -131,7 +131,7 @@ public class NoteConverter {
       PDDocumentInformation pdd = doc.getDocumentInformation();
       pdd.setAuthor("Terrassorkestern");
       pdd.setTitle(song.getTitle());
-      if (TOScore) {
+      if (toScore) {
         pdd.setSubject("TO sättning");
       } else {
         pdd.setSubject("Full sättning");
@@ -150,7 +150,7 @@ public class NoteConverter {
 
       // Ta först hand om framsidan om den finns och är i färg. Endast för fulla arr
       // Alltid första filen om den finns
-      if (song.getCover() && song.getColor() && !TOScore) {
+      if (song.getCover() && song.getColor() && !toScore) {
         PDPage page = new PDPage(PDRectangle.A4);
         doc.addPage(page);
         File file = new File(FilenameUtils.removeExtension(this.extractedFilesList.get(0).toString()) + ".jpg");
@@ -163,7 +163,7 @@ public class NoteConverter {
 
       for (ScorePart scorePart : song.getScoreParts()) {
         // Om det är TO-sättning så hoppa över instrument som inte är standard
-        if (TOScore && !scorePart.getInstrument().isStandard()) {
+        if (toScore && !scorePart.getInstrument().isStandard()) {
           continue;
         }
 
@@ -241,20 +241,20 @@ public class NoteConverter {
           description.append("År: ").append(song.getYear().toString()).append("\n");
         }
 
-        if (TOScore) {
+        if (toScore) {
           description.append("\nTO-sättning:\n");
         } else {
           description.append("\nFull sättning:\n");
         }
 
         for (ScorePart scorePart : song.getScoreParts()) {
-          if (TOScore && !scorePart.getInstrument().isStandard()) {
+          if (toScore && !scorePart.getInstrument().isStandard()) {
             continue;
           }
           description.append(scorePart.getInstrument().getName()).append("\n");
         }
 
-        if (TOScore) {
+        if (toScore) {
           googleDrive.uploadFile(GOOGLE_DRIVE_ID_TOSCORE, "application/pdf", song.getTitle(), path, null, description.toString(), false, map);
           stats.addNumberOfBytes(Files.size(path));
         } else {
@@ -399,7 +399,7 @@ public class NoteConverter {
 
                 NoteConverter.googleDrive.uploadFile(GOOGLE_DRIVE_ID_INSTRUMENT, fileType, song.getTitle(), file.toPath(), "Sång - OCR", description, true, map);
                 stats.addNumberOfBytes(Files.size(file.toPath()));
-                stats.incrementNumberOfOCRs();
+                stats.incrementNumberOfOcr();
               } else {
                 log.warn("More than one lyrics page for song " + song.getId() + ", skipping Google docs OCR upload");
               }

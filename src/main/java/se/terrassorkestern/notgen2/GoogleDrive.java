@@ -23,8 +23,8 @@ public class GoogleDrive extends Google {
   public GoogleDrive() throws IOException, GeneralSecurityException {
     log.debug("Creating GoogleDrive object");
 
-    final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-    service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+    final NetHttpTransport netHttpTransport = GoogleNetHttpTransport.newTrustedTransport();
+    service = new Drive.Builder(netHttpTransport, JSON_FACTORY, getCredentials(netHttpTransport))
         .setApplicationName(APPLICATION_NAME)
         .build();
   }

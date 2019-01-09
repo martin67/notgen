@@ -41,7 +41,7 @@ public class NoteConverterService {
     meterRegistry.counter("notgen.stats", "Hej", "Images processed").increment(stats.getNumberOfImgProcess());
     meterRegistry.counter("notgen.stats", "Hej", "PDFs created").increment(stats.getNumberOfPdf());
     meterRegistry.counter("notgen.stats", "Hej", "Covers created").increment(stats.getNumberOfCovers());
-    meterRegistry.counter("notgen.stats", "Hej", "Lyrics OCR").increment(stats.getNumberOfOCRs());
+    meterRegistry.counter("notgen.stats", "Hej", "Lyrics OCR").increment(stats.getNumberOfOcr());
     meterRegistry.counter("notgen.stats", "Hej", "Bytes uploaded").increment(stats.getNumberOfBytes());
   }
 

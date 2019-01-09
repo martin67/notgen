@@ -26,14 +26,14 @@ class Google {
   private static final List<String> SCOPES = Arrays.asList(DriveScopes.DRIVE, SheetsScopes.SPREADSHEETS);
   private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
-  static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+  static Credential getCredentials(final NetHttpTransport netHttpTransport) throws IOException {
     // Load client secrets.
     InputStream in = Google.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
     GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
     // Build flow and trigger user authorization request.
     GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-        HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+        netHttpTransport, JSON_FACTORY, clientSecrets, SCOPES)
         .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
         .setAccessType("offline")
         .build();

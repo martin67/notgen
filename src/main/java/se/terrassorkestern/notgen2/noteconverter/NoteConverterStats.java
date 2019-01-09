@@ -15,7 +15,7 @@ class NoteConverterStats {
   private int numberOfSrcImg;
   private int numberOfImgProcess;
   private int numberOfCovers;
-  private int numberOfOCRs;
+  private int numberOfOcr;
   private long numberOfBytes;
   private Instant startTime;
   private Instant endTime;
@@ -33,8 +33,8 @@ class NoteConverterStats {
     this.numberOfCovers++;
   }
 
-  public void incrementNumberOfOCRs() {
-    this.numberOfOCRs++;
+  public void incrementNumberOfOcr() {
+    this.numberOfOcr++;
   }
 
   public void incrementNumberOfImgProcess() {
@@ -55,7 +55,7 @@ class NoteConverterStats {
     System.out.println("Number of images processed:         " + numberOfImgProcess);
     System.out.println("Number of pdfs created:             " + numberOfPdf);
     System.out.println("Number of covers created:           " + numberOfCovers);
-    System.out.println("Number of lyrics OCR:               " + numberOfOCRs);
+    System.out.println("Number of lyrics OCR:               " + numberOfOcr);
     System.out.println("Number of bytes uploaded to Google: " + numberOfBytes);
     System.out.println("Total processing time:              " + Duration.between(endTime, startTime));
   }

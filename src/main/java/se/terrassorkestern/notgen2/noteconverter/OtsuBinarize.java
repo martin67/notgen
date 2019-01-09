@@ -88,7 +88,7 @@ class OtsuBinarize {
 
         red = (int) (0.21 * red + 0.71 * green + 0.07 * blue);
         // Return back to original format
-        newPixel = colorToRGB(alpha, red, red, red);
+        newPixel = colorToRgb(alpha, red, red, red);
 
         // Write pixels into image
         lum.setRGB(i, j, newPixel);
@@ -110,9 +110,9 @@ class OtsuBinarize {
     int newPixel;
 
     BufferedImage avg_gray = new BufferedImage(original.getWidth(), original.getHeight(), original.getType());
-    int[] avgLUT = new int[766];
-    for (int i = 0; i < avgLUT.length; i++) {
-      avgLUT[i] = i / 3;
+    int[] avgLut = new int[766];
+    for (int i = 0; i < avgLut.length; i++) {
+      avgLut[i] = i / 3;
     }
 
     for (int i = 0; i < original.getWidth(); i++) {
@@ -125,9 +125,9 @@ class OtsuBinarize {
         blue = new Color(original.getRGB(i, j)).getBlue();
 
         newPixel = red + green + blue;
-        newPixel = avgLUT[newPixel];
+        newPixel = avgLut[newPixel];
         // Return back to original format
-        newPixel = colorToRGB(alpha, newPixel, newPixel, newPixel);
+        newPixel = colorToRgb(alpha, newPixel, newPixel, newPixel);
 
         // Write pixels into image
         avg_gray.setRGB(i, j, newPixel);
@@ -150,9 +150,9 @@ class OtsuBinarize {
     int[] pixel = new int[3];
 
     BufferedImage des = new BufferedImage(original.getWidth(), original.getHeight(), original.getType());
-    int[] desLUT = new int[511];
-    for (int i = 0; i < desLUT.length; i++) {
-      desLUT[i] = i / 2;
+    int[] desLut = new int[511];
+    for (int i = 0; i < desLut.length; i++) {
+      desLut[i] = i / 2;
     }
 
     for (int i = 0; i < original.getWidth(); i++) {
@@ -169,10 +169,10 @@ class OtsuBinarize {
         pixel[2] = blue;
 
         int newval = (findMax(pixel) + findMin(pixel));
-        newval = desLUT[newval];
+        newval = desLut[newval];
 
         // Return back to original format
-        newPixel = colorToRGB(alpha, newval, newval, newval);
+        newPixel = colorToRgb(alpha, newval, newval, newval);
 
         // Write pixels into image
         des.setRGB(i, j, newPixel);
@@ -212,7 +212,7 @@ class OtsuBinarize {
         int newval = findMin(pixel);
 
         // Return back to original format
-        newPixel = colorToRGB(alpha, newval, newval, newval);
+        newPixel = colorToRgb(alpha, newval, newval, newval);
 
         // Write pixels into image
         decomp.setRGB(i, j, newPixel);
@@ -253,7 +253,7 @@ class OtsuBinarize {
         int newval = findMax(pixel);
 
         // Return back to original format
-        newPixel = colorToRGB(alpha, newval, newval, newval);
+        newPixel = colorToRgb(alpha, newval, newval, newval);
 
         // Write pixels into image
         decomp.setRGB(i, j, newPixel);
@@ -294,7 +294,7 @@ class OtsuBinarize {
         int newval = pixel[color];
 
         // Return back to original format
-        newPixel = colorToRGB(alpha, newval, newval, newval);
+        newPixel = colorToRgb(alpha, newval, newval, newval);
 
         // Write pixels into image
         rgb.setRGB(i, j, newPixel);
@@ -373,7 +373,7 @@ class OtsuBinarize {
         } else {
           newPixel = 0;
         }
-        newPixel = colorToRGB(alpha, newPixel, newPixel, newPixel);
+        newPixel = colorToRgb(alpha, newPixel, newPixel, newPixel);
         binarized.setRGB(i, j, newPixel);
 
       }
@@ -385,7 +385,7 @@ class OtsuBinarize {
 
   // Convert R, G, B, Alpha to standard 8 bit
   @Contract(pure = true)
-  private static int colorToRGB(int alpha, int red, int green, int blue) {
+  private static int colorToRgb(int alpha, int red, int green, int blue) {
 
     int newPixel = 0;
     newPixel += alpha;
