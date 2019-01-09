@@ -16,37 +16,37 @@ import java.util.List;
 @Controller
 public class NoteConverterController {
 
-    @Autowired
-    private SongRepository songRepository;
-    @Autowired
-    private NoteConverterService noteConverterService;
+  @Autowired
+  private SongRepository songRepository;
+  @Autowired
+  private NoteConverterService noteConverterService;
 
 
-    public NoteConverterController() {
-        log.info("Constructor!");
-    }
+  public NoteConverterController() {
+    log.info("Constructor!");
+  }
 
 
-    @GetMapping("/noteConverter")
-    public String noteLister(Model model) {
-        log.info("Nu är vi i noteConverter");
+  @GetMapping("/noteConverter")
+  public String noteLister(Model model) {
+    log.info("Nu är vi i noteConverter");
 
-        List<Song> songs = songRepository.findByOrderByTitle();
-        model.addAttribute("songs", songs);
-        model.addAttribute("noteConverterForm", new NoteConverterForm());
+    List<Song> songs = songRepository.findByOrderByTitle();
+    model.addAttribute("songs", songs);
+    model.addAttribute("noteConverterForm", new NoteConverterForm());
 
-        return "noteConverter";
-    }
+    return "noteConverter";
+  }
 
-    @PostMapping("/noteConverter")
-    public String handlePost(@ModelAttribute("noteConverterForm") NoteConverterForm noteConverterForm) {
-        log.info("Nu är vi i noteConverter post");
+  @PostMapping("/noteConverter")
+  public String handlePost(@ModelAttribute("noteConverterForm") NoteConverterForm noteConverterForm) {
+    log.info("Nu är vi i noteConverter post");
 
 
-        noteConverterService.convert(noteConverterForm.getSelectedSongs(),
-                noteConverterForm.getAllSongs(), noteConverterForm.getUpload());
+    noteConverterService.convert(noteConverterForm.getSelectedSongs(),
+        noteConverterForm.getAllSongs(), noteConverterForm.getUpload());
 
-        return "redirect:/noteConverter";
-    }
+    return "redirect:/noteConverter";
+  }
 
 }

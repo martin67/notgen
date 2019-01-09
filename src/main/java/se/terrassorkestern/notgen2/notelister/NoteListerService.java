@@ -11,25 +11,25 @@ import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 @Service
 public class NoteListerService {
 
-    private MeterRegistry meterRegistry;
-    @Autowired
-    private SongRepository songRepository;
-    @Autowired
-    private InstrumentRepository instrumentRepository;
+  private MeterRegistry meterRegistry;
+  @Autowired
+  private SongRepository songRepository;
+  @Autowired
+  private InstrumentRepository instrumentRepository;
 
 
-    NoteListerService(MeterRegistry meterRegistry) {
-        log.debug("Constructor");
-        this.meterRegistry = meterRegistry;
-    }
+  NoteListerService(MeterRegistry meterRegistry) {
+    log.debug("Constructor");
+    this.meterRegistry = meterRegistry;
+  }
 
 
-    public void createList() {
-        log.debug("createList");
+  public void createList() {
+    log.debug("createList");
 
-        NoteLister noteLister = new NoteLister();
-        noteLister.createList(instrumentRepository.findByOrderByStandardDescSortOrder(),
-                songRepository.findByOrderByTitle());
-    }
+    NoteLister noteLister = new NoteLister();
+    noteLister.createList(instrumentRepository.findByOrderByStandardDescSortOrder(),
+        songRepository.findByOrderByTitle());
+  }
 
 }

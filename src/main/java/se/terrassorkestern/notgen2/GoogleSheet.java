@@ -13,32 +13,32 @@ import java.util.List;
 
 @Slf4j
 public class GoogleSheet extends Google {
-    private Sheets service;
-    private static final String GOOGLE_SPREADSHEET_ID = "1O5FEIPY2il6hPBwJRtzgjR8L4lYAII7heymn4DnVfZ4";
+  private Sheets service;
+  private static final String GOOGLE_SPREADSHEET_ID = "1O5FEIPY2il6hPBwJRtzgjR8L4lYAII7heymn4DnVfZ4";
 
-    public GoogleSheet() throws IOException, GeneralSecurityException {
-        log.debug("Creating GoogleSheet object");
+  public GoogleSheet() throws IOException, GeneralSecurityException {
+    log.debug("Creating GoogleSheet object");
 
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
+    final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+    service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+        .setApplicationName(APPLICATION_NAME)
+        .build();
+  }
+
+
+  public void addRows(String startPos, List<List<Object>> values) {
+    log.info("Uploading row to spreadsheet, startpos: " +  startPos);
+
+    ValueRange body = new ValueRange().setValues(values);
+    UpdateValuesResponse result;
+
+    try {
+      result = service.spreadsheets().values().update(GOOGLE_SPREADSHEET_ID, startPos, body)
+          .setValueInputOption("RAW")
+          .execute();
+      log.debug(result.getUpdatedCells() + " updated cells.");
+    } catch (IOException e) {
+      e.printStackTrace();
     }
-
-
-    public void addRows(String startPos, List<List<Object>> values) {
-        log.info("Uploading row to spreadsheet, startpos: " +  startPos);
-
-        ValueRange body = new ValueRange().setValues(values);
-        UpdateValuesResponse result;
-
-        try {
-            result = service.spreadsheets().values().update(GOOGLE_SPREADSHEET_ID, startPos, body)
-                    .setValueInputOption("RAW")
-                    .execute();
-            log.debug(result.getUpdatedCells() + " updated cells.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+  }
 }

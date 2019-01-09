@@ -10,28 +10,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class NoteListerController {
 
-    @Autowired
-    NoteListerService noteListerService;
+  @Autowired
+  NoteListerService noteListerService;
 
 
-    public NoteListerController() {
-        log.info("Constructor!");
-    }
+  public NoteListerController() {
+    log.info("Constructor!");
+  }
 
 
-    @GetMapping("/noteLister")
-    public String noteLister(Model model) {
-        log.info("Nu är vi i noteLister(Model model)");
+  @GetMapping("/noteLister")
+  public String noteLister(Model model) {
+    log.info("Nu är vi i noteLister(Model model)");
 
-        return "noteLister";
-    }
+    return "noteLister";
+  }
 
-    @GetMapping("/noteListerGenerate")
-    public String noteListerGenerate(Model model) {
-        log.info("Nu är vi i noteListerGenerate");
+  @GetMapping("/noteListerGenerate")
+  public String noteListerGenerate(Model model) {
+    log.info("Nu är vi i noteListerGenerate");
 
-        noteListerService.createList();
+    noteListerService.createList();
 
-        return "noteLister";
-    }
+    return "noteLister";
+  }
 }
