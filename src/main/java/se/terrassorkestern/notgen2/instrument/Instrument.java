@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public class Instrument {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name="namn")
     @NotBlank(message="Instrumentnamn måste anges")

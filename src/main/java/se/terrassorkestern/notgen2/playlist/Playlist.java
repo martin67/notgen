@@ -15,7 +15,7 @@ import java.util.List;
 public class Playlist {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name="namn")
     @NotBlank(message="Låtlistan måste ha ett namn")

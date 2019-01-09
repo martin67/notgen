@@ -12,7 +12,7 @@ import java.util.List;
 @Table(name = "song")
 public class Song {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "titel")
     @NotBlank(message="Titel måste anges")
