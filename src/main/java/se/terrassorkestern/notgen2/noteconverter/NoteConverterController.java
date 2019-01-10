@@ -23,7 +23,7 @@ public class NoteConverterController {
 
 
   public NoteConverterController() {
-    log.info("Constructor!");
+    log.debug("Constructor");
   }
 
 

@@ -109,7 +109,8 @@ class OtsuBinarize {
     int blue;
     int newPixel;
 
-    BufferedImage avg_gray = new BufferedImage(original.getWidth(), original.getHeight(), original.getType());
+    BufferedImage avgGray = new BufferedImage(original.getWidth(), 
+        original.getHeight(), original.getType());
     int[] avgLut = new int[766];
     for (int i = 0; i < avgLut.length; i++) {
       avgLut[i] = i / 3;
@@ -130,12 +131,12 @@ class OtsuBinarize {
         newPixel = colorToRgb(alpha, newPixel, newPixel, newPixel);
 
         // Write pixels into image
-        avg_gray.setRGB(i, j, newPixel);
+        avgGray.setRGB(i, j, newPixel);
 
       }
     }
 
-    return avg_gray;
+    return avgGray;
 
   }
 
@@ -320,28 +321,28 @@ class OtsuBinarize {
     }
 
     float sumB = 0;
-    int wB = 0;
-    int wF = 0;
+    int weightBackground = 0;
+    int weightForeground = 0;
 
     float varMax = 0;
     int threshold = 0;
 
     for (int i = 0; i < 256; i++) {
-      wB += histogram[i];
-      if (wB == 0) {
+      weightBackground += histogram[i];
+      if (weightBackground == 0) {
         continue;
       }
-      wF = total - wB;
+      weightForeground = total - weightBackground;
 
-      if (wF == 0) {
+      if (weightForeground == 0) {
         break;
       }
 
       sumB += (float) (i * histogram[i]);
-      float mB = sumB / wB;
-      float mF = (sum - sumB) / wF;
+      float meanBackground = sumB / weightBackground;
+      float meanForeground = (sum - sumB) / weightForeground;
 
-      float varBetween = (float) wB * (float) wF * (mB - mF) * (mB - mF);
+      float varBetween = (float) weightBackground * (float) weightForeground * (meanBackground - meanForeground) * (meanBackground - meanForeground);
 
       if (varBetween > varMax) {
         varMax = varBetween;
@@ -401,13 +402,13 @@ class OtsuBinarize {
   }
 
   @Contract(pure = true)
-  private static int findMin(@NotNull int[] pixel) {
+  private static int findMin(@NotNull int[] pixels) {
 
-    int min = pixel[0];
+    int min = pixels[0];
 
-    for (int aPixel : pixel) {
-      if (aPixel < min) {
-        min = aPixel;
+    for (int pixel : pixels) {
+      if (pixel < min) {
+        min = pixel;
       }
     }
 
@@ -416,13 +417,13 @@ class OtsuBinarize {
   }
 
   @Contract(pure = true)
-  private static int findMax(@NotNull int[] pixel) {
+  private static int findMax(@NotNull int[] pixels) {
 
-    int max = pixel[0];
+    int max = pixels[0];
 
-    for (int aPixel : pixel) {
-      if (aPixel > max) {
-        max = aPixel;
+    for (int pixel : pixels) {
+      if (pixel > max) {
+        max = pixel;
       }
     }
 

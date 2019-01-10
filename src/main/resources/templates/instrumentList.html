@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/general :: header-css"/>
+<head th:replace="fragments/general :: header-css" />
 
 <body>
-<div th:replace="fragments/general :: header"/>
+	<div th:replace="fragments/general :: header" />
 
-<div class="container">
-    <br>
-    <table class="table table-bordered table-striped table-hover table-sm">
-        <thead>
-        <tr>
-            <th>Namn</th>
-            <th>Förkortning</th>
-            <th>Standard</th>
-            <th>Ordning</th>
-            <th><a th:href="@{/instrument/new}"><i class="material-icons" title="Lägg till instrument">add_box</i></a></th>
-        </tr>
-        </thead>
+	<div class="container">
+		<br>
+		<table class="table table-bordered table-striped table-hover table-sm">
+			<thead>
+				<tr>
+					<th>Namn</th>
+					<th>Förkortning</th>
+					<th>Standard</th>
+					<th>Ordning</th>
+					<th><a th:href="@{/instrument/new}"><i
+							class="material-icons" title="Lägg till instrument">add_box</i></a></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="instrument : ${instruments}">
+					<td th:text="${instrument.name}"></td>
+					<td th:text="${instrument.shortName}"></td>
+					<td><input type="checkbox" th:checked="${instrument.standard}"? 'checked'></td>
+					<td th:text="${instrument.sortOrder}"></td>
+					<td><a th:href="@{/instrument/edit(id=${instrument.id})}"><i
+							class="material-icons" title="Ändra instrument">mode_edit</i></a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 
-        <tr th:each="instrument : ${instruments}">
-            <td th:text="${instrument.name}"></td>
-            <td th:text="${instrument.shortName}"></td>
-            <td><input type="checkbox" th:checked="${instrument.standard}" ? 'checked'></td>
-            <td th:text="${instrument.sortOrder}"></td>
-            <td>
-                <a th:href="@{/instrument/edit(id=${instrument.id})}"><i class="material-icons" title="Ändra instrument">mode_edit</i></a>
-            </td>
-        </tr>
-    </table>
-</div>
-
-<footer th:replace="fragments/general :: footer"/>
+	<footer th:replace="fragments/general :: footer" />
 </body>
 </html>

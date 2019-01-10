@@ -15,7 +15,7 @@ public class NoteListerController {
 
 
   public NoteListerController() {
-    log.info("Constructor!");
+    log.debug("Constructor");
   }
 
 

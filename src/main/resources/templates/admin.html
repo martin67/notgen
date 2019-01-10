@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/general :: header-css" />
+
+<body>
+	<div th:replace="fragments/general :: header" />
+
+	<div class="container">
+		<h1>Administration av notgeneratorn</h1>
+
+		<h2>Användare</h2>
+		<table class="table table-bordered table-striped table-hover table-sm">
+			<thead>
+				<tr>
+					<th>Användarnamn</th>
+					<th>Namn</th>
+					<th>Roll</th>
+					<th><a th:href="@{/admin/userAdd}"><i
+							class="material-icons" title="Lägg till användare">add_box</i></a></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="user : ${users}">
+					<td th:text="${user.username}"></td>
+					<td th:text="${user.fullname}"></td>
+					<td></td>
+					<td><a th:href="@{/admin/userEdit(id=${user.id})}"><i
+							class="material-icons" title="Ändra användare">mode_edit</i></a></td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
+
+	<footer th:replace="fragments/general :: footer" />
+</body>
+</html>
