@@ -30,7 +30,7 @@ public class GoogleDrive extends Google {
   }
 
 
-  public void uploadFile(String folderId,     // ID på mappen som det skall upp i
+  public String uploadFile(String folderId,     // ID på mappen som det skall upp i
       String fileType,     // 'application/pdf' or 'image/jpeg'
       String fileName,     // "Apertif" eller "Aperitif - sång.pdf". Extension behöver inte vara med.
       Path uploadFile,     // Själva filen som skall laddas upp
@@ -113,8 +113,11 @@ public class GoogleDrive extends Google {
         .setFields("id, parents, properties")
         .execute();
     log.debug("File ID: " + file.getId());
+    
+    return file.getId();
   }
 
+  
   public void downloadFile(String folderId, String fileName, Path downloadDir) throws IOException {
     log.debug("Searching for file " + fileName);
 

@@ -31,9 +31,9 @@ public class NoteConverterService {
 
     // Starta konvertering!
     if (allSongs) {
-      stats = noteConverter.convert(songRepository.findByOrderByTitle(), upload);
+      stats = noteConverter.convert(songRepository, songRepository.findByOrderByTitle(), upload);
     } else {
-      stats = noteConverter.convert(songRepository.findByIdInOrderByTitle(selectedSongs), upload);
+      stats = noteConverter.convert(songRepository, songRepository.findByIdInOrderByTitle(selectedSongs), upload);
     }
 
     meterRegistry.counter("notgen.stats", "Hej", "Songs processed").increment(stats.getNumberOfSongs());

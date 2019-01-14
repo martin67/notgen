@@ -40,9 +40,11 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import se.terrassorkestern.notgen2.GoogleDrive;
 import se.terrassorkestern.notgen2.song.ScorePart;
 import se.terrassorkestern.notgen2.song.Song;
+import se.terrassorkestern.notgen2.song.SongRepository;
 
 // constructor anropas av springboot,så där kan man inte ange vilka sånger som gäller
 // däremot så vet man vid anrop (via webb), vilka sånger och vilka options.
@@ -88,7 +90,7 @@ public class NoteConverter {
   }
 
 
-  NoteConverterStats convert(List<Song> songs, boolean upload) {
+  NoteConverterStats convert(SongRepository songRepository, List<Song> songs, boolean upload) {
     log.info("Starting main convert loop");
     stats.setStartTime(Instant.now());
 
@@ -102,6 +104,8 @@ public class NoteConverter {
       this.createFullScore(song, true, upload);
       this.createFullScore(song, false, upload);
       this.createInstrumentParts(song, upload);
+      // update song with new google id:s
+      songRepository.save(song);
       this.cleanup();
       stats.incrementNumberOfSongs();
       Metrics.counter("notte.songs").increment();
@@ -254,18 +258,29 @@ public class NoteConverter {
           description.append(scorePart.getInstrument().getName()).append("\n");
         }
 
+        
+        String googleId;
         if (toScore) {
-          googleDrive.uploadFile(GOOGLE_DRIVE_ID_TOSCORE, "application/pdf", song.getTitle(), path, null, description.toString(), false, map);
-          stats.addNumberOfBytes(Files.size(path));
+          googleId = googleDrive.uploadFile(GOOGLE_DRIVE_ID_TOSCORE, "application/pdf", song.getTitle(),
+              path, null, description.toString(), false, map);
+          if (googleId.length() > 0) {
+            song.setGoogleIdTo(googleId);
+            stats.addNumberOfBytes(Files.size(path));
+          }
         } else {
-          googleDrive.uploadFile(GOOGLE_DRIVE_ID_FULLSCORE, "application/pdf", song.getTitle(), path, null, description.toString(), false, map);
-          stats.addNumberOfBytes(Files.size(path));
+          googleId = googleDrive.uploadFile(GOOGLE_DRIVE_ID_FULLSCORE, "application/pdf", song.getTitle(),
+              path, null, description.toString(), false, map);
+          if (googleId.length() > 0) {
+            song.setGoogleIdFull(googleId);
+            stats.addNumberOfBytes(Files.size(path));
+          }
 
           // Ladda också upp omslaget separat (bara om det är bildbehandlat och beskuret)
           if (song.getCover() && song.getColor() && song.getUpperleft()) {
             log.debug("Also uploading cover");
             Path coverPath = Paths.get(this.extractedFilesList.get(0).toString() + "-cover.jpg");
-            NoteConverter.googleDrive.uploadFile(GOOGLE_DRIVE_ID_COVER, "image/jpeg", song.getTitle(), coverPath, null, null, false, null);
+            googleDrive.uploadFile(GOOGLE_DRIVE_ID_COVER, "image/jpeg", song.getTitle(), 
+                coverPath, null, null, false, null);
             stats.addNumberOfBytes(Files.size(coverPath));
           }
         }
@@ -375,8 +390,12 @@ public class NoteConverter {
 
 
             // Stämmor måste ha namn med .pdf så att forScore hittar den
-            NoteConverter.googleDrive.uploadFile(GOOGLE_DRIVE_ID_INSTRUMENT, "application/pdf", song.getTitle() + ".pdf", path, scorePart.getInstrument().getName(), description, false, map);
-            stats.addNumberOfBytes(Files.size(path));
+            String googleId;
+            googleId = googleDrive.uploadFile(GOOGLE_DRIVE_ID_INSTRUMENT, "application/pdf", song.getTitle() + ".pdf", path, scorePart.getInstrument().getName(), description, false, map);
+            if (googleId.length() > 0) {
+              scorePart.setGoogleId(googleId);
+              stats.addNumberOfBytes(Files.size(path));
+            }
 
             // Sångstämmor skall också sparas som Google Docs (med OCR)
             if (scorePart.getInstrument().getName().equals("Sång")) {

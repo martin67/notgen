@@ -21,6 +21,8 @@
             <td th:text="${song.genre}"></td>
             <td>
                 <a th:href="@{/song/edit(id=${song.id})}"><i class="material-icons" title="Ändra låt">mode_edit</i></a>
+                <a th:if="${song.googleIdFull}" th:href="@{https://drive.google.com/open(id=${song.googleIdFull})}"><i class="material-icons" title="Skriv ut fullt arr">print</i></a>
+                <a th:if="${song.googleIdTo}" th:href="@{https://drive.google.com/open(id=${song.googleIdTo})}"><i class="material-icons" title="Skriv ut TO arr">print</i></a>
             </td>
         </tr>
         </tbody>

@@ -36,7 +36,9 @@ public class Song {
   private String arranger;
   @Column(name = "ar")
   private Integer year = 1940;
-
+  private String googleIdFull;
+  private String googleIdTo;
+  
   @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ScorePart> scoreParts = new ArrayList<>();
 

@@ -14,7 +14,8 @@ public class ScorePartId implements Serializable {
   @Column(name = "instrument_id")
   private int instrumentId;
 
-
+  private ScorePartId() {};
+  
   public ScorePartId(
       int songId,
       int instrumentId) {

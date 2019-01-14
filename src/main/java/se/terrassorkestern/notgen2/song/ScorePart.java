@@ -35,6 +35,8 @@ public class ScorePart {
   private int length = 1;
   @Column(name = "kommentar")
   private String comment;
+  private String googleId;
+  
 
   /* Behövs inte om man kör standard
     @Id
