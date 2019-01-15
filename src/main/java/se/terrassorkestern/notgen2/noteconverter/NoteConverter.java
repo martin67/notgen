@@ -40,7 +40,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.terrassorkestern.notgen2.GoogleDrive;
 import se.terrassorkestern.notgen2.song.ScorePart;
 import se.terrassorkestern.notgen2.song.Song;

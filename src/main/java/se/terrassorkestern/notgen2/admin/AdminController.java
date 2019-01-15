@@ -1,8 +1,10 @@
 package se.terrassorkestern.notgen2.admin;
 
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import se.terrassorkestern.notgen2.instrument.Instrument;
+import se.terrassorkestern.notgen2.user.User;
 import se.terrassorkestern.notgen2.user.UserRepository;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +27,36 @@ public class AdminController {
   public String admin(Model model) {
     model.addAttribute("users", userRepository.findAll());
     return "admin";
+  }
+
+  @GetMapping("/userEdit")
+  public String userEdit(@RequestParam("id") Long id, Model model) {
+    model.addAttribute("user", userRepository.findById(id).get());
+    return "userEdit";
+  }
+  
+  @GetMapping("/userNew")
+  public String userNew(Model model) {
+    model.addAttribute("user", new User());
+    return "userEdit";
+  }
+
+  @GetMapping("/userDelete")
+  public String userDelete(@RequestParam("id") Long id, Model model) {
+    User user = userRepository.findById(id).get();
+    log.info("Tar bort användare " + user.getUsername() + " [" + user.getId() + "]");
+    userRepository.delete(user);
+    return "redirect:/admin";
+  }
+  
+  @PostMapping("/userSave")
+  public String userSave(@Valid @ModelAttribute User user, Errors errors) {
+    if (errors.hasErrors()) {
+      return "userEdit";
+    }
+    log.info("Sparar användare " + user.getUsername() + " [" + user.getId() + "]");
+    userRepository.save(user);
+    return "redirect:/admin";
   }
 
 }

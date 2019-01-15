@@ -96,12 +96,12 @@
 					<table class="table table-bordered table-sm">
 						<thead>
 							<tr>
-								<th scope="col">Instrument</th>
-								<th scope="col">Placering</th>
-								<th scope="col">Antal</th>
-								<th scope="col">Kommentar</th>
-								<th scope="col">
-									<button class="btn btn-primary btn-sm" type="submit"
+								<th scope="col" style="width:10%">Instrument</th>
+								<th scope="col" style="width:10%">Placering</th>
+								<th scope="col" style="width:10%">Antal</th>
+								<th scope="col" style="width:55%">Kommentar</th>
+								<th scope="col" style="width:15%">
+									<button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-primary btn-sm" type="submit"
 										name="addRow">Lägg till</button>
 								</th>
 							</tr>
@@ -126,9 +126,11 @@
 									th:value="${scorePart.comment}" /></td>
 
 								<td class="align-middle">
-									<button class="btn btn-sm btn-danger" type="submit"
+									<button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-sm btn-danger" type="submit"
 										name="deleteRow" th:value="${rowStat.index}">Ta bort
-									</button>
+									</button> <a sec:authorize="hasAuthority('PRINT_SCORE')" th:if="${scorePart.googleId}"
+									th:href="@{https://drive.google.com/open(id=${scorePart.googleId})}"><i
+										class="material-icons" title="Skriv ut stämma">print</i></a>
 								</td>
 							</tr>
 						</tbody>
@@ -192,9 +194,9 @@
 			<div class="form-group row">
 				<div class="col-sm-10">
 					<a class="btn btn-secondary" th:href="@{/song/list}">Tillbaka</a>
-					<button type="button" class="btn btn-danger" data-toggle="modal"
+					<button sec:authorize="hasAuthority('EDIT_SONG')" type="button" class="btn btn-danger" data-toggle="modal"
 						data-target="#deleteModal">Ta bort</button>
-					<input type="submit" class="btn btn-primary" value="Spara" />
+					<input sec:authorize="hasAuthority('EDIT_SONG')" type="submit" class="btn btn-primary" value="Spara" />
 				</div>
 			</div>
 		</form>

@@ -14,6 +14,7 @@
 				<tr>
 					<th>Användarnamn</th>
 					<th>Namn</th>
+					<th>Aktiv</th>
 					<th>Roll</th>
 					<th><a th:href="@{/admin/userAdd}"><i
 							class="material-icons" title="Lägg till användare">add_box</i></a></th>
@@ -23,6 +24,7 @@
 				<tr th:each="user : ${users}">
 					<td th:text="${user.username}"></td>
 					<td th:text="${user.fullname}"></td>
+					<td><input type="checkbox" th:checked="${user.enabled}"? 'checked' /></td>
 					<td></td>
 					<td><a th:href="@{/admin/userEdit(id=${user.id})}"><i
 							class="material-icons" title="Ändra användare">mode_edit</i></a></td>

@@ -67,9 +67,9 @@
         <div class="form-group row">
             <div class="col-sm-9">
                 <a class="btn btn-secondary" th:href="@{/instrument/list}">Tillbaka</a>
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
+                <button sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
                 </button>
-                <input type="submit" class="btn btn-primary" value="Spara"/>
+                <input sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="submit" class="btn btn-primary" value="Spara"/>
             </div>
         </div>
     </form>

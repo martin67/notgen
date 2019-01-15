@@ -21,22 +21,22 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
                     <a class="nav-link" th:href="@{/noteConverter}">Generera noter</a>
                 </li>
-                <li class="nav-item">
+                <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
                     <a class="nav-link" th:href="@{/noteLister}">Uppdatera förteckning</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/song/list}">Repertoire</a>
                 </li>
-                <li class="nav-item">
+                <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
                     <a class="nav-link" th:href="@{/instrument/list}">Instrument</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/playlist/list}">Låtlistor</a>
                 </li>
-                <li class="nav-item">
+                <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
                     <a class="nav-link" th:href="@{/admin}">Admin</a>
                 </li>
             </ul>

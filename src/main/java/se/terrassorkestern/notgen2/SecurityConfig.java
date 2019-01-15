@@ -8,10 +8,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
-
-
 
 @Configuration
 @EnableWebSecurity
@@ -22,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public PasswordEncoder encoder() {
-    return new StandardPasswordEncoder("53cr3t");
+    return NoOpPasswordEncoder.getInstance();
   }
 
   @Override
@@ -37,9 +36,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
     .authorizeRequests()
-    .antMatchers("/admin", "/noteConverter", "/noteLister", "/song/**", "/instrument/**", "/playlist/**")
-    .access("hasRole('ROLE_USER')")
-    .antMatchers("/", "/**").access("permitAll")
+    .antMatchers("/admin", "/noteConverter", "/noteLister", "/instrument/**")
+    .hasRole("ADMIN")
+    .antMatchers("/", "/**").permitAll()
     .and()
     .formLogin()
     .and()

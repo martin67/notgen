@@ -1,25 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/general :: header-css"/>
+<head th:replace="fragments/general :: header-css" />
 
 <body>
-<div th:replace="fragments/general :: header" />
+	<div th:replace="fragments/general :: header" />
 
-<div class="container">
+	<div class="container">
 
-    <h1>Terrassorkesterns Notgenerator 2.0</h1>
+		<h1>Terrassorkesterns Notgenerator 2.0</h1>
 
-    <p>Välkommen till den nya notgeneratorn. Här kan du både skapa snygga PDF:er i alla olika tappningar men även
-        lägga till, ta bort och ändra i notdatabasen.</p>
+		<p>Välkommen till den nya notgeneratorn. Här kan du både skapa
+			snygga PDF:er i alla olika tappningar men även lägga till, ta bort
+			och ändra i notdatabasen.</p>
 
-    <p>Fantastiskt, eller hur?</p>
+		<p>Fantastiskt, eller hur?</p>
 
-    <div class="col-6 text-center mx-auto">
-        <img class="img-fluid" th:src="@{/images/Tork02cover.png}"/>
+		<div sec:authorize="hasRole('ROLE_ADMIN')">This will only be
+			displayed if authenticated user has role ROLE_ADMIN.</div>
+		<div sec:authorize="hasRole('ADMIN')">This will only be
+			displayed if authenticated user has role ROLE_ADMIN2.</div>
+		<div sec:authorize="hasRole('READ_PRIVILEGE')">This will only be
+			displayed if authenticated user has role ROLE_ADMIN2.</div>
 
-    </div>
-</div>
+			
+		<div sec:authentication="name">The value of the "name" property
+			of the authentication object should appear here.</div>
 
-<footer th:replace="fragments/general :: footer"/>
+			
+		<div class="col-6 text-center mx-auto">
+			<img class="img-fluid" th:src="@{/images/Tork02cover.png}" />
+
+		</div>
+	</div>
+
+	<footer th:replace="fragments/general :: footer" />
 </body>
 </html>
