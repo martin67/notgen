@@ -15,18 +15,6 @@
 
 		<p>Fantastiskt, eller hur?</p>
 
-		<div sec:authorize="hasRole('ROLE_ADMIN')">This will only be
-			displayed if authenticated user has role ROLE_ADMIN.</div>
-		<div sec:authorize="hasRole('ADMIN')">This will only be
-			displayed if authenticated user has role ROLE_ADMIN2.</div>
-		<div sec:authorize="hasRole('READ_PRIVILEGE')">This will only be
-			displayed if authenticated user has role ROLE_ADMIN2.</div>
-
-			
-		<div sec:authentication="name">The value of the "name" property
-			of the authentication object should appear here.</div>
-
-			
 		<div class="col-6 text-center mx-auto">
 			<img class="img-fluid" th:src="@{/images/Tork02cover.png}" />
 

@@ -10,6 +10,9 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -48,29 +51,38 @@ public class PlaylistController {
   }
 
   @GetMapping("/delete")
-  public String playlistDelete(@RequestParam("id") Integer id, Model model) {
-    Playlist playlist = playlistRepository.findById(id).get();
-    log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
-    playlistRepository.delete(playlist);
+  public String playlistDelete(@RequestParam("id") Integer id, Model model,
+      @AuthenticationPrincipal UserDetails userDetails) {
+    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
+      Playlist playlist = playlistRepository.findById(id).get();
+      log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+      playlistRepository.delete(playlist);
+    }
     return "redirect:/playlist/list";
   }
 
   @GetMapping("/copy")
-  public String playlistCopy(@RequestParam("id") Integer id, Model model) {
-    Playlist playlist = playlistRepository.findById(id).get();
-    log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
-    Playlist newPlaylist = playlist.copy();
-    playlistRepository.save(newPlaylist);
+  public String playlistCopy(@RequestParam("id") Integer id, Model model,
+      @AuthenticationPrincipal UserDetails userDetails) {
+    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
+      Playlist playlist = playlistRepository.findById(id).get();
+      log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+      Playlist newPlaylist = playlist.copy();
+      playlistRepository.save(newPlaylist);
+    }
     return "redirect:/playlist/list";
   }
 
   @PostMapping("/save")
-  public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors) {
+  public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors,
+      @AuthenticationPrincipal UserDetails userDetails) { 
     if (errors.hasErrors()) {
       return "playlistEdit";
     }
-    log.info("Sparar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
-    playlistRepository.save(playlist);
+    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
+      log.info("Sparar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+      playlistRepository.save(playlist);
+    }
     return "redirect:/playlist/list";
   }
 

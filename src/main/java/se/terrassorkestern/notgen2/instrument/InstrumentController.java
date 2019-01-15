@@ -3,6 +3,9 @@ package se.terrassorkestern.notgen2.instrument;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -39,20 +42,26 @@ public class InstrumentController {
   }
 
   @GetMapping("/delete")
-  public String instrumentDelete(@RequestParam("id") Integer id, Model model) {
-    Instrument instrument = instrumentRepository.findById(id).get();
-    log.info("Tar bort instrument " + instrument.getName() + " [" + instrument.getId() + "]");
-    instrumentRepository.delete(instrument);
+  public String instrumentDelete(@RequestParam("id") Integer id, Model model,
+      @AuthenticationPrincipal UserDetails userDetails) {
+    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_INSTRUMENT"))) {
+      Instrument instrument = instrumentRepository.findById(id).get();
+      log.info("Tar bort instrument " + instrument.getName() + " [" + instrument.getId() + "]");
+      instrumentRepository.delete(instrument);
+    }
     return "redirect:/instrument/list";
   }
 
   @PostMapping("/save")
-  public String instrumentSave(@Valid @ModelAttribute Instrument instrument, Errors errors) {
+  public String instrumentSave(@Valid @ModelAttribute Instrument instrument, Errors errors,
+      @AuthenticationPrincipal UserDetails userDetails) {
     if (errors.hasErrors()) {
       return "instrumentEdit";
     }
-    log.info("Sparar instrument " + instrument.getName() + " [" + instrument.getId() + "]");
-    instrumentRepository.save(instrument);
+    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_INSTRUMENT"))) {
+      log.info("Sparar instrument " + instrument.getName() + " [" + instrument.getId() + "]");
+      instrumentRepository.save(instrument);
+    }
     return "redirect:/instrument/list";
   }
 
