@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
+import se.terrassorkestern.notgen2.user.User;
 
 @Slf4j
 @Controller
@@ -41,8 +42,8 @@ public class SongController {
 
   @GetMapping("/delete")
   public String songDelete(@RequestParam("id") Integer id, Model model,
-      @AuthenticationPrincipal UserDetails userDetails) {
-    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_SONG"))) {
+      @AuthenticationPrincipal User user) {
+    if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_SONG"))) {
       Song song = songRepository.findById(id).get();
       log.info("Tar bort låt " + song.getTitle() + " [" + song.getId() + "]");
       songRepository.delete(song);
@@ -71,12 +72,12 @@ public class SongController {
 
   @PostMapping("/save")
   public String songSave(@Valid @ModelAttribute Song song, Errors errors, Model model,
-      @AuthenticationPrincipal UserDetails userDetails) {
+      @AuthenticationPrincipal User user) {
     if (errors.hasErrors()) {
       model.addAttribute("allInstruments", instrumentRepository.findByOrderByStandardDescSortOrder());
       return "songEdit";
     }
-    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_SONG"))) {
+    if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_SONG"))) {
       log.info("Sparar låt " + song.getTitle() + " [" + song.getId() + "]");
       // scorPart måste fixas till efter formuläret
       for (ScorePart scorePart : song.getScoreParts()) {

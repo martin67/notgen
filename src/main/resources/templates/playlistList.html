@@ -44,11 +44,11 @@
             <td th:text="${playlist.date}"></td>
             <td th:text="${playlist.playlistEntries.size()}"></td>
             <td>
-                <a th:href="@{/playlist/edit(id=${playlist.id})}"><i class="material-icons" title="Ändra låtlists">mode_edit</i></a>
-                <a sec:authorize="hasAuthority('EDIT_PLAYLIST')" th:href="@{/playlist/copy(id=${playlist.id})}"><i class="material-icons" title="Kopiera låtlista">file_copy</i></a>
-                <a th:href="@{/playlist/createPdf(id=${playlist.id})}"><i class="material-icons" title="Skriv ut">print</i></a>
+                <a th:href="@{/playlist/edit(id=${playlist.id})}"><i class="material-icons text-secondary" title="Ändra låtlists">mode_edit</i></a>
+                <a sec:authorize="hasAuthority('EDIT_PLAYLIST')" th:href="@{/playlist/copy(id=${playlist.id})}"><i class="material-icons text-secondary" title="Kopiera låtlista">file_copy</i></a>
+                <a th:href="@{/playlist/createPdf(id=${playlist.id})}"><i class="material-icons text-secondary" title="Skriv ut">print</i></a>
                 <a sec:authorize="hasAuthority('EDIT_PLAYLIST')" href="#deleteModal" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${playlist.id}">
-                    <i class="material-icons" title="Ta bort">delete</i></a>
+                    <i class="material-icons text-danger" title="Ta bort">delete</i></a>
                 <!-- Modal -->
                 <div class="modal" th:id="deleteModal+${playlist.id}" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">

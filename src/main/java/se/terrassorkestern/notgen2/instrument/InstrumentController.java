@@ -2,6 +2,7 @@ package se.terrassorkestern.notgen2.instrument;
 
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import se.terrassorkestern.notgen2.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -43,8 +44,8 @@ public class InstrumentController {
 
   @GetMapping("/delete")
   public String instrumentDelete(@RequestParam("id") Integer id, Model model,
-      @AuthenticationPrincipal UserDetails userDetails) {
-    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_INSTRUMENT"))) {
+      @AuthenticationPrincipal User user) {
+    if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_INSTRUMENT"))) {
       Instrument instrument = instrumentRepository.findById(id).get();
       log.info("Tar bort instrument " + instrument.getName() + " [" + instrument.getId() + "]");
       instrumentRepository.delete(instrument);
@@ -54,11 +55,11 @@ public class InstrumentController {
 
   @PostMapping("/save")
   public String instrumentSave(@Valid @ModelAttribute Instrument instrument, Errors errors,
-      @AuthenticationPrincipal UserDetails userDetails) {
+      @AuthenticationPrincipal User user) {
     if (errors.hasErrors()) {
       return "instrumentEdit";
     }
-    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_INSTRUMENT"))) {
+    if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_INSTRUMENT"))) {
       log.info("Sparar instrument " + instrument.getName() + " [" + instrument.getId() + "]");
       instrumentRepository.save(instrument);
     }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import se.terrassorkestern.notgen2.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -52,8 +53,8 @@ public class PlaylistController {
 
   @GetMapping("/delete")
   public String playlistDelete(@RequestParam("id") Integer id, Model model,
-      @AuthenticationPrincipal UserDetails userDetails) {
-    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
+      @AuthenticationPrincipal User user) {
+    if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
       Playlist playlist = playlistRepository.findById(id).get();
       log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
       playlistRepository.delete(playlist);
@@ -63,8 +64,8 @@ public class PlaylistController {
 
   @GetMapping("/copy")
   public String playlistCopy(@RequestParam("id") Integer id, Model model,
-      @AuthenticationPrincipal UserDetails userDetails) {
-    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
+      @AuthenticationPrincipal User user) {
+    if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
       Playlist playlist = playlistRepository.findById(id).get();
       log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
       Playlist newPlaylist = playlist.copy();
@@ -75,11 +76,11 @@ public class PlaylistController {
 
   @PostMapping("/save")
   public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors,
-      @AuthenticationPrincipal UserDetails userDetails) { 
+      @AuthenticationPrincipal User user) { 
     if (errors.hasErrors()) {
       return "playlistEdit";
     }
-    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
+    if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
       log.info("Sparar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
       playlistRepository.save(playlist);
     }

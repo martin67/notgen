@@ -49,14 +49,6 @@ public class AdminController {
     return "redirect:/admin";
   }
   
-  @PostMapping("/userSave")
-  public String userSave(@Valid @ModelAttribute User user, Errors errors) {
-    if (errors.hasErrors()) {
-      return "userEdit";
-    }
-    log.info("Sparar användare " + user.getUsername() + " [" + user.getId() + "]");
-    userRepository.save(user);
-    return "redirect:/admin";
-  }
+  
 
 }

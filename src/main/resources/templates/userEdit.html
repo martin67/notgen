@@ -5,38 +5,13 @@
 <body>
 	<div th:replace="fragments/general :: header" />
 
-	<!-- Modal -->
-	<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Ta bort användare</h5>
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<p>Vill du verkligen ta bort denna användare?</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary"
-						data-dismiss="modal">Avbryt</button>
-					<a class="btn btn-danger"
-						th:href="@{/admin/userDelete(id=${user.id})}">Ta bort</a>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<div class="container">
 		<h1>Redigera användare</h1>
 
-		<form role="form" th:action="@{/admin/userSave}" th:object="${user}"
+		<form role="form" th:action="@{/user/save}" th:object="${user}"
 			th:method="post">
 			<input type="hidden" th:field="*{id}" th:value="${user.id}" />
-
-			<div class="form-group row">
+			<div sec:authorize="hasRole('ROLE_ADMIN')" class="form-group row">
 				<label class="col-sm-3 col-form-label" for="name">Användarnamn</label>
 				<div class="col-sm-9">
 					<input type="text" class="form-control" th:field="*{username}"
@@ -45,6 +20,8 @@
 						th:errors="*{username}">Error</span>
 				</div>
 			</div>
+			<input sec:authorize="!hasRole('ROLE_ADMIN')" type="hidden"
+				th:field="*{username}" th:value="${user.username}" />
 			<div class="form-group row">
 				<label class="col-sm-3 col-form-label" for="fullname">Namn</label>
 				<div class="col-sm-9">
@@ -59,7 +36,7 @@
 						th:value="${user.password}" id="password" />
 				</div>
 			</div>
-			<div class="form-group row">
+			<div sec:authorize="hasRole('ROLE_ADMIN')" class="form-group row">
 				<div class="col-sm-3">Aktiv</div>
 				<div class="col-sm-9">
 					<div class="form_check">
@@ -68,12 +45,12 @@
 					</div>
 				</div>
 			</div>
+			<input sec:authorize="!hasRole('ROLE_ADMIN')" type="hidden"
+				th:field="*{enabled}" th:value="${user.enabled}" />
 			<div class="form-group row">
 				<div class="col-sm-9">
-					<a class="btn btn-secondary" th:href="@{/admin}">Tillbaka</a>
-					<button type="button" class="btn btn-danger" data-toggle="modal"
-						data-target="#deleteModal">Ta bort</button>
-					<input type="submit" class="btn btn-primary" value="Spara" />
+					<a class="btn btn-secondary" th:href="@{/}">Tillbaka</a> <input
+						type="submit" class="btn btn-primary" value="Spara" />
 				</div>
 			</div>
 		</form>
