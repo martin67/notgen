@@ -1,5 +1,10 @@
 package se.terrassorkestern.notgen2.playlist;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -7,12 +12,6 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PlaylistPdfCreator {
 
@@ -73,7 +72,7 @@ public class PlaylistPdfCreator {
       contents.showText(playlistEntry.getComment());
       contents.endText();
 
-      ypos -= 25;
+      ypos -= 20;
       if (playlistEntry.getBold()) {
         ypos -= 10;
       }

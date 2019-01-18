@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,8 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import se.terrassorkestern.notgen2.song.Song;
 import se.terrassorkestern.notgen2.song.SongRepository;
-
-import java.util.List;
 
 @Slf4j
 @Controller

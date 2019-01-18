@@ -1,9 +1,8 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
-import lombok.Data;
-
 import java.time.Duration;
 import java.time.Instant;
+import lombok.Data;
 
 /*
     Stats for one round of converting

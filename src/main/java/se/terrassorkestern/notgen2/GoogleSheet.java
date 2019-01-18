@@ -5,11 +5,10 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GoogleSheet extends Google {

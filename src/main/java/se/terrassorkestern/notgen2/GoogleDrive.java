@@ -6,8 +6,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,6 +13,7 @@ import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GoogleDrive extends Google {
@@ -30,13 +29,28 @@ public class GoogleDrive extends Google {
   }
 
 
-  public String uploadFile(String folderId,     // ID på mappen som det skall upp i
-      String fileType,     // 'application/pdf' or 'image/jpeg'
-      String fileName,     // "Apertif" eller "Aperitif - sång.pdf". Extension behöver inte vara med.
-      Path uploadFile,     // Själva filen som skall laddas upp
-      String instrument,   // Om det är ett instrument så skall det ner ytterligare en katalog, om inte sätt till nill
-      String description,  // Beskrvining av lågten dvs, namn, kompoistör sättning etc.
-      Boolean ocr,         // Om filen skall OCR:as och laddas upp som ett google docs istället
+  /**
+   * Ladda upp fil till Google Drive
+   * 
+   * @param folderId        ID på mappen som man skall ladda upp til
+   * @param fileType        'application/pdf' eller 'image/jpeg'
+   * @param fileName        "Apertif" eller "Aperitif - sång.pdf". Extension behöver inte vara med
+   * @param uploadFile      Själva filen som skall laddas upp
+   * @param instrument      Om det är ett instrument så skall det ner ytterligare en katalog
+   * @param description     Beskrvining av låten dvs, namn, kompoistör sättning etc.
+   * @param ocr             Om filen skall OCR:as och laddas upp som ett google docs istället
+   * @param map
+   * @return
+   * @throws IOException
+   */
+  public String uploadFile(
+      String folderId,
+      String fileType,
+      String fileName,
+      Path uploadFile, 
+      String instrument, 
+      String description, 
+      Boolean ocr, 
       Map<String, String> map)
           throws IOException {
 

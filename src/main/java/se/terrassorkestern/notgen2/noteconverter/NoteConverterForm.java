@@ -1,7 +1,7 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
-import org.springframework.context.annotation.Configuration;
 import java.util.List;
+import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class NoteConverterForm {

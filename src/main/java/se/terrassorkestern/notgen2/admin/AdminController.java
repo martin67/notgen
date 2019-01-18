@@ -1,10 +1,7 @@
 package se.terrassorkestern.notgen2.admin;
 
-import lombok.extern.slf4j.Slf4j;
-import se.terrassorkestern.notgen2.instrument.Instrument;
-import se.terrassorkestern.notgen2.user.User;
-import se.terrassorkestern.notgen2.user.UserRepository;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +11,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import se.terrassorkestern.notgen2.instrument.Instrument;
+import se.terrassorkestern.notgen2.user.User;
+import se.terrassorkestern.notgen2.user.UserRepository;
 
 @Slf4j
 @Controller

@@ -1,12 +1,11 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.song.SongRepository;
-
-import java.util.List;
 
 @Slf4j
 @Service

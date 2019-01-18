@@ -1,14 +1,13 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.stereotype.Component;
+import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 import se.terrassorkestern.notgen2.playlist.PlaylistRepository;
 import se.terrassorkestern.notgen2.song.SongRepository;
-import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class NoteStats implements InfoContributor {
