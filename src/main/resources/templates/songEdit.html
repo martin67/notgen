@@ -38,22 +38,25 @@
 
 			<div class="form-group row">
 				<label class="col-sm-2 col-form-label" for="title">Titel</label>
-				<div class="col-sm-10">
+				<div class="col-sm-7">
 					<input type="text" class="form-control" th:field="*{title}"
 						th:value="${song.title}" id="title" /> <span class="text-danger"
 						th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Error</span>
 				</div>
+				<div class="col-sm-3">
+					<img class="img-fluid" th:src="@{/images/Tork02cover.png}" />
+				</div>
 			</div>
 			<div class="form-group row">
 				<label class="col-sm-2 col-form-label">Subtitel</label>
-				<div class="col-sm-10">
+				<div class="col-sm-7">
 					<input type="text" class="form-control" th:field="*{subtitle}"
 						th:value="${song.subtitle}" />
 				</div>
 			</div>
 			<div class="form-group row">
 				<label class="col-sm-2 col-form-label">Genre</label>
-				<div class="col-sm-10" id="prefetch-genres">
+				<div class="col-sm-7" id="prefetch-genres">
 					<input type="text" class="form-control typeahead"
 						autocomplete="off" th:field="*{genre}" th:value="${song.genre}" />
 					<span class="text-danger" th:if="${#fields.hasErrors('genre')}"
@@ -62,7 +65,7 @@
 			</div>
 			<div class="form-group row">
 				<label class="col-sm-2 col-form-label">Kompositör</label>
-				<div class="col-sm-10" id="prefetch-composers">
+				<div class="col-sm-7" id="prefetch-composers">
 					<input type="text" class="form-control typeahead"
 						autocomplete="off" th:field="*{composer}"
 						th:value="${song.composer}" />
@@ -70,14 +73,14 @@
 			</div>
 			<div class="form-group row">
 				<label class="col-sm-2 col-form-label">Författare</label>
-				<div class="col-sm-10" id="prefetch-authors">
+				<div class="col-sm-7" id="prefetch-authors">
 					<input type="text" class="form-control typeahead"
 						autocomplete="off" th:field="*{author}" th:value="${song.author}" />
 				</div>
 			</div>
 			<div class="form-group row">
 				<label class="col-sm-2 col-form-label">Arrangör</label>
-				<div class="col-sm-10" id="prefetch-arrangers">
+				<div class="col-sm-7" id="prefetch-arrangers">
 					<input type="text" class="form-control typeahead"
 						autocomplete="off" th:field=" *{arranger}"
 						th:value="${song.arranger}" />
@@ -85,7 +88,7 @@
 			</div>
 			<div class="form-group row">
 				<label class="col-sm-2 col-form-label">År</label>
-				<div class="col-sm-10">
+				<div class="col-sm-7">
 					<input type="number" class="form-control" th:field="*{year}"
 						th:value="${song.year}" />
 				</div>

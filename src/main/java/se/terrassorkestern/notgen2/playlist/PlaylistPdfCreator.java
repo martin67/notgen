@@ -42,13 +42,6 @@ public class PlaylistPdfCreator {
     contents.showText(playlist.getName() + "  " + playlist.getDate().toString());
     contents.endText();
 
-    /*
-        contents.beginText();
-        contents.setFont(commentFont, 10);
-        contents.newLineAtOffset(75, 775);
-        contents.showText(playlist.getComment());
-        contents.endText();
-     */
     float ypos = drawMultiLineText(playlist.getComment(), 75,740, 475, 
         page, contents, commentFont, 10, 15) - 20;
 
