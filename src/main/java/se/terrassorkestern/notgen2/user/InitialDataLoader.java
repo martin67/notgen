@@ -17,8 +17,6 @@ import se.terrassorkestern.notgen2.noteconverter.NoteConverter;
 public class InitialDataLoader implements
     ApplicationListener<ContextRefreshedEvent> {
 
-  boolean alreadySetup = true;
-
   @Autowired
   private UserRepository userRepository;
 
@@ -35,10 +33,10 @@ public class InitialDataLoader implements
   @Transactional
   public void onApplicationEvent(ContextRefreshedEvent event) {
     
-    if (alreadySetup) {
+    if (userRepository.findByUsername("admin") != null) {
       return;
     }
-    log.info("Creating initial user test with admin rights");
+    log.info("Creating initial user admin with admin rights");
     
     List<Privilege> adminPrivileges = Arrays.asList(
         createPrivilegeIfNotFound("PRINT_SCORE"),
@@ -64,8 +62,6 @@ public class InitialDataLoader implements
     user.setRoles(Arrays.asList(adminRole));
     user.setEnabled(true);
     userRepository.save(user);
-
-    alreadySetup = true;
   }
 
 
