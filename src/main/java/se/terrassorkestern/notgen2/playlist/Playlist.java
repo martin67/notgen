@@ -31,7 +31,6 @@ public class Playlist {
   @Column(name = "kommentar")
   private String comment;
   @Column(name = "datum")
-  @PastOrPresent(message = "Ange ett datum")
   private LocalDate date;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
