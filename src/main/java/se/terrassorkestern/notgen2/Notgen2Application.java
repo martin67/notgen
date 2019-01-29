@@ -5,6 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,6 +24,15 @@ public class Notgen2Application {
     SpringApplication.run(Notgen2Application.class, args);
   }
 
+  @Bean
+  public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+    PropertySourcesPlaceholderConfigurer propsConfig 
+      = new PropertySourcesPlaceholderConfigurer();
+    propsConfig.setLocation(new ClassPathResource("git.properties"));
+    propsConfig.setIgnoreResourceNotFound(true);
+    propsConfig.setIgnoreUnresolvablePlaceholders(true);
+    return propsConfig;
+  }
   
   @Configuration
   @EnableWebSecurity
@@ -47,7 +58,7 @@ public class Notgen2Application {
     protected void configure(HttpSecurity http) throws Exception {
       http
       .authorizeRequests()
-      .antMatchers("/admin", "/noteConverter", "/noteLister", "/instrument/**")
+      .antMatchers("/admin", "/noteConverter", "/noteLister", "/instrument/**", "/user/list", "/user/delete")
       .hasRole("ADMIN")
       .antMatchers("/", "/**").permitAll()
       .and()

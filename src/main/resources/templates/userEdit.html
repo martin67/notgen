@@ -8,9 +8,13 @@
 	<div class="container">
 		<h1>Redigera användare</h1>
 
-		<form role="form" th:action="@{/user/save}" th:object="${user}"
-			th:method="post">
-			<input type="hidden" th:field="*{id}" th:value="${user.id}" />
+		<form role="form" autocomplete="off" th:action="@{/user/save}"
+			th:object="${user}" th:method="post">
+
+			<p class="text-danger" th:if="${#fields.hasGlobalErrors()}"
+				th:each="error : ${#fields.errors('global')}" th:text="${error}">Validation
+				error</p>
+
 			<div sec:authorize="hasRole('ROLE_ADMIN')" class="form-group row">
 				<label class="col-sm-3 col-form-label" for="name">Användarnamn</label>
 				<div class="col-sm-9">
@@ -26,21 +30,42 @@
 				<label class="col-sm-3 col-form-label" for="fullname">Namn</label>
 				<div class="col-sm-9">
 					<input type="text" class="form-control" th:field="*{fullname}"
-						th:value="${user.fullname}" id="fullname" />
+						th:value="${user.fullname}" id="fullname" /> <span
+						class="text-danger" th:if="${#fields.hasErrors('fullname')}"
+						th:errors="*{fullname}">Error</span>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="col-sm-3 col-form-label" for="email">E-post</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" th:field="*{email}"
+						th:value="${user.email}" /> <span class="text-danger"
+						th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</span>
 				</div>
 			</div>
 			<div class="form-group row">
 				<label class="col-sm-3 col-form-label" for="password">Lösenord</label>
 				<div class="col-sm-9">
-					<input type="text" class="form-control" th:field="*{password}"
-						th:value="${user.password}" id="password" />
+					<input type="password" class="form-control" th:field="*{password}"
+						th:value="${user.password}" id="password" /> <span
+						class="text-danger" th:if="${#fields.hasErrors('password')}"
+						th:errors="*{password}">Error</span>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="col-sm-3 col-form-label" for="matchingPassword">Upprepa
+					lösenord</label>
+				<div class="col-sm-9">
+					<input type="password" class="form-control"
+						th:field="*{matchingPassword}" th:value="${user.matchingPassword}" />
+					<span class="text-danger"
+						th:if="${#fields.hasErrors('matchingPassword')}"
+						th:errors="*{matchingPassword}">Error</span>
 				</div>
 			</div>
 			<div sec:authorize="hasRole('ROLE_ADMIN')" class="form-group row">
 				<div class="col-sm-3">Roll & behörighet</div>
-				<div class="col-sm-9">
-
-				</div>
+				<div class="col-sm-9"></div>
 			</div>
 			<input sec:authorize="!hasRole('ROLE_ADMIN')" type="hidden"
 				th:field="*{enabled}" th:value="${user.enabled}" />

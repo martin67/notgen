@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.user.User;
+import se.terrassorkestern.notgen2.user.UserDto;
 import se.terrassorkestern.notgen2.user.UserRepository;
 
 @Slf4j
@@ -20,35 +21,9 @@ import se.terrassorkestern.notgen2.user.UserRepository;
 @RequestMapping("/admin")
 public class AdminController {
 
-  @Autowired
-  private UserRepository userRepository;
 
-  @GetMapping("")
+  @GetMapping("/")
   public String admin(Model model) {
-    model.addAttribute("users", userRepository.findAll());
     return "admin";
   }
-
-  @GetMapping("/userEdit")
-  public String userEdit(@RequestParam("id") Long id, Model model) {
-    model.addAttribute("user", userRepository.findById(id).get());
-    return "userEdit";
-  }
-  
-  @GetMapping("/userNew")
-  public String userNew(Model model) {
-    model.addAttribute("user", new User());
-    return "userEdit";
-  }
-
-  @GetMapping("/userDelete")
-  public String userDelete(@RequestParam("id") Long id, Model model) {
-    User user = userRepository.findById(id).get();
-    log.info("Tar bort användare " + user.getUsername() + " [" + user.getId() + "]");
-    userRepository.delete(user);
-    return "redirect:/admin";
-  }
-  
-  
-
 }

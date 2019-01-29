@@ -28,6 +28,7 @@ public class User implements UserDetails {
   private String username;
   private String password;
   private String fullname;
+  private String email;
   private Boolean enabled;
 
   @ManyToMany(fetch = FetchType.EAGER)

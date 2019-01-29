@@ -1,10 +1,10 @@
 package se.terrassorkestern.notgen2.notelister;
 
 import lombok.extern.slf4j.Slf4j;
+import se.terrassorkestern.notgen2.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +31,8 @@ public class NoteListerController {
 
   @GetMapping("/noteListerGenerate")
   public String noteListerGenerate(Model model,
-      @AuthenticationPrincipal UserDetails userDetails) {
-    if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("UPDATE_TOC"))) {
+      @AuthenticationPrincipal User user) {
+    if (user.getAuthorities().contains(new SimpleGrantedAuthority("UPDATE_TOC"))) {
       log.info("Nu är vi i noteListerGenerate");
       noteListerService.createList();
     }
