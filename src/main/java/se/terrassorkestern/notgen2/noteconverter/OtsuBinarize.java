@@ -7,13 +7,12 @@
 
 package se.terrassorkestern.notgen2.noteconverter;
 
-import java.awt.Color;
+import javax.imageio.ImageIO;
+import javax.validation.constraints.NotNull;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 class OtsuBinarize {
 
@@ -385,8 +384,7 @@ class OtsuBinarize {
   }
 
   // Convert R, G, B, Alpha to standard 8 bit
-  @Contract(pure = true)
-  private static int colorToRgb(int alpha, int red, int green, int blue) {
+    private static int colorToRgb(int alpha, int red, int green, int blue) {
 
     int newPixel = 0;
     newPixel += alpha;
@@ -401,7 +399,6 @@ class OtsuBinarize {
 
   }
 
-  @Contract(pure = true)
   private static int findMin(@NotNull int[] pixels) {
 
     int min = pixels[0];
@@ -416,7 +413,6 @@ class OtsuBinarize {
 
   }
 
-  @Contract(pure = true)
   private static int findMax(@NotNull int[] pixels) {
 
     int max = pixels[0];

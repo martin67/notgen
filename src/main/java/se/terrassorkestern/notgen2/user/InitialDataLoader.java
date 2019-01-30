@@ -10,7 +10,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
-import se.terrassorkestern.notgen2.noteconverter.NoteConverter;
 
 @Slf4j
 @Component
