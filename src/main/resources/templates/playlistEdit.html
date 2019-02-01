@@ -1,136 +1,155 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/general :: header-css" />
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="fragments/general :: header-css"/>
 
 <body>
-	<div th:replace="fragments/general :: header" />
+<div th:replace="fragments/general :: header"/>
 
-	<!-- Modal -->
-	<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Ta bort låtlista</h5>
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<p>Vill du verkligen ta bort denna låtlista?</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary"
-						data-dismiss="modal">Avbryt</button>
-					<a class="btn btn-danger"
-						th:href="@{/playlist/delete(id=${playlist.id})}">Ta bort</a>
-				</div>
-			</div>
-		</div>
-	</div>
+<!-- Modal -->
+<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ta bort låtlista</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Vill du verkligen ta bort denna låtlista?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">Avbryt
+                </button>
+                <a class="btn btn-danger"
+                   th:href="@{/playlist/delete(id=${playlist.id})}">Ta bort</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 
-	<div class="container">
-		<h1>Redigera låtlista</h1>
+<div class="container">
+    <h1>Redigera låtlista</h1>
 
-		<form role="form" th:action="@{/playlist/save}"
-			th:object="${playlist}" th:method="post" id="editPlaylist">
-			<input type="hidden" th:field="*{id}" th:value="${playlist.id}" />
+    <form role="form" th:action="@{/playlist/save}"
+          th:object="${playlist}" th:method="post" id="editPlaylist">
+        <input type="hidden" th:field="*{id}" th:value="${playlist.id}"/>
 
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label" for="name">Namn</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" th:field="*{name}"
-						th:value="${playlist.name}" id="name" /> <span
-						class="text-danger" th:if="${#fields.hasErrors('name')}"
-						th:errors="*{name}">Error</span>
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label" for="date">Datum</label>
-				<div class="col-sm-10">
-					<input type="date" class="form-control" th:field="*{date}" th:value="${playlist.date}"
-						id="date" /> <span class="text-danger"
-						th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</span>
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label" for="comment">Kommentar</label>
-				<div class="col-sm-10">
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="name">Namn</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" th:field="*{name}"
+                       th:value="${playlist.name}" id="name"/> <span
+                    class="text-danger" th:if="${#fields.hasErrors('name')}"
+                    th:errors="*{name}">Error</span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="date">Datum</label>
+            <div class="col-sm-10">
+                <input type="date" class="form-control" th:field="*{date}" th:value="${playlist.date}"
+                       id="date"/> <span class="text-danger"
+                                         th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="comment">Kommentar</label>
+            <div class="col-sm-10">
 					<textarea class="form-control" th:field="*{comment}"
-						th:value="${playlist.comment}" id="comment" />
-				</div>
-			</div>
+                              th:value="${playlist.comment}" id="comment"/>
+            </div>
+        </div>
 
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">Låtar</label>
-				<div class="col-sm-10">
-					<table class="table table-bordered table-sm">
-						<thead>
-							<tr>
-								<th></th>
-								<th scope="col">Låt</th>
-								<th scope="col">Fet</th>
-								<th scope="col">Kommentar</th>
-								<th>
-									<button sec:authorize="hasAuthority('EDIT_PLAYLIST')" class="btn btn-primary btn-sm" type="submit"
-										name="addRow">Lägg till</button>
-								</th>
-							</tr>
-						</thead>
-						<tbody>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Låtar</label>
+            <div class="col-sm-10">
+                <table class="table table-bordered table-sm">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th scope="col">Låt</th>
+                        <th scope="col">Fet</th>
+                        <th scope="col">Kommentar</th>
+                        <th>
+                            <button sec:authorize="hasAuthority('EDIT_PLAYLIST')" class="btn btn-primary btn-sm"
+                                    type="submit"
+                                    name="addRow">Lägg till
+                            </button>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
 
-							<tr th:each="playlistEntry,rowStat : ${playlist.playlistEntries}">
-								<td class="align-middle"><i class="material-icons">open_with</i></td>
-								<td>
-									<div id="prefetch">
-										<input type="text"
-											class="form-control form-control-sm typeahead"
-											autocomplete="off"
-											th:field="*{playlistEntries[__${rowStat.index}__].text}"
-											th:value="${playlistEntry.text}" />
-									</div>
-								</td>
-								<td>
-									<div class="form_check form-check-inline">
-										<input type="checkbox" class="form-check-input"
-											th:field="*{playlistEntries[__${rowStat.index}__].bold}"
-											th:value="${playlistEntry.bold}" />
-									</div>
-								</td>
-								<td><input type="text" class="form-control form-control-sm"
-									th:field="*{playlistEntries[__${rowStat.index}__].comment}"
-									th:value="${playlistEntry.comment}" /></td>
-								<td class="align-middle"><input type="hidden"
-									class="form-control"
-									th:field="*{playlistEntries[__${rowStat.index}__].sortOrder}"
-									th:value="${playlistEntry.sortOrder}" />
+                    <tr th:each="playlistEntry,rowStat : ${playlist.playlistEntries}">
+                        <td class="align-middle"><i class="material-icons">open_with</i></td>
+                        <td>
+                            <div id="prefetch">
+                                <input type="text"
+                                       class="form-control form-control-sm typeahead"
+                                       autocomplete="off"
+                                       th:field="*{playlistEntries[__${rowStat.index}__].text}"
+                                       th:value="${playlistEntry.text}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form_check form-check-inline">
+                                <input type="checkbox" class="form-check-input"
+                                       th:field="*{playlistEntries[__${rowStat.index}__].bold}"
+                                       th:value="${playlistEntry.bold}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm"
+                                   th:field="*{playlistEntries[__${rowStat.index}__].comment}"
+                                   th:value="${playlistEntry.comment}"/>
+                        </td>
+                        <td class="align-middle">
+                            <input type="hidden"
+                                   class="form-control"
+                                   th:field="*{playlistEntries[__${rowStat.index}__].sortOrder}"
+                                   th:value="${playlistEntry.sortOrder}"/>
+                            <button sec:authorize="hasAuthority('EDIT_PLAYLIST')" class="btn btn-sm btn-danger"
+                                    type="submit"
+                                    name="deleteRow" th:value="${rowStat.index}">Ta bort
+                            </button>
+                        </td>
 
-									<button sec:authorize="hasAuthority('EDIT_PLAYLIST')" class="btn btn-sm btn-danger" type="submit"
-										name="deleteRow" th:value="${rowStat.index}">Ta bort
-									</button></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
 
-			<div class="form-group row">
-				<div class="col-sm-9"> 
-					<a class="btn btn-secondary" th:href="@{/playlist/list}">Tillbaka</a>
-					<button sec:authorize="hasAuthority('EDIT_PLAYLIST')" type="button" class="btn btn-danger" data-toggle="modal"
-						data-target="#deleteModal">Ta bort</button>
-					<a class="btn btn-secondary"
-						th:href="@{/playlist/createPdf(id=${playlist.id})}">Skapa PDF</a>
-					<input sec:authorize="hasAuthority('EDIT_PLAYLIST')" type="submit" class="btn btn-primary" value="Spara" />
-				</div>
-			</div>
-		</form>
-	</div>
+        <div class="form-group row">
+            <div class="col-sm-9">
+                <a class="btn btn-secondary" th:href="@{/playlist/list}">Tillbaka</a>
+                <button sec:authorize="hasAuthority('EDIT_PLAYLIST')" type="button" class="btn btn-danger"
+                        data-toggle="modal"
+                        data-target="#deleteModal">Ta bort
+                </button>
+                <input sec:authorize="hasAuthority('EDIT_PLAYLIST')" type="submit" class="btn btn-primary"
+                       value="Spara"/>
+                <a class="btn btn-secondary"
+                   th:href="@{/playlist/createPdf(id=${playlist.id})}">Skapa PDF</a>
+                <button type="submit" class="btn btn-secondary"
+                        name="createPack">Skapa instrumentpack
+                </button>
+                <select name="selectedInstrument">
+                    <option th:each="instrument : ${instruments}"
+                            th:value="${instrument.id}"
+                            th:text="${instrument.name}"></option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
 
-	<footer th:replace="fragments/general :: footer" />
-	<script type="text/javascript">
+<footer th:replace="fragments/general :: footer"/>
+<script type="text/javascript">
 window.onload=function(){
 
 var songs = new Bloodhound({
@@ -151,9 +170,14 @@ $('#prefetch .typeahead').typeahead({
 
 
 
+
+
+
+
+
 </script>
 
-	<script>
+<script>
     $(function() {
 $( "table tbody" ).sortable( {
   update: function( event, ui ) {
@@ -163,6 +187,11 @@ $( "table tbody" ).sortable( {
 }
 });
 });
+
+
+
+
+
 
 
 

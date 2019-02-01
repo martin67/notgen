@@ -1,10 +1,6 @@
 package se.terrassorkestern.notgen2.playlist;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -12,8 +8,17 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.springframework.stereotype.Service;
 
-public class PlaylistPdfCreator {
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
+@Service
+public class PlaylistPdfService {
 
   ByteArrayInputStream create(Playlist playlist) throws IOException {
 
@@ -111,7 +116,7 @@ public class PlaylistPdfCreator {
    */
   private float drawMultiLineText(String text, int x, int y, int allowedWidth, PDPage page, PDPageContentStream contentStream, PDFont font, int fontSize, int lineHeight) throws IOException {
 
-    List<String> lines = new ArrayList<String>();
+    List<String> lines = new ArrayList<>();
 
     String myLine = "";
 
