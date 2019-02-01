@@ -74,7 +74,7 @@ public class NoteConverterService {
   }
 
 
-  NoteConverterStats convert(List<Song> songs, boolean upload) {
+  void convert(List<Song> songs, boolean upload) {
     log.info("Starting main convert loop");
     stats.setStartTime(Instant.now());
 
@@ -96,7 +96,6 @@ public class NoteConverterService {
     }
     log.info("Finishing main convert loop");
     stats.setEndTime(Instant.now());
-    return stats;
   }
 
 

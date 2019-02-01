@@ -16,7 +16,7 @@
 				error</p>
 
 			<div sec:authorize="hasRole('ROLE_ADMIN')" class="form-group row">
-				<label class="col-sm-3 col-form-label" for="name">Användarnamn</label>
+				<label class="col-sm-3 col-form-label" for="username">Användarnamn</label>
 				<div class="col-sm-9">
 					<input type="text" class="form-control" th:field="*{username}"
 						th:value="${user.username}" id="username" /> <span
@@ -39,7 +39,7 @@
 				<label class="col-sm-3 col-form-label" for="email">E-post</label>
 				<div class="col-sm-9">
 					<input type="text" class="form-control" th:field="*{email}"
-						th:value="${user.email}" /> <span class="text-danger"
+						th:value="${user.email}" id="email"/> <span class="text-danger"
 						th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</span>
 				</div>
 			</div>
@@ -57,7 +57,7 @@
 					lösenord</label>
 				<div class="col-sm-9">
 					<input type="password" class="form-control"
-						th:field="*{matchingPassword}" th:value="${user.matchingPassword}" />
+						th:field="*{matchingPassword}" th:value="${user.matchingPassword}" id="matchingPassword"/>
 					<span class="text-danger"
 						th:if="${#fields.hasErrors('matchingPassword')}"
 						th:errors="*{matchingPassword}">Error</span>
