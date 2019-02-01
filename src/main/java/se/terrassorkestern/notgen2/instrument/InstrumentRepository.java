@@ -8,7 +8,6 @@ import java.util.List;
 @Repository
 public interface InstrumentRepository extends JpaRepository<Instrument, Integer> {
 
-    // custom query to search to blog post by title or content
     List<Instrument> findByName(String text);
 
     List<Instrument> findByOrderByStandardDescSortOrder();
