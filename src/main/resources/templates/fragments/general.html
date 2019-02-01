@@ -22,7 +22,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav">
                 <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
-                    <a class="nav-link" th:href="@{/noteConverter}">Generera noter</a>
+                    <a class="nav-link" th:href="@{/noteConverterService}">Generera noter</a>
                 </li>
                 <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
                     <a class="nav-link" th:href="@{/noteLister}">Uppdatera förteckning</a>
