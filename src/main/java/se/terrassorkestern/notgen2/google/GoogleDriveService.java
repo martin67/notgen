@@ -10,6 +10,7 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,8 +45,8 @@ public class GoogleDriveService extends Google {
      * @param description Beskrvining av låten dvs, namn, kompoistör sättning etc.
      * @param ocr         Om filen skall OCR:as och laddas upp som ett google docs istället
      * @param map         Metadata
-     * @return            Gooogle ID på den uppladdade file
-     * @throws IOException  TBD
+     * @return Gooogle ID på den uppladdade file
+     * @throws IOException TBD
      */
     public String uploadFile(
             String folderId,
