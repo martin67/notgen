@@ -26,8 +26,6 @@ public class PlaylistPackService {
     @Autowired
     private SongRepository songRepository;
 
-    private Path tmpDir;
-
 
     public PlaylistPackService() {
         log.debug("Constructor!");
@@ -50,8 +48,9 @@ public class PlaylistPackService {
         }
 
         // Create temp directory
+        Path tmpDir;
         try {
-            this.tmpDir = Files.createTempDirectory("notgen2-");
+            tmpDir = Files.createTempDirectory("notgen2-");
             log.debug("Creating temporary directory: " + tmpDir.toString());
         } catch (IOException e) {
             log.error("Can't create temporary directory");
@@ -67,8 +66,8 @@ public class PlaylistPackService {
 
         PDDocumentInformation pdd = new PDDocumentInformation();
         pdd.setAuthor("Terrassorkestern");
-        pdd.setTitle(playlist.getName() + " " + playlist.getDate().toString());
-        pdd.setSubject("Notpack - " + instrument.getName());
+        pdd.setTitle(playlist.getName() + " " + playlist.getDate().toString() + " - " + instrument.getName());
+        pdd.setSubject("Notpacke för " + instrument.getName());
 
         pdfMergerUtility.setDestinationDocumentInformation(pdd);
 

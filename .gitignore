@@ -1,4 +1,6 @@
+/out/
 /target/
+/tokens/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###

@@ -150,8 +150,8 @@ class PlaylistPdfService {
         for (String line : lines) {
             contentStream.beginText();
             contentStream.setFont(font, fontSize);
-            contentStream.moveTextPositionByAmount(x, y);
-            contentStream.drawString(line);
+            contentStream.newLineAtOffset(x, y);
+            contentStream.showText(line);
             contentStream.endText();
 
             y -= lineHeight;
