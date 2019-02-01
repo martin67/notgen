@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-class PlaylistPdfService {
+public class PlaylistPdfService {
 
     ByteArrayInputStream create(Playlist playlist) throws IOException {
 
@@ -118,7 +118,7 @@ class PlaylistPdfService {
 
         List<String> lines = new ArrayList<>();
 
-        String myLine = "";
+        StringBuilder myLine = new StringBuilder();
 
         // get all words from the text
         // keep in mind that words are separated by spaces -> "Lorem ipsum!!!!:)" -> words
@@ -126,8 +126,8 @@ class PlaylistPdfService {
         String[] words = text.split(" ");
         for (String word : words) {
 
-            if (!myLine.isEmpty()) {
-                myLine += " ";
+            if (myLine.length() > 0) {
+                myLine.append(" ");
             }
 
             // test the width of the current line + the current word
@@ -135,17 +135,17 @@ class PlaylistPdfService {
             if (size > allowedWidth) {
                 // if the line would be too long with the current word, add the line without the current
                 // word
-                lines.add(myLine);
+                lines.add(myLine.toString());
 
                 // and start a new line with the current word
-                myLine = word;
+                myLine = new StringBuilder(word);
             } else {
                 // if the current line + the current word would fit, add the current word to the line
-                myLine += word;
+                myLine.append(word);
             }
         }
         // add the rest to lines
-        lines.add(myLine);
+        lines.add(myLine.toString());
 
         for (String line : lines) {
             contentStream.beginText();

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Arrays;
+import java.util.Collections;
 
 @Slf4j
 @Controller
@@ -80,7 +81,7 @@ public class UserController {
         if (user == null) {
             user = new User();
             user.setUsername(userDto.getUsername());
-            user.setRoles(Arrays.asList(roleRepository.findByName("ROLE_USER")));
+            user.setRoles(Collections.singletonList(roleRepository.findByName("ROLE_USER")));
         }
         user.setFullname(userDto.getFullname());
         user.setEmail(userDto.getEmail());

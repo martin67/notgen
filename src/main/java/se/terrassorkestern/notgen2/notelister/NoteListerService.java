@@ -13,6 +13,7 @@ import se.terrassorkestern.notgen2.song.SongRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 //
@@ -89,7 +90,7 @@ class NoteListerService {
         googleSheetService.addRows("Repertoire!A4", repertoireRows);
         googleSheetService.addRows("Sättning!A2", instrumentRows);
 
-        List<List<Object>> dateInfo = Arrays.asList(Arrays.asList(LocalDate.now().toString()));
+        List<List<Object>> dateInfo = Collections.singletonList(Collections.singletonList(LocalDate.now().toString()));
         googleSheetService.addRows("Repertoire!E1", dateInfo);
     }
 

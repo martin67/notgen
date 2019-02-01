@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -19,7 +20,7 @@ public class Instrument {
     @Column(name = "forkortning")
     private String shortName;
     @Column(name = "sortorder")
-    @NotBlank(message = "Sorteringsordning måste anges")
+    @NotNull(message = "Sorteringsordning måste anges")
     private Integer sortOrder;
     private boolean standard;
 
