@@ -13,29 +13,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class NoteListerController {
 
-  @Autowired
-  NoteListerService noteListerService;
+    @Autowired
+    private NoteListerService noteListerService;
 
 
-  public NoteListerController() {
-    log.debug("Constructor");
-  }
-
-
-  @GetMapping("/noteLister")
-  public String noteLister(Model model) {
-    log.info("Nu är vi i noteLister(Model model)");
-
-    return "noteLister";
-  }
-
-  @GetMapping("/noteListerGenerate")
-  public String noteListerGenerate(Model model,
-      @AuthenticationPrincipal User user) {
-    if (user.getAuthorities().contains(new SimpleGrantedAuthority("UPDATE_TOC"))) {
-      log.info("Nu är vi i noteListerGenerate");
-      noteListerService.createList();
+    public NoteListerController() {
+        log.debug("Constructor");
     }
-    return "noteLister";
-  }
+
+
+    @GetMapping("/noteLister")
+    public String noteLister(Model model) {
+        log.info("Nu är vi i noteLister(Model model)");
+
+        return "noteLister";
+    }
+
+    @GetMapping("/noteListerGenerate")
+    public String noteListerGenerate(Model model,
+                                     @AuthenticationPrincipal User user) {
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority("UPDATE_TOC"))) {
+            log.info("Nu är vi i noteListerGenerate");
+            noteListerService.createList();
+        }
+        return "noteLister";
+    }
 }

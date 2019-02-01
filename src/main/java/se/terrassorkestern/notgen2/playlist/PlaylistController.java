@@ -10,7 +10,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
@@ -46,7 +45,7 @@ public class PlaylistController {
 
     @GetMapping("/edit")
     public String playlistEdit(@RequestParam("id") Integer id, Model model) {
-        model.addAttribute("playlist", playlistRepository.findById(id).get());
+        model.addAttribute("playlist", playlistRepository.findById(id).orElse(null));
         model.addAttribute("instruments", instrumentRepository.findByStandardIsTrueOrderBySortOrder());
         Integer selectedInstrument = 0;
         model.addAttribute("selectedInstrument", selectedInstrument);
@@ -61,24 +60,28 @@ public class PlaylistController {
     }
 
     @GetMapping("/delete")
-    public String playlistDelete(@RequestParam("id") Integer id, Model model,
+    public String playlistDelete(@RequestParam("id") Integer id,
                                  @AuthenticationPrincipal User user) {
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
-            Playlist playlist = playlistRepository.findById(id).get();
-            log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
-            playlistRepository.delete(playlist);
+            Playlist playlist = playlistRepository.findById(id).orElse(null);
+            if (playlist != null) {
+                log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+                playlistRepository.delete(playlist);
+            }
         }
         return "redirect:/playlist/list";
     }
 
     @GetMapping("/copy")
-    public String playlistCopy(@RequestParam("id") Integer id, Model model,
+    public String playlistCopy(@RequestParam("id") Integer id,
                                @AuthenticationPrincipal User user) {
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
-            Playlist playlist = playlistRepository.findById(id).get();
-            log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
-            Playlist newPlaylist = playlist.copy();
-            playlistRepository.save(newPlaylist);
+            Playlist playlist = playlistRepository.findById(id).orElse(null);
+            if (playlist != null) {
+                log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+                Playlist newPlaylist = playlist.copy();
+                playlistRepository.save(newPlaylist);
+            }
         }
         return "redirect:/playlist/list";
     }
@@ -97,7 +100,7 @@ public class PlaylistController {
     }
 
     @PostMapping(value = "/save", params = {"addRow"})
-    public String addRow(final Playlist playlist, final BindingResult bindingResult, Model model) {
+    public String addRow(final Playlist playlist, Model model) {
         PlaylistEntry playlistEntry = new PlaylistEntry();
         playlistEntry.setSortOrder(playlist.getPlaylistEntries().size() + 1);
         playlist.getPlaylistEntries().add(playlistEntry);
@@ -106,7 +109,7 @@ public class PlaylistController {
     }
 
     @PostMapping(value = "/save", params = {"deleteRow"})
-    public String deleteRow(final Playlist playlist, final BindingResult bindingResult, Model model, final HttpServletRequest req) {
+    public String deleteRow(final Playlist playlist, Model model, final HttpServletRequest req) {
         final Integer playlistPartId = Integer.valueOf(req.getParameter("deleteRow"));
         playlist.getPlaylistEntries().remove(playlistPartId.intValue());
         model.addAttribute("playlist", playlist);
@@ -115,8 +118,6 @@ public class PlaylistController {
 
     @PostMapping(value = "/save", params = {"createPack"})
     public ResponseEntity<InputStreamResource> createPack(final Playlist playlist,
-                                                          final BindingResult bindingResult,
-                                                          Model model,
                                                           final HttpServletRequest req) {
 
         final Integer selectedInstrumentId = Integer.valueOf(req.getParameter("selectedInstrument"));
@@ -147,8 +148,8 @@ public class PlaylistController {
 
 
     @GetMapping(value = "/createPdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> playlistCreatePdf(@RequestParam("id") Integer id, Model model) {
-        Playlist playlist = playlistRepository.findById(id).get();
+    public ResponseEntity<InputStreamResource> playlistCreatePdf(@RequestParam("id") Integer id) {
+        Playlist playlist = playlistRepository.findById(id).orElse(null);
 
         //ByteArrayInputStream bis = GeneratePdfReport.citiesReport(cities);
         ByteArrayInputStream bis = null;
@@ -156,6 +157,7 @@ public class PlaylistController {
             bis = playlistPdfService.create(playlist);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
 
         HttpHeaders headers = new HttpHeaders();
