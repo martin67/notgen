@@ -1,22 +1,25 @@
-package se.terrassorkestern.notgen2;
+package se.terrassorkestern.notgen2.google;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GoogleSheet extends Google {
+@Service
+public class GoogleSheetService extends Google {
   private Sheets service;
   private static final String GOOGLE_SPREADSHEET_ID = "1O5FEIPY2il6hPBwJRtzgjR8L4lYAII7heymn4DnVfZ4";
 
-  public GoogleSheet() throws IOException, GeneralSecurityException {
-    log.debug("Creating GoogleSheet object");
+  public GoogleSheetService() throws IOException, GeneralSecurityException {
+    log.debug("Creating GoogleSheetService object");
 
     final NetHttpTransport netHttpTransport = GoogleNetHttpTransport.newTrustedTransport();
     service = new Sheets.Builder(netHttpTransport, JSON_FACTORY, getCredentials(netHttpTransport))
