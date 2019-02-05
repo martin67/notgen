@@ -19,7 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    private PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -35,7 +35,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/admin", "/noteConverter", "/noteLister", "/instrument/**", "/user/list", "/user/delete")
+                .antMatchers("/instrument/**")
+                .hasAuthority("INSTRUMENT_EDIT")
+                .antMatchers("/admin", "/noteConverter", "/noteLister", "/user/list", "/user/delete")
                 .hasRole("ADMIN")
                 .antMatchers("/", "/**").permitAll()
                 .and()

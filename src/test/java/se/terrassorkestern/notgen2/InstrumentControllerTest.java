@@ -35,7 +35,7 @@ public class InstrumentControllerTest {
     // write test cases here
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(authorities = "INSTRUMENT_EDIT")
     public void givenInstruments_whenGetInstruments_thenReturnJsonArray()
             throws Exception {
 
@@ -60,7 +60,13 @@ public class InstrumentControllerTest {
     @Test
     @WithMockUser
     public void accessToProtected_normalUser() throws Exception {
+        mvc.perform(get("/instrument/list"))
+                .andExpect(status().isForbidden());
+
         mvc.perform(get("/instrument/new"))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(get("/instrument/edit"))
                 .andExpect(status().isForbidden());
 
         mvc.perform(post("/instrument/save"))
@@ -69,9 +75,19 @@ public class InstrumentControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(authorities = "INSTRUMENT_EDIT")
     public void accessToProtected_adminUser() throws Exception {
+        mvc.perform(get("/instrument/list"))
+                .andExpect(status().isOk());
+
         mvc.perform(get("/instrument/new"))
+                .andExpect(status().isOk());
+
+//        mvc.perform(get("/instrument/edit&id=0"))
+//                .andExpect(status().isOk());
+// Måste finnas en post att testa med...
+
+        mvc.perform(post("/instrument/save"))
                 .andExpect(status().isOk());
     }
 }
