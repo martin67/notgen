@@ -18,6 +18,8 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(InstrumentController.class)
@@ -49,5 +51,23 @@ public class InstrumentControllerTest {
 //                .andExpect(status().isOk())
 //                .andExpect(jsonPath("$", hasSize(1)))
 //                .andExpect((ResultMatcher) jsonPath("$[0].name", is(sax.getName())));
+    }
+
+    @Test
+    @WithMockUser
+    public void accessToProtected_normalUser() throws Exception {
+        mvc.perform(get("/instrument/new"))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(post("/instrument/save"))
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void accessToProtected_adminUser() throws Exception {
+        mvc.perform(get("/instrument/new"))
+                .andExpect(status().isOk());
     }
 }
