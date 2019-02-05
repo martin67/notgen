@@ -16,10 +16,11 @@ import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(InstrumentController.class)
@@ -34,7 +35,7 @@ public class InstrumentControllerTest {
     // write test cases here
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     public void givenInstruments_whenGetInstruments_thenReturnJsonArray()
             throws Exception {
 
@@ -44,11 +45,14 @@ public class InstrumentControllerTest {
 
         List<Instrument> allInstruments = Collections.singletonList(sax);
 
-        given(instrumentRepository.findAll()).willReturn(allInstruments);
+        given(instrumentRepository.findByOrderByStandardDescSortOrder()).willReturn(allInstruments);
 
-        mvc.perform(get("/instrument/list/")
-                .contentType(MediaType.TEXT_HTML));
-//                .andExpect(status().isOk())
+        mvc.perform(get("/instrument/list")
+                .contentType(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("instrumentList"))
+                .andExpect(content().string(
+                        containsString(sax.getName())));
 //                .andExpect(jsonPath("$", hasSize(1)))
 //                .andExpect((ResultMatcher) jsonPath("$[0].name", is(sax.getName())));
     }
