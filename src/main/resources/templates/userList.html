@@ -1,40 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/general :: header-css" />
+<head th:replace="fragments/general :: header-css"></head>
 
 <body>
-	<div th:replace="fragments/general :: header" />
+<div th:replace="fragments/general :: header"></div>
 
-	<div class="container">
-		<h2>Användare</h2>
-		<table class="table table-bordered table-striped table-hover table-sm">
-			<thead>
-				<tr>
-					<th>Användarnamn</th>
-					<th>Namn</th>
-					<th>Aktiv</th>
-					<th>Roll</th>
-					<th><a th:href="@{/user/new}"><i class="material-icons"
-							title="Lägg till användare">add_box</i></a></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="user : ${users}">
-					<td th:text="${user.username}"></td>
-					<td th:text="${user.fullname}"></td>
-					<td><input type="checkbox" th:checked="${user.enabled}" ? 'checked' /></td>
-					<td></td>
-					<td><a th:href="@{/user/edit(id=${user.id})}"><i
-							class="material-icons text-secondary" title="Ändra användare">mode_edit</i></a>
-						<a th:href="@{/user/delete(id=${user.id})}"><i
-							class="material-icons text-danger" title="Ta bort användare">delete</i></a>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+<div class="container">
+    <h2>Användare</h2>
+    <table class="table table-bordered table-striped table-hover table-sm">
+        <thead>
+        <tr>
+            <th>Användarnamn</th>
+            <th>Namn</th>
+            <th>Aktiv</th>
+            <th>Roll</th>
+            <th><a th:href="@{/user/new}"><i class="material-icons"
+                                             title="Lägg till användare">add_box</i></a></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.fullname}"></td>
+            <td><input type="checkbox" th:checked="${user.enabled}" ? 'checked' /></td>
+            <td></td>
+            <td>
+                <a th:href="@{/user/edit(id=${user.id})}">
+                    <i class="material-icons text-secondary" title="Ändra användare">mode_edit</i></a>
+                <a th:href="@{/user/delete(id=${user.id})}">
+                    <i class="material-icons text-danger" title="Ta bort användare">delete</i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-	</div>
+</div>
 
-	<footer th:replace="fragments/general :: footer" />
+<footer th:replace="fragments/general :: footer"></footer>
 </body>
 </html>

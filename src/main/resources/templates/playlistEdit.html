@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head th:replace="fragments/general :: header-css"/>
+<head th:replace="fragments/general :: header-css"></head>
 
 <body>
-<div th:replace="fragments/general :: header"/>
+<div th:replace="fragments/general :: header"></div>
 
 <!-- Modal -->
 <div class="modal" id="deleteModal" tabindex="-1" role="dialog">
@@ -50,7 +50,8 @@
         <div class="row">
             <div class="form-group col">
                 <label>Kommentar</label>
-                <textarea class="form-control" th:field="*{comment}" th:value="${playlist.comment}" id="comment"/>
+                <textarea class="form-control" th:field="*{comment}" th:value="${playlist.comment}"
+                          id="comment"></textarea>
             </div>
         </div>
 
@@ -129,7 +130,7 @@
     </form>
 </div>
 
-<footer th:replace="fragments/general :: footer"/>
+<footer th:replace="fragments/general :: footer"></footer>
 <script type="text/javascript">
 window.onload=function(){
 
@@ -186,6 +187,7 @@ $('#prefetch .typeahead').typeahead({
 
 
 
+
 </script>
 
 <script>
@@ -198,6 +200,7 @@ $( "table tbody" ).sortable( {
 }
 });
 });
+
 
 
 
