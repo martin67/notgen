@@ -60,28 +60,22 @@ public class PlaylistController {
     }
 
     @GetMapping("/delete")
-    public String playlistDelete(@RequestParam("id") Integer id,
-                                 @AuthenticationPrincipal User user) {
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
-            Playlist playlist = playlistRepository.findById(id).orElse(null);
-            if (playlist != null) {
-                log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
-                playlistRepository.delete(playlist);
-            }
+    public String playlistDelete(@RequestParam("id") Integer id) {
+        Playlist playlist = playlistRepository.findById(id).orElse(null);
+        if (playlist != null) {
+            log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+            playlistRepository.delete(playlist);
         }
         return "redirect:/playlist/list";
     }
 
     @GetMapping("/copy")
-    public String playlistCopy(@RequestParam("id") Integer id,
-                               @AuthenticationPrincipal User user) {
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
-            Playlist playlist = playlistRepository.findById(id).orElse(null);
-            if (playlist != null) {
-                log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
-                Playlist newPlaylist = playlist.copy();
-                playlistRepository.save(newPlaylist);
-            }
+    public String playlistCopy(@RequestParam("id") Integer id) {
+        Playlist playlist = playlistRepository.findById(id).orElse(null);
+        if (playlist != null) {
+            log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+            Playlist newPlaylist = playlist.copy();
+            playlistRepository.save(newPlaylist);
         }
         return "redirect:/playlist/list";
     }

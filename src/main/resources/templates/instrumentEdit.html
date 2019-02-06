@@ -32,44 +32,43 @@
     <form role="form" th:action="@{/instrument/save}" th:object="${instrument}" th:method="post">
         <input type="hidden" th:field="*{id}" th:value="${instrument.id}"/>
 
-        <div class="form-group row">
-            <label class="col-sm-3 col-form-label" for="name">Namn</label>
-            <div class="col-sm-9">
+        <div class="row">
+            <div class="form-group col">
+                <label>Namn</label>
                 <input type="text" class="form-control" th:field="*{name}" th:value="${instrument.name}" id="name"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
             </div>
         </div>
-        <div class="form-group row">
-            <label class="col-sm-3 col-form-label" for="shortName">Förkortning</label>
-            <div class="col-sm-9">
+        <div class="row">
+            <div class="form-group col">
+                <label>Förkortning</label>
                 <input type="text" class="form-control" th:field="*{shortName}" th:value="${instrument.shortName}"
                        id="shortName"/>
             </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-sm-3">Standard</div>
-            <div class="col-sm-9">
-                <div class="form_check">
-                    <input class="form-check-input" type="checkbox" th:field="*{standard}"
-                           th:value="${instrument.standard}"/>
-                </div>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-sm-3 col-form-label" for="sortOrder">Sorteringsordning</label>
-            <div class="col-sm-9">
-                <input type="number" class="form-control" th:field="*{sortOrder}" th:value="${instrument.sortOrder}"
-                       id="sortOrder"/>
+            <div class="form-group col">
+                <label>Sorteringsordning</label>
+                <input type="number" class="form-control" th:field="*{sortOrder}"
+                       th:value="${instrument.sortOrder}" id="sortOrder"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('sortOrder')}"
                       th:errors="*{sortOrder}">Error</span>
             </div>
         </div>
-        <div class="form-group row">
+
+        <div class="form-group">
+            <div class="form_check form-check-inline col">
+                <input class="form-check-input" type="checkbox" th:field="*{standard}"
+                       th:value="${instrument.standard}" id="standard"/>
+                <label class="form-check-label" for="standard">Standard</label>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-sm-9">
                 <a class="btn btn-secondary" th:href="@{/instrument/list}">Tillbaka</a>
-                <button sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
+                <button sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="button" class="btn btn-danger"
+                        data-toggle="modal" data-target="#deleteModal">Ta bort
                 </button>
-                <input sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="submit" class="btn btn-primary" value="Spara"/>
+                <input sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="submit" class="btn btn-primary"
+                       value="Spara"/>
             </div>
         </div>
     </form>
