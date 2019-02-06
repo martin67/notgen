@@ -1,213 +1,242 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head th:replace="fragments/general :: header-css" />
+<head th:replace="fragments/general :: header-css"/>
 
 <body>
-	<div th:replace="fragments/general :: header" />
+<div th:replace="fragments/general :: header"/>
 
-	<!-- Modal -->
-	<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Ta bort låt</h5>
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<p>Vill du verkligen ta bort denna låt?</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary"
-						data-dismiss="modal">Avbryt</button>
-					<a class="btn btn-danger" th:href="@{/song/delete(id=${song.id})}">Ta
-						bort</a>
-				</div>
-			</div>
-		</div>
-	</div>
+<!-- Modal -->
+<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ta bort låt</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Vill du verkligen ta bort denna låt?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">Avbryt
+                </button>
+                <a class="btn btn-danger" th:href="@{/song/delete(id=${song.id})}">Ta
+                    bort</a>
+            </div>
+        </div>
+    </div>
+</div>
 
-	<div class="container">
-		<h1>Redigera låt</h1>
+<div class="container">
+    <h1>Redigera låt</h1>
 
-		<form role="form" th:action="@{/song/save}" th:object="${song}"
-			th:method="post">
-			<input type="hidden" th:field="*{id}" th:value="${song.id}" />
+    <form role="form" th:action="@{/song/save}" th:object="${song}"
+          th:method="post">
+        <input type="hidden" th:field="*{id}" th:value="${song.id}"/>
 
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label" for="title">Titel</label>
-				<div class="col-sm-7">
-					<input type="text" class="form-control" th:field="*{title}"
-						th:value="${song.title}" id="title" /> <span class="text-danger"
-						th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Error</span>
-				</div>
-				<div class="col-sm-3">
-					<img class="img-fluid" th:src="@{/images/Tork02cover.png}" />
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">Subtitel</label>
-				<div class="col-sm-7">
-					<input type="text" class="form-control" th:field="*{subtitle}"
-						th:value="${song.subtitle}" />
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">Genre</label>
-				<div class="col-sm-7" id="prefetch-genres">
-					<input type="text" class="form-control typeahead"
-						autocomplete="off" th:field="*{genre}" th:value="${song.genre}" />
-					<span class="text-danger" th:if="${#fields.hasErrors('genre')}"
-						th:errors="*{genre}">Error</span>
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">Kompositör</label>
-				<div class="col-sm-7" id="prefetch-composers">
-					<input type="text" class="form-control typeahead"
-						autocomplete="off" th:field="*{composer}"
-						th:value="${song.composer}" />
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">Författare</label>
-				<div class="col-sm-7" id="prefetch-authors">
-					<input type="text" class="form-control typeahead"
-						autocomplete="off" th:field="*{author}" th:value="${song.author}" />
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">Arrangör</label>
-				<div class="col-sm-7" id="prefetch-arrangers">
-					<input type="text" class="form-control typeahead"
-						autocomplete="off" th:field=" *{arranger}"
-						th:value="${song.arranger}" />
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">År</label>
-				<div class="col-sm-7">
-					<input type="number" class="form-control" th:field="*{year}"
-						th:value="${song.year}" />
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">Sättning</label>
-				<div class="col-sm-10">
-					<table class="table table-bordered table-sm">
-						<thead>
-							<tr>
-								<th scope="col" style="width:10%">Instrument</th>
-								<th scope="col" style="width:10%">Placering</th>
-								<th scope="col" style="width:10%">Antal</th>
-								<th scope="col" style="width:55%">Kommentar</th>
-								<th scope="col" style="width:15%">
-									<button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-primary btn-sm" type="submit"
-										name="addRow">Lägg till</button>
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="scorePart,rowStat : ${song.scoreParts}">
-								<td class="align-middle"><select
-									th:field="*{scoreParts[__${rowStat.index}__].instrument.id}">
-										<option th:each="i2 : ${allInstruments}" th:value="${i2.id}"
-											th:text="${i2.name}">bla</option>
-								</select></td>
-								<td><input type="number"
-									class="form-control form-control-sm"
-									th:field="*{scoreParts[__${rowStat.index}__].page}"
-									th:value="${scorePart.page}" /></td>
-								<td><input type="number"
-									class="form-control form-control-sm"
-									th:field="*{scoreParts[__${rowStat.index}__].length}"
-									th:value="${scorePart.length}" /></td>
-								<td><input type="text" class="form-control form-control-sm"
-									th:field="*{scoreParts[__${rowStat.index}__].comment}"
-									th:value="${scorePart.comment}" /></td>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="form-group col">
+                        <label>Titel</label>
+                        <input type="text" class="form-control" th:field="*{title}"
+                               th:value="${song.title}" id="title"/> <span class="text-danger"
+                                                                           th:if="${#fields.hasErrors('title')}"
+                                                                           th:errors="*{title}">Error</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col">
+                        <label>Subtitel</label>
+                        <input type="text" class="form-control" th:field="*{subtitle}"
+                               th:value="${song.subtitle}"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-9" id="prefetch-genres">
+                        <label>Genre</label>
+                        <input type="text" class="form-control typeahead"
+                               autocomplete="off" th:field="*{genre}" th:value="${song.genre}"/>
+                        <span class="text-danger" th:if="${#fields.hasErrors('genre')}"
+                              th:errors="*{genre}">Error</span>
+                    </div>
+                    <div class="form-group col">
+                        <label>År</label>
+                        <input type="number" class="form-control" th:field="*{year}"
+                               th:value="${song.year}"/>
+                    </div>
+                </div>
 
-								<td class="align-middle">
-									<button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-sm btn-danger" type="submit"
-										name="deleteRow" th:value="${rowStat.index}">Ta bort
-									</button> <a sec:authorize="hasAuthority('PRINT_SCORE')" th:if="${scorePart.googleId}"
-									th:href="@{https://drive.google.com/open(id=${scorePart.googleId})}"><i
-										class="material-icons" title="Skriv ut stämma">print</i></a>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">Detaljer</label>
-				<div class="col-sm">
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox"
-							th:field="*{scanned}" th:value="${song.scanned}" /> <label
-							class="form-check-label">Inscannad</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox"
-							th:field="*{cover}" th:value="${song.cover}" /> <label
-							class="form-check-label">Förstasida finns</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox"
-							th:field="*{color}" th:value="${song.color}" /> <label
-							class="form-check-label">Förstasidan är i färg</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox"
-							th:field="*{upperleft}" th:value="${song.upperleft}" /> <label
-							class="form-check-label">Scanningen är linjerad med övre
-							vänstra hörnet</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox"
-							th:field="*{imageProcess}" th:value="${song.imageProcess}" /> <label
-							class="form-check-label">Bildbehandla (beskär, fixa
-							färger etc.)</label>
-					</div>
-				</div>
-				<div class="col-sm">
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox"
-							th:field="*{archived}" th:value="${song.archived}" /> <label
-							class="form-check-label">Original i arkivet</label>
-					</div>
-					<div class="form-group row">
-						<label class="col-sm-4 col-form-label">Arkivplats</label>
-						<div class="col-sm-4">
-							<input type="text" class="form-control"
-								th:field="*{archiveLocation}" th:value="${song.archiveLocation}" />
-						</div>
-					</div>
+            </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <figure class="figure">
+                        <img class="figure-img img-fluid rounded" th:src="@{/images/amoriner180x275.jpg}"/>
+                    </figure>
+                </div>
+            </div>
+        </div>
 
-				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-sm-2 col-form-label">Filnamn</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" th:field="*{filename}"
-						th:value="${song.filename}" />
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-10">
-					<a class="btn btn-secondary" th:href="@{/song/list}">Tillbaka</a>
-					<button sec:authorize="hasAuthority('EDIT_SONG')" type="button" class="btn btn-danger" data-toggle="modal"
-						data-target="#deleteModal">Ta bort</button>
-					<input sec:authorize="hasAuthority('EDIT_SONG')" type="submit" class="btn btn-primary" value="Spara" />
-				</div>
-			</div>
-		</form>
-	</div>
+        <div class="form-row">
+            <div class="form-group col" id="prefetch-composers">
+                <label>Kompositör</label>
+                <input type="text" class="form-control typeahead"
+                       autocomplete="off" th:field="*{composer}"
+                       th:value="${song.composer}"/>
+            </div>
+            <div class="form-group col" id="prefetch-authors">
+                <label>Författare</label>
+                <input type="text" class="form-control typeahead"
+                       autocomplete="off" th:field="*{author}" th:value="${song.author}"/>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col" id="prefetch-arrangers">
+                <label>Arrangör</label>
+                <input type="text" class="form-control typeahead"
+                       autocomplete="off" th:field="*{arranger}"
+                       th:value="${song.arranger}"/>
+            </div>
+            <div class="form-group col" id="prefetch-publishers">
+                <label>Förlag</label>
+                <input type="text" class="form-control typeahead"
+                       autocomplete="off" th:field="*{publisher}"
+                       th:value="${song.publisher}"/>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Kommentar</label>
+                <input type="text" class="form-control" th:field="*{comment}"
+                       th:value="${song.comment}"/>
+            </div>
+        </div>
 
-	<footer th:replace="fragments/general :: footer" />
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Sättning</label>
+                <table class="table table-bordered table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col" style="width:10%">Instrument</th>
+                        <th scope="col" style="width:10%">Placering</th>
+                        <th scope="col" style="width:10%">Antal</th>
+                        <th scope="col" style="width:55%">Kommentar</th>
+                        <th scope="col" style="width:15%">
+                            <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-primary btn-sm"
+                                    type="submit"
+                                    name="addRow">Lägg till
+                            </button>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="scorePart,rowStat : ${song.scoreParts}">
+                        <td class="align-middle"><select
+                                th:field="*{scoreParts[__${rowStat.index}__].instrument.id}">
+                            <option th:each="i2 : ${allInstruments}" th:value="${i2.id}"
+                                    th:text="${i2.name}">bla
+                            </option>
+                        </select></td>
+                        <td><input type="number"
+                                   class="form-control form-control-sm"
+                                   th:field="*{scoreParts[__${rowStat.index}__].page}"
+                                   th:value="${scorePart.page}"/></td>
+                        <td><input type="number"
+                                   class="form-control form-control-sm"
+                                   th:field="*{scoreParts[__${rowStat.index}__].length}"
+                                   th:value="${scorePart.length}"/></td>
+                        <td><input type="text" class="form-control form-control-sm"
+                                   th:field="*{scoreParts[__${rowStat.index}__].comment}"
+                                   th:value="${scorePart.comment}"/></td>
 
-	<script type="text/javascript">
+                        <td class="align-middle">
+                            <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-sm btn-danger"
+                                    type="submit"
+                                    name="deleteRow" th:value="${rowStat.index}">Ta bort
+                            </button>
+                            <a sec:authorize="hasAuthority('PRINT_SCORE')" th:if="${scorePart.googleId}"
+                               th:href="@{https://drive.google.com/open(id=${scorePart.googleId})}"><i
+                                    class="material-icons" title="Skriv ut stämma">print</i></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Detaljer</label>
+            <div class="col-sm">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           th:field="*{scanned}" th:value="${song.scanned}"/> <label
+                        class="form-check-label">Inscannad</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           th:field="*{cover}" th:value="${song.cover}"/> <label
+                        class="form-check-label">Förstasida finns</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           th:field="*{color}" th:value="${song.color}"/> <label
+                        class="form-check-label">Förstasidan är i färg</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           th:field="*{upperleft}" th:value="${song.upperleft}"/> <label
+                        class="form-check-label">Scanningen är linjerad med övre
+                    vänstra hörnet</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           th:field="*{imageProcess}" th:value="${song.imageProcess}"/> <label
+                        class="form-check-label">Bildbehandla (beskär, fixa
+                    färger etc.)</label>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           th:field="*{archived}" th:value="${song.archived}"/> <label
+                        class="form-check-label">Original i arkivet</label>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Arkivplats</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control"
+                               th:field="*{archiveLocation}" th:value="${song.archiveLocation}"/>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Filnamn</label>
+                <input type="text" class="form-control" th:field="*{filename}"
+                       th:value="${song.filename}"/>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <a class="btn btn-secondary" th:href="@{/song/list}">Tillbaka</a>
+                <button sec:authorize="hasAuthority('EDIT_SONG')" type="button" class="btn btn-danger"
+                        data-toggle="modal"
+                        data-target="#deleteModal">Ta bort
+                </button>
+                <input sec:authorize="hasAuthority('EDIT_SONG')" type="submit" class="btn btn-primary" value="Spara"/>
+            </div>
+        </div>
+    </form>
+</div>
+
+<footer th:replace="fragments/general :: footer"/>
+
+<script type="text/javascript">
 window.onload=function(){
 
 var genres = new Bloodhound({
@@ -232,6 +261,12 @@ var arrangers = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.whitespace,
   queryTokenizer: Bloodhound.tokenizers.whitespace,
   prefetch: '/song/arrangers.json'
+});
+
+var publishers = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.whitespace,
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: '/song/publishers.json'
 });
 
 $('#prefetch-genres .typeahead').typeahead({
@@ -266,7 +301,31 @@ $('#prefetch-arrangers .typeahead').typeahead({
     source: arrangers
 });
 
+$('#prefetch-publishers .typeahead').typeahead({
+    highlight: true
+  },
+  {
+    name: 'publishers',
+    source: publishers
+});
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 </script>

@@ -118,10 +118,11 @@ public class SongController {
         return songRepository.getAllAuthors();
     }
 
-    @GetMapping(value = "/arrangers.json")
+    @GetMapping(value = "/publishers.json")
     public @ResponseBody
-    List<String> getArrangerSuggestions() {
-        return songRepository.getAllArrangers();
+    List<String> getPublisherSuggestions() {
+        return songRepository.getAllPublishers();
     }
+
 
 }

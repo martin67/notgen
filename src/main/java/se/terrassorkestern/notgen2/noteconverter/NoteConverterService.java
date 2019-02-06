@@ -62,6 +62,7 @@ public class NoteConverterService {
     private static final String GOOGLE_DRIVE_ID_TOSCORE = "0B_STqkG31CToVmdfSGxlZ2M0ZXc";
     private static final String GOOGLE_DRIVE_ID_COVER = "0B_STqkG31CToVTlNOFlIRERZcjg";
     private static final String GOOGLE_DRIVE_ID_ORIGINAL = "1wD37LV6ldjgt_LdRGz9VFbaa4Mrp_wGs";
+    private static final String GOOGLE_DRIVE_ID_THUMBNAIL = "15ub8bDSHV_hjZHrAt42I5hh06L5LCQMy";
     private static final String NOTE_ARCHIVE_URL = "http://notarkiv.hagelin.nu/";
 
     private Path tmpDir;                            // Dir for extracting individual parts
@@ -262,9 +263,22 @@ public class NoteConverterService {
                     if (song.getCover() && song.getColor() && song.getUpperleft()) {
                         log.debug("Also uploading cover");
                         Path coverPath = Paths.get(this.extractedFilesList.get(0).toString() + "-cover.jpg");
-                        googleDriveService.uploadFile(GOOGLE_DRIVE_ID_COVER, "image/jpeg", song.getTitle(),
+                        googleId = googleDriveService.uploadFile(GOOGLE_DRIVE_ID_COVER, "image/jpeg", song.getTitle(),
                                 coverPath, null, null, false, null);
-                        stats.addNumberOfBytes(Files.size(coverPath));
+                        if (googleId.length() > 0) {
+                            song.setGoogleIdCover(googleId);
+                            stats.addNumberOfBytes(Files.size(coverPath));
+                        }
+                        // Om det finns ett omslag så finns det alltid en thumbnail som också skall laddas upp
+                        log.debug("Uploading cover thumbnail");
+                        Path thumbnailPath = Paths.get(this.extractedFilesList.get(0).toString() + "-thumbnail.jpg");
+                        googleId = googleDriveService.uploadFile(GOOGLE_DRIVE_ID_THUMBNAIL, "image/jpeg", song.getId() + ".jpg",
+                                thumbnailPath, null, null, false, null);
+                        if (googleId.length() > 0) {
+                            song.setGoogleIdThumbnail(googleId);
+                            stats.addNumberOfBytes(Files.size(coverPath));
+                        }
+
                     }
                 }
             } catch (IOException e) {
@@ -485,10 +499,17 @@ public class NoteConverterService {
 
                     //
                     // Om det är ett omslag så skall det sparas en kopia separat här (innan det skalas om)
+                    // Spara också en thumnbail i storlek 180 bredd
                     //
                     if (firstPage && song.getCover() && song.getColor()) {
                         ImageIO.write(image, "jpg", new File(tmpDir.toFile(), basename + "-cover.jpg"));
                         stats.incrementNumberOfCovers();
+
+                        BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
+                        g = thumbnail.createGraphics();
+                        g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
+                        g.dispose();
+                        ImageIO.write(thumbnail, "jpg", new File(tmpDir.toFile(), basename + "-thumbnail.jpg"));
                     }
 
                     // Resize
