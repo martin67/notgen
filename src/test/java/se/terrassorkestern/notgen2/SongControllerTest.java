@@ -9,9 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import se.terrassorkestern.notgen2.instrument.Instrument;
-import se.terrassorkestern.notgen2.instrument.InstrumentController;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
+import se.terrassorkestern.notgen2.song.Song;
+import se.terrassorkestern.notgen2.song.SongController;
+import se.terrassorkestern.notgen2.song.SongRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,74 +24,61 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(InstrumentController.class)
-public class InstrumentControllerTest {
+@WebMvcTest(SongController.class)
+public class SongControllerTest {
 
     @Autowired
     private MockMvc mvc;
 
     @MockBean
+    private SongRepository songRepository;
+
+    @MockBean
     private InstrumentRepository instrumentRepository;
+
 
     // write test cases here
 
     @Test
-    @WithMockUser(authorities = "INSTRUMENT_EDIT")
-    public void givenInstruments_whenGetInstruments_thenReturnJsonArray()
+    @WithMockUser(authorities = "SONG_EDIT")
+    public void givenSongs_whenGetSongs_thenReturnJsonArray()
             throws Exception {
 
-        Instrument sax = new Instrument();
-        sax.setName("saxofon");
-        sax.setSortOrder(10);
+        Song song = new Song();
+        song.setTitle("Hej vad det går bra!");
 
-        List<Instrument> allInstruments = Collections.singletonList(sax);
 
-        given(instrumentRepository.findByOrderByStandardDescSortOrder()).willReturn(allInstruments);
+        List<Song> allSongs = Collections.singletonList(song);
 
-        mvc.perform(get("/instrument/list")
+        given(songRepository.findByOrderByTitle()).willReturn(allSongs);
+
+        mvc.perform(get("/song/list")
                 .contentType(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
-                .andExpect(view().name("instrumentList"))
+                .andExpect(view().name("songList"))
                 .andExpect(content().string(
-                        containsString(sax.getName())));
-//                .andExpect(jsonPath("$", hasSize(1)))
-//                .andExpect((ResultMatcher) jsonPath("$[0].name", is(sax.getName())));
+                        containsString(song.getTitle())));
     }
 
     @Test
     @WithMockUser
     public void accessToProtected_normalUser() throws Exception {
-        mvc.perform(get("/instrument/list"))
+        mvc.perform(get("/song/new"))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get("/instrument/new"))
+        mvc.perform(post("/song/save"))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get("/instrument/edit"))
-                .andExpect(status().isForbidden());
-
-        mvc.perform(get("/instrument/delete"))
-                .andExpect(status().isForbidden());
-
-        mvc.perform(post("/instrument/save"))
+        mvc.perform(get("/song/delete"))
                 .andExpect(status().isForbidden());
 
     }
 
     @Test
-    @WithMockUser(authorities = "INSTRUMENT_EDIT")
+    @WithMockUser(authorities = "SONG_EDIT")
     public void accessToProtected_adminUser() throws Exception {
-        mvc.perform(get("/instrument/list"))
+        mvc.perform(get("/song/new"))
                 .andExpect(status().isOk());
-
-        mvc.perform(get("/instrument/new"))
-                .andExpect(status().isOk());
-
-//        mvc.perform(get("/instrument/edit&id=0"))
-//                .andExpect(status().isOk());
-// Måste finnas en post att testa med...
-
-//        mvc.perform(post("/instrument/save"))
-//                .andExpect(status().isOk());
     }
+
 }

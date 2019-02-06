@@ -2,8 +2,6 @@ package se.terrassorkestern.notgen2.song;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,7 +9,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
-import se.terrassorkestern.notgen2.user.User;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -36,13 +33,10 @@ public class SongController {
     }
 
     @GetMapping("/delete")
-    public String songDelete(@RequestParam("id") Integer id, Model model,
-                             @AuthenticationPrincipal User user) {
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_SONG"))) {
-            Song song = songRepository.findById(id).get();
-            log.info("Tar bort låt " + song.getTitle() + " [" + song.getId() + "]");
-            songRepository.delete(song);
-        }
+    public String songDelete(@RequestParam("id") Integer id, Model model) {
+        Song song = songRepository.findById(id).get();
+        log.info("Tar bort låt " + song.getTitle() + " [" + song.getId() + "]");
+        songRepository.delete(song);
         return "redirect:/song/list";
     }
 
@@ -66,23 +60,20 @@ public class SongController {
     }
 
     @PostMapping("/save")
-    public String songSave(@Valid @ModelAttribute Song song, Errors errors, Model model,
-                           @AuthenticationPrincipal User user) {
+    public String songSave(@Valid @ModelAttribute Song song, Errors errors, Model model) {
         if (errors.hasErrors()) {
             model.addAttribute("allInstruments", instrumentRepository.findByOrderByStandardDescSortOrder());
             return "songEdit";
         }
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_SONG"))) {
-            log.info("Sparar låt " + song.getTitle() + " [" + song.getId() + "]");
-            // scorPart måste fixas till efter formuläret
-            for (ScorePart scorePart : song.getScoreParts()) {
-                Instrument instrument = scorePart.getInstrument();
-                scorePart.setId(new ScorePartId(song.getId(), instrument.getId()));
-                scorePart.setSong(song);
-                scorePart.setInstrument(instrumentRepository.findById(instrument.getId()).get());
-            }
-            songRepository.save(song);
+        log.info("Sparar låt " + song.getTitle() + " [" + song.getId() + "]");
+        // scorPart måste fixas till efter formuläret
+        for (ScorePart scorePart : song.getScoreParts()) {
+            Instrument instrument = scorePart.getInstrument();
+            scorePart.setId(new ScorePartId(song.getId(), instrument.getId()));
+            scorePart.setSong(song);
+            scorePart.setInstrument(instrumentRepository.findById(instrument.getId()).get());
         }
+        songRepository.save(song);
         return "redirect:/song/list";
     }
 

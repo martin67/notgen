@@ -18,8 +18,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @SuppressWarnings("WeakerAccess")
     @Bean
-    private PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -37,7 +38,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/instrument/**")
                 .hasAuthority("INSTRUMENT_EDIT")
-                .antMatchers("/admin", "/noteConverter", "/noteLister", "/user/list", "/user/delete")
+                .antMatchers("/song/new/**", "/song/delete/**", "/song/save/**")
+                .hasAuthority("SONG_EDIT")
+                .antMatchers("/user/new/**", "/user/delete/**")
+                .hasAuthority("USER_EDIT")
+                .antMatchers("/noteConverter/**")
+                .hasAuthority("CONVERT_SCORE")
+                .antMatchers("/noteLister/**")
+                .hasAuthority("UPDATE_TOC")
+                .antMatchers("/admin/**")
                 .hasRole("ADMIN")
                 .antMatchers("/", "/**").permitAll()
                 .and()
