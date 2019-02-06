@@ -35,7 +35,7 @@ public class InstrumentControllerTest {
     // write test cases here
 
     @Test
-    @WithMockUser(authorities = "INSTRUMENT_EDIT")
+    @WithMockUser(authorities = "EDIT_INSTRUMENT")
     public void givenInstruments_whenGetInstruments_thenReturnJsonArray()
             throws Exception {
 
@@ -78,7 +78,7 @@ public class InstrumentControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = "INSTRUMENT_EDIT")
+    @WithMockUser(authorities = "EDIT_INSTRUMENT")
     public void accessToProtected_adminUser() throws Exception {
         mvc.perform(get("/instrument/list"))
                 .andExpect(status().isOk());

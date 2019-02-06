@@ -40,7 +40,7 @@ public class SongControllerTest {
     // write test cases here
 
     @Test
-    @WithMockUser(authorities = "SONG_EDIT")
+    @WithMockUser(authorities = "EDIT_SONG")
     public void givenSongs_whenGetSongs_thenReturnJsonArray()
             throws Exception {
 
@@ -75,7 +75,7 @@ public class SongControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = "SONG_EDIT")
+    @WithMockUser(authorities = "EDIT_SONG")
     public void accessToProtected_adminUser() throws Exception {
         mvc.perform(get("/song/new"))
                 .andExpect(status().isOk());
