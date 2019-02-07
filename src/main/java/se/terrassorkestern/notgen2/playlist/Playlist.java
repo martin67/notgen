@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen2.playlist;
 
 import lombok.Data;
+import se.terrassorkestern.notgen2.Auditable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -11,7 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "playlist")
-public class Playlist {
+public class Playlist extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -16,7 +16,7 @@ import java.util.Collections;
 @Slf4j
 @Controller
 @RequestMapping("/user")
-class UserController {
+public class UserController {
 
     @Autowired
     private UserRepository userRepository;
