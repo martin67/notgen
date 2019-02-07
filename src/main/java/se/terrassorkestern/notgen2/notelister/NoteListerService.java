@@ -34,7 +34,7 @@ class NoteListerService {
     private GoogleSheetService googleSheetService;
 
 
-    public NoteListerService() {
+    private NoteListerService() {
         log.debug("Constructor!");
     }
 

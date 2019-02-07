@@ -18,7 +18,7 @@ public class GoogleSheetService extends Google {
     private Sheets service;
     private static final String GOOGLE_SPREADSHEET_ID = "1O5FEIPY2il6hPBwJRtzgjR8L4lYAII7heymn4DnVfZ4";
 
-    public GoogleSheetService() throws IOException, GeneralSecurityException {
+    private GoogleSheetService() throws IOException, GeneralSecurityException {
         log.debug("Creating GoogleSheetService object");
 
         final NetHttpTransport netHttpTransport = GoogleNetHttpTransport.newTrustedTransport();

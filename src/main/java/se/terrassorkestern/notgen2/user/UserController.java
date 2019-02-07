@@ -16,7 +16,7 @@ import java.util.Collections;
 @Slf4j
 @Controller
 @RequestMapping("/user")
-public class UserController {
+class UserController {
 
     @Autowired
     private UserRepository userRepository;
@@ -29,13 +29,10 @@ public class UserController {
 
 
     @GetMapping("/list")
-    public String userList(Model model, @AuthenticationPrincipal User user) {
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_USER"))) {
-            model.addAttribute("users", userRepository.findAll());
-            return "userList";
-        } else {
-            return "redirect:/";
-        }
+    public String userList(Model model) {
+        model.addAttribute("users", userRepository.findAll());
+        return "userList";
+
     }
 
     @GetMapping("/new")
@@ -55,7 +52,7 @@ public class UserController {
         } else {
             // First check that the user has permission to edit user (i.e. is admin)
             if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_USER"))) {
-                u = userRepository.findById(id).get();
+                u = userRepository.findById(id).orElse(null);
             } else {
                 return "redirect:/";
             }
@@ -98,15 +95,11 @@ public class UserController {
     }
 
     @GetMapping("/delete")
-    public String userDelete(@RequestParam("id") Long id, Model model, @AuthenticationPrincipal User user) {
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_USER"))) {
-            User u = userRepository.findById(id).get();
-            log.info("Tar bort användare " + u.getUsername() + " [" + u.getId() + "]");
-            userRepository.delete(u);
-            return "redirect:/user/list";
-        } else {
-            return "redirect:/";
-        }
+    public String userDelete(@RequestParam("id") Long id, Model model) {
+        User user = userRepository.findById(id).orElse(null);
+        log.info("Tar bort användare " + user.getUsername() + " [" + user.getId() + "]");
+        userRepository.delete(user);
+        return "redirect:/user/list";
     }
 
 }

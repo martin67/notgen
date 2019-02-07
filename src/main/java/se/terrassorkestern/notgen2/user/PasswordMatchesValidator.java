@@ -4,7 +4,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 
-public class PasswordMatchesValidator
+class PasswordMatchesValidator
         implements ConstraintValidator<PasswordMatches, Object> {
 
     @Override

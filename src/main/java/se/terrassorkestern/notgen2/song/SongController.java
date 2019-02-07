@@ -34,7 +34,7 @@ public class SongController {
 
     @GetMapping("/delete")
     public String songDelete(@RequestParam("id") Integer id, Model model) {
-        Song song = songRepository.findById(id).get();
+        Song song = songRepository.findById(id).orElse(null);
         log.info("Tar bort låt " + song.getTitle() + " [" + song.getId() + "]");
         songRepository.delete(song);
         return "redirect:/song/list";
@@ -43,7 +43,7 @@ public class SongController {
     @GetMapping("/edit")
     public String songEdit(@RequestParam("id") Integer id, Model model) {
         model.addAttribute("allInstruments", instrumentRepository.findByOrderByStandardDescSortOrder());
-        model.addAttribute("song", songRepository.findById(id).get());
+        model.addAttribute("song", songRepository.findById(id).orElse(null));
         return "songEdit";
     }
 
@@ -71,7 +71,7 @@ public class SongController {
             Instrument instrument = scorePart.getInstrument();
             scorePart.setId(new ScorePartId(song.getId(), instrument.getId()));
             scorePart.setSong(song);
-            scorePart.setInstrument(instrumentRepository.findById(instrument.getId()).get());
+            scorePart.setInstrument(instrumentRepository.findById(instrument.getId()).orElse(null));
         }
         songRepository.save(song);
         return "redirect:/song/list";

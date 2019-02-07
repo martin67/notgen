@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Slf4j
 @Controller
-public class NoteListerController {
+class NoteListerController {
 
     @Autowired
     private NoteListerService noteListerService;
 
 
-    public NoteListerController() {
+    private NoteListerController() {
         log.debug("Constructor");
     }
 

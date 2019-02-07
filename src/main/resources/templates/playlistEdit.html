@@ -36,22 +36,21 @@
         <div class="row">
             <div class="form-group col">
                 <label>Namn</label>
-                <input type="text" class="form-control" th:field="*{name}" th:value="${playlist.name}" id="name"/>
+                <input type="text" class="form-control" th:field="*{name}" th:value="${playlist.name}"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
             </div>
         </div>
         <div class="row">
             <div class="form-group col">
                 <label>Datum</label>
-                <input type="date" class="form-control" th:field="*{date}" th:value="${playlist.date}" id="date"/>
+                <input type="date" class="form-control" th:field="*{date}" th:value="${playlist.date}"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</span>
             </div>
         </div>
         <div class="row">
             <div class="form-group col">
                 <label>Kommentar</label>
-                <textarea class="form-control" th:field="*{comment}" th:value="${playlist.comment}"
-                          id="comment"></textarea>
+                <textarea class="form-control" th:field="*{comment}" th:value="${playlist.comment}"></textarea>
             </div>
         </div>
 
@@ -188,6 +187,8 @@ $('#prefetch .typeahead').typeahead({
 
 
 
+
+
 </script>
 
 <script>
@@ -200,6 +201,8 @@ $( "table tbody" ).sortable( {
 }
 });
 });
+
+
 
 
 

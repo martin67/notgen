@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .hasAuthority("EDIT_INSTRUMENT")
                 .antMatchers("/song/new/**", "/song/delete/**", "/song/save/**")
                 .hasAuthority("EDIT_SONG")
-                .antMatchers("/user/new/**", "/user/delete/**")
+                .antMatchers("/user/new/**", "/user/delete/**", "/user/list/**")
                 .hasAuthority("EDIT_USER")
                 .antMatchers("/playlist/new/**", "/playlist/delete/**", "/playlist/copy/**")
                 .hasAuthority("EDIT_PLAYLIST")

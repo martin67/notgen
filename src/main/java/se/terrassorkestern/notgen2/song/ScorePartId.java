@@ -7,7 +7,7 @@ import java.util.Objects;
 
 // See doc at https://vladmihalcea.com/the-best-way-to-map-a-many-to-many-association-with-extra-columns-when-using-jpa-and-hibernate/
 @Embeddable
-public class ScorePartId implements Serializable {
+class ScorePartId implements Serializable {
     @Column(name = "song_id")
     private int songId;
 

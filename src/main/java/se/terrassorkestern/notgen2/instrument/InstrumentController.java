@@ -2,13 +2,10 @@ package se.terrassorkestern.notgen2.instrument;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import se.terrassorkestern.notgen2.user.User;
 
 import javax.validation.Valid;
 
@@ -39,28 +36,22 @@ public class InstrumentController {
     }
 
     @GetMapping("/delete")
-    public String instrumentDelete(@RequestParam("id") Integer id, Model model,
-                                   @AuthenticationPrincipal User user) {
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_INSTRUMENT"))) {
-            Instrument instrument = instrumentRepository.findById(id).orElse(null);
-            if (instrument != null) {
-                log.info("Tar bort instrument " + instrument.getName() + " [" + instrument.getId() + "]");
-                instrumentRepository.delete(instrument);
-            }
+    public String instrumentDelete(@RequestParam("id") Integer id, Model model) {
+        Instrument instrument = instrumentRepository.findById(id).orElse(null);
+        if (instrument != null) {
+            log.info("Tar bort instrument " + instrument.getName() + " [" + instrument.getId() + "]");
+            instrumentRepository.delete(instrument);
         }
         return "redirect:/instrument/list";
     }
 
     @PostMapping("/save")
-    public String instrumentSave(@Valid @ModelAttribute Instrument instrument, Errors errors,
-                                 @AuthenticationPrincipal User user) {
+    public String instrumentSave(@Valid @ModelAttribute Instrument instrument, Errors errors) {
         if (errors.hasErrors()) {
             return "instrumentEdit";
         }
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_INSTRUMENT"))) {
-            log.info("Sparar instrument " + instrument.getName() + " [" + instrument.getId() + "]");
-            instrumentRepository.save(instrument);
-        }
+        log.info("Sparar instrument " + instrument.getName() + " [" + instrument.getId() + "]");
+        instrumentRepository.save(instrument);
         return "redirect:/instrument/list";
     }
 

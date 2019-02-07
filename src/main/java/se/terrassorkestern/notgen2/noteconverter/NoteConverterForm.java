@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-public class NoteConverterForm {
+class NoteConverterForm {
     private List<Integer> selectedSongs;
     private Boolean allSongs;
     private Boolean upload;

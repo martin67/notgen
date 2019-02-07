@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = PasswordMatchesValidator.class)
 @Documented
-public @interface PasswordMatches {
+@interface PasswordMatches {
     String message() default "Passwords don't match";
 
     Class<?>[] groups() default {};

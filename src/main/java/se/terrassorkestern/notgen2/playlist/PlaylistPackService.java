@@ -27,7 +27,7 @@ public class PlaylistPackService {
     private SongRepository songRepository;
 
 
-    public PlaylistPackService() {
+    private PlaylistPackService() {
         log.debug("Constructor!");
     }
 

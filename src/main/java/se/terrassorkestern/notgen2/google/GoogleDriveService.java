@@ -24,7 +24,7 @@ import java.util.Map;
 public class GoogleDriveService extends Google {
     private Drive service;
 
-    public GoogleDriveService() throws IOException, GeneralSecurityException {
+    private GoogleDriveService() throws IOException, GeneralSecurityException {
         log.debug("Creating GoogleDriveService object");
 
         final NetHttpTransport netHttpTransport = GoogleNetHttpTransport.newTrustedTransport();

@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-public class NoteConverterController {
+class NoteConverterController {
 
     @Autowired
     private SongRepository songRepository;
