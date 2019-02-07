@@ -129,7 +129,9 @@
         <div class="row" th:if="${playlist.lastModifiedDate}">
             <div class="col">
                 <br>
-                <p class="small font-italic" th:text="|Senast ändrad ${playlist.lastModifiedDate} av ${playlist.lastModifiedBy}|">skapad</p>
+                <p class="small font-italic"
+                   th:text="|Senast ändrad ${#dates.format(playlist.lastModifiedDate, 'yyyy-MM-dd HH:mm')} av ${playlist.lastModifiedBy}|">
+                    skapad</p>
             </div>
         </div>
     </form>
@@ -196,6 +198,7 @@ $('#prefetch .typeahead').typeahead({
 
 
 
+
 </script>
 
 <script>
@@ -208,6 +211,7 @@ $( "table tbody" ).sortable( {
 }
 });
 });
+
 
 
 
