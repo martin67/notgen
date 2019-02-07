@@ -11,4 +11,5 @@ class WebMvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
     }
+
 }
