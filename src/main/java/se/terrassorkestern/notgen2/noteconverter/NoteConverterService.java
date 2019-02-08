@@ -1,6 +1,5 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
-import com.google.common.net.UrlEscapers;
 import io.micrometer.core.instrument.Metrics;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
@@ -25,8 +24,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,11 +60,6 @@ public class NoteConverterService {
     private static final String GOOGLE_DRIVE_ID_COVER = "0B_STqkG31CToVTlNOFlIRERZcjg";
     private static final String GOOGLE_DRIVE_ID_ORIGINAL = "1wD37LV6ldjgt_LdRGz9VFbaa4Mrp_wGs";
     private static final String GOOGLE_DRIVE_ID_THUMBNAIL = "15ub8bDSHV_hjZHrAt42I5hh06L5LCQMy";
-    private static final String NOTE_ARCHIVE_URL = "http://notarkiv.hagelin.nu/";
-
-    private Path tmpDir;                            // Dir for extracting individual parts
-    private ArrayList<Path> extractedFilesList = new ArrayList<>();     // List of extracted files
-    private final NoteConverterStats stats = new NoteConverterStats();
 
 
     NoteConverterService() {
@@ -77,31 +69,38 @@ public class NoteConverterService {
 
     void convert(List<Song> songs, boolean upload) {
         log.info("Starting main convert loop");
+
+        NoteConverterStats stats = new NoteConverterStats();
         stats.setStartTime(Instant.now());
+
+        Path tmpDir;
+        ArrayList<Path> extractedFilesList;
 
         for (Song song : songs) {
             log.info("Converting " + song.getId() + ", " + song.getTitle());
             // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
             song.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
-            this.download(song);
-            this.split(song);
-            this.imageProcess(song);
-            this.createFullScore(song, true, upload);
-            this.createFullScore(song, false, upload);
-            this.createInstrumentParts(song, upload);
+
+            tmpDir = download(song);
+            extractedFilesList = split(tmpDir, stats, song);
+            imageProcess(tmpDir, extractedFilesList, stats, song);
+            createFullScore(tmpDir, extractedFilesList, stats, song, true, upload);
+            createFullScore(tmpDir, extractedFilesList, stats, song, false, upload);
+            createInstrumentParts(tmpDir, extractedFilesList, stats, song, upload);
             // update song with new google id:s
             songRepository.save(song);
-            this.cleanup();
+            cleanup(tmpDir);
             stats.incrementNumberOfSongs();
             Metrics.counter("notte.songs").increment();
         }
         log.info("Finishing main convert loop");
         stats.setEndTime(Instant.now());
+        System.out.println(stats);
     }
 
 
-    private void createFullScore(Song song, boolean toScore, boolean upload) {
-        if (!Files.exists(tmpDir) || this.extractedFilesList.isEmpty()) {
+    private void createFullScore(Path tmpDir, ArrayList<Path> extractedFilesList, NoteConverterStats stats, Song song, boolean toScore, boolean upload) {
+        if (!Files.exists(tmpDir) || extractedFilesList.isEmpty()) {
             return;
         }
 
@@ -141,7 +140,7 @@ public class NoteConverterService {
             if (song.getCover() && song.getColor() && !toScore) {
                 PDPage page = new PDPage(PDRectangle.A4);
                 doc.addPage(page);
-                File file = new File(FilenameUtils.removeExtension(this.extractedFilesList.get(0).toString()) + ".jpg");
+                File file = new File(FilenameUtils.removeExtension(extractedFilesList.get(0).toString()) + ".jpg");
                 PDImageXObject pdImage = PDImageXObject.createFromFile(file.toString(), doc);
                 PDPageContentStream contents = new PDPageContentStream(doc, page);
                 PDRectangle mediaBox = page.getMediaBox();
@@ -262,7 +261,7 @@ public class NoteConverterService {
                     // Ladda också upp omslaget separat (bara om det är bildbehandlat och beskuret)
                     if (song.getCover() && song.getColor() && song.getUpperleft()) {
                         log.debug("Also uploading cover");
-                        Path coverPath = Paths.get(this.extractedFilesList.get(0).toString() + "-cover.jpg");
+                        Path coverPath = Paths.get(extractedFilesList.get(0).toString() + "-cover.jpg");
                         googleId = googleDriveService.uploadFile(GOOGLE_DRIVE_ID_COVER, "image/jpeg", song.getTitle(),
                                 coverPath, null, null, false, null);
                         if (googleId.length() > 0) {
@@ -271,7 +270,7 @@ public class NoteConverterService {
                         }
                         // Om det finns ett omslag så finns det alltid en thumbnail som också skall laddas upp
                         log.debug("Uploading cover thumbnail");
-                        Path thumbnailPath = Paths.get(this.extractedFilesList.get(0).toString() + "-thumbnail.jpg");
+                        Path thumbnailPath = Paths.get(extractedFilesList.get(0).toString() + "-thumbnail.jpg");
                         googleId = googleDriveService.uploadFile(GOOGLE_DRIVE_ID_THUMBNAIL, "image/jpeg", song.getId() + ".jpg",
                                 thumbnailPath, null, null, false, null);
                         if (googleId.length() > 0) {
@@ -288,8 +287,8 @@ public class NoteConverterService {
     }
 
 
-    private void createInstrumentParts(Song song, boolean upload) {
-        if (!Files.exists(tmpDir) || this.extractedFilesList.isEmpty()) {
+    private void createInstrumentParts(Path tmpDir, ArrayList<Path> extractedFilesList, NoteConverterStats stats, Song song, boolean upload) {
+        if (!Files.exists(tmpDir) || extractedFilesList.isEmpty()) {
             return;
         }
 
@@ -323,8 +322,8 @@ public class NoteConverterService {
                 for (int i = scorePart.getPage(); i < (scorePart.getPage() + scorePart.getLength()); i++) {
                     PDPage page = new PDPage(PDRectangle.A4);
                     doc.addPage(page);
-                    File png = new File(FilenameUtils.removeExtension(this.extractedFilesList.get(i - 1).toString()) + ".png");
-                    File jpg = new File(FilenameUtils.removeExtension(this.extractedFilesList.get(i - 1).toString()) + ".jpg");
+                    File png = new File(FilenameUtils.removeExtension(extractedFilesList.get(i - 1).toString()) + ".png");
+                    File jpg = new File(FilenameUtils.removeExtension(extractedFilesList.get(i - 1).toString()) + ".jpg");
                     File file;
                     if (png.exists()) {
                         file = png;
@@ -401,8 +400,8 @@ public class NoteConverterService {
                             // Klarar bara fallet då sångnoten är en sida (en bild)
                             if (scorePart.getLength() == 1) {
 
-                                File png = new File(FilenameUtils.removeExtension(this.extractedFilesList.get(scorePart.getPage() - 1).toString()) + ".png");
-                                File jpg = new File(FilenameUtils.removeExtension(this.extractedFilesList.get(scorePart.getPage() - 1).toString()) + ".jpg");
+                                File png = new File(FilenameUtils.removeExtension(extractedFilesList.get(scorePart.getPage() - 1).toString()) + ".png");
+                                File jpg = new File(FilenameUtils.removeExtension(extractedFilesList.get(scorePart.getPage() - 1).toString()) + ".jpg");
                                 File file;
                                 String fileType;
                                 if (png.exists()) {
@@ -431,14 +430,14 @@ public class NoteConverterService {
     }
 
 
-    private void imageProcess(Song song) {
-        if (!Files.exists(tmpDir) || !song.getImageProcess() || this.extractedFilesList.isEmpty()) {
+    private void imageProcess(Path tmpDir, ArrayList<Path> extractedFilesList, NoteConverterStats stats, Song song) {
+        if (!Files.exists(tmpDir) || !song.getImageProcess() || extractedFilesList.isEmpty()) {
             return;
         }
 
         log.debug("Starting image processing");
         boolean firstPage = true;
-        for (Path path : this.extractedFilesList) {
+        for (Path path : extractedFilesList) {
             try {
                 BufferedImage image = ImageIO.read(path.toFile());
                 stats.incrementNumberOfImgProcess();
@@ -571,14 +570,17 @@ public class NoteConverterService {
     }
 
 
-    private void split(Song song) {
+    private ArrayList<Path> split(Path tmpDir, NoteConverterStats stats, Song song) {
+
+        ArrayList<Path> extractedFilesList = new ArrayList<>();
+
         if (!Files.exists(tmpDir)) {
-            return;
+            return null;
         }
 
         File inFile = new File(tmpDir.toFile(), song.getFilename());
         if (!inFile.exists()) {
-            return;
+            return null;
         }
         //String inFile = new File(tmpDir.toFile(), song.getFilename()).toString();
 
@@ -629,61 +631,56 @@ public class NoteConverterService {
         // Store name of all extracted files. Order is important!
         // Exclude source file (zip or pdf)
         try {
-            this.extractedFilesList = Files
+            extractedFilesList = Files
                     .list(tmpDir)
                     .filter(Files::isRegularFile)
                     .filter(p -> (p.toString().toLowerCase().endsWith(".png") || p.toString().toLowerCase().endsWith(".jpg")))
                     .collect(Collectors.toCollection(ArrayList::new));
-            Collections.sort(this.extractedFilesList);
-            stats.addNumberOfSrcImg(this.extractedFilesList.size());
+            Collections.sort(extractedFilesList);
+            stats.addNumberOfSrcImg(extractedFilesList.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return extractedFilesList;
     }
 
 
-    private void download(@NotNull Song song) {
+    private Path download(@NotNull Song song) {
         // if the song is not scanned  then just skip
         if (!song.getScanned()) {
-            return;
+            return null;
         }
+
+        Path tmpDir;
 
         // Create temp directory
         try {
-            this.tmpDir = Files.createTempDirectory("notkonv-");
+            tmpDir = Files.createTempDirectory("notkonv-");
             log.debug("Creating temporary directory: " + tmpDir.toString());
         } catch (IOException e) {
             log.error("Can't create temporary directory");
             //e.printStackTrace();
-            return;
+            return null;
         }
 
         // Download note file to tmpDir
-        URL url = null;
         try {
-            url = new URL(NOTE_ARCHIVE_URL + UrlEscapers.urlPathSegmentEscaper().escape(song.getFilename()));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        try {
-            assert url != null;
             log.debug("Downloading " + song.getFilename());
-            // FileUtils.copyURLToFile(url, new File(tmpDir.toFile(), song.getFilename()));
             googleDriveService.downloadFile(GOOGLE_DRIVE_ID_ORIGINAL, song.getFilename(), tmpDir);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return tmpDir;
     }
 
 
-    private void cleanup() {
+    private void cleanup(Path tmpDir) {
         if (!Files.exists(tmpDir)) {
             return;
         }
 
         log.debug("Cleaning up");
-        this.extractedFilesList.clear();
 
         // Remove the temp directory if we're not in trace mode
         if (!log.isTraceEnabled()) {
