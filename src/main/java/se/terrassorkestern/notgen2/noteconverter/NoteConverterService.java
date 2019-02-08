@@ -95,7 +95,7 @@ public class NoteConverterService {
         }
         log.info("Finishing main convert loop");
         stats.setEndTime(Instant.now());
-        System.out.println(stats);
+        stats.print();
     }
 
 
