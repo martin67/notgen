@@ -48,7 +48,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .hasAuthority("CONVERT_SCORE")
                 .antMatchers("/noteLister/**")
                 .hasAuthority("UPDATE_TOC")
-                .antMatchers("/admin/**")
+                .antMatchers("/admin/**", "/actuator/**")
                 .hasRole("ADMIN")
                 .antMatchers("/", "/**").permitAll()
                 .and()

@@ -22,7 +22,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-class NoteListerService {
+public class NoteListerService {
 
     @Autowired
     private InstrumentRepository instrumentRepository;

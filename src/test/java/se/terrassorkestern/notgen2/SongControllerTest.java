@@ -17,7 +17,7 @@ import se.terrassorkestern.notgen2.song.SongRepository;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -56,6 +56,9 @@ public class SongControllerTest {
                 .contentType(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
                 .andExpect(view().name("songList"))
+                .andExpect(model().attributeExists("songs"))
+                .andExpect(model().attribute("songs", hasSize(1)))
+                .andExpect(model().attribute("songs", contains(samePropertyValuesAs(song))))
                 .andExpect(content().string(
                         containsString(song.getTitle())));
     }

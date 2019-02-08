@@ -16,7 +16,8 @@ import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -51,10 +52,9 @@ public class InstrumentControllerTest {
                 .contentType(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
                 .andExpect(view().name("instrumentList"))
-                .andExpect(content().string(
-                        containsString(sax.getName())));
-//                .andExpect(jsonPath("$", hasSize(1)))
-//                .andExpect((ResultMatcher) jsonPath("$[0].name", is(sax.getName())));
+                .andExpect(model().attributeExists("instruments"))
+                .andExpect(model().attribute("instruments", hasSize(1)))
+                .andExpect(model().attribute("instruments", contains(samePropertyValuesAs(sax))));
     }
 
     @Test
