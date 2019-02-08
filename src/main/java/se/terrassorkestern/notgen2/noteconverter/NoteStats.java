@@ -1,5 +1,7 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.stereotype.Component;
@@ -11,16 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@AllArgsConstructor
 public class NoteStats implements InfoContributor {
-    private SongRepository songRepository;
-    private InstrumentRepository instrumentRepository;
-    private PlaylistRepository playlistRepository;
 
-    NoteStats(SongRepository songRepository, InstrumentRepository instrumentRepository, PlaylistRepository playlistRepository) {
-        this.songRepository = songRepository;
-        this.instrumentRepository = instrumentRepository;
-        this.playlistRepository = playlistRepository;
-    }
+    private final @NonNull SongRepository songRepository;
+    private final @NonNull InstrumentRepository instrumentRepository;
+    private final @NonNull PlaylistRepository playlistRepository;
+
 
     @Override
     public void contribute(Info.Builder builder) {
