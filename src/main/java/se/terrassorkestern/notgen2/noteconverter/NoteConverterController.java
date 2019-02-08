@@ -30,22 +30,22 @@ public class NoteConverterController {
 
         List<Song> songs = songRepository.findByOrderByTitle();
         model.addAttribute("songs", songs);
-        model.addAttribute("noteConverterForm", new NoteConverterForm());
+        model.addAttribute("noteConverterDto", new NoteConverterDto());
 
         return "noteConverter";
     }
 
     @PostMapping("/convert")
-    public String handlePost(@ModelAttribute("noteConverterForm") NoteConverterForm noteConverterForm) {
+    public String handlePost(@ModelAttribute("noteConverterDto") NoteConverterDto noteConverterDto) {
 
         log.info("Nu är vi i noteConverter post");
 
         // Starta konvertering!
-        if (noteConverterForm.getAllSongs()) {
-            noteConverterService.convert(songRepository.findByOrderByTitle(), noteConverterForm.getUpload());
+        if (noteConverterDto.getAllSongs()) {
+            noteConverterService.convert(songRepository.findByOrderByTitle(), noteConverterDto.getUpload());
         } else {
-            noteConverterService.convert(songRepository.findByIdInOrderByTitle(noteConverterForm.getSelectedSongs()),
-                    noteConverterForm.getUpload());
+            noteConverterService.convert(songRepository.findByIdInOrderByTitle(noteConverterDto.getSelectedSongs()),
+                    noteConverterDto.getUpload());
         }
 
         return "redirect:/noteConverter";

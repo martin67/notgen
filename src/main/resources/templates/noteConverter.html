@@ -14,7 +14,7 @@
     <p>Det tar 2-3 minuter att konvertera en låt och skall man ta och konvertera alla (+400 stycken), så tar det
         följaktligen över 12 timmar.
     </p>
-    <form action="#" th:action="@{/noteConverter/convert}" th:object="${noteConverterForm}" method="post">
+    <form action="#" th:action="@{/noteConverter/convert}" th:object="${noteConverterDto}" method="post">
 
         <div class="form-group">
             <select multiple class="form-control" th:field="*{selectedSongs}" id="sel1">
