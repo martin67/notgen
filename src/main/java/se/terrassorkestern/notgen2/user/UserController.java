@@ -1,7 +1,8 @@
 package se.terrassorkestern.notgen2.user;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,17 +16,13 @@ import java.util.Collections;
 
 @Slf4j
 @Controller
+@AllArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final @NonNull UserRepository userRepository;
+    private final @NonNull RoleRepository roleRepository;
+    private final @NonNull PasswordEncoder passwordEncoder;
 
 
     @GetMapping("/list")

@@ -1,7 +1,7 @@
 package se.terrassorkestern.notgen2.song;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,14 +16,12 @@ import java.util.List;
 
 @Slf4j
 @Controller
+@AllArgsConstructor
 @RequestMapping("/song")
 public class SongController {
 
-    @Autowired
-    private SongRepository songRepository;
-
-    @Autowired
-    private InstrumentRepository instrumentRepository;
+    private final SongRepository songRepository;
+    private final InstrumentRepository instrumentRepository;
 
 
     @GetMapping("/list")

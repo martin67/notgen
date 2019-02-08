@@ -1,9 +1,10 @@
 package se.terrassorkestern.notgen2.playlist;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleDriveService;
 import se.terrassorkestern.notgen2.instrument.Instrument;
@@ -18,18 +19,11 @@ import java.nio.file.Path;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class PlaylistPackService {
 
-    @Autowired
-    private GoogleDriveService googleDriveService;
-
-    @Autowired
-    private SongRepository songRepository;
-
-
-    private PlaylistPackService() {
-        log.debug("Constructor!");
-    }
+    private final @NonNull GoogleDriveService googleDriveService;
+    private final @NonNull SongRepository songRepository;
 
 
     public String createPack(Playlist playlist, Instrument instrument) {

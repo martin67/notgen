@@ -1,7 +1,8 @@
 package se.terrassorkestern.notgen2.playlist;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,20 +22,14 @@ import java.io.*;
 
 @Slf4j
 @Controller
+@AllArgsConstructor
 @RequestMapping("/playlist")
 public class PlaylistController {
 
-    @Autowired
-    private PlaylistRepository playlistRepository;
-
-    @Autowired
-    private InstrumentRepository instrumentRepository;
-
-    @Autowired
-    private PlaylistPdfService playlistPdfService;
-
-    @Autowired
-    private PlaylistPackService playlistPackService;
+    private final @NonNull PlaylistRepository playlistRepository;
+    private final @NonNull InstrumentRepository instrumentRepository;
+    private final @NonNull PlaylistPdfService playlistPdfService;
+    private final @NonNull PlaylistPackService playlistPackService;
 
 
     @GetMapping("/list")

@@ -1,7 +1,8 @@
 package se.terrassorkestern.notgen2.instrument;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -11,11 +12,12 @@ import javax.validation.Valid;
 
 @Slf4j
 @Controller
+@AllArgsConstructor
 @RequestMapping("/instrument")
 public class InstrumentController {
 
-    @Autowired
-    private InstrumentRepository instrumentRepository;
+    private final @NonNull InstrumentRepository instrumentRepository;
+
 
     @GetMapping("/list")
     public String instrumentList(Model model) {

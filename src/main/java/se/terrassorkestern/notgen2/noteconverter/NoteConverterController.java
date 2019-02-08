@@ -1,7 +1,8 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +16,12 @@ import java.util.List;
 
 @Slf4j
 @Controller
+@AllArgsConstructor
 @RequestMapping("/noteConverter")
 public class NoteConverterController {
 
-    @Autowired
-    private SongRepository songRepository;
-    @Autowired
-    private NoteConverterService noteConverterService;
+    private final @NonNull SongRepository songRepository;
+    private final @NonNull NoteConverterService noteConverterService;
 
 
     @GetMapping(value = {"", "/"})

@@ -1,6 +1,8 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
 import io.micrometer.core.instrument.Metrics;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -11,7 +13,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleDriveService;
 import se.terrassorkestern.notgen2.song.ScorePart;
@@ -32,27 +33,14 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// constructor anropas av springboot,så där kan man inte ange vilka sånger som gäller
-// däremot så vet man vid anrop (via webb), vilka sånger och vilka options.
-
-// anrop bör se ut något som:
-// noteConverter.convert(songList, option1, option2)
-//
-// alternativ skulle vara att loopa igenom utanför och anrop i stil med
-// noteConverter.convert(song, option1, option2)
-// men detta känns inte lika snyggt
-//
-// inuti noteConverter.convert så har man sedan anropo till olika interna metoder (som typ download)
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class NoteConverterService {
 
-    @Autowired
-    private SongRepository songRepository;
-
-    @Autowired
-    private GoogleDriveService googleDriveService;
+    private final @NonNull SongRepository songRepository;
+    private final @NonNull GoogleDriveService googleDriveService;
 
     private static final String GOOGLE_DRIVE_ID_FULLSCORE = "0B-ZpHPz-KfoJQUUxTU5JNWFHbWM";
     private static final String GOOGLE_DRIVE_ID_INSTRUMENT = "0B-ZpHPz-KfoJajZFSXV2dTZzZjQ";
@@ -60,11 +48,6 @@ public class NoteConverterService {
     private static final String GOOGLE_DRIVE_ID_COVER = "0B_STqkG31CToVTlNOFlIRERZcjg";
     private static final String GOOGLE_DRIVE_ID_ORIGINAL = "1wD37LV6ldjgt_LdRGz9VFbaa4Mrp_wGs";
     private static final String GOOGLE_DRIVE_ID_THUMBNAIL = "15ub8bDSHV_hjZHrAt42I5hh06L5LCQMy";
-
-
-    NoteConverterService() {
-        log.debug("Constructor!");
-    }
 
 
     void convert(List<Song> songs, boolean upload) {

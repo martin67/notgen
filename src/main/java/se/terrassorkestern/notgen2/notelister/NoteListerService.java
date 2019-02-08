@@ -1,7 +1,8 @@
 package se.terrassorkestern.notgen2.notelister;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleSheetService;
 import se.terrassorkestern.notgen2.instrument.Instrument;
@@ -22,21 +23,13 @@ import java.util.List;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class NoteListerService {
 
-    @Autowired
-    private InstrumentRepository instrumentRepository;
+    private final @NonNull InstrumentRepository instrumentRepository;
+    private final @NonNull SongRepository songRepository;
+    private final @NonNull GoogleSheetService googleSheetService;
 
-    @Autowired
-    private SongRepository songRepository;
-
-    @Autowired
-    private GoogleSheetService googleSheetService;
-
-
-    private NoteListerService() {
-        log.debug("Constructor!");
-    }
 
     void createList() {
         log.info("Starting note listing");

@@ -1,7 +1,8 @@
 package se.terrassorkestern.notgen2.user;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,20 +16,14 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class InitialDataLoader implements
-        ApplicationListener<ContextRefreshedEvent> {
+@AllArgsConstructor
+public class InitialDataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final @NonNull UserRepository userRepository;
+    private final @NonNull RoleRepository roleRepository;
+    private final @NonNull PrivilegeRepository privilegeRepository;
+    private final @NonNull PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PrivilegeRepository privilegeRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
