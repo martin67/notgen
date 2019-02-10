@@ -113,7 +113,7 @@ public class PlaylistController {
 
         log.debug("Startar createPack för instrument id " + selectedInstrumentId);
         String fileName;
-        fileName = playlistPackService.createPack(playlist, instrumentRepository.getOne(selectedInstrumentId));
+        fileName = playlistPackService.createPack(playlist, instrumentRepository.getOne(selectedInstrumentId), "playlist.pdf");
 
         File file = new File(fileName);
 
