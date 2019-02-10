@@ -26,7 +26,7 @@ public class PlaylistPackService {
     private final @NonNull SongRepository songRepository;
 
 
-    public String createPack(Playlist playlist, Instrument instrument) {
+    public String createPack(Playlist playlist, Instrument instrument, String filename) {
 
         String output;
 
@@ -55,7 +55,7 @@ public class PlaylistPackService {
         // Skapa PDF
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        output = tmpDir.toString() + File.separator + "playlist.pdf";
+        output = tmpDir.toString() + File.separator + filename;
         pdfMergerUtility.setDestinationFileName(output);
 
         PDDocumentInformation pdd = new PDDocumentInformation();
