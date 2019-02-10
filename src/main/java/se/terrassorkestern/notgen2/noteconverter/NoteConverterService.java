@@ -15,6 +15,11 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleDriveService;
+import se.terrassorkestern.notgen2.instrument.Instrument;
+import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
+import se.terrassorkestern.notgen2.playlist.Playlist;
+import se.terrassorkestern.notgen2.playlist.PlaylistEntry;
+import se.terrassorkestern.notgen2.playlist.PlaylistPackService;
 import se.terrassorkestern.notgen2.song.ScorePart;
 import se.terrassorkestern.notgen2.song.Song;
 import se.terrassorkestern.notgen2.song.SongRepository;
@@ -29,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,7 +46,9 @@ import java.util.stream.Collectors;
 public class NoteConverterService {
 
     private final @NonNull SongRepository songRepository;
+    private final @NonNull InstrumentRepository instrumentRepository;
     private final @NonNull GoogleDriveService googleDriveService;
+    private final @NonNull PlaylistPackService playlistPackService;
 
     private static final String GOOGLE_DRIVE_ID_FULLSCORE = "0B-ZpHPz-KfoJQUUxTU5JNWFHbWM";
     private static final String GOOGLE_DRIVE_ID_INSTRUMENT = "0B-ZpHPz-KfoJajZFSXV2dTZzZjQ";
@@ -48,6 +56,7 @@ public class NoteConverterService {
     private static final String GOOGLE_DRIVE_ID_COVER = "0B_STqkG31CToVTlNOFlIRERZcjg";
     private static final String GOOGLE_DRIVE_ID_ORIGINAL = "1wD37LV6ldjgt_LdRGz9VFbaa4Mrp_wGs";
     private static final String GOOGLE_DRIVE_ID_THUMBNAIL = "15ub8bDSHV_hjZHrAt42I5hh06L5LCQMy";
+    private static final String GOOGLE_DRIVE_ID_PACKS = "17PZGxRLsRQa_-QWAJGCX82yqTmDvt6dZ";
 
 
     void convert(List<Song> songs, boolean upload) {
@@ -679,4 +688,36 @@ public class NoteConverterService {
         }
     }
 
+    void createInstrumentPacks(boolean upload) {
+
+        // Create a playlist with all songs
+        Playlist playlist = new Playlist();
+        playlist.setName("Komplett notpack");
+        playlist.setDate(LocalDate.now());
+
+        for (Song song : songRepository.findByOrderByTitle()) {
+            PlaylistEntry playlistEntry = new PlaylistEntry();
+            playlistEntry.setText(song.getTitle());
+            playlistEntry.setBold(false);
+            playlist.getPlaylistEntries().add(playlistEntry);
+        }
+
+        // Use the existing playlist function to create a PDF pack
+        for (Instrument instrument : instrumentRepository.findAll()) {
+            String outputFile;
+            String description = "Komplett notpack för " + instrument.getName();
+
+            outputFile = playlistPackService.createPack(playlist, instrument, instrument.getName() + ".pdf");
+            Path path = Paths.get(outputFile);
+
+            if (upload)
+                try {
+                    googleDriveService.uploadFile(GOOGLE_DRIVE_ID_PACKS, "application/pdf", instrument.getName(),
+                            path, null, description, false, null);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
+    }
 }
+
