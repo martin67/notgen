@@ -15,10 +15,13 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleDriveService;
+import se.terrassorkestern.notgen2.instrument.Instrument;
+import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 import se.terrassorkestern.notgen2.song.ScorePart;
 import se.terrassorkestern.notgen2.song.Song;
 import se.terrassorkestern.notgen2.song.SongRepository;
 
+import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;
 import java.awt.*;
@@ -40,6 +43,7 @@ import java.util.stream.Collectors;
 public class NoteConverterService {
 
     private final @NonNull SongRepository songRepository;
+    private final @Nonnull InstrumentRepository instrumentRepository;
     private final @NonNull GoogleDriveService googleDriveService;
 
     private static final String GOOGLE_DRIVE_ID_FULLSCORE = "0B-ZpHPz-KfoJQUUxTU5JNWFHbWM";
@@ -679,4 +683,13 @@ public class NoteConverterService {
         }
     }
 
+
+    private void createInstrumentPacks() {
+        for (Instrument instrument: instrumentRepository.findByStandardIsTrueOrderBySortOrder()){
+
+            for (Song song: songRepository.findAll()) {
+                if (song.getScoreParts().contains())
+            }
+        }
+    }
 }
