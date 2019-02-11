@@ -35,7 +35,7 @@ public class NoteConverterController {
         return "noteConverter";
     }
 
-    @PostMapping("/convert")
+    @PostMapping(value = "/convert", params = {"convertNotes"})
     public String handlePost(@ModelAttribute("noteConverterDto") NoteConverterDto noteConverterDto) {
 
         log.info("Nu är vi i noteConverter post");
@@ -47,6 +47,16 @@ public class NoteConverterController {
             noteConverterService.convert(songRepository.findByIdInOrderByTitle(noteConverterDto.getSelectedSongs()),
                     noteConverterDto.getUpload());
         }
+
+        return "redirect:/noteConverter";
+    }
+
+    @PostMapping(value = "/convert", params = {"createPacks"})
+    public String createPacks(@ModelAttribute("noteConverterDto") NoteConverterDto noteConverterDto) {
+
+        log.info("Skapar instrumentpackar");
+
+        noteConverterService.createInstrumentPacks(noteConverterDto.getUpload());
 
         return "redirect:/noteConverter";
     }
