@@ -1,8 +1,8 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
 import io.micrometer.core.instrument.Metrics;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -13,6 +13,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleDriveService;
 import se.terrassorkestern.notgen2.instrument.Instrument;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NoteConverterService {
 
     private final @NonNull SongRepository songRepository;
@@ -50,13 +51,20 @@ public class NoteConverterService {
     private final @NonNull GoogleDriveService googleDriveService;
     private final @NonNull PlaylistPackService playlistPackService;
 
-    private static final String GOOGLE_DRIVE_ID_FULLSCORE = "0B-ZpHPz-KfoJQUUxTU5JNWFHbWM";
-    private static final String GOOGLE_DRIVE_ID_INSTRUMENT = "0B-ZpHPz-KfoJajZFSXV2dTZzZjQ";
-    private static final String GOOGLE_DRIVE_ID_TOSCORE = "0B_STqkG31CToVmdfSGxlZ2M0ZXc";
-    private static final String GOOGLE_DRIVE_ID_COVER = "0B_STqkG31CToVTlNOFlIRERZcjg";
-    private static final String GOOGLE_DRIVE_ID_ORIGINAL = "1wD37LV6ldjgt_LdRGz9VFbaa4Mrp_wGs";
-    private static final String GOOGLE_DRIVE_ID_THUMBNAIL = "15ub8bDSHV_hjZHrAt42I5hh06L5LCQMy";
-    private static final String GOOGLE_DRIVE_ID_PACKS = "17PZGxRLsRQa_-QWAJGCX82yqTmDvt6dZ";
+    @Value("${notgen2.google.id.fullscore}")
+    private String googleFileIdFullScore;
+    @Value("${notgen2.google.id.toscore}")
+    private String googleFileIdToScore;
+    @Value("${notgen2.google.id.instrument}")
+    private String googleFileIdInstrument;
+    @Value("${notgen2.google.id.cover}")
+    private String googleFileIdCover;
+    @Value("${notgen2.google.id.original}")
+    private String googleFileIdOriginal;
+    @Value("${notgen2.google.id.thumbnail}")
+    private String googleFileIdThumbnail;
+    @Value("${notgen2.google.id.packs}")
+    private String googleFileIdPacks;
 
 
     void convert(List<Song> songs, boolean upload) {
@@ -236,14 +244,14 @@ public class NoteConverterService {
 
                 String googleId;
                 if (toScore) {
-                    googleId = googleDriveService.uploadFile(GOOGLE_DRIVE_ID_TOSCORE, "application/pdf", song.getTitle(),
+                    googleId = googleDriveService.uploadFile(googleFileIdToScore, "application/pdf", song.getTitle(),
                             path, null, description.toString(), false, map);
                     if (googleId.length() > 0) {
                         song.setGoogleIdTo(googleId);
                         stats.addNumberOfBytes(Files.size(path));
                     }
                 } else {
-                    googleId = googleDriveService.uploadFile(GOOGLE_DRIVE_ID_FULLSCORE, "application/pdf", song.getTitle(),
+                    googleId = googleDriveService.uploadFile(googleFileIdFullScore, "application/pdf", song.getTitle(),
                             path, null, description.toString(), false, map);
                     if (googleId.length() > 0) {
                         song.setGoogleIdFull(googleId);
@@ -254,7 +262,7 @@ public class NoteConverterService {
                     if (song.getCover() && song.getColor() && song.getUpperleft()) {
                         log.debug("Also uploading cover");
                         Path coverPath = Paths.get(extractedFilesList.get(0).toString() + "-cover.jpg");
-                        googleId = googleDriveService.uploadFile(GOOGLE_DRIVE_ID_COVER, "image/jpeg", song.getTitle(),
+                        googleId = googleDriveService.uploadFile(googleFileIdCover, "image/jpeg", song.getTitle(),
                                 coverPath, null, null, false, null);
                         if (googleId.length() > 0) {
                             song.setGoogleIdCover(googleId);
@@ -263,7 +271,7 @@ public class NoteConverterService {
                         // Om det finns ett omslag så finns det alltid en thumbnail som också skall laddas upp
                         log.debug("Uploading cover thumbnail");
                         Path thumbnailPath = Paths.get(extractedFilesList.get(0).toString() + "-thumbnail.jpg");
-                        googleId = googleDriveService.uploadFile(GOOGLE_DRIVE_ID_THUMBNAIL, "image/jpeg", song.getId() + ".jpg",
+                        googleId = googleDriveService.uploadFile(googleFileIdThumbnail, "image/jpeg", song.getId() + ".jpg",
                                 thumbnailPath, null, null, false, null);
                         if (googleId.length() > 0) {
                             song.setGoogleIdThumbnail(googleId);
@@ -379,7 +387,7 @@ public class NoteConverterService {
 
                         // Stämmor måste ha namn med .pdf så att forScore hittar den
                         String googleId;
-                        googleId = googleDriveService.uploadFile(GOOGLE_DRIVE_ID_INSTRUMENT, "application/pdf", song.getTitle() + ".pdf", path, scorePart.getInstrument().getName(), description, false, map);
+                        googleId = googleDriveService.uploadFile(googleFileIdInstrument, "application/pdf", song.getTitle() + ".pdf", path, scorePart.getInstrument().getName(), description, false, map);
                         if (googleId.length() > 0) {
                             scorePart.setGoogleId(googleId);
                             stats.addNumberOfBytes(Files.size(path));
@@ -404,7 +412,7 @@ public class NoteConverterService {
                                     fileType = "image/jpeg";
                                 }
 
-                                googleDriveService.uploadFile(GOOGLE_DRIVE_ID_INSTRUMENT, fileType, song.getTitle(), file.toPath(), "Sång - OCR", description, true, map);
+                                googleDriveService.uploadFile(googleFileIdInstrument, fileType, song.getTitle(), file.toPath(), "Sång - OCR", description, true, map);
                                 stats.addNumberOfBytes(Files.size(file.toPath()));
                                 stats.incrementNumberOfOcr();
                             } else {
@@ -659,7 +667,7 @@ public class NoteConverterService {
         // Download note file to tmpDir
         try {
             log.debug("Downloading " + song.getFilename());
-            googleDriveService.downloadFile(GOOGLE_DRIVE_ID_ORIGINAL, song.getFilename(), tmpDir);
+            googleDriveService.downloadFile(googleFileIdOriginal, song.getFilename(), tmpDir);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -712,7 +720,7 @@ public class NoteConverterService {
 
             if (upload)
                 try {
-                    googleDriveService.uploadFile(GOOGLE_DRIVE_ID_PACKS, "application/pdf", instrument.getName(),
+                    googleDriveService.uploadFile(googleFileIdPacks, "application/pdf", instrument.getName(),
                             path, null, description, false, null);
                 } catch (IOException e) {
                     e.printStackTrace();

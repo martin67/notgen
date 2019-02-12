@@ -11,6 +11,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
+@Service
 class Google {
     static final String APPLICATION_NAME = "Terrassorkesterns notgenerator";
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();

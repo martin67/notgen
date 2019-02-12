@@ -6,6 +6,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,7 +17,10 @@ import java.util.List;
 @Service
 public class GoogleSheetService extends Google {
     private Sheets service;
-    private static final String GOOGLE_SPREADSHEET_ID = "1O5FEIPY2il6hPBwJRtzgjR8L4lYAII7heymn4DnVfZ4";
+
+    @Value("${notgen2.google.id.spreadsheet}")
+    private String googleFileIdSpreadsheet;
+
 
     private GoogleSheetService() throws IOException, GeneralSecurityException {
         log.debug("Creating GoogleSheetService object");
@@ -35,7 +39,7 @@ public class GoogleSheetService extends Google {
         UpdateValuesResponse result;
 
         try {
-            result = service.spreadsheets().values().update(GOOGLE_SPREADSHEET_ID, startPos, body)
+            result = service.spreadsheets().values().update(googleFileIdSpreadsheet, startPos, body)
                     .setValueInputOption("RAW")
                     .execute();
             log.debug(result.getUpdatedCells() + " updated cells.");

@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen2.playlist;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import se.terrassorkestern.notgen2.Auditable;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "playlist")
