@@ -1,0 +1,51 @@
+plugins {
+    id 'org.springframework.boot' version '2.2.1.RELEASE'
+    id "io.freefair.lombok" version "4.1.5"
+    id "org.jetbrains.gradle.plugin.idea-ext" version "0.7"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'mysql:mysql-connector-java'
+    compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-java8time', version: '3.0.4.RELEASE'
+    compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity5', version: '3.0.4.RELEASE'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.h2database:h2:1.4.200'
+    implementation 'com.google.guava:guava'
+    implementation 'com.google.api-client:google-api-client:1.30.2'
+    implementation 'com.google.apis:google-api-services-drive:v3-rev188-1.25.0'
+    implementation 'com.google.apis:google-api-services-sheets:v4-rev604-1.25.0'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.30.4'
+    compile group: 'net.lingala.zip4j', name: 'zip4j', version: '2.2.4'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.17'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8

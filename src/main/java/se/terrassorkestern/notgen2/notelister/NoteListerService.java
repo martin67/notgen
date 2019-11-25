@@ -77,7 +77,6 @@ public class NoteListerService {
             instrumentRows.add(instrumentRow);
         }
 
-
         log.info("Writing to Google Sheet");
 
         googleSheetService.addRows("Repertoire!A4", repertoireRows);
