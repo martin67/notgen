@@ -1,8 +1,8 @@
 # Terrassorkesterns notgenerator 2.0
 
-Detta program genererar noter i PDF format från scannat material. Programmet är skrivet i Java och kräver tillgång till orkesterns databas samt till den filserver där noterna ligger.
+Detta program genererar noter i PDF format från scannat material. Programmet är skrivet i Java + Swing och kräver tillgång till orkesterns databas samt till den filserver där noterna ligger.
 
-Noterna ligger lagrade i antingen ZIP eller PDF-filer. Vanligast och standard numera är ZIP.
+Noterna ligger lagrade i antingen ZIP,  eller PDF-filer. Vanligast och standard numera är ZIP.
 
 Arbetsgången är följande:
 1. Läs in info från databasen
@@ -28,4 +28,12 @@ Bildbehandlingen utgörs sedan av följande steg:
 För omslag så sker det ingen färgkonvertering samt att filen sparas som JPG istället.
 
 ## Listning
-Det finns också ett separat program som skapar ett Google Sheet dokument med en lista på alla noter och sättning.
+Det finns också en ytterligare funktion som skapar ett Google Sheet dokument med en lista på alla noter och sättning.
+
+## Hantering av metadata
+Vidare så finns det stöd för att hantera all metadata kring noterna. Detta innefattar upplägg och redigering av:
+* Noter (låtar)
+* Instrument
+* Sättning (dvs. vilka instrument som ingår i vilka låtar)
+* Låtlistor
+* Användare
