@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2.song;
+package se.terrassorkestern.notgen2.score;
 
 import lombok.Data;
 
@@ -9,29 +9,20 @@ import java.util.List;
 
 @Data
 @Entity
-public class Song {
+public class Score {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "titel")
     @NotBlank(message = "Titel måste anges")
     private String title;
-    @Column(name = "subtitel")
     private String subtitle;
-    @Column(name = "genre")
     @NotBlank(message = "Genre måste anges")
     private String genre = "Foxtrot";
-    @Column(name = "musik")
     private String composer;
-    @Column(name = "text")
     private String author;
-    @Column(name = "arr")
     private String arranger;
-    @Column(name = "ar")
     private Integer year = 1940;
-    @Column(name = "forlag")
     private String publisher;
-    @Column(name = "kommentar")
     private String comment;
 
     private String googleIdFull;
@@ -39,23 +30,17 @@ public class Song {
     private String googleIdCover;
     private String googleIdThumbnail;
 
-    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScorePart> scoreParts = new ArrayList<>();
 
-    @Column(name = "inscannad")
     private Boolean scanned = true;
-    @Column(name = "omslag")
     private Boolean cover = true;
-    @Column(name = "bildbehandla")
     private Boolean imageProcess = true;
     private Boolean upperleft = true;
     private Boolean color = true;
 
-    @Column(name = "filnamn")
-    private String filename;
-
-    @Column(name = "orginal")
     private Boolean archived = true;
-    @Column(name = "Arkivplats")
     private String archiveLocation = "A";
+
+    private String filename;
 }

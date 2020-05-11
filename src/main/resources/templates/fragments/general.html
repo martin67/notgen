@@ -28,7 +28,7 @@
                     <a class="nav-link" th:href="@{/noteLister}">Uppdatera förteckning</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/song/list}">Repertoire</a>
+                    <a class="nav-link" th:href="@{/score/list}">Repertoire</a>
                 </li>
                 <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
                     <a class="nav-link" th:href="@{/instrument/list}">Instrument</a>
@@ -45,7 +45,7 @@
                     <a class="nav-link" th:href="@{/login}">Logga in</a>
                 </li>
                 <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" th:text="'Inloggad som ' + ${#authentication.name}">Logga ut</a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" th:text="'Inloggad som '">Logga ut</a>
                     <div class="dropdown-menu"> 
                     <a class="dropdown-item" th:href="@{/user/edit}">Redigera profil</a>
                     <a class="dropdown-item" th:href="@{/logout}">Logga ut</a>

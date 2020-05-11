@@ -10,7 +10,7 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Integer>
 
     List<Instrument> findByName(String text);
 
-    List<Instrument> findByOrderByStandardDescSortOrder();
-
-    List<Instrument> findByStandardIsTrueOrderBySortOrder();
+//    List<Instrument> findByOrderByStandardDescSortOrder();
+//
+//    List<Instrument> findByStandardIsTrueOrderBySortOrder();
 }

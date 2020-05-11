@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.noteconverter.NoteConverterController;
 import se.terrassorkestern.notgen2.noteconverter.NoteConverterService;
-import se.terrassorkestern.notgen2.song.SongRepository;
+import se.terrassorkestern.notgen2.score.ScoreRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,7 +27,7 @@ public class NoteConverterControllerTest {
     private NoteConverterService noteConverterService;
 
     @MockBean
-    private SongRepository songRepository;
+    private ScoreRepository scoreRepository;
 
     // write test cases here
 

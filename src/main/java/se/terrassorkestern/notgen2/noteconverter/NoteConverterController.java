@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import se.terrassorkestern.notgen2.song.Song;
-import se.terrassorkestern.notgen2.song.SongRepository;
+import se.terrassorkestern.notgen2.score.Score;
+import se.terrassorkestern.notgen2.score.ScoreRepository;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/noteConverter")
 public class NoteConverterController {
 
-    private final @NonNull SongRepository songRepository;
+    private final @NonNull ScoreRepository scoreRepository;
     private final @NonNull NoteConverterService noteConverterService;
 
 
@@ -28,8 +28,8 @@ public class NoteConverterController {
     public String noteConverter(Model model) {
         log.info("Nu är vi i noteConverter");
 
-        List<Song> songs = songRepository.findByOrderByTitle();
-        model.addAttribute("songs", songs);
+        List<Score> scores = scoreRepository.findByOrderByTitle();
+        model.addAttribute("songs", scores);
         model.addAttribute("noteConverterDto", new NoteConverterDto());
 
         return "noteConverter";
@@ -42,9 +42,9 @@ public class NoteConverterController {
 
         // Starta konvertering!
         if (noteConverterDto.getAllSongs()) {
-            noteConverterService.convert(songRepository.findByOrderByTitle(), noteConverterDto.getUpload());
+            noteConverterService.convert(scoreRepository.findByOrderByTitle(), noteConverterDto.getUpload());
         } else {
-            noteConverterService.convert(songRepository.findByIdInOrderByTitle(noteConverterDto.getSelectedSongs()),
+            noteConverterService.convert(scoreRepository.findByIdInOrderByTitle(noteConverterDto.getSelectedSongs()),
                     noteConverterDto.getUpload());
         }
 

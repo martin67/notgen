@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleSheetService;
 import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
-import se.terrassorkestern.notgen2.song.ScorePart;
-import se.terrassorkestern.notgen2.song.Song;
-import se.terrassorkestern.notgen2.song.SongRepository;
+import se.terrassorkestern.notgen2.score.ScorePart;
+import se.terrassorkestern.notgen2.score.Score;
+import se.terrassorkestern.notgen2.score.ScoreRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,44 +27,44 @@ import java.util.List;
 public class NoteListerService {
 
     private final @NonNull InstrumentRepository instrumentRepository;
-    private final @NonNull SongRepository songRepository;
+    private final @NonNull ScoreRepository scoreRepository;
     private final @NonNull GoogleSheetService googleSheetService;
 
 
     void createList() {
         log.info("Starting note listing");
 
-        List<Instrument> instruments = instrumentRepository.findByOrderByStandardDescSortOrder();
-        List<Song> songs = songRepository.findByOrderByTitle();
+        List<Instrument> instruments = instrumentRepository.findAll();
+        List<Score> scores = scoreRepository.findByOrderByTitle();
 
         List<List<Object>> repertoireRows = new ArrayList<>();
         List<List<Object>> instrumentRows = new ArrayList<>();
 
-        for (Song song : songs) {
+        for (Score score : scores) {
 
             // Första fliken
             repertoireRows.add(
                     Arrays.asList(
-                            song.getTitle(),
-                            song.getSubtitle(),
-                            song.getGenre(),
-                            song.getAuthor(),
-                            song.getComposer(),
-                            song.getArranger(),
-                            song.getYear()
+                            score.getTitle(),
+                            score.getSubtitle(),
+                            score.getGenre(),
+                            score.getAuthor(),
+                            score.getComposer(),
+                            score.getArranger(),
+                            score.getYear()
                     )
             );
 
             // Andra fliken
             //instrumentRows.add()
             List<Object> instrumentRow = new ArrayList<>();
-            instrumentRow.add(song.getTitle());
-            instrumentRow.add(song.getGenre());
+            instrumentRow.add(score.getTitle());
+            instrumentRow.add(score.getGenre());
 
             // Kolla för varje instrument i ordning om det finns i låten
             for (Instrument instrument : instruments) {
                 boolean hit = false;
-                for (ScorePart scorePart : song.getScoreParts()) {
+                for (ScorePart scorePart : score.getScoreParts()) {
                     if (scorePart.getInstrument().getId() == instrument.getId()) {
                         instrumentRow.add(scorePart.getLength());
                         hit = true;

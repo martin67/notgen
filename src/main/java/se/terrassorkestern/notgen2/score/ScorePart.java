@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2.song;
+package se.terrassorkestern.notgen2.score;
 
 import lombok.Data;
 import se.terrassorkestern.notgen2.instrument.Instrument;
@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Data
 @Entity
-@Table(name = "sattning")
+@Table(name = "score_instrument")
 public class ScorePart {
 
     @EmbeddedId
@@ -16,18 +16,14 @@ public class ScorePart {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("songId")
-    private Song song;
+    private Score score;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("instrumentId")
     @OrderBy("sortOrder")
     private Instrument instrument;
-
-    @Column(name = "sida")
     private int page;
-    @Column(name = "antal")
     private int length = 1;
-    @Column(name = "kommentar")
     private String comment;
     private String googleId;
   
@@ -51,10 +47,10 @@ public class ScorePart {
     public ScorePart() {
     }
 
-    public ScorePart(Song song, Instrument instrument) {
-        this.song = song;
+    public ScorePart(Score score, Instrument instrument) {
+        this.score = score;
         this.instrument = instrument;
-        this.id = new ScorePartId(song.getId(), instrument.getId());
+        this.id = new ScorePartId(score.getId(), instrument.getId());
     }
 
 
@@ -76,12 +72,12 @@ public class ScorePart {
             return false;
         }
         ScorePart that = (ScorePart) o;
-        return Objects.equals(song, that.song)
+        return Objects.equals(score, that.score)
                 && Objects.equals(instrument, that.instrument);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(song, instrument);
+        return Objects.hash(score, instrument);
     }
 }

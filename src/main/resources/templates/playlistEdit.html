@@ -141,10 +141,10 @@
 <script type="text/javascript">
 window.onload=function(){
 
-var songs = new Bloodhound({
+var scores = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.whitespace,
   queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: '../song/songs.json'
+  prefetch: '../score/scores.json'
 });
 
 $('#prefetch .typeahead').typeahead({
@@ -152,7 +152,7 @@ $('#prefetch .typeahead').typeahead({
   },
   {
     name: 'Songs',
-    source: songs,
+    source: scores,
     limit: 10
 });
 }

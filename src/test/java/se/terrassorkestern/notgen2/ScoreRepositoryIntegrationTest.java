@@ -7,8 +7,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import se.terrassorkestern.notgen2.song.Song;
-import se.terrassorkestern.notgen2.song.SongRepository;
+import se.terrassorkestern.notgen2.score.Score;
+import se.terrassorkestern.notgen2.score.ScoreRepository;
 import se.terrassorkestern.notgen2.user.UserRepositoryUserDetailsService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,30 +22,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @Import(UserRepositoryUserDetailsService.class)
-public class SongRepositoryIntegrationTest {
+public class ScoreRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
-    private SongRepository songRepository;
+    private ScoreRepository scoreRepository;
 
     // write test cases here
 
     @Test
     public void whenFindByTitle_thenReturnSong() {
         // given
-        Song song1 = new Song();
-        song1.setTitle("Testsång");
-        entityManager.persist(song1);
+        Score score1 = new Score();
+        score1.setTitle("Testsång");
+        entityManager.persist(score1);
         entityManager.flush();
 
         // when
-        Song found = songRepository.findByTitle(song1.getTitle()).get(0);
+        Score found = scoreRepository.findByTitle(score1.getTitle()).get(0);
 
         // then
         assertThat(found.getTitle())
-                .isEqualTo(song1.getTitle());
+                .isEqualTo(score1.getTitle());
     }
 }
 

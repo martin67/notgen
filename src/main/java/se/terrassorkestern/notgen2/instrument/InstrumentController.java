@@ -21,7 +21,7 @@ public class InstrumentController {
 
     @GetMapping("/list")
     public String instrumentList(Model model) {
-        model.addAttribute("instruments", instrumentRepository.findByOrderByStandardDescSortOrder());
+        model.addAttribute("instruments", instrumentRepository.findAll());
         return "instrumentList";
     }
 

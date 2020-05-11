@@ -10,9 +10,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
-import se.terrassorkestern.notgen2.song.Song;
-import se.terrassorkestern.notgen2.song.SongController;
-import se.terrassorkestern.notgen2.song.SongRepository;
+import se.terrassorkestern.notgen2.score.Score;
+import se.terrassorkestern.notgen2.score.ScoreController;
+import se.terrassorkestern.notgen2.score.ScoreRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,14 +24,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(SongController.class)
-public class SongControllerTest {
+@WebMvcTest(ScoreController.class)
+public class ScoreControllerTest {
 
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private SongRepository songRepository;
+    private ScoreRepository scoreRepository;
 
     @MockBean
     private InstrumentRepository instrumentRepository;
@@ -44,13 +44,13 @@ public class SongControllerTest {
     public void givenSongs_whenGetSongs_thenReturnJsonArray()
             throws Exception {
 
-        Song song = new Song();
-        song.setTitle("Hej vad det går bra!");
+        Score score = new Score();
+        score.setTitle("Hej vad det går bra!");
 
 
-        List<Song> allSongs = Collections.singletonList(song);
+        List<Score> allScores = Collections.singletonList(score);
 
-        given(songRepository.findByOrderByTitle()).willReturn(allSongs);
+        given(scoreRepository.findByOrderByTitle()).willReturn(allScores);
 
         mvc.perform(get("/song/list")
                 .contentType(MediaType.TEXT_HTML))
@@ -58,9 +58,9 @@ public class SongControllerTest {
                 .andExpect(view().name("songList"))
                 .andExpect(model().attributeExists("songs"))
                 .andExpect(model().attribute("songs", hasSize(1)))
-                .andExpect(model().attribute("songs", contains(samePropertyValuesAs(song))))
+                .andExpect(model().attribute("songs", contains(samePropertyValuesAs(score))))
                 .andExpect(content().string(
-                        containsString(song.getTitle())));
+                        containsString(score.getTitle())));
     }
 
     @Test

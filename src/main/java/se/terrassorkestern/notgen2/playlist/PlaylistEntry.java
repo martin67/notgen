@@ -6,14 +6,11 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "song_playlist")
+@Table(name = "score_playlist")
 public class PlaylistEntry {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @Column(name = "sortorder")
     private Integer sortOrder;
     private String text;
     private Boolean bold;

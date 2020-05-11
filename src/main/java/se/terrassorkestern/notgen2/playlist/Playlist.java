@@ -13,23 +13,19 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = "playlist")
 public class Playlist extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "namn")
     @NotBlank(message = "Låtlistan måste ha ett namn")
     private String name;
-    @Column(name = "kommentar")
     private String comment;
-    @Column(name = "datum")
     private LocalDate date;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "playlist_id", nullable = false)
-    @OrderBy("sortOrder")
+    @OrderBy("sort_order")
     List<PlaylistEntry> playlistEntries = new ArrayList<>();
 
 

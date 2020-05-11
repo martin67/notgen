@@ -18,15 +18,15 @@
 
         <div class="form-group">
             <select multiple class="form-control" th:field="*{selectedSongs}" id="sel1">
-                <option th:each="song : ${songs}"
-                        th:value="${song.id}"
-                        th:text="${song.title}"></option>
+                <option th:each="score : ${scores}"
+                        th:value="${score.id}"
+                        th:text="${score.title}"></option>
             </select>
         </div>
 
         <div class="form-check">
             <label class="form-check-label">
-                <input type="checkbox" class="form-check-input" th:field="*{allSongs}" value="" checked>Konvertera alla
+                <input type="checkbox" class="form-check-input" th:field="*{allScores}" value="" checked>Konvertera alla
                 låtar
             </label>
         </div>

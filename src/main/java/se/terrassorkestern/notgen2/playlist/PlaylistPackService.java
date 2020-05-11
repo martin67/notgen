@@ -8,9 +8,9 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleDriveService;
 import se.terrassorkestern.notgen2.instrument.Instrument;
-import se.terrassorkestern.notgen2.song.ScorePart;
-import se.terrassorkestern.notgen2.song.Song;
-import se.terrassorkestern.notgen2.song.SongRepository;
+import se.terrassorkestern.notgen2.score.Score;
+import se.terrassorkestern.notgen2.score.ScorePart;
+import se.terrassorkestern.notgen2.score.ScoreRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.nio.file.Path;
 public class PlaylistPackService {
 
     private final @NonNull GoogleDriveService googleDriveService;
-    private final @NonNull SongRepository songRepository;
+    private final @NonNull ScoreRepository scoreRepository;
 
 
     public String createPack(Playlist playlist, Instrument instrument, String filename) {
@@ -35,7 +35,7 @@ public class PlaylistPackService {
         // Bättre att kolla alla på en gång än att ta det allt eftersom
         log.debug("Kollar att alla låtar ur listan verkligen finns");
         for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
-            if (!playlistEntry.getBold() && songRepository.findByTitle(playlistEntry.getText()).isEmpty()) {
+            if (!playlistEntry.getBold() && scoreRepository.findByTitle(playlistEntry.getText()).isEmpty()) {
                 log.warn("Hittar inte låten med titel: " + playlistEntry.getText());
                 return null;
             }
@@ -75,27 +75,27 @@ public class PlaylistPackService {
                 continue;
             }
 
-            Song song = songRepository.findByTitle(playlistEntry.getText()).get(0);
-            if (song == null) {
+            Score score = scoreRepository.findByTitle(playlistEntry.getText()).get(0);
+            if (score == null) {
                 log.warn("Hittar inte låten med titel: " + playlistEntry.getText());
                 continue;
             }
 
-            ScorePart scorePart = song.getScoreParts().stream().
+            ScorePart scorePart = score.getScoreParts().stream().
                     filter(p -> p.getInstrument().getId() == instrument.getId()).
                     findAny().
                     orElse(null);
             if (scorePart == null) {
-                log.warn("Hittar ingen stämma för " + instrument.getName() + " i låten " + song.getTitle());
+                log.warn("Hittar ingen stämma för " + instrument.getName() + " i låten " + score.getTitle());
                 continue;
             }
 
             if (scorePart.getGoogleId() == null) {
-                log.warn("Inga scannade noter för " + instrument.getName() + " i låten " + song.getTitle());
+                log.warn("Inga scannade noter för " + instrument.getName() + " i låten " + score.getTitle());
                 continue;
             }
 
-            log.info("Downloading " + song.getTitle() + "/" + instrument.getName() + " [" + scorePart.getGoogleId() + "]");
+            log.info("Downloading " + score.getTitle() + "/" + instrument.getName() + " [" + scorePart.getGoogleId() + "]");
             try {
                 File f = googleDriveService.downloadFile(scorePart.getGoogleId(), index++, tmpDir);
                 pdfMergerUtility.addSource(f);

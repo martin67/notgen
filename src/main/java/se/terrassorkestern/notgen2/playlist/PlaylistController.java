@@ -41,7 +41,7 @@ public class PlaylistController {
     @GetMapping("/edit")
     public String playlistEdit(@RequestParam("id") Integer id, Model model) {
         model.addAttribute("playlist", playlistRepository.findById(id).orElse(null));
-        model.addAttribute("instruments", instrumentRepository.findByStandardIsTrueOrderBySortOrder());
+        model.addAttribute("instruments", instrumentRepository.findAll());
         Integer selectedInstrument = 0;
         model.addAttribute("selectedInstrument", selectedInstrument);
         return "playlistEdit";
@@ -50,7 +50,7 @@ public class PlaylistController {
     @GetMapping("/new")
     public String playlistNew(Model model) {
         model.addAttribute("playlist", new Playlist());
-        model.addAttribute("instruments", instrumentRepository.findByStandardIsTrueOrderBySortOrder());
+        model.addAttribute("instruments", instrumentRepository.findAll());
         return "playlistEdit";
     }
 

@@ -46,7 +46,7 @@ public class InstrumentControllerTest {
 
         List<Instrument> allInstruments = Collections.singletonList(sax);
 
-        given(instrumentRepository.findByOrderByStandardDescSortOrder()).willReturn(allInstruments);
+        given(instrumentRepository.findAll()).willReturn(allInstruments);
 
         mvc.perform(get("/instrument/list")
                 .contentType(MediaType.TEXT_HTML))
