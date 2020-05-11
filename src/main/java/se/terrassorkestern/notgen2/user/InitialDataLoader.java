@@ -62,7 +62,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
 
 
     @Transactional
-    private Privilege createPrivilegeIfNotFound(String name) {
+    Privilege createPrivilegeIfNotFound(String name) {
 
         Privilege privilege = privilegeRepository.findByName(name);
         if (privilege == null) {
@@ -74,7 +74,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
 
 
     @Transactional
-    private void createRoleIfNotFound(
+    void createRoleIfNotFound(
             String name, Collection<Privilege> privileges) {
 
         Role role = roleRepository.findByName(name);

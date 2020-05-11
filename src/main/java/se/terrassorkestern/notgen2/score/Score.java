@@ -15,7 +15,7 @@ public class Score {
     private int id;
     @NotBlank(message = "Titel måste anges")
     private String title;
-    private String subtitle;
+    private String subTitle;
     @NotBlank(message = "Genre måste anges")
     private String genre = "Foxtrot";
     private String composer;
@@ -42,5 +42,6 @@ public class Score {
     private Boolean archived = true;
     private String archiveLocation = "A";
 
+    @Transient
     private String filename;
 }

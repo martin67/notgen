@@ -46,7 +46,7 @@ public class NoteListerService {
             repertoireRows.add(
                     Arrays.asList(
                             score.getTitle(),
-                            score.getSubtitle(),
+                            score.getSubTitle(),
                             score.getGenre(),
                             score.getAuthor(),
                             score.getComposer(),

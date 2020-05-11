@@ -161,7 +161,7 @@ public class GoogleDriveService extends Google {
     }
 
 
-    class CustomProgressListener implements MediaHttpDownloaderProgressListener {
+    static class CustomProgressListener implements MediaHttpDownloaderProgressListener {
         public void progressChanged(MediaHttpDownloader downloader) {
             switch (downloader.getDownloadState()) {
                 case MEDIA_IN_PROGRESS:

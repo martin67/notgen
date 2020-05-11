@@ -46,7 +46,7 @@
                 <div class="row">
                     <div class="form-group col">
                         <label>Subtitel</label>
-                        <input type="text" class="form-control" th:field="*{subtitle}" th:value="${score.subtitle}"/>
+                        <input type="text" class="form-control" th:field="*{subTitle}" th:value="${score.subTitle}"/>
                     </div>
                 </div>
                 <div class="row">
@@ -190,7 +190,8 @@
             </div>
             <div class="col-sm">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" th:field="*{archived}" th:value="${score.archived}"/>
+                    <input class="form-check-input" type="checkbox" th:field="*{archived}"
+                           th:value="${score.archived}"/>
                     <label class="form-check-label">Original i arkivet</label>
                 </div>
                 <div class="form-group row">
@@ -201,12 +202,6 @@
                     </div>
                 </div>
 
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col">
-                <label>Filnamn</label>
-                <input type="text" class="form-control" th:field="*{filename}" th:value="${score.filename}"/>
             </div>
         </div>
         <div class="form-group row">
@@ -224,139 +219,79 @@
 <footer th:replace="fragments/general :: footer"></footer>
 
 <script type="text/javascript">
-window.onload=function(){
-
-var genres = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.whitespace,
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: '/score/genres.json'
-});
-
-var composers = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.whitespace,
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: '/score/composers.json'
-});
-
-var authors = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.whitespace,
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: '/score/authors.json'
-});
-
-var arrangers = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.whitespace,
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: '/score/arrangers.json'
-});
-
-var publishers = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.whitespace,
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: '/score/publishers.json'
-});
-
-$('#prefetch-genres .typeahead').typeahead({
-    highlight: true
-  },
-  {
-    name: 'genres',
-    source: genres
-});
-
-$('#prefetch-composers .typeahead').typeahead({
-    highlight: true
-  },
-  {
-    name: 'composers',
-    source: composers
-});
-
-$('#prefetch-authors .typeahead').typeahead({
-    highlight: true
-  },
-  {
-    name: 'authors',
-    source: authors
-});
-
-$('#prefetch-arrangers .typeahead').typeahead({
-    highlight: true
-  },
-  {
-    name: 'arrangers',
-    source: arrangers
-});
-
-$('#prefetch-publishers .typeahead').typeahead({
-    highlight: true
-  },
-  {
-    name: 'publishers',
-    source: publishers
-});
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    window.onload = function () {
+
+        var genres = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: '/score/genres.json'
+        });
+
+        var composers = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: '/score/composers.json'
+        });
+
+        var authors = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: '/score/authors.json'
+        });
+
+        var arrangers = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: '/score/arrangers.json'
+        });
+
+        var publishers = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: '/score/publishers.json'
+        });
+
+        $('#prefetch-genres .typeahead').typeahead({
+                highlight: true
+            },
+            {
+                name: 'genres',
+                source: genres
+            });
+
+        $('#prefetch-composers .typeahead').typeahead({
+                highlight: true
+            },
+            {
+                name: 'composers',
+                source: composers
+            });
+
+        $('#prefetch-authors .typeahead').typeahead({
+                highlight: true
+            },
+            {
+                name: 'authors',
+                source: authors
+            });
+
+        $('#prefetch-arrangers .typeahead').typeahead({
+                highlight: true
+            },
+            {
+                name: 'arrangers',
+                source: arrangers
+            });
+
+        $('#prefetch-publishers .typeahead').typeahead({
+                highlight: true
+            },
+            {
+                name: 'publishers',
+                source: publishers
+            });
+
+    }
 
 
 </script>

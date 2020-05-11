@@ -23,7 +23,6 @@
         <tr th:each="instrument : ${instruments}">
             <td th:text="${instrument.name}"></td>
             <td th:text="${instrument.shortName}"></td>
-            <td><input type="checkbox" th:checked="${instrument.standard}" ? 'checked' /></td>
             <td th:text="${instrument.sortOrder}"></td>
             <td><a th:href="@{/instrument/edit(id=${instrument.id})}"><i
                     class="material-icons text-secondary" title="Ändra instrument">mode_edit</i></a></td>

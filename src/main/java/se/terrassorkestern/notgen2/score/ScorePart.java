@@ -15,7 +15,7 @@ public class ScorePart {
     private ScorePartId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("songId")
+    @MapsId("scoreId")
     private Score score;
 
     @ManyToOne(fetch = FetchType.LAZY)
