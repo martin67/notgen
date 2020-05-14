@@ -3,24 +3,22 @@
 <head th:replace="fragments/general :: header-css"></head>
 
 <body>
-	<div th:replace="fragments/general :: header"></div>
+<div th:replace="fragments/general :: header"></div>
 
-	<div class="container">
+<div class="container">
 
-		<h1>Terrassorkesterns Notgenerator 2.0</h1>
+    <h1 th:text="#{home.title}">Terrassorkesterns Notgenerator 2.0</h1>
 
-		<p>Välkommen till den nya notgeneratorn. Här kan du både skapa
-			snygga PDF:er i alla olika tappningar men även lägga till, ta bort
-			och ändra i notdatabasen.</p>
+    <p th:text="#{home.welcome}">Välkommen</p>
 
-		<p>Fantastiskt, eller hur?</p>
+    <p>Fantastiskt, eller hur?</p>
 
-		<div class="col-6 text-center mx-auto">
-			<img class="img-fluid" th:src="@{/images/Tork02cover.png}" />
+    <div class="col-6 text-center mx-auto">
+        <img class="img-fluid" th:src="@{/images/Tork02cover.png}"/>
 
-		</div>
-	</div>
+    </div>
+</div>
 
-	<footer th:replace="fragments/general :: footer"></footer>
+<footer th:replace="fragments/general :: footer"></footer>
 </body>
 </html>

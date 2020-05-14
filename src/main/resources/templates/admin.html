@@ -3,19 +3,19 @@
 <head th:replace="fragments/general :: header-css"></head>
 
 <body>
-	<div th:replace="fragments/general :: header"></div>
+<div th:replace="fragments/general :: header"></div>
 
-	<div class="container">
-		<h1>Administration av notgeneratorn</h1>
+<div class="container">
+    <h2>Administration av notgeneratorn</h2>
 
-		<ul class="list-group">
-			<li class="list-group-item"><a th:href="@{/user/list}">Administrera
-					användare</a></li>
-		</ul>
+    <ul class="list-group">
+        <li class="list-group-item"><a th:href="@{/user/list}">Användare</a></li>
+        <li class="list-group-item"><a th:href="@{/instrument/list}">Instrument</a></li>
+        <li class="list-group-item"><a th:href="@{/setting/list}">Sättningar</a></li>
+    </ul>
 
+</div>
 
-	</div>
-
-	<footer th:replace="fragments/general :: footer"></footer>
+<footer th:replace="fragments/general :: footer"></footer>
 </body>
 </html>

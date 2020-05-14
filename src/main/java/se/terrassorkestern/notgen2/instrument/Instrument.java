@@ -1,12 +1,17 @@
 package se.terrassorkestern.notgen2.instrument;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class Instrument {
     @Id
@@ -17,4 +22,7 @@ public class Instrument {
     private String shortName;
     @NotNull(message = "Sorteringsordning måste anges")
     private Integer sortOrder;
+
+    @ManyToMany(mappedBy = "instruments")
+    private Set<Setting> settings = new HashSet<>();
 }

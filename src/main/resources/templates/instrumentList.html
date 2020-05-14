@@ -7,13 +7,12 @@
 <div th:replace="fragments/general :: header"></div>
 
 <div class="container">
-    <br>
+    <h2>Instrument</h2>
     <table class="table table-bordered table-striped table-hover table-sm">
         <thead>
         <tr>
             <th>Namn</th>
             <th>Förkortning</th>
-            <th>Standard</th>
             <th>Ordning</th>
             <th><a sec:authorize="hasAuthority('EDIT_INSTRUMENT')" th:href="@{/instrument/new}"><i
                     class="material-icons" title="Lägg till instrument">add_box</i></a></th>

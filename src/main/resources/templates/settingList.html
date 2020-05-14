@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--suppress XmlHighlighting -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="fragments/general :: header-css"></head>
+
+<body>
+<div th:replace="fragments/general :: header"></div>
+
+<div class="container">
+    <h2>Sättningar</h2>
+    <table class="table table-bordered table-striped table-hover table-sm">
+        <thead>
+        <tr>
+            <th>Namn</th>
+            <th>Antal instrument</th>
+            <th><a sec:authorize="hasAuthority('EDIT_INSTRUMENT')" th:href="@{/setting/new}"><i
+                    class="material-icons" title="Lägg till sättning">add_box</i></a></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="setting : ${settings}">
+            <td th:text="${setting.name}"></td>
+            <td th:text="${setting.getInstruments().size()}"></td>
+            <td><a th:href="@{/setting/edit(id=${setting.id})}"><i
+                    class="material-icons text-secondary" title="Ändra sättning">mode_edit</i></a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer th:replace="fragments/general :: footer"></footer>
+</body>
+</html>

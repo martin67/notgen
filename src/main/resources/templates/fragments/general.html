@@ -32,9 +32,6 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/score/list}">Repertoire</a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
-                    <a class="nav-link" th:href="@{/instrument/list}">Instrument</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/playlist/list}">Låtlistor</a>
                 </li>
@@ -62,7 +59,7 @@
 
 <footer th:fragment="footer">
     <hr/>
-    <p class="small text-right col-sm-12" th:text="|Git build: #{git.commit.id.describe}|">Hejsan</p>
+    <p class="small text-right col-sm-12" th:text="|Git build: #{git.commit.id}|">Hejsan</p>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
