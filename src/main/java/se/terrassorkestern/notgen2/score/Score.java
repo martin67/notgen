@@ -42,6 +42,5 @@ public class Score {
     private Boolean archived = true;
     private String archiveLocation = "A";
 
-    @Transient
     private String filename;
 }

@@ -17,7 +17,7 @@
     <form action="#" th:action="@{/noteConverter/convert}" th:object="${noteConverterDto}" method="post">
 
         <div class="form-group">
-            <select multiple class="form-control" th:field="*{selectedSongs}" id="sel1">
+            <select multiple class="form-control" th:field="*{selectedScores}" id="sel1">
                 <option th:each="score : ${scores}"
                         th:value="${score.id}"
                         th:text="${score.title}"></option>
@@ -50,7 +50,7 @@
 
     <div class="progress">
         <div id="progressBar" class="progress-bar progress-bar-success" role="progressbar"
-             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%
+             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0">0%
         </div>
     </div>
 

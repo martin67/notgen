@@ -32,8 +32,8 @@
     <table class="table table-bordered table-striped table-hover table-sm">
         <thead>
         <tr>
-            <th>Namn</th>
-            <th>Datum</th>
+            <th th:text="#{name}">name</th>
+            <th th:text="#{date}">date</th>
             <th>Antal låtar</th>
             <th><a sec:authorize="hasAuthority('EDIT_PLAYLIST')" th:href="@{/playlist/new}"><i class="material-icons" title="Lägg till låtlists">add_box</i></a></th>
         </tr>

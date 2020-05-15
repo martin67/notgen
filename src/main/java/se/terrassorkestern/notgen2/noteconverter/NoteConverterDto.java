@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 @Configuration
 class NoteConverterDto {
-    private List<Integer> selectedSongs;
-    private Boolean allSongs;
+    private List<Integer> selectedScores;
+    private Boolean allScores;
     private Boolean upload;
     private Boolean async;
 }

@@ -29,7 +29,7 @@ public class NoteConverterController {
         log.info("Nu är vi i noteConverter");
 
         List<Score> scores = scoreRepository.findByOrderByTitle();
-        model.addAttribute("songs", scores);
+        model.addAttribute("scores", scores);
         model.addAttribute("noteConverterDto", new NoteConverterDto());
 
         return "noteConverter";
@@ -41,10 +41,10 @@ public class NoteConverterController {
         log.info("Nu är vi i noteConverter post");
 
         // Starta konvertering!
-        if (noteConverterDto.getAllSongs()) {
+        if (noteConverterDto.getAllScores()) {
             noteConverterService.convert(scoreRepository.findByOrderByTitle(), noteConverterDto.getUpload());
         } else {
-            noteConverterService.convert(scoreRepository.findByIdInOrderByTitle(noteConverterDto.getSelectedSongs()),
+            noteConverterService.convert(scoreRepository.findByIdInOrderByTitle(noteConverterDto.getSelectedScores()),
                     noteConverterDto.getUpload());
         }
 
