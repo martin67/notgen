@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head th:replace="fragments/general :: header-css"></head>
 
 <body>
@@ -33,6 +33,7 @@
         <thead>
         <tr>
             <th th:text="#{name}">name</th>
+            <th th:text="#{setting}">setting</th>
             <th th:text="#{date}">date</th>
             <th>Antal låtar</th>
             <th><a sec:authorize="hasAuthority('EDIT_PLAYLIST')" th:href="@{/playlist/new}"><i class="material-icons" title="Lägg till låtlists">add_box</i></a></th>
@@ -41,6 +42,7 @@
 
         <tr th:each="playlist : ${playlists}">
             <td th:text="${playlist.name}"></td>
+            <td th:text="${playlist.setting}"></td>
             <td th:text="${playlist.date}"></td>
             <td th:text="${playlist.playlistEntries.size()}"></td>
             <td>

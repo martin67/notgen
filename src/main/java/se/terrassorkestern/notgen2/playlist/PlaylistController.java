@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
+import se.terrassorkestern.notgen2.instrument.SettingRepository;
 import se.terrassorkestern.notgen2.user.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ import java.io.*;
 public class PlaylistController {
 
     private final @NonNull PlaylistRepository playlistRepository;
+    private final @NonNull SettingRepository settingRepository;
     private final @NonNull InstrumentRepository instrumentRepository;
     private final @NonNull PlaylistPdfService playlistPdfService;
     private final @NonNull PlaylistPackService playlistPackService;
@@ -41,6 +43,7 @@ public class PlaylistController {
     @GetMapping("/edit")
     public String playlistEdit(@RequestParam("id") Integer id, Model model) {
         model.addAttribute("playlist", playlistRepository.findById(id).orElse(null));
+        model.addAttribute("settings", settingRepository.findAll());
         model.addAttribute("instruments", instrumentRepository.findAll());
         Integer selectedInstrument = 0;
         model.addAttribute("selectedInstrument", selectedInstrument);
@@ -50,6 +53,7 @@ public class PlaylistController {
     @GetMapping("/new")
     public String playlistNew(Model model) {
         model.addAttribute("playlist", new Playlist());
+        model.addAttribute("settings", settingRepository.findAll());
         model.addAttribute("instruments", instrumentRepository.findAll());
         return "playlistEdit";
     }

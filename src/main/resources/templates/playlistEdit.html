@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head th:replace="fragments/general :: header-css"></head>
 
 <body>
@@ -33,25 +33,29 @@
     <form role="form" th:action="@{/playlist/save}" th:object="${playlist}" th:method="post" id="editPlaylist">
         <input type="hidden" th:field="*{id}" th:value="${playlist.id}"/>
 
-        <div class="row">
-            <div class="form-group col">
-                <label>Namn</label>
-                <input type="text" class="form-control" th:field="*{name}" th:value="${playlist.name}"/>
-                <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
-            </div>
+        <div class="form-group">
+            <label for="name" th:text="#{name}">name</label>
+            <input type="text" class="form-control" th:field="*{name}" th:value="${playlist.name}" id="name"/>
+            <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
         </div>
-        <div class="row">
-            <div class="form-group col">
-                <label>Datum</label>
-                <input type="date" class="form-control" th:field="*{date}" th:value="${playlist.date}"/>
-                <span class="text-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</span>
-            </div>
+
+        <div class="form-group">
+            <label for="setting" th:text="#{setting}">setting</label>
+            <select class="form-control" id="setting" th:field="*{setting}">
+                <option th:each="s : ${settings}" th:value="${s.id}" th:text="${s.name}">bla</option>
+            </select>
         </div>
-        <div class="row">
-            <div class="form-group col">
-                <label>Kommentar</label>
-                <textarea class="form-control" th:field="*{comment}" th:value="${playlist.comment}"></textarea>
-            </div>
+
+        <div class="form-group">
+            <label for="date" th:text="#{date}">date</label>
+            <input type="date" class="form-control" th:field="*{date}" th:value="${playlist.date}" id="date"/>
+            <span class="text-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</span>
+        </div>
+
+        <div class="form-group">
+            <label for="comment" th:text="#{comment}">comment</label>
+            <textarea class="form-control" th:field="*{comment}" th:value="${playlist.comment}"
+                      id="comment"></textarea>
         </div>
 
         <div class="row">
@@ -139,119 +143,37 @@
 
 <footer th:replace="fragments/general :: footer"></footer>
 <script type="text/javascript">
-window.onload=function(){
+    window.onload = function () {
 
-var scores = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.whitespace,
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: '../score/scores.json'
-});
+        var scores = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: '../score/scores.json'
+        });
 
-$('#prefetch .typeahead').typeahead({
-    highlight: true
-  },
-  {
-    name: 'Songs',
-    source: scores,
-    limit: 10
-});
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        $('#prefetch .typeahead').typeahead({
+                highlight: true
+            },
+            {
+                name: 'Songs',
+                source: scores,
+                limit: 10
+            });
+    }
 
 
 </script>
 
 <script>
-    $(function() {
-$( "table tbody" ).sortable( {
-  update: function( event, ui ) {
-    $(this).children().each(function(index) {
-      $(this).find('td').last().find('input').val(index + 1)
+    $(function () {
+        $("table tbody").sortable({
+            update: function (event, ui) {
+                $(this).children().each(function (index) {
+                    $(this).find('td').last().find('input').val(index + 1)
+                });
+            }
+        });
     });
-}
-});
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </script>

@@ -1,6 +1,5 @@
 package se.terrassorkestern.notgen2.instrument;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +9,10 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
+
+/**
+ * DTO for Instrument
+ */
 @Getter
 @Setter
 @Entity

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="sv">
 <head th:replace="fragments/general :: header-css"></head>
 
 <body>
@@ -17,6 +17,7 @@
     <form action="#" th:action="@{/noteConverter/convert}" th:object="${noteConverterDto}" method="post">
 
         <div class="form-group">
+            <label for="sel1"></label>
             <select multiple class="form-control" th:field="*{selectedScores}" id="sel1">
                 <option th:each="score : ${scores}"
                         th:value="${score.id}"

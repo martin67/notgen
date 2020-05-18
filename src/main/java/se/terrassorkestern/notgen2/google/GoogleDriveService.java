@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 @Service
 public class GoogleDriveService extends Google {
-    private Drive service;
+    private final Drive service;
 
     private GoogleDriveService() throws IOException, GeneralSecurityException {
         log.debug("Creating GoogleDriveService object");

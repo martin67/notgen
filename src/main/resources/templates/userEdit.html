@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head th:replace="fragments/general :: header-css"></head>
 
 <body>
@@ -15,7 +15,7 @@
 
         <div sec:authorize="hasRole('ROLE_ADMIN')" class="row">
             <div class="form-group col">
-                <label>Användarnamn</label>
+                <label for="username">Användarnamn</label>
                 <input type="text" class="form-control" th:field="*{username}" th:value="${user.username}"
                        id="username"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</span>
@@ -26,7 +26,7 @@
 
         <div class="row">
             <div class="form-group col">
-                <label>Namn</label>
+                <label for="fullname">Namn</label>
                 <input type="text" class="form-control" th:field="*{fullname}" th:value="${user.fullname}"
                        id="fullname"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('fullname')}" th:errors="*{fullname}">Error</span>
@@ -35,7 +35,7 @@
 
         <div class="row">
             <div class="form-group col">
-                <label>E-post</label>
+                <label for="email">E-post</label>
                 <input type="text" class="form-control" th:field="*{email}" th:value="${user.email}" id="email"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</span>
             </div>
@@ -43,7 +43,7 @@
 
         <div class="row">
             <div class="form-group col">
-                <label>Lösenord</label>
+                <label for="password">Lösenord</label>
                 <input type="password" class="form-control" th:field="*{password}" th:value="${user.password}"
                        id="password"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error</span>
@@ -52,7 +52,7 @@
 
         <div class="form-group row">
             <div class="form-group col">
-                <label>Upprepa lösenord</label>
+                <label for="matchingPassword">Upprepa lösenord</label>
                 <input type="password" class="form-control" th:field="*{matchingPassword}"
                        th:value="${user.matchingPassword}" id="matchingPassword"/>
                 <span class="text-danger" th:if="${#fields.hasErrors('matchingPassword')}"

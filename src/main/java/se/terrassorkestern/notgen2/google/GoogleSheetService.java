@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @Service
 public class GoogleSheetService extends Google {
-    private Sheets service;
+    private final Sheets service;
 
     @Value("${notgen2.google.id.spreadsheet}")
     private String googleFileIdSpreadsheet;

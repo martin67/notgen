@@ -3,6 +3,7 @@ package se.terrassorkestern.notgen2.playlist;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import se.terrassorkestern.notgen2.Auditable;
+import se.terrassorkestern.notgen2.instrument.Setting;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -22,6 +23,9 @@ public class Playlist extends Auditable<String> {
     private String name;
     private String comment;
     private LocalDate date;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Setting setting;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "playlist_id", nullable = false)

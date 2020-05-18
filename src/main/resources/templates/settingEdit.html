@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head th:replace="fragments/general :: header-css"></head>
 
 <body>
@@ -10,7 +10,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Ta bort instrument</h5>
+                <h5 class="modal-title">Ta bort sättning</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -31,28 +31,24 @@
 
     <form role="form" th:action="@{/setting/save}" th:object="${setting}" th:method="post">
         <input type="hidden" th:field="*{id}" th:value="${setting.id}"/>
-
-        <div class="row">
-            <div class="form-group col">
-                <label>Namn</label>
-                <input type="text" class="form-control" th:field="*{name}" th:value="${setting.name}" id="name"/>
-                <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
-            </div>
+        <div class="form-group">
+            <label for="name">Namn</label>
+            <input type="text" class="form-control" th:field="*{name}" th:value="${setting.name}" id="name"/>
+            <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
         </div>
-        <div class="row">
-            <select th:field="*{instruments}" multiple="multiple">
+        <div class="form-group">
+            <label for="instrumentSelect">Instrument</label>
+            <select class="form-control" id="instrumentSelect" th:field="*{instruments}" multiple="multiple" size="10">
                 <option th:each="i : ${allInstruments}" th:value="${i.id}" th:text="${i.name}">bla</option>
             </select>
         </div>
-        <div class="row">
-            <div class="col-sm-9">
-                <a class="btn btn-secondary" th:href="@{/setting/list}">Tillbaka</a>
-                <button sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="button" class="btn btn-danger"
-                        data-toggle="modal" data-target="#deleteModal">Ta bort
-                </button>
-                <input sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="submit" class="btn btn-primary"
-                       value="Spara"/>
-            </div>
+        <div class="form-group">
+            <a class="btn btn-secondary" th:href="@{/setting/list}">Tillbaka</a>
+            <button sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="button" class="btn btn-danger"
+                    data-toggle="modal" data-target="#deleteModal">Ta bort
+            </button>
+            <input sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="submit" class="btn btn-primary"
+                   value="Spara"/>
         </div>
     </form>
 </div>
