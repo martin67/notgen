@@ -2,6 +2,7 @@ package se.terrassorkestern.notgen2.playlist;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.format.annotation.DateTimeFormat;
 import se.terrassorkestern.notgen2.Auditable;
 import se.terrassorkestern.notgen2.instrument.Setting;
 
@@ -22,14 +23,15 @@ public class Playlist extends Auditable<String> {
     @NotBlank(message = "Låtlistan måste ha ett namn")
     private String name;
     private String comment;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Setting setting;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "playlist_id", nullable = false)
-    @OrderBy("sort_order")
+    @OrderBy("sortOrder")
     List<PlaylistEntry> playlistEntries = new ArrayList<>();
 
 

@@ -36,20 +36,26 @@
             <th th:text="#{setting}">setting</th>
             <th th:text="#{date}">date</th>
             <th>Antal låtar</th>
-            <th><a sec:authorize="hasAuthority('EDIT_PLAYLIST')" th:href="@{/playlist/new}"><i class="material-icons" title="Lägg till låtlists">add_box</i></a></th>
+            <th><a sec:authorize="hasAuthority('EDIT_PLAYLIST')" th:href="@{/playlist/new}"><i class="material-icons"
+                                                                                               title="Lägg till låtlists">add_box</i></a>
+            </th>
         </tr>
         </thead>
 
         <tr th:each="playlist : ${playlists}">
             <td th:text="${playlist.name}"></td>
-            <td th:text="${playlist.setting}"></td>
+            <td th:text="${playlist.setting?.name}"></td>
             <td th:text="${playlist.date}"></td>
             <td th:text="${playlist.playlistEntries.size()}"></td>
             <td>
-                <a th:href="@{/playlist/edit(id=${playlist.id})}"><i class="material-icons text-secondary" title="Ändra låtlists">mode_edit</i></a>
-                <a sec:authorize="hasAuthority('EDIT_PLAYLIST')" th:href="@{/playlist/copy(id=${playlist.id})}"><i class="material-icons text-secondary" title="Kopiera låtlista">file_copy</i></a>
-                <a th:href="@{/playlist/createPdf(id=${playlist.id})}"><i class="material-icons text-secondary" title="Skriv ut">print</i></a>
-                <a sec:authorize="hasAuthority('EDIT_PLAYLIST')" href="#deleteModal" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${playlist.id}">
+                <a th:href="@{/playlist/edit(id=${playlist.id})}"><i class="material-icons text-secondary"
+                                                                     title="Ändra låtlists">mode_edit</i></a>
+                <a sec:authorize="hasAuthority('EDIT_PLAYLIST')" th:href="@{/playlist/copy(id=${playlist.id})}"><i
+                        class="material-icons text-secondary" title="Kopiera låtlista">file_copy</i></a>
+                <a th:href="@{/playlist/createPdf(id=${playlist.id})}"><i class="material-icons text-secondary"
+                                                                          title="Skriv ut">print</i></a>
+                <a sec:authorize="hasAuthority('EDIT_PLAYLIST')" href="#deleteModal" data-toggle="modal"
+                   data-target="#deleteModal" th:attr="data-target='#deleteModal'+${playlist.id}">
                     <i class="material-icons text-danger" title="Ta bort">delete</i></a>
                 <!-- Modal -->
                 <div class="modal" th:id="deleteModal+${playlist.id}" tabindex="-1" role="dialog">
