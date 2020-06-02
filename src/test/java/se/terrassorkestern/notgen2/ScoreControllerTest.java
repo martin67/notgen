@@ -41,7 +41,7 @@ public class ScoreControllerTest {
 
     @Test
     @WithMockUser(authorities = "EDIT_SONG")
-    public void givenSongs_whenGetSongs_thenReturnJsonArray()
+    public void givenScores_whenGetScores_thenReturnJsonArray()
             throws Exception {
 
         Score score = new Score();
@@ -52,27 +52,26 @@ public class ScoreControllerTest {
 
         given(scoreRepository.findByOrderByTitle()).willReturn(allScores);
 
-        mvc.perform(get("/song/list")
+        mvc.perform(get("/score/list")
                 .contentType(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
-                .andExpect(view().name("songList"))
-                .andExpect(model().attributeExists("songs"))
-                .andExpect(model().attribute("songs", hasSize(1)))
-                .andExpect(model().attribute("songs", contains(samePropertyValuesAs(score))))
-                .andExpect(content().string(
-                        containsString(score.getTitle())));
+                .andExpect(view().name("scoreList"))
+                .andExpect(model().attributeExists("scores"))
+                .andExpect(model().attribute("scores", hasSize(1)))
+                .andExpect(model().attribute("scores", contains(samePropertyValuesAs(score))))
+                .andExpect(content().string(containsString(score.getTitle())));
     }
 
     @Test
     @WithMockUser
     public void accessToProtected_normalUser() throws Exception {
-        mvc.perform(get("/song/new"))
+        mvc.perform(get("/score/new"))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(post("/song/save"))
+        mvc.perform(post("/score/save"))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get("/song/delete"))
+        mvc.perform(get("/score/delete"))
                 .andExpect(status().isForbidden());
 
     }
@@ -80,7 +79,7 @@ public class ScoreControllerTest {
     @Test
     @WithMockUser(authorities = "EDIT_SONG")
     public void accessToProtected_adminUser() throws Exception {
-        mvc.perform(get("/song/new"))
+        mvc.perform(get("/score/new"))
                 .andExpect(status().isOk());
     }
 

@@ -10,6 +10,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
+import se.terrassorkestern.notgen2.instrument.SettingRepository;
 import se.terrassorkestern.notgen2.playlist.*;
 
 import java.util.Collections;
@@ -32,6 +33,9 @@ public class PlaylistControllerTest {
 
     @MockBean
     private PlaylistRepository playlistRepository;
+
+    @MockBean
+    private SettingRepository settingRepository;
 
     @MockBean
     private InstrumentRepository instrumentRepository;
