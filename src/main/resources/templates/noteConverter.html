@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="sv">
 <head th:replace="fragments/general :: header-css"></head>
 
-<body>
+<body onload="connect()">
 <div th:replace="fragments/general :: header"></div>
 
 <div class="container">
@@ -48,14 +48,70 @@
     </form>
 
     <br>
+    <hr>
 
     <div class="progress">
-        <div id="progressBar" class="progress-bar progress-bar-success" role="progressbar"
-             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0">0%
+        <div id="totalProgressBar" class="progress-bar" role="progressbar"
+             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        </div>
+    </div>
+    <br>
+    <div class="progress">
+        <div id="progressBar" class="progress-bar" role="progressbar"
+             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
         </div>
     </div>
 
+    <div class="form-group">
+        <label for="progressArea"></label>
+        <textarea class="form-control" id="progressArea" rows="5"></textarea>
+    </div>
+
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script>
+    function connect() {
+        let socket = new WebSocket(location.origin.replace(/^http/, 'ws') + '/progress');
+        let ws = Stomp.over(socket);
+
+        ws.connect({}, function (frame) {
+            ws.subscribe("/user/queue/errors", function (message) {
+                alert("Error " + message.body);
+            });
+
+            ws.subscribe("/user/queue/progress", function (message) {
+                log(JSON.parse(message.body));
+            });
+        }, function (error) {
+            //alert("STOMP error " + error);
+        });
+    }
+
+    function log(msg) {
+        let progressArea = document.getElementById("progressArea");
+        let progressBar = document.getElementById("progressBar");
+        let totalProgressBar = document.getElementById("totalProgressBar");
+        if (msg.message !== "") {
+            progressArea.innerHTML += msg.message + '\n';
+            progressArea.scrollTop = progressArea.scrollHeight;
+        }
+        progressBar.style.width = msg.progress + "%";
+        if (msg.total !== -1) {
+            totalProgressBar.style.width = msg.total + "%";
+        }
+    }
+
+    function disconnect() {
+        if (ws != null) {
+            ws.close();
+        }
+        setConnected(false);
+        console.log("Disconnected");
+    }
+</script>
+
 
 <footer th:replace="fragments/general :: footer"></footer>
 </body>

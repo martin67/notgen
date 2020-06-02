@@ -50,6 +50,7 @@ public class NoteConverterService {
     private final @NonNull InstrumentRepository instrumentRepository;
     private final @NonNull GoogleDriveService googleDriveService;
     private final @NonNull PlaylistPackService playlistPackService;
+    private final @NonNull ProgressService progressService;
 
     @Value("${notgen2.google.id.fullscore}")
     private String googleFileIdFullScore;
@@ -77,7 +78,10 @@ public class NoteConverterService {
         ArrayList<Path> extractedFilesList;
 
         for (Score score : scores) {
-            log.info("Converting " + score.getId() + ", " + score.getTitle());
+            String msg = "Converting " + score.getTitle() + " (id=" + score.getId() + ")";
+            log.info(msg);
+            progressService.updateProgress(new Progress(100 * stats.getNumberOfSongs() / scores.size(), 0, msg));
+
             // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
             score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
 
@@ -89,10 +93,12 @@ public class NoteConverterService {
             createInstrumentParts(tmpDir, extractedFilesList, stats, score, upload);
             // update song with new google id:s
             scoreRepository.save(score);
+            progressService.updateProgress(new Progress(100, "Done"));
             cleanup(tmpDir);
             stats.incrementNumberOfSongs();
             Metrics.counter("notte.songs").increment();
         }
+        progressService.updateProgress(new Progress(100, 100, "Completed!"));
         log.info("Finishing main convert loop");
         stats.setEndTime(Instant.now());
         stats.print();
@@ -106,11 +112,19 @@ public class NoteConverterService {
 
         // Ta bort "0123 - " från det nya filnamnet
         Path path = Paths.get(tmpDir.toString(), FilenameUtils.getBaseName(score.getFilename()).substring(7) + ".pdf");
+        int progressStart;
+        int progressLength;
 
         if (toScore) {
             log.debug("Creating TO score " + path.toString());
+            progressStart = 55;
+            progressLength = 15;
+            progressService.updateProgress(new Progress(progressStart, "Creating TO score"));
         } else {
             log.debug("Creating full score " + path.toString());
+            progressStart = 70;
+            progressLength = 30;
+            progressService.updateProgress(new Progress(progressStart, "Creating full score"));
         }
 
         try {
@@ -149,6 +163,7 @@ public class NoteConverterService {
             }
 
             for (ScorePart scorePart : score.getScoreParts()) {
+                progressService.updateProgress(new Progress(progressStart + (progressLength * score.getScoreParts().indexOf(scorePart) / score.getScoreParts().size())));
                 // Om det är TO-sättning så hoppa över instrument som inte är standard
 //                if (toScore && !scorePart.getInstrument().isStandard()) {
 //                    continue;
@@ -437,13 +452,18 @@ public class NoteConverterService {
 
         log.debug("Starting image processing");
         boolean firstPage = true;
+        int numberOfImagesProcessed = 0;
+
         for (Path path : extractedFilesList) {
             try {
                 BufferedImage image = ImageIO.read(path.toFile());
                 stats.incrementNumberOfImgProcess();
+                numberOfImagesProcessed++;
 
                 String basename = FilenameUtils.getName(path.toString());
                 log.debug("Image processing " + FilenameUtils.getName(path.toString()) + " (" + image.getWidth() + "x" + image.getHeight() + ")");
+                progressService.updateProgress(new Progress(5 + (50 * numberOfImagesProcessed / extractedFilesList.size()),
+                        "Image processing file " + numberOfImagesProcessed + " of " + extractedFilesList.size()));
 
                 //
                 // Ta först hand om vissa specialfall i bildbehandlingen
@@ -539,6 +559,7 @@ public class NoteConverterService {
                 //BufferedImage grey = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
 
                 OtsuBinarize ob = new OtsuBinarize();
+
                 BufferedImage grey = ob.toGray(image);
                 image = grey;
 
@@ -585,8 +606,9 @@ public class NoteConverterService {
         //String inFile = new File(tmpDir.toFile(), song.getFilename()).toString();
 
         // Unzip files into temp directory
+        log.debug("Extracting {} to {}", inFile, tmpDir.toString());
+        progressService.updateProgress(new Progress(5, "Extracting files"));
         if (FilenameUtils.getExtension(score.getFilename()).toLowerCase().equals("zip")) {
-            log.debug("Extracting " + inFile + " to " + tmpDir.toString());
             try {
                 // Initiate ZipFile object with the path/name of the zip file.
                 ZipFile zipFile = new ZipFile(inFile);
@@ -599,8 +621,6 @@ public class NoteConverterService {
             }
 
         } else if (FilenameUtils.getExtension(score.getFilename()).toLowerCase().equals("pdf")) {
-            log.debug("Extracting " + inFile + " to " + tmpDir.toString());
-
             try {
                 PDDocument document = PDDocument.load(new File(inFile.toString()));
                 PDPageTree list = document.getPages();
@@ -627,6 +647,8 @@ public class NoteConverterService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            log.error("Unknown file format for {}", score.getFilename());
         }
         // Store name of all extracted files. Order is important!
         // Exclude source file (zip or pdf)
@@ -657,16 +679,16 @@ public class NoteConverterService {
         // Create temp directory
         try {
             tmpDir = Files.createTempDirectory("notkonv-");
-            log.debug("Creating temporary directory: " + tmpDir.toString());
+            log.debug("Creating temporary directory {}", tmpDir.toString());
         } catch (IOException e) {
             log.error("Can't create temporary directory");
-            //e.printStackTrace();
             return null;
         }
 
         // Download note file to tmpDir
         try {
-            log.debug("Downloading " + score.getFilename());
+            log.debug("Downloading {}", score.getFilename());
+            progressService.updateProgress(new Progress(3, "Downloading archive from Google"));
             googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), tmpDir);
         } catch (IOException e) {
             e.printStackTrace();
