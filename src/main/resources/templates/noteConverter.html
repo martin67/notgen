@@ -71,9 +71,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
     function connect() {
-        let socket = new WebSocket(location.origin.replace(/^http/, 'ws') + '/progress');
+        let socket = new WebSocket(location.origin.replace(/^http/, 'ws') + /*[[@{/progress}]]*/ ' blabla');
         let ws = Stomp.over(socket);
 
         ws.connect({}, function (frame) {
@@ -110,6 +111,7 @@
         setConnected(false);
         console.log("Disconnected");
     }
+    /*]]>*/
 </script>
 
 
