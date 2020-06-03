@@ -9,6 +9,7 @@ import se.terrassorkestern.notgen2.instrument.Setting;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class Playlist extends Auditable<String> {
     @OrderBy("sortOrder")
     List<PlaylistEntry> playlistEntries = new ArrayList<>();
 
+    //@Transient
+    private LocalDateTime updated;
 
     Playlist copy() {
         Playlist newPlaylist = new Playlist();

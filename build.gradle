@@ -31,7 +31,7 @@ dependencies {
     implementation 'mysql:mysql-connector-java'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'com.h2database:h2:1.4.200'
+    implementation 'com.h2database:h2:1.4.200'
     implementation 'com.google.guava:guava'
     implementation 'com.google.api-client:google-api-client:1.30.9'
     implementation 'com.google.apis:google-api-services-drive:v3-rev20200413-1.30.9'
