@@ -1,20 +1,23 @@
 package se.terrassorkestern.notgen2.score;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
 // See doc at https://vladmihalcea.com/the-best-way-to-map-a-many-to-many-association-with-extra-columns-when-using-jpa-and-hibernate/
+@Data
 @Embeddable
-class ScorePartId implements Serializable {
+public class ScorePartId implements Serializable {
     @Column(name = "score_id")
     private int scoreId;
 
     @Column(name = "instrument_id")
     private int instrumentId;
 
-    private ScorePartId() {
+    public ScorePartId() {
     }
 
     public ScorePartId(
@@ -29,7 +32,6 @@ class ScorePartId implements Serializable {
         if (this == o) {
             return true;
         }
-
 
         if (o == null || getClass() != o.getClass()) {
             return false;

@@ -3,11 +3,13 @@ plugins {
     id 'war'
     id 'org.springframework.boot' version '2.2.7.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id "io.freefair.lombok" version "5.0.1"
+    id 'io.freefair.lombok' version '5.0.1'
+    //id 'org.gretty' version '3.0.3'
 }
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 test {
@@ -15,8 +17,6 @@ test {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-rest'
@@ -29,9 +29,6 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time'
     implementation 'mysql:mysql-connector-java'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    implementation 'com.h2database:h2:1.4.200'
     implementation 'com.google.guava:guava'
     implementation 'com.google.api-client:google-api-client:1.30.9'
     implementation 'com.google.apis:google-api-services-drive:v3-rev20200413-1.30.9'
@@ -40,6 +37,11 @@ dependencies {
     implementation 'net.lingala.zip4j:zip4j:2.5.2'
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.apache.pdfbox:pdfbox:2.0.19'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+    testImplementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 }
 
 sourceCompatibility = 1.8

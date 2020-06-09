@@ -23,7 +23,6 @@ public class ScoreController {
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
 
-
     @GetMapping("/list")
     public String songList(Model model) {
         model.addAttribute("scores", scoreRepository.findByOrderByTitle());
@@ -40,8 +39,9 @@ public class ScoreController {
 
     @GetMapping("/edit")
     public String songEdit(@RequestParam("id") Integer id, Model model) {
+        Score score = scoreRepository.findById(id).orElse(null);
         model.addAttribute("allInstruments", instrumentRepository.findAll());
-        model.addAttribute("score", scoreRepository.findById(id).orElse(null));
+        model.addAttribute("score", score);
         return "scoreEdit";
     }
 
@@ -114,6 +114,12 @@ public class ScoreController {
     public @ResponseBody
     List<String> getAuthorSuggestions() {
         return scoreRepository.getAllAuthors();
+    }
+
+    @GetMapping(value = "/arrangers.json")
+    public @ResponseBody
+    List<String> getArrangerSuggestions() {
+        return scoreRepository.getAllArrangers();
     }
 
     @GetMapping(value = "/publishers.json")
