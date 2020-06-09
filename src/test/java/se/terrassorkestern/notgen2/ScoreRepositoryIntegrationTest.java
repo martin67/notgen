@@ -1,28 +1,19 @@
 package se.terrassorkestern.notgen2;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
 import se.terrassorkestern.notgen2.score.Score;
 import se.terrassorkestern.notgen2.score.ScoreRepository;
-import se.terrassorkestern.notgen2.user.UserRepositoryUserDetailsService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-// Gick inte att köra med @DataJpaTest, då den försöker hitta UserDetails bean
-// som inte laddas när man kör DataJpaTest. Däremot med SpringBootTest så laddas allt
-// Men då behövdes det lite extra @Auto samt @Transactional
-//
-
-@RunWith(SpringRunner.class)
 @DataJpaTest
-@Import(UserRepositoryUserDetailsService.class)
-public class ScoreRepositoryIntegrationTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class ScoreRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -33,7 +24,7 @@ public class ScoreRepositoryIntegrationTest {
     // write test cases here
 
     @Test
-    public void whenFindByTitle_thenReturnSong() {
+    void whenFindByTitle_thenReturnSong() {
         // given
         Score score1 = new Score();
         score1.setTitle("Testsång");

@@ -1,13 +1,11 @@
 package se.terrassorkestern.notgen2;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 import se.terrassorkestern.notgen2.score.Score;
@@ -23,9 +21,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(ScoreController.class)
-public class ScoreControllerTest {
+class ScoreControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -41,7 +38,7 @@ public class ScoreControllerTest {
 
     @Test
     @WithMockUser(authorities = "EDIT_SONG")
-    public void givenScores_whenGetScores_thenReturnJsonArray()
+    void givenScores_whenGetScores_thenReturnJsonArray()
             throws Exception {
 
         Score score = new Score();
@@ -64,7 +61,7 @@ public class ScoreControllerTest {
 
     @Test
     @WithMockUser
-    public void accessToProtected_normalUser() throws Exception {
+    void accessToProtected_normalUser() throws Exception {
         mvc.perform(get("/score/new"))
                 .andExpect(status().isForbidden());
 
@@ -78,7 +75,7 @@ public class ScoreControllerTest {
 
     @Test
     @WithMockUser(authorities = "EDIT_SONG")
-    public void accessToProtected_adminUser() throws Exception {
+    void accessToProtected_adminUser() throws Exception {
         mvc.perform(get("/score/new"))
                 .andExpect(status().isOk());
     }
