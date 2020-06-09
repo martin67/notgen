@@ -10,6 +10,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import se.terrassorkestern.notgen2.Notgen2Application;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -34,7 +35,7 @@ class WebTest {
     @Test
     void basicNavigation() {
         // Always wait 30 seconds to locate elements
-        //driver.manage().timeouts().implicitlyWait(30, SECONDS);
+        driver.manage().timeouts().implicitlyWait(30, SECONDS);
 
         driver.get("http://localhost:8080");
 
@@ -48,6 +49,6 @@ class WebTest {
 
         driver.findElement(By.linkText("Låtlistor")).click();
         driver.findElement(By.cssSelector("tr:nth-child(1) a:nth-child(1) > .material-icons")).click();
-        //driver.findElement(By.linkText("Tillbaka")).click();
+        driver.findElement(By.linkText("Tillbaka")).click();
     }
 }
