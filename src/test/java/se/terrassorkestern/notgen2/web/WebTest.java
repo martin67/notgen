@@ -7,15 +7,25 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import se.terrassorkestern.notgen2.Notgen2Application;
+
+import javax.servlet.ServletContext;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-@SpringBootTest(classes = Notgen2Application.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = Notgen2Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WebTest {
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private ServletContext servletContext;
 
     private static WebDriver driver;
 
@@ -35,9 +45,9 @@ class WebTest {
     @Test
     void basicNavigation() {
         // Always wait 30 seconds to locate elements
-        driver.manage().timeouts().implicitlyWait(30, SECONDS);
+        driver.manage().timeouts().implicitlyWait(60, SECONDS);
 
-        driver.get("http://localhost:8080");
+        driver.get("http://localhost:" + port + servletContext.getContextPath() + "/");
 
         // Verify first page title
         assertEquals("Notgeneratorn", driver.getTitle());

@@ -18,10 +18,12 @@ import java.util.List;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/score")
+@SessionAttributes("score")
 public class ScoreController {
 
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
+
 
     @GetMapping("/list")
     public String songList(Model model) {
@@ -32,16 +34,20 @@ public class ScoreController {
     @GetMapping("/delete")
     public String songDelete(@RequestParam("id") Integer id, Model model) {
         Score score = scoreRepository.findById(id).orElse(null);
-        log.info("Tar bort låt " + score.getTitle() + " [" + score.getId() + "]");
-        scoreRepository.delete(score);
+        if (score != null) {
+            log.info("Tar bort låt " + score.getTitle() + " [" + score.getId() + "]");
+            scoreRepository.delete(score);
+        } else {
+            log.info("Försökte ta bort låt som inte finns, id=" + id);
+        }
         return "redirect:/score/list";
     }
 
     @GetMapping("/edit")
     public String songEdit(@RequestParam("id") Integer id, Model model) {
         Score score = scoreRepository.findById(id).orElse(null);
-        model.addAttribute("allInstruments", instrumentRepository.findAll());
         model.addAttribute("score", score);
+        model.addAttribute("allInstruments", instrumentRepository.findAll());
         return "scoreEdit";
     }
 
@@ -64,7 +70,7 @@ public class ScoreController {
             return "scoreEdit";
         }
         log.info("Sparar låt " + score.getTitle() + " [" + score.getId() + "]");
-        // scorPart måste fixas till efter formuläret
+        // scorePart måste fixas till efter formuläret
         for (ScorePart scorePart : score.getScoreParts()) {
             Instrument instrument = scorePart.getInstrument();
             scorePart.setId(new ScorePartId(score.getId(), instrument.getId()));
@@ -78,17 +84,17 @@ public class ScoreController {
     @PostMapping(value = "/save", params = {"addRow"})
     public String addRow(final Score score, final BindingResult bindingResult, Model model) {
         score.getScoreParts().add(new ScorePart());
-        model.addAttribute("allInstruments", instrumentRepository.findAll());
         model.addAttribute("score", score);
+        model.addAttribute("allInstruments", instrumentRepository.findAll());
         return "scoreEdit";
     }
 
     @PostMapping(value = "/save", params = {"deleteRow"})
     public String deleteRow(final Score score, final BindingResult bindingResult, Model model, final HttpServletRequest req) {
-        final Integer scorePartId = Integer.valueOf(req.getParameter("deleteRow"));
-        score.getScoreParts().remove(scorePartId.intValue());
-        model.addAttribute("allInstruments", instrumentRepository.findAll());
+        final int scorePartId = Integer.parseInt(req.getParameter("deleteRow"));
+        score.getScoreParts().remove((int) scorePartId);
         model.addAttribute("score", score);
+        model.addAttribute("allInstruments", instrumentRepository.findAll());
         return "scoreEdit";
     }
 
@@ -127,6 +133,5 @@ public class ScoreController {
     List<String> getPublisherSuggestions() {
         return scoreRepository.getAllPublishers();
     }
-
 
 }

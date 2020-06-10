@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen2.score;
 
 import lombok.Data;
+import se.terrassorkestern.notgen2.Auditable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Data
 @Entity
-public class Score {
+public class Score extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -26,7 +27,9 @@ public class Score {
     private String arranger;
     private Integer year = 1940;
     private String publisher;
+    @Lob
     private String comment;
+    @Lob
     private String internalComment;
 
     private String googleIdFull;
@@ -52,12 +55,7 @@ public class Score {
     private Boolean aktiv;
     private Boolean standard;
     private LocalDateTime inforskaffad;
-    //@Transient
-    private LocalDateTime updated;
     private String movie;
     private String orgText;
-    @Column(name = "url_mp3_to")
-    private String urlMp3To;
-    private String urlMp3;
     private Integer betyg;
 }

@@ -2,7 +2,6 @@ package se.terrassorkestern.notgen2.score;
 
 import lombok.Data;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
@@ -11,18 +10,14 @@ import java.util.Objects;
 @Data
 @Embeddable
 public class ScorePartId implements Serializable {
-    @Column(name = "score_id")
-    private int scoreId;
 
-    @Column(name = "instrument_id")
+    private int scoreId;
     private int instrumentId;
 
     public ScorePartId() {
     }
 
-    public ScorePartId(
-            int scoreId,
-            int instrumentId) {
+    public ScorePartId(int scoreId, int instrumentId) {
         this.scoreId = scoreId;
         this.instrumentId = instrumentId;
     }

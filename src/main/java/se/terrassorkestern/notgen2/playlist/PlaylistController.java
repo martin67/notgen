@@ -145,7 +145,7 @@ public class PlaylistController {
         Playlist playlist = playlistRepository.findById(id).orElse(null);
 
         //ByteArrayInputStream bis = GeneratePdfReport.citiesReport(cities);
-        ByteArrayInputStream bis = null;
+        ByteArrayInputStream bis;
         try {
             bis = playlistPdfService.create(playlist);
         } catch (IOException e) {
