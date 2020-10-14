@@ -17,6 +17,9 @@
 <div th:fragment="header">
     <nav class="navbar sticky-top navbar-expand-sm bg-dark navbar-dark">
         <a class="navbar-brand" th:href="@{/}">Notgeneratorn</a>
+        <div class="navbar-brand text-warning" th:if="${@environment.getActiveProfiles()[0] != 'prod'}"
+             th:text="${@environment.getActiveProfiles()[0]}">active profile
+        </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
