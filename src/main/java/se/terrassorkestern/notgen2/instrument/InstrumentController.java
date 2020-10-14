@@ -1,23 +1,24 @@
 package se.terrassorkestern.notgen2.instrument;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import se.terrassorkestern.notgen2.exceptions.NotFoundException;
 
 import javax.validation.Valid;
 
 @Slf4j
 @Controller
-@AllArgsConstructor
 @RequestMapping("/instrument")
 public class InstrumentController {
 
-    private final @NonNull InstrumentRepository instrumentRepository;
+    private final InstrumentRepository instrumentRepository;
 
+    public InstrumentController(InstrumentRepository instrumentRepository) {
+        this.instrumentRepository = instrumentRepository;
+    }
 
     @GetMapping("/list")
     public String instrumentList(Model model) {
@@ -27,7 +28,9 @@ public class InstrumentController {
 
     @GetMapping("/edit")
     public String instrumentEdit(@RequestParam("id") Integer id, Model model) {
-        model.addAttribute("instrument", instrumentRepository.findById(id).orElse(null));
+        Instrument instrument = instrumentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
+        model.addAttribute("instrument", instrument);
         return "instrumentEdit";
     }
 
@@ -38,12 +41,11 @@ public class InstrumentController {
     }
 
     @GetMapping("/delete")
-    public String instrumentDelete(@RequestParam("id") Integer id, Model model) {
-        Instrument instrument = instrumentRepository.findById(id).orElse(null);
-        if (instrument != null) {
-            log.info("Tar bort instrument " + instrument.getName() + " [" + instrument.getId() + "]");
-            instrumentRepository.delete(instrument);
-        }
+    public String instrumentDelete(@RequestParam("id") Integer id) {
+        Instrument instrument = instrumentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
+        log.info("Tar bort instrument " + instrument.getName() + " [" + instrument.getId() + "]");
+        instrumentRepository.delete(instrument);
         return "redirect:/instrument/list";
     }
 
