@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentController;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
+import se.terrassorkestern.notgen2.user.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +37,9 @@ class InstrumentControllerTest {
 
     @MockBean
     private InstrumentRepository instrumentRepository;
+
+    @MockBean
+    private UserRepository userRepository;
 
 
     @BeforeEach

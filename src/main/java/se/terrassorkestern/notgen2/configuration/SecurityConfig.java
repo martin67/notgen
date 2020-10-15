@@ -46,6 +46,8 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .hasAuthority("EDIT_SONG")
                 .antMatchers("/user/new/**", "/user/delete/**", "/user/list/**")
                 .hasAuthority("EDIT_USER")
+                .antMatchers("/user/edit/**", "/user/save/**")
+                .hasAnyRole("USER", "ADMIN")
                 .antMatchers("/playlist/new/**", "/playlist/delete/**", "/playlist/copy/**")
                 .hasAuthority("EDIT_PLAYLIST")
                 .antMatchers("/noteConverter/**")

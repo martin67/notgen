@@ -1,29 +1,33 @@
 package se.terrassorkestern.notgen2.user;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import se.terrassorkestern.notgen2.exceptions.NotFoundException;
 
 import javax.validation.Valid;
 import java.util.Collections;
 
 @Slf4j
 @Controller
-@AllArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
-    private final @NonNull UserRepository userRepository;
-    private final @NonNull RoleRepository roleRepository;
-    private final @NonNull PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
+    public UserController(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping("/list")
     public String userList(Model model) {
@@ -39,17 +43,17 @@ public class UserController {
     }
 
     @GetMapping("/edit")
-    public String userEdit(Model model, @RequestParam(value = "id", required = false) Long id, @AuthenticationPrincipal User user) {
+    public String userEdit(Model model, @RequestParam(value = "id", required = false) Long id) {
 
         User u;
-
+        Authentication user = SecurityContextHolder.getContext().getAuthentication();
         // If id == null, then it's the user who is editing his own profile
-        if (id == null) {
-            u = user;
+        if (id == null && user.getPrincipal() instanceof User) {
+            u = (User)user.getPrincipal();
         } else {
             // First check that the user has permission to edit user (i.e. is admin)
             if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_USER"))) {
-                u = userRepository.findById(id).orElse(null);
+                u = userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
             } else {
                 return "redirect:/";
             }
@@ -92,8 +96,9 @@ public class UserController {
     }
 
     @GetMapping("/delete")
-    public String userDelete(@RequestParam("id") Long id, Model model) {
-        User user = userRepository.findById(id).orElse(null);
+    public String userDelete(@RequestParam("id") Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
         log.info("Tar bort användare " + user.getUsername() + " [" + user.getId() + "]");
         userRepository.delete(user);
         return "redirect:/user/list";
