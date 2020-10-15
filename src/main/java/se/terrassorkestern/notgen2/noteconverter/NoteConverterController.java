@@ -1,7 +1,5 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,13 +14,16 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@AllArgsConstructor
 @RequestMapping("/noteConverter")
 public class NoteConverterController {
 
-    private final @NonNull ScoreRepository scoreRepository;
-    private final @NonNull NoteConverterService noteConverterService;
+    private final ScoreRepository scoreRepository;
+    private final NoteConverterService noteConverterService;
 
+    public NoteConverterController(ScoreRepository scoreRepository, NoteConverterService noteConverterService) {
+        this.scoreRepository = scoreRepository;
+        this.noteConverterService = noteConverterService;
+    }
 
     @GetMapping(value = {"", "/"})
     public String noteConverter(Model model) {
@@ -41,11 +42,11 @@ public class NoteConverterController {
         log.info("Nu är vi i noteConverter post");
 
         // Starta konvertering!
-        if (noteConverterDto.getAllScores()) {
-            noteConverterService.convert(scoreRepository.findByOrderByTitle(), noteConverterDto.getUpload());
+        if (noteConverterDto.isAllScores()) {
+            noteConverterService.convert(scoreRepository.findByOrderByTitle(), noteConverterDto.isUpload());
         } else {
             noteConverterService.convert(scoreRepository.findByIdInOrderByTitle(noteConverterDto.getSelectedScores()),
-                    noteConverterDto.getUpload());
+                    noteConverterDto.isUpload());
         }
 
         return "redirect:/noteConverter";
@@ -56,7 +57,7 @@ public class NoteConverterController {
 
         log.info("Skapar instrumentpackar");
 
-        noteConverterService.createInstrumentPacks(noteConverterDto.getUpload());
+        noteConverterService.createInstrumentPacks(noteConverterDto.isUpload());
 
         return "redirect:/noteConverter";
     }

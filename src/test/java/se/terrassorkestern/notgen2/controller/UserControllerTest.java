@@ -211,7 +211,7 @@ class UserControllerTest {
     class Access {
 
         @Test
-        @DisplayName("Anonymous (non-logged in) user")
+        @DisplayName("Anonymous user")
         void whenAccessProtectedContentAsAnonymousUser_redirectToLogin() throws Exception {
             mvc.perform(get("/user/list")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));

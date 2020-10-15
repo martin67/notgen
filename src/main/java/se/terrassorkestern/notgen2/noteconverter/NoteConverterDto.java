@@ -7,9 +7,9 @@ import java.util.List;
 
 @Data
 @Configuration
-class NoteConverterDto {
+public class NoteConverterDto {
     private List<Integer> selectedScores;
-    private Boolean allScores;
-    private Boolean upload;
-    private Boolean async;
+    private boolean allScores;
+    private boolean upload;
+    private boolean async;
 }
