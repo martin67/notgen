@@ -1,12 +1,11 @@
 package se.terrassorkestern.notgen2.score;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import se.terrassorkestern.notgen2.exceptions.NotFoundException;
 import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 
@@ -16,7 +15,6 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@AllArgsConstructor
 @RequestMapping("/score")
 @SessionAttributes("score")
 public class ScoreController {
@@ -25,6 +23,11 @@ public class ScoreController {
     private final InstrumentRepository instrumentRepository;
 
 
+    public ScoreController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository) {
+        this.scoreRepository = scoreRepository;
+        this.instrumentRepository = instrumentRepository;
+    }
+
     @GetMapping("/list")
     public String songList(Model model) {
         model.addAttribute("scores", scoreRepository.findByOrderByTitle());
@@ -32,20 +35,18 @@ public class ScoreController {
     }
 
     @GetMapping("/delete")
-    public String songDelete(@RequestParam("id") Integer id, Model model) {
-        Score score = scoreRepository.findById(id).orElse(null);
-        if (score != null) {
-            log.info("Tar bort låt " + score.getTitle() + " [" + score.getId() + "]");
-            scoreRepository.delete(score);
-        } else {
-            log.info("Försökte ta bort låt som inte finns, id=" + id);
-        }
+    public String songDelete(@RequestParam("id") Integer id) {
+        Score score = scoreRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
+        log.info("Tar bort låt " + score.getTitle() + " [" + score.getId() + "]");
+        scoreRepository.delete(score);
         return "redirect:/score/list";
     }
 
     @GetMapping("/edit")
     public String songEdit(@RequestParam("id") Integer id, Model model) {
-        Score score = scoreRepository.findById(id).orElse(null);
+        Score score = scoreRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
         model.addAttribute("score", score);
         model.addAttribute("allInstruments", instrumentRepository.findAll());
         return "scoreEdit";
@@ -82,7 +83,7 @@ public class ScoreController {
     }
 
     @PostMapping(value = "/save", params = {"addRow"})
-    public String addRow(final Score score, final BindingResult bindingResult, Model model) {
+    public String addRow(final Score score, Model model) {
         score.getScoreParts().add(new ScorePart());
         model.addAttribute("score", score);
         model.addAttribute("allInstruments", instrumentRepository.findAll());
@@ -90,11 +91,18 @@ public class ScoreController {
     }
 
     @PostMapping(value = "/save", params = {"deleteRow"})
-    public String deleteRow(final Score score, final BindingResult bindingResult, Model model, final HttpServletRequest req) {
-        final int scorePartId = Integer.parseInt(req.getParameter("deleteRow"));
-        score.getScoreParts().remove((int) scorePartId);
-        model.addAttribute("score", score);
-        model.addAttribute("allInstruments", instrumentRepository.findAll());
+    public String deleteRow(final Score score, Model model, final HttpServletRequest req) {
+        try {
+            int scorePartId = Integer.parseInt(req.getParameter("deleteRow"));
+            if (scorePartId < score.getScoreParts().size()) {
+                score.getScoreParts().remove(scorePartId);
+            } else {
+                log.warn("Trying to remove non-existing score part {}", scorePartId);
+            }
+            model.addAttribute("score", score);
+            model.addAttribute("allInstruments", instrumentRepository.findAll());
+        } catch (NumberFormatException ignore) {
+        }
         return "scoreEdit";
     }
 
