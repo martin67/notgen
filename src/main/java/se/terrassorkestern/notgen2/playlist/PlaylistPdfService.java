@@ -20,7 +20,7 @@ import java.util.List;
 @Service
 public class PlaylistPdfService {
 
-    ByteArrayInputStream create(Playlist playlist) throws IOException {
+    public ByteArrayInputStream create(Playlist playlist) throws IOException {
 
         PDDocument doc = new PDDocument();
         PDDocumentInformation pdd = doc.getDocumentInformation();

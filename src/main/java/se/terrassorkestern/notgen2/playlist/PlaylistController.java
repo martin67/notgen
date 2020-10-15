@@ -1,21 +1,22 @@
 package se.terrassorkestern.notgen2.playlist;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import se.terrassorkestern.notgen2.exceptions.NotFoundException;
+import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
 import se.terrassorkestern.notgen2.instrument.SettingRepository;
-import se.terrassorkestern.notgen2.user.User;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -23,16 +24,24 @@ import java.io.*;
 
 @Slf4j
 @Controller
-@AllArgsConstructor
 @RequestMapping("/playlist")
 public class PlaylistController {
 
-    private final @NonNull PlaylistRepository playlistRepository;
-    private final @NonNull SettingRepository settingRepository;
-    private final @NonNull InstrumentRepository instrumentRepository;
-    private final @NonNull PlaylistPdfService playlistPdfService;
-    private final @NonNull PlaylistPackService playlistPackService;
+    private final PlaylistRepository playlistRepository;
+    private final SettingRepository settingRepository;
+    private final InstrumentRepository instrumentRepository;
+    private final PlaylistPdfService playlistPdfService;
+    private final PlaylistPackService playlistPackService;
 
+    public PlaylistController(PlaylistRepository playlistRepository, SettingRepository settingRepository,
+                              InstrumentRepository instrumentRepository, PlaylistPdfService playlistPdfService,
+                              PlaylistPackService playlistPackService) {
+        this.playlistRepository = playlistRepository;
+        this.settingRepository = settingRepository;
+        this.instrumentRepository = instrumentRepository;
+        this.playlistPdfService = playlistPdfService;
+        this.playlistPackService = playlistPackService;
+    }
 
     @GetMapping("/list")
     public String playlistList(Model model) {
@@ -42,7 +51,9 @@ public class PlaylistController {
 
     @GetMapping("/edit")
     public String playlistEdit(@RequestParam("id") Integer id, Model model) {
-        model.addAttribute("playlist", playlistRepository.findById(id).orElse(null));
+        Playlist playlist = playlistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
+        model.addAttribute("playlist", playlist);
         model.addAttribute("settings", settingRepository.findAll());
         model.addAttribute("instruments", instrumentRepository.findAll());
         Integer selectedInstrument = 0;
@@ -60,31 +71,29 @@ public class PlaylistController {
 
     @GetMapping("/delete")
     public String playlistDelete(@RequestParam("id") Integer id) {
-        Playlist playlist = playlistRepository.findById(id).orElse(null);
-        if (playlist != null) {
-            log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
-            playlistRepository.delete(playlist);
-        }
+        Playlist playlist = playlistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
+        log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+        playlistRepository.delete(playlist);
         return "redirect:/playlist/list";
     }
 
     @GetMapping("/copy")
     public String playlistCopy(@RequestParam("id") Integer id) {
-        Playlist playlist = playlistRepository.findById(id).orElse(null);
-        if (playlist != null) {
-            log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
-            Playlist newPlaylist = playlist.copy();
-            playlistRepository.save(newPlaylist);
-        }
+        Playlist playlist = playlistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
+        log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+        Playlist newPlaylist = playlist.copy();
+        playlistRepository.save(newPlaylist);
         return "redirect:/playlist/list";
     }
 
     @PostMapping("/save")
-    public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors,
-                               @AuthenticationPrincipal User user) {
+    public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors) {
         if (errors.hasErrors()) {
             return "playlistEdit";
         }
+        Authentication user = SecurityContextHolder.getContext().getAuthentication();
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
             log.info("Sparar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
             playlistRepository.save(playlist);
@@ -103,32 +112,33 @@ public class PlaylistController {
 
     @PostMapping(value = "/save", params = {"deleteRow"})
     public String deleteRow(final Playlist playlist, Model model, final HttpServletRequest req) {
-        final Integer playlistPartId = Integer.valueOf(req.getParameter("deleteRow"));
-        playlist.getPlaylistEntries().remove(playlistPartId.intValue());
-        model.addAttribute("playlist", playlist);
+        try {
+            int playlistPartId = Integer.parseInt(req.getParameter("deleteRow"));
+            playlist.getPlaylistEntries().remove(playlistPartId);
+            model.addAttribute("playlist", playlist);
+        } catch (NumberFormatException ignored) {
+        }
         return "playlistEdit";
     }
 
     @PostMapping(value = "/save", params = {"createPack"})
     public ResponseEntity<InputStreamResource> createPack(final Playlist playlist,
-                                                          final HttpServletRequest req) {
-
-        final Integer selectedInstrumentId = Integer.valueOf(req.getParameter("selectedInstrument"));
-
-        log.debug("Startar createPack för instrument id " + selectedInstrumentId);
-        String fileName;
-        fileName = playlistPackService.createPack(playlist, instrumentRepository.getOne(selectedInstrumentId), "playlist.pdf");
-
-        File file = new File(fileName);
-
-
-        InputStreamResource isr = null;
+                                                          final HttpServletRequest req) throws FileNotFoundException {
+        int id;
         try {
-            isr = new InputStreamResource(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            id = Integer.parseInt(req.getParameter("selectedInstrument"));
+        } catch (NumberFormatException e) {
+            throw new NotFoundException("Instrument not found");
         }
 
+        log.debug("Startar createPack för instrument id " + id);
+        String fileName;
+        Instrument instrument = instrumentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
+        fileName = playlistPackService.createPack(playlist, instrument, "playlist.pdf");
+
+        File file = new File(fileName);
+        InputStreamResource isr = new InputStreamResource(new FileInputStream(file));
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=playlistpack.pdf");
 
@@ -139,18 +149,17 @@ public class PlaylistController {
                 .body(isr);
     }
 
-
     @GetMapping(value = "/createPdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> playlistCreatePdf(@RequestParam("id") Integer id) {
-        Playlist playlist = playlistRepository.findById(id).orElse(null);
+        Playlist playlist = playlistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
 
-        //ByteArrayInputStream bis = GeneratePdfReport.citiesReport(cities);
         ByteArrayInputStream bis;
         try {
             bis = playlistPdfService.create(playlist);
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
 
         HttpHeaders headers = new HttpHeaders();

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.instrument.Instrument;
@@ -55,12 +56,24 @@ class InstrumentControllerTest {
     @Test
     @DisplayName("List")
     @WithMockUser(authorities = "EDIT_INSTRUMENT")
-    void givenInstruments_whenGetInstruments_thenReturnHtml() throws Exception {
+    void whenListInstruments_thenReturnOk() throws Exception {
         mvc.perform(get("/instrument/list")
                 .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("instrumentList"))
                 .andExpect(model().attributeExists("instruments"))
                 .andExpect(model().attribute("instruments", hasSize(2)))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("New")
+    @WithMockUser(authorities = "EDIT_INSTRUMENT")
+    void whenNewInstrument_thenReturnOk() throws Exception {
+        mvc.perform(get("/instrument/new")
+                .contentType(MediaType.TEXT_HTML))
+                .andExpect(view().name("instrumentEdit"))
+                .andExpect(model().attributeExists("instrument"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(status().isOk());
     }
@@ -162,7 +175,8 @@ class InstrumentControllerTest {
     class Access {
 
         @Test
-        @DisplayName("Anonymous (non-logged in) user")
+        @DisplayName("Anonymous user")
+        @WithAnonymousUser
         void whenAccessProtectedContentAsAnonymousUser_redirectToLogin() throws Exception {
             mvc.perform(get("/instrument/list")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
@@ -180,8 +194,8 @@ class InstrumentControllerTest {
         }
 
         @Test
-        @WithMockUser
         @DisplayName("Normal user")
+        @WithMockUser
         void whenAccessProtectedContentAsNormalUser_returnForbidden() throws Exception {
             mvc.perform(get("/instrument/list")).andExpect(status().isForbidden());
             mvc.perform(get("/instrument/new")).andExpect(status().isForbidden());
