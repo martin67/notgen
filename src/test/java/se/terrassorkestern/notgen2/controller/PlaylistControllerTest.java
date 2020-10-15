@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(PlaylistController.class)
+@DisplayName("Playlist controller")
 class PlaylistControllerTest {
 
     @Autowired
