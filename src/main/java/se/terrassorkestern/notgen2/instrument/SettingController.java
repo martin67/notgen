@@ -1,8 +1,7 @@
 package se.terrassorkestern.notgen2.instrument;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -10,15 +9,19 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@Slf4j
 @Controller
-@AllArgsConstructor
 @RequestMapping("/setting")
 public class SettingController {
+    static final Logger log = LoggerFactory.getLogger(SettingController.class);
 
-    private final @NonNull SettingRepository settingRepository;
-    private final @NonNull InstrumentRepository instrumentRepository;
+    private final SettingRepository settingRepository;
+    private final InstrumentRepository instrumentRepository;
 
+
+    public SettingController(SettingRepository settingRepository, InstrumentRepository instrumentRepository) {
+        this.settingRepository = settingRepository;
+        this.instrumentRepository = instrumentRepository;
+    }
 
     @GetMapping("/list")
     public String settingList(Model model) {

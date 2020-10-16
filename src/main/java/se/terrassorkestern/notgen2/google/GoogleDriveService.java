@@ -8,7 +8,8 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -19,10 +20,12 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Map;
 
-@Slf4j
 @Service
 public class GoogleDriveService extends Google {
+    static final Logger log = LoggerFactory.getLogger(GoogleDriveService.class);
+
     private final Drive service;
+
 
     private GoogleDriveService() throws IOException, GeneralSecurityException {
         log.debug("Creating GoogleDriveService object");

@@ -1,8 +1,7 @@
 package se.terrassorkestern.notgen2.user;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,16 +13,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
 @Component
-@AllArgsConstructor
 public class InitialDataLoader implements ApplicationListener<ContextRefreshedEvent> {
+    static final Logger log = LoggerFactory.getLogger(InitialDataLoader.class);
 
-    private final @NonNull UserRepository userRepository;
-    private final @NonNull RoleRepository roleRepository;
-    private final @NonNull PrivilegeRepository privilegeRepository;
-    private final @NonNull PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PrivilegeRepository privilegeRepository;
+    private final PasswordEncoder passwordEncoder;
 
+
+    public InitialDataLoader(UserRepository userRepository, RoleRepository roleRepository,
+                             PrivilegeRepository privilegeRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.privilegeRepository = privilegeRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     @Transactional

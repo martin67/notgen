@@ -12,6 +12,8 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
     // custom query to search to blog post by title or content
     List<Score> findByTitle(String text);
 
+    List<Score> findByTitleContaining(String text);
+
     List<Score> findByOrderByTitle();
 
     List<Score> findByIdInOrderByTitle(List<Integer> id);

@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,13 +13,14 @@ import se.terrassorkestern.notgen2.score.ScoreRepository;
 
 import java.util.List;
 
-@Slf4j
 @Controller
 @RequestMapping("/noteConverter")
 public class NoteConverterController {
+    static final Logger log = LoggerFactory.getLogger(NoteConverterController.class);
 
     private final ScoreRepository scoreRepository;
     private final NoteConverterService noteConverterService;
+
 
     public NoteConverterController(ScoreRepository scoreRepository, NoteConverterService noteConverterService) {
         this.scoreRepository = scoreRepository;

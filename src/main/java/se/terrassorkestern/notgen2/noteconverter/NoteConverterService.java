@@ -1,9 +1,6 @@
 package se.terrassorkestern.notgen2.noteconverter;
 
 import io.micrometer.core.instrument.Metrics;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FilenameUtils;
@@ -13,8 +10,11 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen2.google.GoogleDriveService;
 import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
@@ -41,16 +41,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class NoteConverterService {
+    static final Logger log = LoggerFactory.getLogger(NoteConverterService.class);
 
-    private final @NonNull ScoreRepository scoreRepository;
-    private final @NonNull InstrumentRepository instrumentRepository;
-    private final @NonNull GoogleDriveService googleDriveService;
-    private final @NonNull PlaylistPackService playlistPackService;
-    private final @NonNull ProgressService progressService;
+    private final ScoreRepository scoreRepository;
+    private final InstrumentRepository instrumentRepository;
+    private final GoogleDriveService googleDriveService;
+    private final PlaylistPackService playlistPackService;
+    private final ProgressService progressService;
 
     @Value("${notgen2.google.id.fullscore}")
     private String googleFileIdFullScore;
@@ -67,6 +66,16 @@ public class NoteConverterService {
     @Value("${notgen2.google.id.packs}")
     private String googleFileIdPacks;
 
+
+    public NoteConverterService(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
+                                GoogleDriveService googleDriveService, PlaylistPackService playlistPackService,
+                                ProgressService progressService) {
+        this.scoreRepository = scoreRepository;
+        this.instrumentRepository = instrumentRepository;
+        this.googleDriveService = googleDriveService;
+        this.playlistPackService = playlistPackService;
+        this.progressService = progressService;
+    }
 
     void convert(List<Score> scores, boolean upload) {
         log.info("Starting main convert loop");
@@ -453,6 +462,8 @@ public class NoteConverterService {
         log.debug("Starting image processing");
         boolean firstPage = true;
         int numberOfImagesProcessed = 0;
+        StopWatch oneScoreWatch = new StopWatch("imageProcess " + score.getTitle());
+        oneScoreWatch.start();
 
         for (Path path : extractedFilesList) {
             try {
@@ -464,6 +475,8 @@ public class NoteConverterService {
                 log.debug("Image processing " + FilenameUtils.getName(path.toString()) + " (" + image.getWidth() + "x" + image.getHeight() + ")");
                 progressService.updateProgress(new Progress(5 + (50 * numberOfImagesProcessed / extractedFilesList.size()),
                         "Image processing file " + numberOfImagesProcessed + " of " + extractedFilesList.size()));
+
+                StopWatch onePageWatch = new StopWatch(score.getTitle() + ", page " + numberOfImagesProcessed);
 
                 //
                 // Ta först hand om vissa specialfall i bildbehandlingen
@@ -560,7 +573,10 @@ public class NoteConverterService {
 
                 OtsuBinarize ob = new OtsuBinarize();
 
+                onePageWatch.start("to grey");
                 BufferedImage grey = ob.toGray(image);
+                onePageWatch.stop();
+
                 image = grey;
 
                 if (log.isTraceEnabled()) {
@@ -574,7 +590,9 @@ public class NoteConverterService {
 
                 //BufferedImage image = ob.binarize(grey);
                 //image = bw;
+                onePageWatch.start("binarize");
                 image = ob.binarize(grey);
+                onePageWatch.stop();
 
                 if (log.isTraceEnabled()) {
                     ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-bw.png"));
@@ -582,12 +600,18 @@ public class NoteConverterService {
 
                 // Write final picture back to original
                 ImageIO.write(image, "png", new File(FilenameUtils.removeExtension(path.toString()) + ".png"));
+
+                log.debug("Time converting page " + numberOfImagesProcessed + ", " + onePageWatch + " ms");
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             firstPage = false;
         }
+        oneScoreWatch.stop();
+        log.info("Total time converting " + score.getTitle() + ", " + oneScoreWatch.getLastTaskTimeMillis() + " ms");
+        //System.out.println(oneScoreWatch.prettyPrint());
     }
 
 

@@ -13,10 +13,10 @@ public class UserRepositoryUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+
     public UserRepositoryUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

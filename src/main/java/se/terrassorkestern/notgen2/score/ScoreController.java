@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen2.score;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -13,11 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
-@Slf4j
 @Controller
 @RequestMapping("/score")
 @SessionAttributes("score")
 public class ScoreController {
+    static final Logger log = LoggerFactory.getLogger(ScoreController.class);
 
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;

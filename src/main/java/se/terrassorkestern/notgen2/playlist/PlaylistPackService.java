@@ -1,10 +1,9 @@
 package se.terrassorkestern.notgen2.playlist;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleDriveService;
 import se.terrassorkestern.notgen2.instrument.Instrument;
@@ -17,14 +16,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@Slf4j
 @Service
-@AllArgsConstructor
 public class PlaylistPackService {
+    static final Logger log = LoggerFactory.getLogger(PlaylistPackService.class);
 
-    private final @NonNull GoogleDriveService googleDriveService;
-    private final @NonNull ScoreRepository scoreRepository;
+    private final GoogleDriveService googleDriveService;
+    private final ScoreRepository scoreRepository;
 
+
+    public PlaylistPackService(GoogleDriveService googleDriveService, ScoreRepository scoreRepository) {
+        this.googleDriveService = googleDriveService;
+        this.scoreRepository = scoreRepository;
+    }
 
     public String createPack(Playlist playlist, Instrument instrument, String filename) {
 

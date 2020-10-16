@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen2.instrument;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -9,12 +10,13 @@ import se.terrassorkestern.notgen2.exceptions.NotFoundException;
 
 import javax.validation.Valid;
 
-@Slf4j
 @Controller
 @RequestMapping("/instrument")
 public class InstrumentController {
+    static final Logger log = LoggerFactory.getLogger(InstrumentController.class);
 
     private final InstrumentRepository instrumentRepository;
+
 
     public InstrumentController(InstrumentRepository instrumentRepository) {
         this.instrumentRepository = instrumentRepository;

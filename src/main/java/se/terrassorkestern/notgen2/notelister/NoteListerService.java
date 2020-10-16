@@ -1,14 +1,13 @@
 package se.terrassorkestern.notgen2.notelister;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen2.google.GoogleSheetService;
 import se.terrassorkestern.notgen2.instrument.Instrument;
 import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
-import se.terrassorkestern.notgen2.score.ScorePart;
 import se.terrassorkestern.notgen2.score.Score;
+import se.terrassorkestern.notgen2.score.ScorePart;
 import se.terrassorkestern.notgen2.score.ScoreRepository;
 
 import java.time.LocalDate;
@@ -21,15 +20,22 @@ import java.util.List;
 // Class to create a Google Sheet with all the songs
 //
 
-@Slf4j
+
 @Service
-@AllArgsConstructor
 public class NoteListerService {
+    static final Logger log = LoggerFactory.getLogger(NoteListerService.class);
 
-    private final @NonNull InstrumentRepository instrumentRepository;
-    private final @NonNull ScoreRepository scoreRepository;
-    private final @NonNull GoogleSheetService googleSheetService;
+    private final InstrumentRepository instrumentRepository;
+    private final ScoreRepository scoreRepository;
+    private final GoogleSheetService googleSheetService;
 
+
+    public NoteListerService(InstrumentRepository instrumentRepository, ScoreRepository scoreRepository,
+                             GoogleSheetService googleSheetService) {
+        this.instrumentRepository = instrumentRepository;
+        this.scoreRepository = scoreRepository;
+        this.googleSheetService = googleSheetService;
+    }
 
     void createList() {
         log.info("Starting note listing");
