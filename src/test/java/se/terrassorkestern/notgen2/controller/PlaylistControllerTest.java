@@ -11,10 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import se.terrassorkestern.notgen2.instrument.Instrument;
-import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
-import se.terrassorkestern.notgen2.instrument.SettingRepository;
-import se.terrassorkestern.notgen2.playlist.*;
+import se.terrassorkestern.notgen2.model.Instrument;
+import se.terrassorkestern.notgen2.model.Playlist;
+import se.terrassorkestern.notgen2.repository.InstrumentRepository;
+import se.terrassorkestern.notgen2.repository.PlaylistRepository;
+import se.terrassorkestern.notgen2.repository.SettingRepository;
+import se.terrassorkestern.notgen2.service.PlaylistPackService;
+import se.terrassorkestern.notgen2.service.PlaylistPdfService;
 import se.terrassorkestern.notgen2.user.UserRepository;
 
 import java.io.ByteArrayInputStream;
@@ -38,22 +41,16 @@ class PlaylistControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @MockBean
     private PlaylistRepository playlistRepository;
-
     @MockBean
     private InstrumentRepository instrumentRepository;
-
     @MockBean
     private SettingRepository settingRepository;
-
     @MockBean
     private UserRepository userRepository;
-
     @MockBean
     private PlaylistPdfService playlistPdfService;
-
     @MockBean
     private PlaylistPackService playlistPackService;
 

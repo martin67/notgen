@@ -9,13 +9,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import se.terrassorkestern.notgen2.notelister.NoteListerController;
-import se.terrassorkestern.notgen2.notelister.NoteListerService;
+import se.terrassorkestern.notgen2.service.NoteListerService;
 import se.terrassorkestern.notgen2.user.UserRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 
 @WebMvcTest(NoteListerController.class)
 @DisplayName("NoteLister controller")
@@ -23,12 +21,11 @@ class NoteListerControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @MockBean
     private NoteListerService noteListerService;
-
     @MockBean
     private UserRepository userRepository;
+
 
     @Test
     @WithMockUser(authorities = "UPDATE_TOC")

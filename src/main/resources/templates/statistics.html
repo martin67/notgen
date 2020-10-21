@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
+<head th:replace="fragments/general :: header-css"></head>
+
+<body>
+<div th:replace="fragments/general :: header"></div>
+
+<div class="container">
+    <h2>Statistik</h2>
+
+    <h4>Databasen</h4>
+    <table class="table table-bordered w-auto">
+        <tr>
+            <td>Antal låtar</td>
+            <td th:text="${numberOfSongs}"></td>
+        </tr>
+        <tr>
+            <td>Varav scannade</td>
+            <td th:text="${numberOfScannedSongs}"></td>
+        </tr>
+        <tr>
+            <td>Antal scannade sidor</td>
+            <td th:text="${numberOfScannedPages}"></td>
+        </tr>
+        <tr>
+            <td>Total storlek på alla sidor</td>
+            <td th:text="${numberOfBytes}"></td>
+        </tr>
+        <tr>
+            <td>Antal instrument</td>
+            <td th:text="${numberOfInstruments}"></td>
+        </tr>
+        <tr>
+            <td>Antal låtlistor</td>
+            <td th:text="${numberOfPlaylists}"></td>
+        </tr>
+    </table>
+</div>
+
+
+<footer th:replace="fragments/general :: footer"></footer>
+</body>
+</html>

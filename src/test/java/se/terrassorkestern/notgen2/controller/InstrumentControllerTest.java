@@ -11,9 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import se.terrassorkestern.notgen2.instrument.Instrument;
-import se.terrassorkestern.notgen2.instrument.InstrumentController;
-import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
+import se.terrassorkestern.notgen2.model.Instrument;
+import se.terrassorkestern.notgen2.repository.InstrumentRepository;
 import se.terrassorkestern.notgen2.user.UserRepository;
 
 import java.util.List;
@@ -34,10 +33,8 @@ class InstrumentControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @MockBean
     private InstrumentRepository instrumentRepository;
-
     @MockBean
     private UserRepository userRepository;
 

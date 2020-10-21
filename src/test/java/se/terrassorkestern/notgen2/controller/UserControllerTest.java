@@ -29,10 +29,8 @@ class UserControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @MockBean
     private UserRepository userRepository;
-
     @MockBean
     private RoleRepository roleRepository;
 

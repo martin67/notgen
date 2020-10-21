@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-class Google {
+public class Google {
     static final String APPLICATION_NAME = "Terrassorkesterns notgenerator";
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";

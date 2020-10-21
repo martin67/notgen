@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import se.terrassorkestern.notgen2.admin.AdminController;
 import se.terrassorkestern.notgen2.user.UserRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -22,7 +21,6 @@ class AdminControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @MockBean
     private UserRepository userRepository;
 

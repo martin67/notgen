@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import se.terrassorkestern.notgen2.instrument.Instrument;
-import se.terrassorkestern.notgen2.instrument.InstrumentRepository;
+import se.terrassorkestern.notgen2.model.Instrument;
+import se.terrassorkestern.notgen2.repository.InstrumentRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

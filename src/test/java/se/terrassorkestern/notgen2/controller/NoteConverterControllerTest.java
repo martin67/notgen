@@ -9,10 +9,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import se.terrassorkestern.notgen2.noteconverter.NoteConverterController;
 import se.terrassorkestern.notgen2.noteconverter.NoteConverterDto;
-import se.terrassorkestern.notgen2.noteconverter.NoteConverterService;
-import se.terrassorkestern.notgen2.score.ScoreRepository;
+import se.terrassorkestern.notgen2.service.NoteConverterService;
+import se.terrassorkestern.notgen2.repository.ScoreRepository;
 import se.terrassorkestern.notgen2.user.UserRepository;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -26,13 +25,10 @@ class NoteConverterControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @MockBean
     private NoteConverterService noteConverterService;
-
     @MockBean
     private ScoreRepository scoreRepository;
-
     @MockBean
     private UserRepository userRepository;
 
