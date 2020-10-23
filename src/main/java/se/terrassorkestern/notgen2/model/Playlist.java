@@ -3,7 +3,6 @@ package se.terrassorkestern.notgen2.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
-import se.terrassorkestern.notgen2.Auditable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

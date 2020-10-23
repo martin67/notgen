@@ -9,7 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import se.terrassorkestern.notgen2.noteconverter.NoteConverterDto;
+import se.terrassorkestern.notgen2.model.NoteConverterDto;
 import se.terrassorkestern.notgen2.service.NoteConverterService;
 import se.terrassorkestern.notgen2.repository.ScoreRepository;
 import se.terrassorkestern.notgen2.user.UserRepository;

@@ -35,6 +35,7 @@ public class StatisticsService {
             statistics.setNumberOfBytes(instrumentRepository.sumSortOrder());
             statistics.setNumberOfInstruments(instrumentRepository.count());
             statistics.setNumberOfPlaylists(playlistRepository.count());
+            //statistics.setTopGenres(scoreRepository.getTop5Genres());
 
         return statistics;
     }

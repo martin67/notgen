@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2.noteconverter;
+package se.terrassorkestern.notgen2.model;
 
 import lombok.Data;
 import org.springframework.context.annotation.Configuration;

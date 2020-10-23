@@ -13,12 +13,8 @@ public class Statistics {
     private long numberOfInstruments;
     private long numberOfPlaylists;
 
-    private List<TopList> topGenres;
-    private List<TopList> topComposers;
-    private List<TopList> topArrangers;
+    private List<TopListEntry> topGenres;
+    private List<TopListEntry> topComposers;
+    private List<TopListEntry> topArrangers;
 
-    static class TopList {
-        String name;
-        int value;
-    }
 }

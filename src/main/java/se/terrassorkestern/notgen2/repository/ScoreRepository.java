@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import se.terrassorkestern.notgen2.model.Score;
+import se.terrassorkestern.notgen2.model.TopListEntry;
 
 import java.util.List;
 
@@ -46,6 +47,6 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
     long countByScannedIsFalse();
 
     //select genre, count(genre) from score group by genre order by count(genre) desc limit 5;
-    @Query("SELECT s.genre, COUNT(s.genre) FROM Score s GROUP BY s.genre ORDER BY COUNT(s.genre) DESC")
-    List<List<String>> getTop5Genres();
+    @Query("SELECT s.genre as name, COUNT(s.genre) as value FROM Score s GROUP BY s.genre ORDER BY COUNT(s.genre) DESC")
+    List<TopListEntry> getTop5Genres();
 }

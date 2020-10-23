@@ -5,7 +5,10 @@
 
  */
 
-package se.terrassorkestern.notgen2.noteconverter.filters;
+package se.terrassorkestern.notgen2.filters;
+
+import se.terrassorkestern.notgen2.filters.Binarizer;
+import se.terrassorkestern.notgen2.filters.GreyScaler;
 
 import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;

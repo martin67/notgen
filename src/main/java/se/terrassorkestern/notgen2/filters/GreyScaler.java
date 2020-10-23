@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2.noteconverter.filters;
+package se.terrassorkestern.notgen2.filters;
 
 import java.awt.image.BufferedImage;
 

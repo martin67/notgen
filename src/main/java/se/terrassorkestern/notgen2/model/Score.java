@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen2.model;
 
 import lombok.Data;
-import se.terrassorkestern.notgen2.Auditable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

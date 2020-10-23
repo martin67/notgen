@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import se.terrassorkestern.notgen2.model.Score;
-import se.terrassorkestern.notgen2.noteconverter.NoteConverterDto;
+import se.terrassorkestern.notgen2.model.NoteConverterDto;
 import se.terrassorkestern.notgen2.service.NoteConverterService;
 import se.terrassorkestern.notgen2.repository.ScoreRepository;
 
