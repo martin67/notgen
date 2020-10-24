@@ -13,7 +13,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.model.Instrument;
 import se.terrassorkestern.notgen2.repository.InstrumentRepository;
-import se.terrassorkestern.notgen2.user.UserRepository;
+import se.terrassorkestern.notgen2.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;

@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.model.Statistics;
 import se.terrassorkestern.notgen2.service.StatisticsService;
-import se.terrassorkestern.notgen2.user.UserRepository;
+import se.terrassorkestern.notgen2.repository.UserRepository;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

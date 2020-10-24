@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2.google;
+package se.terrassorkestern.notgen2.service;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -15,7 +15,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 @Service
-public class GoogleSheetService extends Google {
+public class GoogleSheetService extends GoogleService {
     static final Logger log = LoggerFactory.getLogger(GoogleSheetService.class);
 
     private final Sheets service;

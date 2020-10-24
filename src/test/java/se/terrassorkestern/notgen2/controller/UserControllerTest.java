@@ -7,7 +7,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import se.terrassorkestern.notgen2.user.*;
+import se.terrassorkestern.notgen2.model.Privilege;
+import se.terrassorkestern.notgen2.model.Role;
+import se.terrassorkestern.notgen2.model.User;
+import se.terrassorkestern.notgen2.repository.RoleRepository;
+import se.terrassorkestern.notgen2.repository.UserRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;

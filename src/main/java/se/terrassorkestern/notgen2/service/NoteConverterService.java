@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
-import se.terrassorkestern.notgen2.google.GoogleDriveService;
 import se.terrassorkestern.notgen2.model.Instrument;
 import se.terrassorkestern.notgen2.model.NoteConverterStats;
 import se.terrassorkestern.notgen2.model.Progress;

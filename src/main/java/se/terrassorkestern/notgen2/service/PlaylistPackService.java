@@ -5,7 +5,6 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.terrassorkestern.notgen2.google.GoogleDriveService;
 import se.terrassorkestern.notgen2.model.Instrument;
 import se.terrassorkestern.notgen2.model.PlaylistEntry;
 import se.terrassorkestern.notgen2.model.Playlist;

@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @PasswordMatches(message = "Lösenorden matchar inte")
-class UserDto {
+public class UserDto {
     @NotNull
     @NotEmpty
     private String username;

@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.model.NoteConverterDto;
 import se.terrassorkestern.notgen2.service.NoteConverterService;
 import se.terrassorkestern.notgen2.repository.ScoreRepository;
-import se.terrassorkestern.notgen2.user.UserRepository;
+import se.terrassorkestern.notgen2.repository.UserRepository;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

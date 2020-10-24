@@ -10,7 +10,7 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen2.service.NoteListerService;
-import se.terrassorkestern.notgen2.user.UserRepository;
+import se.terrassorkestern.notgen2.repository.UserRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;

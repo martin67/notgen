@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2.google;
+package se.terrassorkestern.notgen2.service;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class Google {
+public class GoogleService {
     static final String APPLICATION_NAME = "Terrassorkesterns notgenerator";
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
@@ -30,7 +30,7 @@ public class Google {
 
     static Credential getCredentials(final NetHttpTransport netHttpTransport) throws IOException {
         // Load client secrets.
-        InputStream in = Google.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        InputStream in = GoogleService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.

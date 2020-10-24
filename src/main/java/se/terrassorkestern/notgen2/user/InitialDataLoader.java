@@ -6,6 +6,12 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import se.terrassorkestern.notgen2.model.Privilege;
+import se.terrassorkestern.notgen2.model.Role;
+import se.terrassorkestern.notgen2.model.User;
+import se.terrassorkestern.notgen2.repository.PrivilegeRepository;
+import se.terrassorkestern.notgen2.repository.RoleRepository;
+import se.terrassorkestern.notgen2.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;

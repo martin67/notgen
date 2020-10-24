@@ -3,7 +3,7 @@ plugins {
     id 'war'
     id 'org.springframework.boot' version '2.2.7.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'io.freefair.lombok' version '5.0.1'
+    id 'io.freefair.lombok' version '5.2.1'
     id 'com.gorylenko.gradle-git-properties' version '2.2.4'
 }
 
@@ -14,10 +14,16 @@ repositories {
 
 test {
     useJUnitPlatform()
+    systemProperty "file.encoding", "UTF-8"
 }
 
 springBoot {
     buildInfo()
+}
+
+compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 dependencies {
@@ -51,6 +57,7 @@ dependencies {
     testImplementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
     testImplementation 'io.github.bonigarcia:webdrivermanager:4.0.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+    //annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
 sourceCompatibility = 1.8

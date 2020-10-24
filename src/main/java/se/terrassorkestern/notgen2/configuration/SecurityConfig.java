@@ -8,8 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import se.terrassorkestern.notgen2.user.UserRepository;
-import se.terrassorkestern.notgen2.user.UserRepositoryUserDetailsService;
+import se.terrassorkestern.notgen2.repository.UserRepository;
+import se.terrassorkestern.notgen2.service.UserRepositoryUserDetailsService;
 
 @Configuration
 @EnableWebSecurity

@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2.user;
+package se.terrassorkestern.notgen2.model;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

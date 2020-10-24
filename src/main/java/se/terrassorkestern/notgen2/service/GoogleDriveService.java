@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2.google;
+package se.terrassorkestern.notgen2.service;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.media.MediaHttpDownloader;
@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @Service
-public class GoogleDriveService extends Google {
+public class GoogleDriveService extends GoogleService {
     static final Logger log = LoggerFactory.getLogger(GoogleDriveService.class);
 
     private final Drive service;

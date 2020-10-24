@@ -1,11 +1,11 @@
 package se.terrassorkestern.notgen2.service;
 
 import org.apache.commons.imaging.ImageReadException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import se.terrassorkestern.notgen2.model.Score;
 import se.terrassorkestern.notgen2.repository.ScoreRepository;
@@ -25,21 +25,21 @@ class ImageDataExtractorTest {
 
 
     @Test
-    @Rollback(false)
     @WithMockUser
     void extract() throws IOException, ImageReadException {
         List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
         imageDataExtractor.extract(scores);
     }
 
+    @Disabled
     @Test
-    @Rollback(false)
     @WithMockUser
     void extractMultipleScores() throws IOException, ImageReadException {
         List<Score> scores = scoreRepository.findByTitleContaining("valsen");
         imageDataExtractor.extract(scores);
     }
 
+    @Disabled
     @Test
     @WithMockUser
     void problemsScores() throws IOException, ImageReadException {

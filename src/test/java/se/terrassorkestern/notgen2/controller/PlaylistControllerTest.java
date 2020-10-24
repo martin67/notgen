@@ -18,7 +18,7 @@ import se.terrassorkestern.notgen2.repository.PlaylistRepository;
 import se.terrassorkestern.notgen2.repository.SettingRepository;
 import se.terrassorkestern.notgen2.service.PlaylistPackService;
 import se.terrassorkestern.notgen2.service.PlaylistPdfService;
-import se.terrassorkestern.notgen2.user.UserRepository;
+import se.terrassorkestern.notgen2.repository.UserRepository;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

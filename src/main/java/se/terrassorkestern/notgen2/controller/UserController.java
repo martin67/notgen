@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen2.user;
+package se.terrassorkestern.notgen2.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen2.exceptions.NotFoundException;
+import se.terrassorkestern.notgen2.model.User;
+import se.terrassorkestern.notgen2.repository.RoleRepository;
+import se.terrassorkestern.notgen2.repository.UserRepository;
+import se.terrassorkestern.notgen2.user.InitialDataLoader;
+import se.terrassorkestern.notgen2.user.UserDto;
 
 import javax.validation.Valid;
 import java.util.Collections;
