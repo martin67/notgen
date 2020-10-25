@@ -9,32 +9,57 @@
     <h2>Statistik</h2>
 
     <h4>Databasen</h4>
-    <table class="table table-bordered w-auto">
+    <table class="table table-bordered table-sm w-auto">
         <tr>
             <td>Antal låtar</td>
-            <td th:text="${numberOfSongs}"></td>
+            <td th:text="${statistics.numberOfSongs}"></td>
         </tr>
         <tr>
             <td>Varav scannade</td>
-            <td th:text="${numberOfScannedSongs}"></td>
+            <td th:text="${statistics.numberOfScannedSongs}"></td>
         </tr>
         <tr>
             <td>Antal scannade sidor</td>
-            <td th:text="${numberOfScannedPages}"></td>
+            <td th:text="${statistics.numberOfScannedPages}"></td>
         </tr>
         <tr>
             <td>Total storlek på alla sidor</td>
-            <td th:text="${numberOfBytes}"></td>
+            <td th:text="${statistics.numberOfBytes}"></td>
         </tr>
         <tr>
             <td>Antal instrument</td>
-            <td th:text="${numberOfInstruments}"></td>
+            <td th:text="${statistics.numberOfInstruments}"></td>
         </tr>
         <tr>
             <td>Antal låtlistor</td>
-            <td th:text="${numberOfPlaylists}"></td>
+            <td th:text="${statistics.numberOfPlaylists}"></td>
         </tr>
     </table>
+
+    <h5>Populäraste genres</h5>
+    <table class="table table-bordered table-sm w-auto">
+        <tr th:each="genre : ${statistics.topGenres}">
+            <td th:text="${genre.name}"></td>
+            <td th:text="${genre.value}"></td>
+        </tr>
+    </table>
+
+    <h5>Populäraste kompositörer</h5>
+    <table class="table table-bordered table-sm w-auto">
+        <tr th:each="genre : ${statistics.topComposers}">
+            <td th:text="${genre.name}"></td>
+            <td th:text="${genre.value}"></td>
+        </tr>
+    </table>
+
+    <h5>Populäraste arrangörer</h5>
+    <table class="table table-bordered table-sm w-auto">
+        <tr th:each="genre : ${statistics.topArrangers}">
+            <td th:text="${genre.name}"></td>
+            <td th:text="${genre.value}"></td>
+        </tr>
+    </table>
+
 </div>
 
 

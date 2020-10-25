@@ -25,19 +25,7 @@ public class StatisticsController {
     public String statistics(Model model) {
 
         Statistics statistics = statisticsService.getStatistics();
-
-        model.addAttribute("numberOfSongs", statistics.getNumberOfSongs());
-        model.addAttribute("numberOfScannedSongs", statistics.getNumberOfScannedSongs());
-        model.addAttribute("numberOfScannedPages", statistics.getNumberOfScannedPages());
-        model.addAttribute("numberOfBytes", statistics.getNumberOfBytes());
-        model.addAttribute("numberOfInstruments", statistics.getNumberOfInstruments());
-        model.addAttribute("numberOfPlaylists", statistics.getNumberOfPlaylists());
-
-        model.addAttribute("topGenres", statistics.getTopGenres());
-        model.addAttribute("topComposers", statistics.getTopComposers());
-        model.addAttribute("topArrangers", statistics.getTopArrangers());
-
-        // Top 5 largest arrangements (most pages)
+        model.addAttribute("statistics", statistics);
 
         return "statistics";
     }

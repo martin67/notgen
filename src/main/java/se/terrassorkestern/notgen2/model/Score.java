@@ -41,7 +41,7 @@ public class Score extends Auditable<String> {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "score_id")
-    private List<ImageData> imageData = new ArrayList<>();
+    private List<Imagedata> imageData = new ArrayList<>();
 
     private Boolean scanned = true;
     private Boolean cover = true;

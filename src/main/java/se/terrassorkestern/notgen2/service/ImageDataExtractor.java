@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.terrassorkestern.notgen2.model.ImageData;
+import se.terrassorkestern.notgen2.model.Imagedata;
 import se.terrassorkestern.notgen2.model.Score;
 import se.terrassorkestern.notgen2.repository.ScoreRepository;
 
@@ -78,13 +78,13 @@ public class ImageDataExtractor {
                     ImageInfo imageInfo = getImageInfo(file);
                     ImageMetadata imageMetadata = getMetadata(file);
 
-                    ImageData imageData;
+                    Imagedata imageData;
                     if (score.getImageData() == null) {
                         score.setImageData(new ArrayList<>());
-                        imageData = new ImageData();
+                        imageData = new Imagedata();
                         score.getImageData().add(index, imageData);
                     } else if (index == score.getImageData().size()) {
-                        imageData = new ImageData();
+                        imageData = new Imagedata();
                         score.getImageData().add(imageData);
                     } else {
                         imageData = score.getImageData().get(index);

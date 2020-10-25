@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen2.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -42,11 +43,20 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
 
     // Statistics
-    long count();
-
     long countByScannedIsFalse();
 
-    //select genre, count(genre) from score group by genre order by count(genre) desc limit 5;
-    @Query("SELECT s.genre as name, COUNT(s.genre) as value FROM Score s GROUP BY s.genre ORDER BY COUNT(s.genre) DESC")
-    List<TopListEntry> getTop5Genres();
+    @Query("SELECT " +
+            " new se.terrassorkestern.notgen2.model.TopListEntry(s.genre, count(s.genre)) " +
+            " FROM Score s GROUP BY s.genre ORDER BY COUNT(s.genre) DESC")
+    List<TopListEntry> findTopGenres(Pageable pageable);
+
+    @Query("SELECT " +
+            " new se.terrassorkestern.notgen2.model.TopListEntry(s.composer, count(s.composer)) " +
+            " FROM Score s GROUP BY s.composer ORDER BY COUNT(s.composer) DESC")
+    List<TopListEntry> findTopComposers(Pageable pageable);
+
+    @Query("SELECT " +
+            " new se.terrassorkestern.notgen2.model.TopListEntry(s.arranger, count(s.arranger)) " +
+            " FROM Score s GROUP BY s.arranger ORDER BY COUNT(s.arranger) DESC")
+    List<TopListEntry> findTopArrangers(Pageable pageable);
 }

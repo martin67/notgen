@@ -5,11 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import se.terrassorkestern.notgen2.model.Statistics;
 
-import javax.transaction.Transactional;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-//@DataJpaTest
-@Transactional
 class StatisticsServiceTest {
 
     @Autowired
@@ -20,6 +18,8 @@ class StatisticsServiceTest {
     void getStatistics() {
         Statistics statistics = statisticsService.getStatistics();
 
-        long hej = statistics.getNumberOfSongs();
+        assertThat(statistics.getNumberOfInstruments()).isEqualTo(39L);
+        assertThat(statistics.getNumberOfPlaylists()).isEqualTo(7L);
+        assertThat(statistics.getTopGenres().size()).isEqualTo(5);
     }
 }

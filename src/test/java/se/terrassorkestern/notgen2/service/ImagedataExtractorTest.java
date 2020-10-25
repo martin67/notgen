@@ -16,7 +16,7 @@ import java.util.List;
 
 @SpringBootTest
 @Transactional
-class ImageDataExtractorTest {
+class ImagedataExtractorTest {
 
     @Autowired
     ImageDataExtractor imageDataExtractor;
