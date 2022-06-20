@@ -56,7 +56,7 @@ public class UserController {
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
         // If id == null, then it's the user who is editing his own profile
         if (id == null && user.getPrincipal() instanceof User) {
-            u = (User)user.getPrincipal();
+            u = (User) user.getPrincipal();
         } else {
             // First check that the user has permission to edit user (i.e. is admin)
             if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_USER"))) {
@@ -90,12 +90,12 @@ public class UserController {
         user.setFullname(userDto.getFullname());
         user.setEmail(userDto.getEmail());
 
-        log.info("Sparar användare " + user.getUsername());
+        log.info("Sparar användare {}", user.getUsername());
         user.setEnabled(true);
 
         if (userDto.getPassword().length() > 0) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-            log.info("Lösenord: " + userDto.getPassword());
+            log.info("Lösenord: {}", userDto.getPassword());
         }
         userRepository.save(user);
         // Also need to save the details to the current running object??
@@ -106,7 +106,7 @@ public class UserController {
     public String userDelete(@RequestParam("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
-        log.info("Tar bort användare " + user.getUsername() + " [" + user.getId() + "]");
+        log.info("Tar bort användare {} [{}]", user.getUsername(), user.getId());
         userRepository.delete(user);
         return "redirect:/user/list";
     }

@@ -63,7 +63,7 @@ public class ImageDataExtractor {
 
         for (Score score : scores) {
             if (score.getScanned() && score.getFilename() != null) {
-                log.info("Extracting image data for " + score.getTitle() + " (id=" + score.getId() + ")");
+                log.info("Extracting image data for {} ({})", score.getTitle(), score.getId());
 
                 Path tmpDir = download(score);
                 List<Path> extractedFilesList = split(tmpDir, score);
@@ -102,7 +102,7 @@ public class ImageDataExtractor {
                 scoreRepository.save(score);
                 FileUtils.deleteDirectory(tmpDir.toFile());
             } else {
-                log.info("Skipping image data for " + score.getTitle() + " (id=" + score.getId() + ")");
+                log.info("Skipping image data for {} ({})", score.getTitle(), score.getId());
             }
         }
     }
@@ -121,8 +121,8 @@ public class ImageDataExtractor {
         }
 
         // Unzip files into temp directory
-        log.debug("Extracting {} to {}", inFile, tmpDir.toString());
-        if (FilenameUtils.getExtension(score.getFilename()).toLowerCase().equals("zip")) {
+        log.debug("Extracting {} to {}", inFile, tmpDir);
+        if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("zip")) {
             try {
                 // Initiate ZipFile object with the path/name of the zip file.
                 ZipFile zipFile = new ZipFile(inFile);
@@ -134,7 +134,7 @@ public class ImageDataExtractor {
                 e.printStackTrace();
             }
 
-        } else if (FilenameUtils.getExtension(score.getFilename()).toLowerCase().equals("pdf")) {
+        } else if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("pdf")) {
             try {
                 PDDocument document = PDDocument.load(new File(inFile.toString()));
                 PDPageTree list = document.getPages();
@@ -146,7 +146,7 @@ public class ImageDataExtractor {
                         PDXObject o = pdResources.getXObject(name);
                         if (o instanceof PDImageXObject) {
                             PDImageXObject image = (PDImageXObject) o;
-                            String filename = tmpDir.toString() + File.separator + "extracted-image-" + i;
+                            String filename = tmpDir + File.separator + "extracted-image-" + i;
                             //ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
                             if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
                                 ImageIO.write(image.getImage(), "jpg", new File(filename + ".jpg"));

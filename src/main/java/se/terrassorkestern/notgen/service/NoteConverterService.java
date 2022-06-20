@@ -447,7 +447,7 @@ public class NoteConverterService {
                                 stats.addNumberOfBytes(Files.size(file.toPath()));
                                 stats.incrementNumberOfOcr();
                             } else {
-                                log.warn("More than one lyrics page for song " + score.getId() + ", skipping Google docs OCR upload");
+                                log.warn("More than one lyrics page for song {}, skipping Google docs OCR upload", score.getId());
                             }
                         }
                     } catch (IOException e) {
@@ -479,7 +479,7 @@ public class NoteConverterService {
                 numberOfImagesProcessed++;
 
                 String basename = FilenameUtils.getName(path.toString());
-                log.debug("Image processing " + FilenameUtils.getName(path.toString()) + " (" + image.getWidth() + "x" + image.getHeight() + ")");
+                log.debug("Image processing {} ({}x{})", FilenameUtils.getName(path.toString()), image.getWidth(), image.getHeight());
                 progressService.updateProgress(new Progress(5 + (50 * numberOfImagesProcessed / extractedFilesList.size()),
                         "Image processing file " + numberOfImagesProcessed + " of " + extractedFilesList.size()));
                 StopWatch onePageWatch = new StopWatch(score.getTitle() + ", page " + numberOfImagesProcessed);
@@ -609,7 +609,7 @@ public class NoteConverterService {
                 // Write final picture back to original
                 ImageIO.write(image, "png", new File(FilenameUtils.removeExtension(path.toString()) + ".png"));
 
-                log.debug("Time converting page " + numberOfImagesProcessed + ", " + onePageWatch.getTotalTimeMillis() + " ms");
+                log.debug("Time converting page {}, {} ms", numberOfImagesProcessed, onePageWatch.getTotalTimeMillis());
                 log.trace(onePageWatch.prettyPrint());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -618,7 +618,7 @@ public class NoteConverterService {
             firstPage = false;
         }
         oneScoreWatch.stop();
-        log.info("Total time converting " + score.getTitle() + ", " + oneScoreWatch.getTotalTimeMillis() + " ms");
+        log.info("Total time converting {}, {} ms", score.getTitle(), oneScoreWatch.getTotalTimeMillis());
         //System.out.println(oneScoreWatch.prettyPrint());
     }
 
@@ -638,7 +638,7 @@ public class NoteConverterService {
         //String inFile = new File(tmpDir.toFile(), song.getFilename()).toString();
 
         // Unzip files into temp directory
-        log.debug("Extracting {} to {}", inFile, tmpDir.toString());
+        log.debug("Extracting {} to {}", inFile, tmpDir);
         progressService.updateProgress(new Progress(5, "Extracting files"));
         if (FilenameUtils.getExtension(score.getFilename()).toLowerCase().equals("zip")) {
             try {
@@ -652,7 +652,7 @@ public class NoteConverterService {
                 e.printStackTrace();
             }
 
-        } else if (FilenameUtils.getExtension(score.getFilename()).toLowerCase().equals("pdf")) {
+        } else if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("pdf")) {
             try {
                 PDDocument document = PDDocument.load(new File(inFile.toString()));
                 PDPageTree list = document.getPages();
@@ -664,7 +664,7 @@ public class NoteConverterService {
                         PDXObject o = pdResources.getXObject(name);
                         if (o instanceof PDImageXObject) {
                             PDImageXObject image = (PDImageXObject) o;
-                            String filename = tmpDir.toString() + File.separator + "extracted-image-" + i;
+                            String filename = tmpDir + File.separator + "extracted-image-" + i;
                             //ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
                             if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
                                 ImageIO.write(image.getImage(), "jpg", new File(filename + ".jpg"));

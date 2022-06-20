@@ -38,7 +38,7 @@ public class PlaylistPackService {
         log.debug("Kollar att alla låtar ur listan verkligen finns");
         for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
             if (!playlistEntry.getBold() && scoreRepository.findByTitle(playlistEntry.getText()).isEmpty()) {
-                log.warn("Hittar inte låten med titel: " + playlistEntry.getText());
+                log.warn("Hittar inte låten med titel: {}", playlistEntry.getText());
                 return null;
             }
         }
@@ -47,7 +47,7 @@ public class PlaylistPackService {
         Path tmpDir;
         try {
             tmpDir = Files.createTempDirectory("notgen-");
-            log.debug("Creating temporary directory: " + tmpDir.toString());
+            log.debug("Creating temporary directory: {}", tmpDir.toString());
         } catch (IOException e) {
             log.error("Can't create temporary directory");
             //e.printStackTrace();
@@ -57,7 +57,7 @@ public class PlaylistPackService {
         // Skapa PDF
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        output = tmpDir.toString() + File.separator + filename;
+        output = tmpDir + File.separator + filename;
         pdfMergerUtility.setDestinationFileName(output);
 
         PDDocumentInformation pdd = new PDDocumentInformation();
@@ -79,7 +79,7 @@ public class PlaylistPackService {
 
             Score score = scoreRepository.findByTitle(playlistEntry.getText()).get(0);
             if (score == null) {
-                log.warn("Hittar inte låten med titel: " + playlistEntry.getText());
+                log.warn("Hittar inte låten med titel: {}", playlistEntry.getText());
                 continue;
             }
 
@@ -88,16 +88,16 @@ public class PlaylistPackService {
                     findAny().
                     orElse(null);
             if (scorePart == null) {
-                log.warn("Hittar ingen stämma för " + instrument.getName() + " i låten " + score.getTitle());
+                log.warn("Hittar ingen stämma för {} i låten {}", instrument.getName(), score.getTitle());
                 continue;
             }
 
             if (scorePart.getGoogleId() == null) {
-                log.warn("Inga scannade noter för " + instrument.getName() + " i låten " + score.getTitle());
+                log.warn("Inga scannade noter för {} i låten {}", instrument.getName(), score.getTitle());
                 continue;
             }
 
-            log.info("Downloading " + score.getTitle() + "/" + instrument.getName() + " [" + scorePart.getGoogleId() + "]");
+            log.info("Downloading {}/{} [{}]", score.getTitle(), instrument.getName(), scorePart.getGoogleId());
 //            try {
 //                File f = googleDriveService.downloadFile(scorePart.getGoogleId(), index++, tmpDir);
 //                pdfMergerUtility.addSource(f);

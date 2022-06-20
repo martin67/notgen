@@ -43,7 +43,7 @@ public class ScoreController {
     public String songDelete(@RequestParam("id") Integer id) {
         Score score = scoreRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
-        log.info("Tar bort låt " + score.getTitle() + " [" + score.getId() + "]");
+        log.info("Tar bort låt {} [{}]", score.getTitle(), score.getId());
         scoreRepository.delete(score);
         return "redirect:/score/list";
     }
@@ -75,7 +75,7 @@ public class ScoreController {
             model.addAttribute("allInstruments", instrumentRepository.findAll());
             return "scoreEdit";
         }
-        log.info("Sparar låt " + score.getTitle() + " [" + score.getId() + "]");
+        log.info("Sparar låt {} [{}]", score.getTitle(), score.getId());
         // scorePart måste fixas till efter formuläret
         for (ScorePart scorePart : score.getScoreParts()) {
             Instrument instrument = scorePart.getInstrument();

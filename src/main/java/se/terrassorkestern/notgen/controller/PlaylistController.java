@@ -80,7 +80,7 @@ public class PlaylistController {
     public String playlistDelete(@RequestParam("id") Integer id) {
         Playlist playlist = playlistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
-        log.info("Tar bort låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+        log.info("Tar bort låtlista {} [{}]", playlist.getName(), playlist.getId());
         playlistRepository.delete(playlist);
         return "redirect:/playlist/list";
     }
@@ -89,7 +89,7 @@ public class PlaylistController {
     public String playlistCopy(@RequestParam("id") Integer id) {
         Playlist playlist = playlistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
-        log.info("Kopierar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+        log.info("Kopierar låtlista {} [{}]", playlist.getName(), playlist.getId());
         Playlist newPlaylist = playlist.copy();
         playlistRepository.save(newPlaylist);
         return "redirect:/playlist/list";
@@ -102,7 +102,7 @@ public class PlaylistController {
         }
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
-            log.info("Sparar låtlista " + playlist.getName() + " [" + playlist.getId() + "]");
+            log.info("Sparar låtlista {} [{}]", playlist.getName(), playlist.getId());
             playlistRepository.save(playlist);
         }
         return "redirect:/playlist/list";

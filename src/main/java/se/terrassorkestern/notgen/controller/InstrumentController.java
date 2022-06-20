@@ -48,7 +48,7 @@ public class InstrumentController {
     public String instrumentDelete(@RequestParam("id") Integer id) {
         Instrument instrument = instrumentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
-        log.info("Tar bort instrument " + instrument.getName() + " [" + instrument.getId() + "]");
+        log.info("Tar bort instrument {} [{}]", instrument.getName(), instrument.getId());
         instrumentRepository.delete(instrument);
         return "redirect:/instrument/list";
     }
@@ -58,7 +58,7 @@ public class InstrumentController {
         if (errors.hasErrors()) {
             return "instrumentEdit";
         }
-        log.info("Sparar instrument " + instrument.getName() + " [" + instrument.getId() + "]");
+        log.info("Sparar instrument {} [{}]", instrument.getName(), instrument.getId());
         instrumentRepository.save(instrument);
         return "redirect:/instrument/list";
     }

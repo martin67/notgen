@@ -50,7 +50,7 @@ public class SettingController {
     public String settingDelete(@RequestParam("id") Integer id, Model model) {
         Setting setting = settingRepository.findById(id).orElse(null);
         if (setting != null) {
-            log.info("Tar bort sättning " + setting.getName() + " [" + setting.getId() + "]");
+            log.info("Tar bort sättning {} [{}]", setting.getName(), setting.getId());
             settingRepository.delete(setting);
         }
         return "redirect:/setting/list";
@@ -61,7 +61,7 @@ public class SettingController {
         if (errors.hasErrors()) {
             return "settingEdit";
         }
-        log.info("Sparar sättning " + setting.getName() + " [" + setting.getId() + "]");
+        log.info("Sparar sättning {} [{}]", setting.getName(), setting.getId());
         settingRepository.save(setting);
         return "redirect:/setting/list";
     }
