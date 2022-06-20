@@ -52,7 +52,6 @@ public class NoteConverterService {
 
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
-    private final GoogleDriveService googleDriveService;
     private final PlaylistPackService playlistPackService;
     private final ProgressService progressService;
 
@@ -77,11 +76,9 @@ public class NoteConverterService {
 
 
     public NoteConverterService(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
-                                GoogleDriveService googleDriveService, PlaylistPackService playlistPackService,
-                                ProgressService progressService) {
+                                PlaylistPackService playlistPackService, ProgressService progressService) {
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
-        this.googleDriveService = googleDriveService;
         this.playlistPackService = playlistPackService;
         this.progressService = progressService;
     }
@@ -276,17 +273,17 @@ public class NoteConverterService {
                 }
 
 
-                String googleId;
+                String googleId = "";
                 if (toScore) {
-                    googleId = googleDriveService.uploadFile(googleFileIdToScore, "application/pdf", score.getTitle(),
-                            path, null, description.toString(), false, map);
+//                    googleId = googleDriveService.uploadFile(googleFileIdToScore, "application/pdf", score.getTitle(),
+//                            path, null, description.toString(), false, map);
                     if (googleId.length() > 0) {
                         score.setGoogleIdTo(googleId);
                         stats.addNumberOfBytes(Files.size(path));
                     }
                 } else {
-                    googleId = googleDriveService.uploadFile(googleFileIdFullScore, "application/pdf", score.getTitle(),
-                            path, null, description.toString(), false, map);
+//                    googleId = googleDriveService.uploadFile(googleFileIdFullScore, "application/pdf", score.getTitle(),
+//                            path, null, description.toString(), false, map);
                     if (googleId.length() > 0) {
                         score.setGoogleIdFull(googleId);
                         stats.addNumberOfBytes(Files.size(path));
@@ -296,8 +293,8 @@ public class NoteConverterService {
                     if (score.getCover() && score.getColor() && score.getUpperleft()) {
                         log.debug("Also uploading cover");
                         Path coverPath = Paths.get(extractedFilesList.get(0).toString() + "-cover.jpg");
-                        googleId = googleDriveService.uploadFile(googleFileIdCover, "image/jpeg", score.getTitle(),
-                                coverPath, null, null, false, null);
+//                        googleId = googleDriveService.uploadFile(googleFileIdCover, "image/jpeg", score.getTitle(),
+//                                coverPath, null, null, false, null);
                         if (googleId.length() > 0) {
                             score.setGoogleIdCover(googleId);
                             stats.addNumberOfBytes(Files.size(coverPath));
@@ -305,8 +302,8 @@ public class NoteConverterService {
                         // Om det finns ett omslag så finns det alltid en thumbnail som också skall laddas upp
                         log.debug("Uploading cover thumbnail");
                         Path thumbnailPath = Paths.get(extractedFilesList.get(0).toString() + "-thumbnail.jpg");
-                        googleId = googleDriveService.uploadFile(googleFileIdThumbnail, "image/jpeg", score.getId() + ".jpg",
-                                thumbnailPath, null, null, false, null);
+//                        googleId = googleDriveService.uploadFile(googleFileIdThumbnail, "image/jpeg", score.getId() + ".jpg",
+//                                thumbnailPath, null, null, false, null);
                         if (googleId.length() > 0) {
                             score.setGoogleIdThumbnail(googleId);
                             stats.addNumberOfBytes(Files.size(coverPath));
@@ -420,8 +417,8 @@ public class NoteConverterService {
 
 
                         // Stämmor måste ha namn med .pdf så att forScore hittar den
-                        String googleId;
-                        googleId = googleDriveService.uploadFile(googleFileIdInstrument, "application/pdf", score.getTitle() + ".pdf", path, scorePart.getInstrument().getName(), description, false, map);
+                        String googleId = "";
+//                        googleId = googleDriveService.uploadFile(googleFileIdInstrument, "application/pdf", score.getTitle() + ".pdf", path, scorePart.getInstrument().getName(), description, false, map);
                         if (googleId.length() > 0) {
                             scorePart.setGoogleId(googleId);
                             stats.addNumberOfBytes(Files.size(path));
@@ -446,7 +443,7 @@ public class NoteConverterService {
                                     fileType = "image/jpeg";
                                 }
 
-                                googleDriveService.uploadFile(googleFileIdInstrument, fileType, score.getTitle(), file.toPath(), "Sång - OCR", description, true, map);
+//                                googleDriveService.uploadFile(googleFileIdInstrument, fileType, score.getTitle(), file.toPath(), "Sång - OCR", description, true, map);
                                 stats.addNumberOfBytes(Files.size(file.toPath()));
                                 stats.incrementNumberOfOcr();
                             } else {
@@ -718,13 +715,13 @@ public class NoteConverterService {
             } else {
                 log.debug("Downloading {} to cache", score.getFilename());
                 progressService.updateProgress(new Progress(3, "Downloading archive from Google"));
-                googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), cache);
+//                googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), cache);
             }
             Files.copy(cacheFile, tmpDir.resolve(score.getFilename()));
         } else {
             log.debug("Downloading {} to {}", score.getFilename(), tmpDir);
             progressService.updateProgress(new Progress(3, "Downloading archive from Google"));
-            googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), tmpDir);
+//            googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), tmpDir);
         }
         return tmpDir;
     }
@@ -751,13 +748,13 @@ public class NoteConverterService {
             outputFile = playlistPackService.createPack(playlist, instrument, instrument.getName() + ".pdf");
             Path path = Paths.get(outputFile);
 
-            if (upload)
-                try {
-                    googleDriveService.uploadFile(googleFileIdPacks, "application/pdf", instrument.getName(),
-                            path, null, description, false, null);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//            if (upload)
+//                try {
+//                    googleDriveService.uploadFile(googleFileIdPacks, "application/pdf", instrument.getName(),
+//                            path, null, description, false, null);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
         }
     }
 }

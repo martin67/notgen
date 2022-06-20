@@ -20,7 +20,7 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Map;
 
-@Service
+//@Service
 public class GoogleDriveService extends GoogleService {
     static final Logger log = LoggerFactory.getLogger(GoogleDriveService.class);
 

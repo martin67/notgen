@@ -45,7 +45,6 @@ import static org.apache.commons.imaging.Imaging.getMetadata;
 public class ImageDataExtractor {
     static final Logger log = LoggerFactory.getLogger(ImageDataExtractor.class);
 
-    private final GoogleDriveService googleDriveService;
     private final ScoreRepository scoreRepository;
 
     @Value("${notgen2.google.id.original}")
@@ -56,9 +55,7 @@ public class ImageDataExtractor {
     private int cacheTtl;
 
 
-    public ImageDataExtractor(GoogleDriveService googleDriveService,
-                              ScoreRepository scoreRepository) {
-        this.googleDriveService = googleDriveService;
+    public ImageDataExtractor(ScoreRepository scoreRepository) {
         this.scoreRepository = scoreRepository;
     }
 
@@ -197,12 +194,12 @@ public class ImageDataExtractor {
                 log.debug("Copying {} from cache", score.getFilename());
             } else {
                 log.debug("Downloading {} to cache", score.getFilename());
-                googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), cache);
+                //googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), cache);
             }
             Files.copy(cacheFile, tmpDir.resolve(score.getFilename()));
         } else {
             log.debug("Downloading {} to {}", score.getFilename(), tmpDir);
-            googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), tmpDir);
+            //googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), tmpDir);
         }
         return tmpDir;
     }

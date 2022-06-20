@@ -26,14 +26,11 @@ public class NoteListerService {
 
     private final InstrumentRepository instrumentRepository;
     private final ScoreRepository scoreRepository;
-    private final GoogleSheetService googleSheetService;
 
 
-    public NoteListerService(InstrumentRepository instrumentRepository, ScoreRepository scoreRepository,
-                             GoogleSheetService googleSheetService) {
+    public NoteListerService(InstrumentRepository instrumentRepository, ScoreRepository scoreRepository) {
         this.instrumentRepository = instrumentRepository;
         this.scoreRepository = scoreRepository;
-        this.googleSheetService = googleSheetService;
     }
 
     public void createList() {
@@ -84,11 +81,11 @@ public class NoteListerService {
 
         log.info("Writing to Google Sheet");
 
-        googleSheetService.addRows("Repertoire!A4", repertoireRows);
-        googleSheetService.addRows("Sättning!A2", instrumentRows);
+        //googleSheetService.addRows("Repertoire!A4", repertoireRows);
+        //googleSheetService.addRows("Sättning!A2", instrumentRows);
 
         List<List<Object>> dateInfo = Collections.singletonList(Collections.singletonList(LocalDate.now().toString()));
-        googleSheetService.addRows("Repertoire!E1", dateInfo);
+        //googleSheetService.addRows("Repertoire!E1", dateInfo);
     }
 
 }

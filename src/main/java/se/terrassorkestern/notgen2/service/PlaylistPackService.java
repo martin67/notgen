@@ -21,12 +21,10 @@ import java.nio.file.Path;
 public class PlaylistPackService {
     static final Logger log = LoggerFactory.getLogger(PlaylistPackService.class);
 
-    private final GoogleDriveService googleDriveService;
     private final ScoreRepository scoreRepository;
 
 
-    public PlaylistPackService(GoogleDriveService googleDriveService, ScoreRepository scoreRepository) {
-        this.googleDriveService = googleDriveService;
+    public PlaylistPackService(ScoreRepository scoreRepository) {
         this.scoreRepository = scoreRepository;
     }
 
@@ -100,13 +98,13 @@ public class PlaylistPackService {
             }
 
             log.info("Downloading " + score.getTitle() + "/" + instrument.getName() + " [" + scorePart.getGoogleId() + "]");
-            try {
-                File f = googleDriveService.downloadFile(scorePart.getGoogleId(), index++, tmpDir);
-                pdfMergerUtility.addSource(f);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
+//            try {
+//                File f = googleDriveService.downloadFile(scorePart.getGoogleId(), index++, tmpDir);
+//                pdfMergerUtility.addSource(f);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                return null;
+//            }
         }
 
         try {
