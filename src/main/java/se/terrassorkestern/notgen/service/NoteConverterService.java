@@ -91,7 +91,7 @@ public class NoteConverterService {
 
         for (Score score : scores) {
             if (score.getScanned()) {
-                String msg = "Converting " + score.getTitle() + " (id=" + score.getId() + ")";
+                String msg = "Converting {} ({})" + score.getTitle() + " (id=" + score.getId() + ")";
                 log.info(msg);
                 progressService.updateProgress(new Progress(100 * stats.getNumberOfSongs() / scores.size(), 0, msg));
 
