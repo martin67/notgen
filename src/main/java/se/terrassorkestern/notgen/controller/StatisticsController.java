@@ -26,7 +26,7 @@ public class StatisticsController {
 
         Statistics statistics = statisticsService.getStatistics();
         model.addAttribute("statistics", statistics);
-
+        model.addAttribute("numberOfSongs", statistics.getNumberOfSongs());
         return "statistics";
     }
 }

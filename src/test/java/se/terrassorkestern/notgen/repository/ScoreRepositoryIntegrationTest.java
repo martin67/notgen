@@ -1,11 +1,10 @@
-package se.terrassorkestern.notgen;
+package se.terrassorkestern.notgen.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.repository.ScoreRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

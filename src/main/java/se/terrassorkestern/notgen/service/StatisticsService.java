@@ -34,7 +34,7 @@ public class StatisticsService {
         statistics.setNumberOfSongs(scoreRepository.count());
         statistics.setNumberOfScannedSongs(scoreRepository.countByScannedIsFalse());
         statistics.setNumberOfScannedPages(imagedataRepository.count());
-        statistics.setNumberOfBytes(imagedataRepository.sumSize());
+//        statistics.setNumberOfBytes(imagedataRepository.sumSize());
         statistics.setNumberOfInstruments(instrumentRepository.count());
         statistics.setNumberOfPlaylists(playlistRepository.count());
 

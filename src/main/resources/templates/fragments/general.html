@@ -17,9 +17,11 @@
 <div th:fragment="header">
     <nav class="navbar sticky-top navbar-expand-sm bg-dark navbar-dark">
         <a class="navbar-brand" th:href="@{/}">Notgeneratorn</a>
-        <div class="navbar-brand text-warning" th:if="${@environment.getActiveProfiles()[0] != 'prod'}"
-             th:text="${@environment.getActiveProfiles()[0]}">active profile
-        </div>
+        <!--
+                <div class="navbar-brand text-warning" th:if="${@environment.getActiveProfiles()[0] != 'prod'}"
+                     th:text="${@environment.getActiveProfiles()[0]}">active profile
+                </div>
+        -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -62,7 +64,9 @@
 
 <footer th:fragment="footer">
     <hr/>
-    <p class="small text-right col-sm-12" th:text="|Git build ${@environment.getProperty('git.commit.id.abbrev')} ${@environment.getProperty('git.commit.time')}|">Hejsan</p>
+    <p class="small text-right col-sm-12"
+       th:text="|Git build ${@environment.getProperty('git.commit.id.abbrev')} ${@environment.getProperty('git.commit.time')}|">
+        Hejsan</p>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
