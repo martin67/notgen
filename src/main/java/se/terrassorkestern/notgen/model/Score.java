@@ -25,6 +25,7 @@ public class Score extends Auditable<String> {
     private String composer;
     private String author;
     private String arranger;
+    @Column(name = "year_")             // year is a reserved name in H2...
     private Integer year = 1940;
     private String publisher;
     @Lob
@@ -36,6 +37,7 @@ public class Score extends Auditable<String> {
     private String googleIdTo;
     private String googleIdCover;
     private String googleIdThumbnail;
+    private String hejsan;
 
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScorePart> scoreParts = new ArrayList<>();

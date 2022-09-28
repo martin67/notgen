@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @Entity
 @Transactional
-@Table(name = "user")
+@Table(name = "user_")             // user is a reserved name in H2...
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 1L;

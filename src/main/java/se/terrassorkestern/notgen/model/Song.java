@@ -14,6 +14,6 @@ public class Song {
     private String title;
     private String subTitle;
     private String composer;
-    private Integer year;
+    private Integer year_;              // year is a reserved name in H2...
     private String comment;
 }
