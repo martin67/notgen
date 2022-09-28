@@ -16,6 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@Table(name = "instrument")
 public class Instrument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

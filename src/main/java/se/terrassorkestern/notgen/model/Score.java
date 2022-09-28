@@ -10,6 +10,7 @@ import java.util.List;
 
 @Data
 @Entity
+@Table(name = "score")
 public class Score extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

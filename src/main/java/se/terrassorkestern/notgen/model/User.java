@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 @Entity
 @Transactional
+@Table(name = "user")
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 1L;

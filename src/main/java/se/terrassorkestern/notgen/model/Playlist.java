@@ -13,6 +13,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@Table(name = "playlist")
 public class Playlist extends Auditable<String> {
 
     @Id
