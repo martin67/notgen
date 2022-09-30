@@ -37,7 +37,6 @@ public class Score extends Auditable<String> {
     private String googleIdTo;
     private String googleIdCover;
     private String googleIdThumbnail;
-    private String hejsan;
 
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScorePart> scoreParts = new ArrayList<>();
