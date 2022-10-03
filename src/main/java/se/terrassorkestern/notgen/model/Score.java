@@ -63,4 +63,13 @@ public class Score extends Auditable<String> {
     private String movie;
     private String orgText;
     private Integer betyg;
+
+
+    public List<Instrument> getInstruments() {
+        List<Instrument> result = new ArrayList<>();
+        for (ScorePart scorePart : scoreParts) {
+            result.add(scorePart.getInstrument());
+        }
+        return result;
+    }
 }

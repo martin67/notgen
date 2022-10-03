@@ -6,6 +6,8 @@ import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
@@ -16,25 +18,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.NoteConverterStats;
-import se.terrassorkestern.notgen.model.Progress;
-import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.filters.Binarizer;
 import se.terrassorkestern.notgen.filters.GreyScaler;
 import se.terrassorkestern.notgen.filters.Standard;
-import se.terrassorkestern.notgen.model.Playlist;
-import se.terrassorkestern.notgen.model.PlaylistEntry;
-import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.ScorePart;
+import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 
 import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +49,7 @@ public class NoteConverterService {
     private final InstrumentRepository instrumentRepository;
     private final PlaylistPackService playlistPackService;
     private final ProgressService progressService;
+    private final StorageService storageService;
 
     @Value("${notgen.google.id.fullscore}")
     private String googleFileIdFullScore;
@@ -73,14 +69,17 @@ public class NoteConverterService {
     private String cacheLocation;
     @Value("${notgen.cache.ttl:10}")
     private int cacheTtl;
-
+    @Value("${notgen.folders.thumbnails}")
+    private String thumbnailsFolder;
 
     public NoteConverterService(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
-                                PlaylistPackService playlistPackService, ProgressService progressService) {
+                                PlaylistPackService playlistPackService, ProgressService progressService,
+                                StorageService storageService) {
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
         this.playlistPackService = playlistPackService;
         this.progressService = progressService;
+        this.storageService = storageService;
     }
 
     public void convert(List<Score> scores, boolean upload) throws IOException {
@@ -98,14 +97,12 @@ public class NoteConverterService {
                 // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
                 score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
 
-                Path tmpDir = download(score);
+                Path tmpDir = storageService.getTmpDir(score);
+                storageService.downloadScore(score, tmpDir);
+
                 List<Path> extractedFilesList = split(tmpDir, stats, score);
                 imageProcess(tmpDir, extractedFilesList, stats, score);
-                createFullScore(tmpDir, extractedFilesList, stats, score, true, upload);
-                createFullScore(tmpDir, extractedFilesList, stats, score, false, upload);
                 createInstrumentParts(tmpDir, extractedFilesList, stats, score, upload);
-                // update song with new google id:s
-                scoreRepository.save(score);
                 progressService.updateProgress(new Progress(100, "Done"));
                 if (!log.isTraceEnabled()) {
                     FileUtils.deleteDirectory(tmpDir.toFile());
@@ -119,204 +116,6 @@ public class NoteConverterService {
         stats.setEndTime(Instant.now());
         stats.print();
     }
-
-
-    private void createFullScore(Path tmpDir, List<Path> extractedFilesList, NoteConverterStats stats, Score score, boolean toScore, boolean upload) {
-        if (!Files.exists(tmpDir) || extractedFilesList.isEmpty()) {
-            return;
-        }
-
-        // Ta bort "0123 - " från det nya filnamnet
-        Path path = Paths.get(tmpDir.toString(), FilenameUtils.getBaseName(score.getFilename()).substring(7) + ".pdf");
-        int progressStart;
-        int progressLength;
-
-        if (toScore) {
-            log.debug("Creating TO score {}", path);
-            progressStart = 55;
-            progressLength = 15;
-            progressService.updateProgress(new Progress(progressStart, "Creating TO score"));
-        } else {
-            log.debug("Creating full score {}", path);
-            progressStart = 70;
-            progressLength = 30;
-            progressService.updateProgress(new Progress(progressStart, "Creating full score"));
-        }
-
-        try {
-            PDDocument doc = new PDDocument();
-            PDDocumentInformation pdd = doc.getDocumentInformation();
-            pdd.setAuthor("Terrassorkestern");
-            pdd.setTitle(score.getTitle());
-            if (toScore) {
-                pdd.setSubject("TO sättning");
-            } else {
-                pdd.setSubject("Full sättning");
-            }
-            pdd.setCustomMetadataValue("Musik", score.getComposer());
-            pdd.setCustomMetadataValue("Text", score.getAuthor());
-            pdd.setCustomMetadataValue("Arrangemang", score.getArranger());
-            if (score.getYear() != null && score.getYear() > 0) {
-                pdd.setCustomMetadataValue("År", score.getYear().toString());
-            } else {
-                pdd.setCustomMetadataValue("År", null);
-            }
-            pdd.setCustomMetadataValue("Genre", score.getGenre());
-            pdd.setCreator("Terrassorkesterns notgenerator 2.0");
-            pdd.setModificationDate(Calendar.getInstance());
-
-            // Ta först hand om framsidan om den finns och är i färg. Endast för fulla arr
-            // Alltid första filen om den finns
-            if (score.getCover() && score.getColor() && !toScore) {
-                PDPage page = new PDPage(PDRectangle.A4);
-                doc.addPage(page);
-                File file = new File(FilenameUtils.removeExtension(extractedFilesList.get(0).toString()) + ".jpg");
-                PDImageXObject pdImage = PDImageXObject.createFromFile(file.toString(), doc);
-                PDPageContentStream contents = new PDPageContentStream(doc, page);
-                PDRectangle mediaBox = page.getMediaBox();
-                contents.drawImage(pdImage, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());
-                contents.close();
-            }
-
-            for (ScorePart scorePart : score.getScoreParts()) {
-                progressService.updateProgress(new Progress(progressStart + (progressLength * score.getScoreParts().indexOf(scorePart) / score.getScoreParts().size())));
-                // Om det är TO-sättning så hoppa över instrument som inte är standard
-//                if (toScore && !scorePart.getInstrument().isStandard()) {
-//                    continue;
-//                }
-
-                for (int i = scorePart.getPage(); i < (scorePart.getPage() + scorePart.getLength()); i++) {
-                    PDPage page = new PDPage(PDRectangle.A4);
-                    doc.addPage(page);
-                    // Om det är bildbehandlat så är formatet png, i annat fall jpg
-                    // TIF från början => zip med png, bildbehandlas ej
-                    // PDF => splittas som png, bildbehnandlas ej
-                    // ZIP med mina scanningar, splittas som jpg, bildbahandlas och sparas som png
-                    // ZIP från Bengtsson, splittas som jpg, behandlas ej, sparas som jpg
-                    // Logik - välj i första hand png, finns inte det ta jpg
-                    File png = new File(FilenameUtils.removeExtension(extractedFilesList.get(i - 1).toString()) + ".png");
-                    File jpg = new File(FilenameUtils.removeExtension(extractedFilesList.get(i - 1).toString()) + ".jpg");
-                    File file;
-                    if (png.exists()) {
-                        file = png;
-                    } else {
-                        file = jpg;
-                    }
-                    PDImageXObject pdImage = PDImageXObject.createFromFile(file.toString(), doc);
-                    PDPageContentStream contents = new PDPageContentStream(doc, page);
-                    PDRectangle mediaBox = page.getMediaBox();
-                    contents.drawImage(pdImage, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());
-
-                    contents.beginText();
-                    contents.setFont(PDType1Font.HELVETICA_OBLIQUE, 5);
-                    contents.setNonStrokingColor(Color.DARK_GRAY);
-                    contents.newLineAtOffset(495, 5);
-                    contents.showText("Godhetsfullt inscannad av Terrassorkestern");
-                    contents.endText();
-                    contents.close();
-                }
-            }
-            doc.save(path.toFile());
-            doc.close();
-            stats.incrementNumberOfPdf();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (upload) {
-            try {
-                log.debug("Uploading {} to Google Drive", path);
-                Map<String, String> map = new HashMap<>();
-                map.put("Title", score.getTitle());
-                map.put("Composer", score.getComposer());
-                map.put("Author", score.getAuthor());
-                map.put("Arranger", score.getArranger());
-                if (score.getYear() != null && score.getYear() > 0) {
-                    map.put("Year", score.getYear().toString());
-                } else {
-                    map.put("Year", null);
-                }
-                map.put("Genre", score.getGenre());
-
-                // Beskrivning som visas för google
-                StringBuilder description;
-                description = new StringBuilder(score.getTitle() + "\n");
-                if (score.getGenre() != null) {
-                    description.append(score.getGenre()).append("\n");
-                }
-                description.append("\n");
-
-                if (score.getComposer() != null && score.getComposer().length() > 0) {
-                    description.append("Kompositör: ").append(score.getComposer()).append("\n");
-                }
-                if (score.getAuthor() != null && score.getAuthor().length() > 0) {
-                    description.append("Text: ").append(score.getAuthor()).append("\n");
-                }
-                if (score.getArranger() != null && score.getArranger().length() > 0) {
-                    description.append("Arrangör: ").append(score.getArranger()).append("\n");
-                }
-                if (score.getYear() != null && score.getYear() > 0) {
-                    description.append("År: ").append(score.getYear().toString()).append("\n");
-                }
-
-                if (toScore) {
-                    description.append("\nTO-sättning:\n");
-                } else {
-                    description.append("\nFull sättning:\n");
-                }
-
-                for (ScorePart scorePart : score.getScoreParts()) {
-//                    if (toScore && !scorePart.getInstrument().isStandard()) {
-//                        continue;
-//                    }
-                    description.append(scorePart.getInstrument().getName()).append("\n");
-                }
-
-
-                String googleId = "";
-                if (toScore) {
-//                    googleId = googleDriveService.uploadFile(googleFileIdToScore, "application/pdf", score.getTitle(),
-//                            path, null, description.toString(), false, map);
-                    if (googleId.length() > 0) {
-                        score.setGoogleIdTo(googleId);
-                        stats.addNumberOfBytes(Files.size(path));
-                    }
-                } else {
-//                    googleId = googleDriveService.uploadFile(googleFileIdFullScore, "application/pdf", score.getTitle(),
-//                            path, null, description.toString(), false, map);
-                    if (googleId.length() > 0) {
-                        score.setGoogleIdFull(googleId);
-                        stats.addNumberOfBytes(Files.size(path));
-                    }
-
-                    // Ladda också upp omslaget separat (bara om det är bildbehandlat och beskuret)
-                    if (score.getCover() && score.getColor() && score.getUpperleft()) {
-                        log.debug("Also uploading cover");
-                        Path coverPath = Paths.get(extractedFilesList.get(0).toString() + "-cover.jpg");
-//                        googleId = googleDriveService.uploadFile(googleFileIdCover, "image/jpeg", score.getTitle(),
-//                                coverPath, null, null, false, null);
-                        if (googleId.length() > 0) {
-                            score.setGoogleIdCover(googleId);
-                            stats.addNumberOfBytes(Files.size(coverPath));
-                        }
-                        // Om det finns ett omslag så finns det alltid en thumbnail som också skall laddas upp
-                        log.debug("Uploading cover thumbnail");
-                        Path thumbnailPath = Paths.get(extractedFilesList.get(0).toString() + "-thumbnail.jpg");
-//                        googleId = googleDriveService.uploadFile(googleFileIdThumbnail, "image/jpeg", score.getId() + ".jpg",
-//                                thumbnailPath, null, null, false, null);
-                        if (googleId.length() > 0) {
-                            score.setGoogleIdThumbnail(googleId);
-                            stats.addNumberOfBytes(Files.size(coverPath));
-                        }
-
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
     private void createInstrumentParts(Path tmpDir, List<Path> extractedFilesList, NoteConverterStats stats, Score score, boolean upload) {
         if (!Files.exists(tmpDir) || extractedFilesList.isEmpty()) {
@@ -341,6 +140,7 @@ public class NoteConverterService {
                 pdd.setCustomMetadataValue("Musik", score.getComposer());
                 pdd.setCustomMetadataValue("Text", score.getAuthor());
                 pdd.setCustomMetadataValue("Arrangemang", score.getArranger());
+                pdd.setCustomMetadataValue("Instrument", scorePart.getInstrument().getName());
                 if (score.getYear() != null && score.getYear() > 0) {
                     pdd.setCustomMetadataValue("År", score.getYear().toString());
                 } else {
@@ -376,7 +176,7 @@ public class NoteConverterService {
                 doc.save(path.toFile());
                 doc.close();
                 stats.incrementNumberOfPdf();
-
+                storageService.saveScorePart(scorePart, path);
 
                 if (upload) {
                     try {
@@ -460,7 +260,6 @@ public class NoteConverterService {
         }
     }
 
-
     private void imageProcess(Path tmpDir, List<Path> extractedFilesList, NoteConverterStats stats, Score score) {
         if (!Files.exists(tmpDir) || !score.getImageProcess() || extractedFilesList.isEmpty()) {
             return;
@@ -509,7 +308,7 @@ public class NoteConverterService {
                 // slutgiltiga bilden 2036x3116 (med 300 DPI). För bilder scannade i 150 DPI så
                 // Crop image to 2008x3130
 
-                // För 300 DPI så har jag hittat föjande bredder: 2409, 2480, 2550, 2576, 2872 (1)
+                // För 300 DPI så har jag hittat följande bredder: 2409, 2480, 2550, 2576, 2872 (1)
                 int cropWidth;
                 int cropHeight;
 
@@ -542,7 +341,7 @@ public class NoteConverterService {
 
                     //
                     // Om det är ett omslag så skall det sparas en kopia separat här (innan det skalas om)
-                    // Spara också en thumnbail i storlek 180 bredd
+                    // Spara också en thumbnail i storlek 180 bredd
                     //
                     if (firstPage && score.getCover() && score.getColor()) {
                         ImageIO.write(image, "jpg", new File(tmpDir.toFile(), basename + "-cover.jpg"));
@@ -553,6 +352,8 @@ public class NoteConverterService {
                         g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
                         g.dispose();
                         ImageIO.write(thumbnail, "jpg", new File(tmpDir.toFile(), basename + "-thumbnail.jpg"));
+                        ImageIO.write(thumbnail, "png", Paths.get(thumbnailsFolder).resolve(String.format("%04d.png", score.getId())).toFile());
+                        ImageIO.write(thumbnail, "jpg", Paths.get(thumbnailsFolder).resolve(String.format("%04d.jpg", score.getId())).toFile());
                     }
 
                     // Resize
@@ -621,7 +422,6 @@ public class NoteConverterService {
         log.info("Total time converting {}, {} ms", score.getTitle(), oneScoreWatch.getTotalTimeMillis());
         //System.out.println(oneScoreWatch.prettyPrint());
     }
-
 
     private List<Path> split(Path tmpDir, NoteConverterStats stats, Score score) {
 
@@ -699,34 +499,7 @@ public class NoteConverterService {
         return extractedFilesList;
     }
 
-    private Path download(@NotNull Score score) throws IOException {
-
-        Path tmpDir = Files.createTempDirectory("notkonv-");
-        log.debug("Creating temporary directory {}", tmpDir.toString());
-
-        // If the cache is enabled, check if the file is present and not older than x days (TTL)
-        if (cacheLocation != null) {
-            Path cache = Paths.get(cacheLocation);
-            FileTime ttl = FileTime.from(Instant.now().minus(Duration.ofDays(cacheTtl)));
-            Path cacheFile = cache.resolve(score.getFilename());
-            if (Files.exists(cacheFile) && Files.getLastModifiedTime(cacheFile).compareTo(ttl) > 0) {
-                progressService.updateProgress(new Progress(3, "Copying archive from cache"));
-                log.debug("Copying {} from cache", score.getFilename());
-            } else {
-                log.debug("Downloading {} to cache", score.getFilename());
-                progressService.updateProgress(new Progress(3, "Downloading archive from Google"));
-//                googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), cache);
-            }
-            Files.copy(cacheFile, tmpDir.resolve(score.getFilename()));
-        } else {
-            log.debug("Downloading {} to {}", score.getFilename(), tmpDir);
-            progressService.updateProgress(new Progress(3, "Downloading archive from Google"));
-//            googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), tmpDir);
-        }
-        return tmpDir;
-    }
-
-    public void createInstrumentPacks(boolean upload) {
+    public void createInstrumentPacks() {
 
         // Create a playlist with all songs
         Playlist playlist = new Playlist();
@@ -757,5 +530,93 @@ public class NoteConverterService {
 //                }
         }
     }
+
+    public void convert(List<Score> scores) throws IOException {
+        log.info("Starting main convert loop");
+        NoteConverterStats stats = new NoteConverterStats();
+        stats.setStartTime(Instant.now());
+
+        for (Score score : scores) {
+            if (score.getScanned()) {
+                log.info("Converting {} ({})", score.getTitle(), score.getId());
+
+                // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
+                score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
+
+                Path tmpDir = storageService.getTmpDir(score);
+                storageService.downloadScore(score, tmpDir);
+
+                List<Path> extractedFilesList = split(tmpDir, stats, score);
+                imageProcess(tmpDir, extractedFilesList, stats, score);
+                createInstrumentParts(tmpDir, extractedFilesList, stats, score, false);
+            }
+        }
+        log.info("Finishing main convert loop");
+    }
+
+    public InputStream assemble(List<Score> scores, Setting setting, boolean sortByInstrument) throws IOException {
+        return assemble(scores, new ArrayList<>(setting.getInstruments()), sortByInstrument);
+    }
+
+    public InputStream assemble(List<Score> scores, List<Instrument> instruments, boolean sortByInstrument) throws IOException {
+
+        // Can't assume that the input always will be sorted
+        scores.sort(Comparator.comparing(Score::getTitle));
+        instruments.sort(Comparator.comparing(Instrument::getSortOrder));
+
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        pdfMergerUtility.setDestinationStream(byteArrayOutputStream);
+
+        if (scores.size() > 1) {
+            // Use generic info if there are more than one score. Otherwise, use the already present info.
+            PDDocumentInformation docInfo = new PDDocumentInformation();
+            docInfo.setTitle("Noter");
+            docInfo.setAuthor("Terrassorkestern");
+            docInfo.setSubject("Notsamling");
+            docInfo.setCreator("Terrassorkesterns notgenerator 3.0");
+            docInfo.setModificationDate(Calendar.getInstance());
+
+            StringBuilder keywords = new StringBuilder();
+            for (Score score : scores) {
+                keywords.append(score.getTitle()).append("\n");
+            }
+            docInfo.setKeywords(keywords.toString());
+            pdfMergerUtility.setDestinationDocumentInformation(docInfo);
+        }
+
+        // Check so that all pdfs have been generated before assembling
+        for (Score score : scores) {
+            if (!storageService.isScoreGenerated(score)) {
+                convert(List.of(score));
+            }
+        }
+
+        // Create PDF
+        if (sortByInstrument) {
+            for (Instrument instrument : instruments) {
+                log.info("Adding instrument: {}", instrument.getName());
+                for (Score score : scores) {
+                    if (score.getInstruments().contains(instrument)) {
+                        pdfMergerUtility.addSource(storageService.toPath(score, instrument).toFile());
+                    }
+                }
+            }
+
+        } else {
+            for (Score score : scores) {
+                log.info("Adding score: {}", score.getTitle());
+                for (Instrument instrument : instruments) {
+                    if (score.getInstruments().contains(instrument)) {
+                        pdfMergerUtility.addSource(storageService.toPath(score, instrument).toFile());
+                    }
+                }
+            }
+        }
+        pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+    }
+
 }
 

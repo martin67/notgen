@@ -5,22 +5,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.jdbc.Sql;
+import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
+import se.terrassorkestern.notgen.model.Setting;
+import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
+import se.terrassorkestern.notgen.repository.SettingRepository;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
 @Transactional
+@Sql({"/full-data.sql"})
 class NoteConverterServiceTest {
-
-    @Autowired
-    NoteConverterService noteConverterService;
-    @Autowired
-    ScoreRepository scoreRepository;
 
     static final Integer[] exampleScores = {
             219,    // Jumpy Lullaby.zip, PNG, 2480x3508, 300x300, 1 bit greyscale (no conversion)
@@ -43,21 +48,27 @@ class NoteConverterServiceTest {
             488,    // Drömvalsen.zip, JPEG, 2550x3501, 300x300, 24 bit YCbCr
             573     // Cherie-Mona.zip, JPEG, 2576x(2864-3744), 300x300, 24 bit YCbCr
     };
-
+    @Autowired
+    NoteConverterService noteConverterService;
+    @Autowired
+    ScoreRepository scoreRepository;
+    @Autowired
+    InstrumentRepository instrumentRepository;
+    @Autowired
+    SettingRepository settingRepository;
 
     @Test
     @WithMockUser
     void convertOneScore() throws IOException {
         List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
-        noteConverterService.convert(scores, false);
+        noteConverterService.convert(scores);
     }
 
-    @Disabled
     @Test
     @WithMockUser
     void convertMultipleScores() throws IOException {
         List<Score> scores = scoreRepository.findByTitleContaining("valsen");
-        noteConverterService.convert(scores, false);
+        noteConverterService.convert(scores);
     }
 
     @Disabled
@@ -65,6 +76,25 @@ class NoteConverterServiceTest {
     @WithMockUser
     void convertExampleScores() throws IOException {
         List<Score> scores = scoreRepository.findAllById(Arrays.asList(exampleScores));
-        noteConverterService.convert(scores, false);
+        noteConverterService.convert(scores);
     }
+
+    @Test
+    @WithMockUser
+    void assembleOneScore() throws IOException {
+        List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
+        List<Instrument> instruments = instrumentRepository.findByNameContaining("saxofon");
+        InputStream is = noteConverterService.assemble(scores, instruments, false);
+        Files.copy(is, Paths.get("test.pdf"), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Test
+    @WithMockUser
+    void assembleTOScores() throws IOException {
+        List<Score> scores = scoreRepository.findByTitleContaining("ögon");
+        List<Setting> setting = settingRepository.findByName("Terrassorkestern");
+        InputStream is = noteConverterService.assemble(scores, setting.get(0), true);
+        Files.copy(is, Paths.get("test2.pdf"), StandardCopyOption.REPLACE_EXISTING);
+    }
+
 }

@@ -49,6 +49,7 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time'
     implementation 'org.liquibase:liquibase-core:4.16.1'
+    implementation 'mysql:mysql-connector-java:8.0.30'
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.6'
     implementation 'com.h2database:h2:2.1.214'
     implementation 'com.google.guava:guava:31.1-jre'
@@ -70,13 +71,15 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     liquibaseRuntime 'info.picocli:picocli:4.6.3'
     liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:4.16.1'
-    liquibaseRuntime sourceSets.main.output
+    //liquibaseRuntime sourceSets.main.output
 
     liquibase {
         activities {
             main {
-                changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
-                //changeLogFile 'db/changelog/db.changelog-master.xml'
+                changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+                //changeLogFile 'db/changelog/db.changelog-master.yaml'
+                //changeLogFile 'db.changelog-master.yaml'
+                //classpath 'src/main/resources'
                 url "jdbc:h2:file:./todb"
                 referenceUrl "hibernate:spring:se.terrassorkestern.notgen.model?dialect=org.hibernate.dialect.H2Dialect&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
                 username "sa"

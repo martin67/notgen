@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -16,10 +17,10 @@ import se.terrassorkestern.notgen.repository.ScoreRepository;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/noteConverter")
 public class NoteConverterController {
-    static final Logger log = LoggerFactory.getLogger(NoteConverterController.class);
 
     private final ScoreRepository scoreRepository;
     private final NoteConverterService noteConverterService;
@@ -58,11 +59,11 @@ public class NoteConverterController {
     }
 
     @PostMapping(value = "/convert", params = {"createPacks"})
-    public String createPacks(@ModelAttribute("noteConverterDto") NoteConverterDto noteConverterDto) {
+    public String createPacks() {
 
         log.info("Skapar instrumentpackar");
 
-        noteConverterService.createInstrumentPacks(noteConverterDto.isUpload());
+        noteConverterService.createInstrumentPacks();
 
         return "redirect:/noteConverter";
     }
