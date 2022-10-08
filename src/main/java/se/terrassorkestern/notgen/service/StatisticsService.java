@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.Statistics;
@@ -10,9 +9,9 @@ import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 
+@Slf4j
 @Service
 public class StatisticsService {
-    static final Logger log = LoggerFactory.getLogger(StatisticsService.class);
     static final int TOPLIST_COUNT = 5;
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
@@ -32,7 +31,7 @@ public class StatisticsService {
         Statistics statistics = new Statistics();
 
         statistics.setNumberOfSongs(scoreRepository.count());
-        statistics.setNumberOfScannedSongs(scoreRepository.countByScannedIsFalse());
+        statistics.setNumberOfScannedSongs(scoreRepository.countByScannedIsTrue());
         statistics.setNumberOfScannedPages(imagedataRepository.count());
 //        statistics.setNumberOfBytes(imagedataRepository.sumSize());
         statistics.setNumberOfInstruments(instrumentRepository.count());

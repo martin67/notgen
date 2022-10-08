@@ -1,18 +1,16 @@
 package se.terrassorkestern.notgen.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.NoteConverterDto;
-import se.terrassorkestern.notgen.service.NoteConverterService;
+import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
+import se.terrassorkestern.notgen.service.NoteConverterService;
 
 import java.io.IOException;
 import java.util.List;

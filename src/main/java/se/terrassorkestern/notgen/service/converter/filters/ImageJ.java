@@ -1,4 +1,4 @@
-package se.terrassorkestern.notgen.filters;
+package se.terrassorkestern.notgen.service.converter.filters;
 
 import ij.ImagePlus;
 

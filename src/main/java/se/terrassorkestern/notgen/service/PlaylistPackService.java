@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.slf4j.Logger;
@@ -17,9 +18,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Slf4j
 @Service
 public class PlaylistPackService {
-    static final Logger log = LoggerFactory.getLogger(PlaylistPackService.class);
 
     private final ScoreRepository scoreRepository;
 

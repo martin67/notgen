@@ -14,6 +14,8 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Integer>
 
     List<Instrument> findByNameContaining(String text);
 
+    List<Instrument> findByOrderBySortOrder();
+
 //    List<Instrument> findByOrderByStandardDescSortOrder();
 //
 //    List<Instrument> findByStandardIsTrueOrderBySortOrder();

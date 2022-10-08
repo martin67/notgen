@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen.service;
 
 import io.micrometer.core.instrument.Metrics;
+import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
@@ -18,32 +19,34 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
-import se.terrassorkestern.notgen.filters.Binarizer;
-import se.terrassorkestern.notgen.filters.GreyScaler;
-import se.terrassorkestern.notgen.filters.Standard;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
+import se.terrassorkestern.notgen.service.converter.ImageProcessor;
+import se.terrassorkestern.notgen.service.converter.PdfAssembler;
+import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
+import se.terrassorkestern.notgen.service.converter.filters.GreyScaler;
+import se.terrassorkestern.notgen.service.converter.filters.Standard;
 
 import javax.imageio.ImageIO;
-import javax.validation.constraints.NotNull;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class NoteConverterService {
-    static final Logger log = LoggerFactory.getLogger(NoteConverterService.class);
 
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
@@ -83,7 +86,7 @@ public class NoteConverterService {
     }
 
     public void convert(List<Score> scores, boolean upload) throws IOException {
-        log.info("Starting main convert loop");
+        log.debug("Starting main convert loop");
 
         NoteConverterStats stats = new NoteConverterStats();
         stats.setStartTime(Instant.now());
@@ -95,7 +98,7 @@ public class NoteConverterService {
                 progressService.updateProgress(new Progress(100 * stats.getNumberOfSongs() / scores.size(), 0, msg));
 
                 // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
-                score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
+                //score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
 
                 Path tmpDir = storageService.getTmpDir(score);
                 storageService.downloadScore(score, tmpDir);
@@ -351,9 +354,7 @@ public class NoteConverterService {
                         g = thumbnail.createGraphics();
                         g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
                         g.dispose();
-                        ImageIO.write(thumbnail, "jpg", new File(tmpDir.toFile(), basename + "-thumbnail.jpg"));
                         ImageIO.write(thumbnail, "png", Paths.get(thumbnailsFolder).resolve(String.format("%04d.png", score.getId())).toFile());
-                        ImageIO.write(thumbnail, "jpg", Paths.get(thumbnailsFolder).resolve(String.format("%04d.jpg", score.getId())).toFile());
                     }
 
                     // Resize
@@ -423,6 +424,51 @@ public class NoteConverterService {
         //System.out.println(oneScoreWatch.prettyPrint());
     }
 
+    private void imageProcess2(Path tmpDir, List<Path> extractedFilesList, Score score) throws InterruptedException {
+        if (!Files.exists(tmpDir) || !score.getImageProcess() || extractedFilesList.isEmpty()) {
+            return;
+        }
+
+        log.debug("Starting image processing");
+        boolean firstPage = true;
+
+        ExecutorService executorService = null;
+        try {
+            executorService = Executors.newFixedThreadPool(4);
+            for (Path path : extractedFilesList) {
+                executorService.submit(new ImageProcessor(path, tmpDir, thumbnailsFolder, score, firstPage));
+                firstPage = false;
+            }
+        } finally {
+            if (executorService != null) executorService.shutdown();
+        }
+
+        if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
+            log.error("problem terminating image processing");
+        }
+    }
+
+    private void createPdfs(Path tmpDir, List<Path> extractedFilesList, Score score) throws InterruptedException {
+        if (!Files.exists(tmpDir) || extractedFilesList.isEmpty()) {
+            return;
+        }
+        ExecutorService executorService = null;
+        try {
+            executorService = Executors.newCachedThreadPool();
+            //executorService = Executors.newFixedThreadPool(4);
+            for (ScorePart scorePart : score.getScoreParts()) {
+                executorService.submit(new PdfAssembler(scorePart, tmpDir, storageService, extractedFilesList));
+            }
+        } finally {
+            if (executorService != null) executorService.shutdown();
+        }
+
+        if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
+            log.error("problem terminating pdf creation");
+        }
+
+    }
+
     private List<Path> split(Path tmpDir, NoteConverterStats stats, Score score) {
 
         List<Path> extractedFilesList = new ArrayList<>();
@@ -440,7 +486,7 @@ public class NoteConverterService {
         // Unzip files into temp directory
         log.debug("Extracting {} to {}", inFile, tmpDir);
         progressService.updateProgress(new Progress(5, "Extracting files"));
-        if (FilenameUtils.getExtension(score.getFilename()).toLowerCase().equals("zip")) {
+        if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("zip")) {
             try {
                 // Initiate ZipFile object with the path/name of the zip file.
                 ZipFile zipFile = new ZipFile(inFile);
@@ -531,38 +577,64 @@ public class NoteConverterService {
         }
     }
 
-    public void convert(List<Score> scores) throws IOException {
-        log.info("Starting main convert loop");
+    public void convert(List<Score> scores) throws IOException, InterruptedException {
+        log.debug("Starting main convert loop");
         NoteConverterStats stats = new NoteConverterStats();
         stats.setStartTime(Instant.now());
+        StopWatch stopWatch = new StopWatch("convert");
+        //stopWatch.start();
 
         for (Score score : scores) {
             if (score.getScanned()) {
-                log.info("Converting {} ({})", score.getTitle(), score.getId());
+                log.info("Converting: {} ({})", score.getTitle(), score.getId());
 
                 // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
                 score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
 
                 Path tmpDir = storageService.getTmpDir(score);
+                stopWatch.start("download");
                 storageService.downloadScore(score, tmpDir);
+                stopWatch.stop();
 
                 List<Path> extractedFilesList = split(tmpDir, stats, score);
-                imageProcess(tmpDir, extractedFilesList, stats, score);
-                createInstrumentParts(tmpDir, extractedFilesList, stats, score, false);
+
+                stopWatch.start("image process");
+                imageProcess2(tmpDir, extractedFilesList, score);
+                stopWatch.stop();
+                stopWatch.start("pdf creation");
+                createPdfs(tmpDir, extractedFilesList, score);
+                stopWatch.stop();
             }
         }
-        log.info("Finishing main convert loop");
+        //stopWatch.stop();
+        log.debug("Finishing main convert loop, time: {}", stopWatch.prettyPrint());
     }
 
-    public InputStream assemble(List<Score> scores, Setting setting, boolean sortByInstrument) throws IOException {
+    public InputStream assemble(List<Score> scores, Setting setting, boolean sortByInstrument) throws IOException, InterruptedException {
         return assemble(scores, new ArrayList<>(setting.getInstruments()), sortByInstrument);
     }
 
-    public InputStream assemble(List<Score> scores, List<Instrument> instruments, boolean sortByInstrument) throws IOException {
+    public InputStream assemble(Playlist playlist, Instrument instrument) throws IOException, InterruptedException {
+        List<Score> scores = new ArrayList<>();
+        List<Instrument> instruments = List.of(instrument);
 
-        // Can't assume that the input always will be sorted
-        scores.sort(Comparator.comparing(Score::getTitle));
-        instruments.sort(Comparator.comparing(Instrument::getSortOrder));
+        for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
+            List<Score> scoresFound = scoreRepository.findByTitle(playlistEntry.getText());
+            if (scoresFound != null && !scoresFound.isEmpty()) {
+                if (scoresFound.size() > 1) {
+                    log.warn("Multiple scores for playlist entry {}", playlistEntry.getText());
+                }
+                scores.add(scoresFound.get(0));
+            }
+        }
+        return assemble(scores, instruments, false);
+    }
+
+    public InputStream assemble(List<Score> scores, List<Instrument> instruments, boolean sortByInstrument) throws IOException, InterruptedException {
+
+        // Todo: Can we assume that the input always will be sorted?
+        //scores.sort(Comparator.comparing(Score::getTitle));
+        //instruments.sort(Comparator.comparing(Instrument::getSortOrder));
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -595,7 +667,7 @@ public class NoteConverterService {
         // Create PDF
         if (sortByInstrument) {
             for (Instrument instrument : instruments) {
-                log.info("Adding instrument: {}", instrument.getName());
+                log.info("Adding instrument: {} to pdf output", instrument.getName());
                 for (Score score : scores) {
                     if (score.getInstruments().contains(instrument)) {
                         pdfMergerUtility.addSource(storageService.toPath(score, instrument).toFile());
@@ -605,7 +677,7 @@ public class NoteConverterService {
 
         } else {
             for (Score score : scores) {
-                log.info("Adding score: {}", score.getTitle());
+                log.info("Adding score: {} ({}) to pdf output", score.getTitle(), score.getId());
                 for (Instrument instrument : instruments) {
                     if (score.getInstruments().contains(instrument)) {
                         pdfMergerUtility.addSource(storageService.toPath(score, instrument).toFile());

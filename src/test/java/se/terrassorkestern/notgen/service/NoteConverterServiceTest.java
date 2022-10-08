@@ -59,14 +59,14 @@ class NoteConverterServiceTest {
 
     @Test
     @WithMockUser
-    void convertOneScore() throws IOException {
+    void convertOneScore() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
         noteConverterService.convert(scores);
     }
 
     @Test
     @WithMockUser
-    void convertMultipleScores() throws IOException {
+    void convertMultipleScores() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findByTitleContaining("valsen");
         noteConverterService.convert(scores);
     }
@@ -74,14 +74,14 @@ class NoteConverterServiceTest {
     @Disabled
     @Test
     @WithMockUser
-    void convertExampleScores() throws IOException {
+    void convertExampleScores() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findAllById(Arrays.asList(exampleScores));
         noteConverterService.convert(scores);
     }
 
     @Test
     @WithMockUser
-    void assembleOneScore() throws IOException {
+    void assembleOneScore() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
         List<Instrument> instruments = instrumentRepository.findByNameContaining("saxofon");
         InputStream is = noteConverterService.assemble(scores, instruments, false);
@@ -90,7 +90,7 @@ class NoteConverterServiceTest {
 
     @Test
     @WithMockUser
-    void assembleTOScores() throws IOException {
+    void assembleTOScores() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findByTitleContaining("ögon");
         List<Setting> setting = settingRepository.findByName("Terrassorkestern");
         InputStream is = noteConverterService.assemble(scores, setting.get(0), true);

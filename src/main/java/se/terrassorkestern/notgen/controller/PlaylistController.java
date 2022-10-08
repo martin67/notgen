@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
@@ -21,33 +22,32 @@ import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
 import se.terrassorkestern.notgen.model.PlaylistEntry;
-import se.terrassorkestern.notgen.service.PlaylistPackService;
+import se.terrassorkestern.notgen.service.NoteConverterService;
 import se.terrassorkestern.notgen.service.PlaylistPdfService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.*;
 
+@Slf4j
 @Controller
 @RequestMapping("/playlist")
 public class PlaylistController {
-    static final Logger log = LoggerFactory.getLogger(PlaylistController.class);
 
     private final PlaylistRepository playlistRepository;
     private final SettingRepository settingRepository;
     private final InstrumentRepository instrumentRepository;
     private final PlaylistPdfService playlistPdfService;
-    private final PlaylistPackService playlistPackService;
-
+    private final NoteConverterService noteConverterService;
 
     public PlaylistController(PlaylistRepository playlistRepository, SettingRepository settingRepository,
                               InstrumentRepository instrumentRepository, PlaylistPdfService playlistPdfService,
-                              PlaylistPackService playlistPackService) {
+                              NoteConverterService noteConverterService) {
         this.playlistRepository = playlistRepository;
         this.settingRepository = settingRepository;
         this.instrumentRepository = instrumentRepository;
         this.playlistPdfService = playlistPdfService;
-        this.playlistPackService = playlistPackService;
+        this.noteConverterService = noteConverterService;
     }
 
     @GetMapping("/list")
@@ -130,7 +130,7 @@ public class PlaylistController {
 
     @PostMapping(value = "/save", params = {"createPack"})
     public ResponseEntity<InputStreamResource> createPack(final Playlist playlist,
-                                                          final HttpServletRequest req) throws FileNotFoundException {
+                                                          final HttpServletRequest req) {
         int id;
         try {
             id = Integer.parseInt(req.getParameter("selectedInstrument"));
@@ -139,21 +139,21 @@ public class PlaylistController {
         }
 
         log.debug("Startar createPack för instrument id " + id);
-        String fileName;
-        Instrument instrument = instrumentRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
-        fileName = playlistPackService.createPack(playlist, instrument, "playlist.pdf");
 
-        File file = new File(fileName);
-        InputStreamResource isr = new InputStreamResource(new FileInputStream(file));
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=playlistpack.pdf");
+        Instrument instrument = instrumentRepository.findById(id).get();
+        try (InputStream is = noteConverterService.assemble(playlist, instrument)) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=playlist.pdf");
 
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(isr);
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(new InputStreamResource(is));
+
+        } catch (IOException | InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
     }
 
     @GetMapping(value = "/createPdf", produces = MediaType.APPLICATION_PDF_VALUE)

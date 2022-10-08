@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
+import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.imaging.ImageInfo;
@@ -41,9 +42,9 @@ import java.util.stream.Collectors;
 import static org.apache.commons.imaging.Imaging.getImageInfo;
 import static org.apache.commons.imaging.Imaging.getMetadata;
 
+@Slf4j
 @Service
 public class ImageDataExtractor {
-    static final Logger log = LoggerFactory.getLogger(ImageDataExtractor.class);
 
     private final ScoreRepository scoreRepository;
 

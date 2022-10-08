@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.TopListEntry;
 
@@ -22,6 +23,8 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
     List<Score> findByIdInOrderByTitle(List<Integer> id);
 
     List<Score> findByIdGreaterThan(int id);
+
+    List<Score> findByScorePartsInstrumentOrderByTitle(Instrument instrument);
 
     @Query("SELECT s.title FROM Score s ORDER BY s.title")
     List<String> getAllTitles();
@@ -43,7 +46,7 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
 
     // Statistics
-    long countByScannedIsFalse();
+    long countByScannedIsTrue();
 
     @Query("SELECT " +
             " new se.terrassorkestern.notgen.model.TopListEntry(s.genre, count(s.genre)) " +

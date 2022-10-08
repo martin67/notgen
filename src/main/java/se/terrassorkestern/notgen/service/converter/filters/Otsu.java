@@ -5,7 +5,7 @@
 
  */
 
-package se.terrassorkestern.notgen.filters;
+package se.terrassorkestern.notgen.service.converter.filters;
 
 import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;

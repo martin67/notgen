@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.Instrument;
@@ -20,11 +21,12 @@ public class StorageService {
     private static final Path INPUT = Paths.get("/Work/TO/notgen/score_input");
     private static final Path OUTPUT = Paths.get("/Work/TO/notgen/score_output");
 
-    Path getTmpDir(Score score) throws IOException {
+    public Path getTmpDir(Score score) throws IOException {
         Path t;
         if (tempDir != null) {
             t = Files.createDirectories(Paths.get(tempDir).resolve("score-" + score.getId()));
-            //
+            // Remove all files in directory
+            FileUtils.cleanDirectory(t.toFile());
         } else {
             t = Files.createTempDirectory("notkonv-");
         }
@@ -32,12 +34,12 @@ public class StorageService {
         return t;
     }
 
-    Path downloadScore(Score score, Path location) throws IOException {
+    public Path downloadScore(Score score, Path location) throws IOException {
         // Start with local service
         return Files.copy(INPUT.resolve(score.getFilename()), location.resolve(score.getFilename()), StandardCopyOption.REPLACE_EXISTING);
     }
 
-    void saveScorePart(ScorePart scorePart, Path path) throws IOException {
+    public void saveScorePart(ScorePart scorePart, Path path) throws IOException {
         Path scoreOutput = Files.createDirectories(OUTPUT.resolve(String.valueOf(scorePart.getScore().getId())));
         Files.copy(path, scoreOutput.resolve(getFileName(scorePart)), StandardCopyOption.REPLACE_EXISTING);
     }
@@ -63,4 +65,5 @@ public class StorageService {
     private String getFileName(Score score, Instrument instrument) {
         return String.format("%d-%d.pdf", score.getId(), instrument.getId());
     }
+
 }
