@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import se.terrassorkestern.notgen.model.Statistics;
 import se.terrassorkestern.notgen.service.StatisticsService;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @Slf4j
 @Controller
 @RequestMapping("/statistics")
@@ -22,10 +25,23 @@ public class StatisticsController {
 
     @GetMapping(value = {"", "/"})
     public String statistics(Model model) {
-
         Statistics statistics = statisticsService.getStatistics();
         model.addAttribute("statistics", statistics);
         model.addAttribute("numberOfSongs", statistics.getNumberOfSongs());
         return "statistics";
+    }
+
+    @GetMapping(value = {"/scorelist"})
+    public void list(HttpServletResponse servletResponse) throws IOException {
+        servletResponse.setContentType("text/csv");
+        //servletResponse.addHeader("Content-Disposition", "attachment; filename=\"noter.csv\"");
+        statisticsService.writeScoresToCsv(servletResponse.getWriter());
+    }
+
+    @GetMapping(value = {"/unscanned"})
+    public void unscanned(HttpServletResponse servletResponse) throws IOException {
+        servletResponse.setContentType("text/csv");
+        //servletResponse.addHeader("Content-Disposition", "attachment; filename=\"unscanned.csv\"");
+        statisticsService.writeUnscannedToCsv(servletResponse.getWriter());
     }
 }

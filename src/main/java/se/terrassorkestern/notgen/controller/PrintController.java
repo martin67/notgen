@@ -16,7 +16,7 @@ import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
-import se.terrassorkestern.notgen.service.NoteConverterService;
+import se.terrassorkestern.notgen.service.ConverterService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,13 +30,13 @@ public class PrintController {
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
     private final SettingRepository settingRepository;
-    private final NoteConverterService noteConverterService;
+    private final ConverterService converterService;
 
-    public PrintController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository, SettingRepository settingRepository, NoteConverterService noteConverterService) {
+    public PrintController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository, SettingRepository settingRepository, ConverterService converterService) {
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
         this.settingRepository = settingRepository;
-        this.noteConverterService = noteConverterService;
+        this.converterService = converterService;
     }
 
     @GetMapping("/instrument")
@@ -59,10 +59,10 @@ public class PrintController {
     public ResponseEntity<InputStreamResource> printInstrument(@RequestParam(name = "instrument_id") Integer instrumentId,
                                                                @RequestParam(name = "score_id") Integer scoreId) {
 
-        List<Score> scores = scoreRepository.findById(scoreId).stream().toList();
+        List<Score> scores = List.of(scoreRepository.findById(scoreId).get());
         List<Instrument> instruments = List.of(instrumentRepository.findById(instrumentId).get());
 
-        try (InputStream is = noteConverterService.assemble(scores, instruments, false)) {
+        try (InputStream is = converterService.assemble(scores, instruments, false)) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=playlist.pdf");
 

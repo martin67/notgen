@@ -10,6 +10,7 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
+import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.ImageDataExtractor;
 import se.terrassorkestern.notgen.repository.UserRepository;
 
@@ -29,7 +30,8 @@ class AdminControllerTest {
     private ImageDataExtractor imageDataExtractor;
     @MockBean
     private ScoreRepository scoreRepository;
-
+    @MockBean
+    private ConverterService converterService;
 
     @Nested
     @DisplayName("Access")

@@ -3,31 +3,30 @@ package se.terrassorkestern.notgen.service.converter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.util.StopWatch;
+import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
 import se.terrassorkestern.notgen.service.converter.filters.GreyScaler;
 import se.terrassorkestern.notgen.service.converter.filters.Standard;
-import se.terrassorkestern.notgen.model.Score;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Slf4j
 public class ImageProcessor implements Runnable {
 
     private final Path path;
     private final Path tmpDir;
-    private final String thumbnailsFolder;
+    private final String staticContentDir;
     private final Score score;
     private boolean firstPage;
 
-    public ImageProcessor(Path path, Path tmpDir, String thumbnailsFolder, Score score, boolean firstPage) {
+    public ImageProcessor(Path path, Path tmpDir, String staticContentDir, Score score, boolean firstPage) {
         this.path = path;
         this.tmpDir = tmpDir;
-        this.thumbnailsFolder = thumbnailsFolder;
+        this.staticContentDir = staticContentDir;
         this.score = score;
         this.firstPage = firstPage;
     }
@@ -107,13 +106,13 @@ public class ImageProcessor implements Runnable {
                 //
                 if (firstPage && score.getCover() && score.getColor()) {
                     log.debug("Saving cover");
-                    ImageIO.write(image, "jpg", new File(tmpDir.toFile(), basename + "-cover.jpg"));
+                    ImageIO.write(image, "jpg", Path.of(staticContentDir).resolve(String.format("covers/%d.jpg", score.getId())).toFile());
 
                     BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
                     g = thumbnail.createGraphics();
                     g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
                     g.dispose();
-                    ImageIO.write(thumbnail, "png", Paths.get(thumbnailsFolder).resolve(String.format("%d.png", score.getId())).toFile());
+                    ImageIO.write(thumbnail, "png", Path.of(staticContentDir).resolve(String.format("thumbnails/%d.png", score.getId())).toFile());
                     return;
                 }
 
@@ -174,7 +173,7 @@ public class ImageProcessor implements Runnable {
             log.debug("Time converting page {}, {} ms", 1, onePageWatch.getTotalTimeMillis());
             log.trace(onePageWatch.prettyPrint());
             image.flush();
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error("Oopsie", e);
         }
     }

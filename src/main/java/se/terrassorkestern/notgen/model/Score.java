@@ -64,7 +64,6 @@ public class Score extends Auditable<String> {
     private String orgText;
     private Integer betyg;
 
-
     public List<Instrument> getInstruments() {
         List<Instrument> result = new ArrayList<>();
         for (ScorePart scorePart : scoreParts) {
@@ -72,4 +71,13 @@ public class Score extends Auditable<String> {
         }
         return result;
     }
+
+    public String getThumbnailPath() {
+        return cover ? String.format("/thumbnails/%d.png", id) : "/images/thoreehrling.jpg";
+    }
+
+    public String getCoverPath() {
+        return cover ? String.format("/covers/%d-cover.jpg", id) : "/images/thoreehrling.jpg";
+    }
+
 }

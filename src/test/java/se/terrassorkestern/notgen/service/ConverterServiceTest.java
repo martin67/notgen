@@ -17,7 +17,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.List;
 @SpringBootTest
 @Transactional
 @Sql({"/full-data.sql"})
-class NoteConverterServiceTest {
+class ConverterServiceTest {
 
     static final Integer[] exampleScores = {
             219,    // Jumpy Lullaby.zip, PNG, 2480x3508, 300x300, 1 bit greyscale (no conversion)
@@ -49,7 +49,7 @@ class NoteConverterServiceTest {
             573     // Cherie-Mona.zip, JPEG, 2576x(2864-3744), 300x300, 24 bit YCbCr
     };
     @Autowired
-    NoteConverterService noteConverterService;
+    ConverterService converterService;
     @Autowired
     ScoreRepository scoreRepository;
     @Autowired
@@ -61,14 +61,14 @@ class NoteConverterServiceTest {
     @WithMockUser
     void convertOneScore() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
-        noteConverterService.convert(scores);
+        converterService.convert(scores);
     }
 
     @Test
     @WithMockUser
     void convertMultipleScores() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findByTitleContaining("valsen");
-        noteConverterService.convert(scores);
+        converterService.convert(scores);
     }
 
     @Disabled
@@ -76,7 +76,7 @@ class NoteConverterServiceTest {
     @WithMockUser
     void convertExampleScores() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findAllById(Arrays.asList(exampleScores));
-        noteConverterService.convert(scores);
+        converterService.convert(scores);
     }
 
     @Test
@@ -84,8 +84,8 @@ class NoteConverterServiceTest {
     void assembleOneScore() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
         List<Instrument> instruments = instrumentRepository.findByNameContaining("saxofon");
-        InputStream is = noteConverterService.assemble(scores, instruments, false);
-        Files.copy(is, Paths.get("test.pdf"), StandardCopyOption.REPLACE_EXISTING);
+        InputStream is = converterService.assemble(scores, instruments, false);
+        Files.copy(is, Path.of("test.pdf"), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Test
@@ -93,8 +93,8 @@ class NoteConverterServiceTest {
     void assembleTOScores() throws IOException, InterruptedException {
         List<Score> scores = scoreRepository.findByTitleContaining("ögon");
         List<Setting> setting = settingRepository.findByName("Terrassorkestern");
-        InputStream is = noteConverterService.assemble(scores, setting.get(0), true);
-        Files.copy(is, Paths.get("test2.pdf"), StandardCopyOption.REPLACE_EXISTING);
+        InputStream is = converterService.assemble(scores, setting.get(0), true);
+        Files.copy(is, Path.of("test2.pdf"), StandardCopyOption.REPLACE_EXISTING);
     }
 
 }

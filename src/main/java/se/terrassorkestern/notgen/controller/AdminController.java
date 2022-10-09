@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
+import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.ImageDataExtractor;
 
 import java.io.IOException;
@@ -13,11 +14,13 @@ import java.io.IOException;
 @RequestMapping("/admin")
 public class AdminController {
 
-    final ImageDataExtractor imageDataExtractor;
-    final ScoreRepository scoreRepository;
+    private final ConverterService converterService;
+    private final ImageDataExtractor imageDataExtractor;
+    private final ScoreRepository scoreRepository;
 
-
-    public AdminController(ImageDataExtractor imageDataExtractor, ScoreRepository scoreRepository) {
+    public AdminController(ConverterService converterService, ImageDataExtractor imageDataExtractor,
+                           ScoreRepository scoreRepository) {
+        this.converterService = converterService;
         this.imageDataExtractor = imageDataExtractor;
         this.scoreRepository = scoreRepository;
     }
@@ -25,6 +28,11 @@ public class AdminController {
     @GetMapping(value = {"", "/"})
     public String admin() {
         return "admin";
+    }
+
+    @GetMapping("/noteCreate")
+    public void create() throws IOException, InterruptedException {
+        converterService.convert(scoreRepository.findAll());
     }
 
     @GetMapping("/imageExtract")

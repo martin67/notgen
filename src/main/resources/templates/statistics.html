@@ -22,12 +22,8 @@
             <td th:text="${statistics.numberOfScannedSongs}"></td>
         </tr>
         <tr>
-            <td>Antal scannade sidor</td>
+            <td>Totalt antal scannade sidor</td>
             <td th:text="${statistics.numberOfScannedPages}"></td>
-        </tr>
-        <tr>
-            <td>Total storlek på alla sidor</td>
-            <td th:text="${statistics.numberOfBytes}"></td>
         </tr>
         <tr>
             <td>Antal instrument</td>
@@ -39,6 +35,14 @@
         </tr>
     </table>
 
+    <h4>Rapporter</h4>
+    <ul>
+        <li><a th:href="@{/statistics/scorelist}">Notförteckning</a></li>
+        <li>Notförteckning inklusive stämmor</li>
+        <li><a th:href="@{/statistics/unscanned}">Noter som inte är scannade</a></li>
+    </ul>
+
+    <h4>10 i topp listor</h4>
     <h5>Populäraste genres</h5>
     <table class="table table-bordered table-sm w-auto">
         <tr th:each="genre : ${statistics.topGenres}">
@@ -58,6 +62,22 @@
     <h5>Populäraste arrangörer</h5>
     <table class="table table-bordered table-sm w-auto">
         <tr th:each="genre : ${statistics.topArrangers}">
+            <td th:text="${genre.name}"></td>
+            <td th:text="${genre.value}"></td>
+        </tr>
+    </table>
+
+    <h5>Populäraste textförfattare</h5>
+    <table class="table table-bordered table-sm w-auto">
+        <tr th:each="genre : ${statistics.topAuthors}">
+            <td th:text="${genre.name}"></td>
+            <td th:text="${genre.value}"></td>
+        </tr>
+    </table>
+
+    <h5>Populäraste notförlag</h5>
+    <table class="table table-bordered table-sm w-auto">
+        <tr th:each="genre : ${statistics.topPublishers}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
         </tr>

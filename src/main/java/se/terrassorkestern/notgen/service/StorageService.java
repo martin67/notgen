@@ -9,22 +9,30 @@ import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.ScorePart;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 @Slf4j
 @Service
 public class StorageService {
 
-    @Value("${notgen.folders.tempdir}")
-    private String tempDir;
+    private final Path input;
+    private final Path output;
+    private final Path tmp;
 
-    private static final Path INPUT = Paths.get("/Work/TO/notgen/score_input");
-    private static final Path OUTPUT = Paths.get("/Work/TO/notgen/score_output");
+    public StorageService(@Value("${notgen.folders.input}") String inputDir,
+                          @Value("${notgen.folders.output}") String outputDir,
+                          @Value("${notgen.folders.tempdir}") String tempDir) {
+        input = Path.of(inputDir);
+        output = Path.of(outputDir);
+        tmp = Path.of(tempDir);
+    }
 
     public Path getTmpDir(Score score) throws IOException {
         Path t;
-        if (tempDir != null) {
-            t = Files.createDirectories(Paths.get(tempDir).resolve("score-" + score.getId()));
+        if (tmp != null) {
+            t = Files.createDirectories(tmp.resolve("score-" + score.getId()));
             // Remove all files in directory
             FileUtils.cleanDirectory(t.toFile());
         } else {
@@ -36,18 +44,18 @@ public class StorageService {
 
     public Path downloadScore(Score score, Path location) throws IOException {
         // Start with local service
-        return Files.copy(INPUT.resolve(score.getFilename()), location.resolve(score.getFilename()), StandardCopyOption.REPLACE_EXISTING);
+        return Files.copy(input.resolve(score.getFilename()), location.resolve(score.getFilename()), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public void saveScorePart(ScorePart scorePart, Path path) throws IOException {
-        Path scoreOutput = Files.createDirectories(OUTPUT.resolve(String.valueOf(scorePart.getScore().getId())));
+        Path scoreOutput = Files.createDirectories(output.resolve(String.valueOf(scorePart.getScore().getId())));
         Files.copy(path, scoreOutput.resolve(getFileName(scorePart)), StandardCopyOption.REPLACE_EXISTING);
     }
 
     boolean isScoreGenerated(Score score) {
         boolean allFilesExist = true;
         for (ScorePart scorePart : score.getScoreParts()) {
-            if (!Files.exists(OUTPUT.resolve(String.valueOf(scorePart.getScore().getId())).resolve(getFileName(scorePart)))) {
+            if (!Files.exists(output.resolve(String.valueOf(scorePart.getScore().getId())).resolve(getFileName(scorePart)))) {
                 allFilesExist = false;
             }
         }
@@ -55,7 +63,7 @@ public class StorageService {
     }
 
     public Path toPath(Score score, Instrument instrument) {
-        return OUTPUT.resolve(String.valueOf(score.getId())).resolve(getFileName(score, instrument));
+        return output.resolve(String.valueOf(score.getId())).resolve(getFileName(score, instrument));
     }
 
     private String getFileName(ScorePart scorePart) {

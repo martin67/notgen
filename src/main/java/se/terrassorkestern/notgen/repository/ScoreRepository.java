@@ -26,6 +26,8 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
     List<Score> findByScorePartsInstrumentOrderByTitle(Instrument instrument);
 
+    List<Score> findByScannedFalseOrderByTitle();
+
     @Query("SELECT s.title FROM Score s ORDER BY s.title")
     List<String> getAllTitles();
 
@@ -62,4 +64,14 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
             " new se.terrassorkestern.notgen.model.TopListEntry(s.arranger, count(s.arranger)) " +
             " FROM Score s GROUP BY s.arranger ORDER BY COUNT(s.arranger) DESC")
     List<TopListEntry> findTopArrangers(Pageable pageable);
+
+    @Query("SELECT " +
+            " new se.terrassorkestern.notgen.model.TopListEntry(s.author, count(s.author)) " +
+            " FROM Score s GROUP BY s.author ORDER BY COUNT(s.author) DESC")
+    List<TopListEntry> findTopAuthors(Pageable pageable);
+
+    @Query("SELECT " +
+            " new se.terrassorkestern.notgen.model.TopListEntry(s.publisher, count(s.publisher)) " +
+            " FROM Score s GROUP BY s.publisher ORDER BY COUNT(s.publisher) DESC")
+    List<TopListEntry> findTopPublishers(Pageable pageable);
 }

@@ -15,8 +15,6 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.Imagedata;
@@ -30,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.time.Instant;
@@ -188,7 +185,7 @@ public class ImageDataExtractor {
 
         // If the cache is enabled, check if the file is present and not older than x days (TTL)
         if (cacheLocation != null) {
-            Path cache = Paths.get(cacheLocation);
+            Path cache = Path.of(cacheLocation);
             FileTime ttl = FileTime.from(Instant.now().minus(Duration.ofDays(cacheTtl)));
             Path cacheFile = cache.resolve(score.getFilename());
             if (Files.exists(cacheFile) && Files.getLastModifiedTime(cacheFile).compareTo(ttl) > 0) {

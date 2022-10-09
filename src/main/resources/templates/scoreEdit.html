@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="sv">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
     <th:block th:replace="fragments/general :: header-css"></th:block>
     <title>Redigera noter</title>
@@ -72,13 +72,12 @@
             </div>
             <div class="col-md-3" align="center">
                 <figure class="figure">
-                    <img class="figure-img img-fluid rounded"
-                         th:src="${score.googleIdThumbnail} ? @{https://drive.google.com/uc(id=${score.googleIdThumbnail})} : @{/images/thoreehrling.jpg}"/>
+                    <img class="figure-img img-fluid rounded" th:src="@{${score.getThumbnailPath()}}"/>
                 </figure>
             </div>
         </div>
 
-        <div class="form-row">
+        <div class=" form-row">
             <div class="form-group col" id="prefetch-composers">
                 <label for="composer">Kompositör</label>
                 <input type="text" class="form-control typeahead" id="composer" autocomplete="off"
@@ -87,7 +86,8 @@
             </div>
             <div class="form-group col" id="prefetch-authors">
                 <label for="author">Författare</label>
-                <input type="text" class="form-control typeahead" id="author" autocomplete="off" th:field="*{author}"
+                <input type="text" class="form-control typeahead" id="author" autocomplete="off"
+                       th:field="*{author}"
                        th:value="${score.author}"/>
             </div>
         </div>
@@ -135,13 +135,15 @@
                     <tr th:each="scorePart,rowStat : ${score.scoreParts}">
                         <td class="align-middle">
                             <select th:field="*{scoreParts[__${rowStat.index}__].instrument.id}">
-                                <option th:each="i2 : ${allInstruments}" th:value="${i2.id}" th:text="${i2.name}">bla
+                                <option th:each="i2 : ${allInstruments}" th:value="${i2.id}" th:text="${i2.name}">
+                                    bla
                                 </option>
                             </select>
                         </td>
                         <td>
                             <input type="number" class="form-control form-control-sm"
-                                   th:field="*{scoreParts[__${rowStat.index}__].page}" th:value="${scorePart.page}"/>
+                                   th:field="*{scoreParts[__${rowStat.index}__].page}"
+                                   th:value="${scorePart.page}"/>
                         </td>
                         <td>
                             <input type="number" class="form-control form-control-sm"
@@ -195,7 +197,8 @@
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="imageProcess"
                            th:field="*{imageProcess}" th:value="${score.imageProcess}"/>
-                    <label for="imageProcess" class="form-check-label">Bildbehandla (beskär, fixa färger etc.)</label>
+                    <label for="imageProcess" class="form-check-label">Bildbehandla (beskär, fixa färger
+                        etc.)</label>
                 </div>
             </div>
             <div class="col-sm">
@@ -226,7 +229,8 @@
                 <button sec:authorize="hasAuthority('EDIT_SONG')" type="button" class="btn btn-danger"
                         data-toggle="modal" data-target="#deleteModal">Ta bort
                 </button>
-                <input sec:authorize="hasAuthority('EDIT_SONG')" type="submit" class="btn btn-primary" value="Spara"/>
+                <input sec:authorize="hasAuthority('EDIT_SONG')" type="submit" class="btn btn-primary"
+                       value="Spara"/>
             </div>
         </div>
     </form>

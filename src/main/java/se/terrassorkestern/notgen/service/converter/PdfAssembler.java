@@ -39,7 +39,7 @@ public class PdfAssembler implements Runnable {
     @Override
     public void run() {
         Score score = scorePart.getScore();
-        Path path = Paths.get(tmpDir.toString(), FilenameUtils.getBaseName(score.getFilename()).substring(7)
+        Path path = Path.of(tmpDir.toString(), FilenameUtils.getBaseName(score.getFilename()).substring(7)
                 + " - " + scorePart.getInstrument().getName() + ".pdf");
         log.debug("Creating separate score ({}) {}", scorePart.getLength(), path);
 

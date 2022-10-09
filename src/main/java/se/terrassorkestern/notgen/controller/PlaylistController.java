@@ -1,8 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,16 +16,18 @@ import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.exceptions.NotFoundException;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Playlist;
+import se.terrassorkestern.notgen.model.PlaylistEntry;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
-import se.terrassorkestern.notgen.model.PlaylistEntry;
-import se.terrassorkestern.notgen.service.NoteConverterService;
+import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.PlaylistPdfService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Slf4j
 @Controller
@@ -38,16 +38,16 @@ public class PlaylistController {
     private final SettingRepository settingRepository;
     private final InstrumentRepository instrumentRepository;
     private final PlaylistPdfService playlistPdfService;
-    private final NoteConverterService noteConverterService;
+    private final ConverterService converterService;
 
     public PlaylistController(PlaylistRepository playlistRepository, SettingRepository settingRepository,
                               InstrumentRepository instrumentRepository, PlaylistPdfService playlistPdfService,
-                              NoteConverterService noteConverterService) {
+                              ConverterService converterService) {
         this.playlistRepository = playlistRepository;
         this.settingRepository = settingRepository;
         this.instrumentRepository = instrumentRepository;
         this.playlistPdfService = playlistPdfService;
-        this.noteConverterService = noteConverterService;
+        this.converterService = converterService;
     }
 
     @GetMapping("/list")
@@ -141,7 +141,7 @@ public class PlaylistController {
         log.debug("Startar createPack för instrument id " + id);
 
         Instrument instrument = instrumentRepository.findById(id).get();
-        try (InputStream is = noteConverterService.assemble(playlist, instrument)) {
+        try (InputStream is = converterService.assemble(playlist, instrument)) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=playlist.pdf");
 
