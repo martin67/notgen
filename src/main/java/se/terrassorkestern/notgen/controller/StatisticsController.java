@@ -16,6 +16,7 @@ import java.io.IOException;
 @RequestMapping("/statistics")
 public class StatisticsController {
 
+    private static final String TEXT_CSV = "text/csv";
     private final StatisticsService statisticsService;
 
 
@@ -33,15 +34,19 @@ public class StatisticsController {
 
     @GetMapping(value = {"/scorelist"})
     public void list(HttpServletResponse servletResponse) throws IOException {
-        servletResponse.setContentType("text/csv");
-        //servletResponse.addHeader("Content-Disposition", "attachment; filename=\"noter.csv\"");
+        servletResponse.setContentType(TEXT_CSV);
         statisticsService.writeScoresToCsv(servletResponse.getWriter());
+    }
+
+    @GetMapping(value = {"/fullscorelist"})
+    public void fullList(HttpServletResponse servletResponse) throws IOException {
+        servletResponse.setContentType(TEXT_CSV);
+        statisticsService.writeFullScoresToCsv(servletResponse.getWriter());
     }
 
     @GetMapping(value = {"/unscanned"})
     public void unscanned(HttpServletResponse servletResponse) throws IOException {
-        servletResponse.setContentType("text/csv");
-        //servletResponse.addHeader("Content-Disposition", "attachment; filename=\"unscanned.csv\"");
+        servletResponse.setContentType(TEXT_CSV);
         statisticsService.writeUnscannedToCsv(servletResponse.getWriter());
     }
 }
