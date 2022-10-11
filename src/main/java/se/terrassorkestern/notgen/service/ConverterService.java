@@ -250,13 +250,16 @@ public class ConverterService {
             }
         }
 
+        // temp directory for all downloads and assembly
+        Path tmpDir = storageService.getTmpDir();
+
         // Create PDF
         if (sortByInstrument) {
             for (Instrument instrument : instruments) {
                 log.info("Adding instrument: {} to pdf output", instrument.getName());
                 for (Score score : scores) {
                     if (score.getInstruments().contains(instrument)) {
-                        pdfMergerUtility.addSource(storageService.toPath(score, instrument).toFile());
+                        pdfMergerUtility.addSource(storageService.downloadScorePart(score, instrument, tmpDir).toFile());
                     }
                 }
             }
@@ -265,7 +268,7 @@ public class ConverterService {
                 log.info("Adding score: {} ({}) to pdf output", score.getTitle(), score.getId());
                 for (Instrument instrument : instruments) {
                     if (score.getInstruments().contains(instrument)) {
-                        pdfMergerUtility.addSource(storageService.toPath(score, instrument).toFile());
+                        pdfMergerUtility.addSource(storageService.downloadScorePart(score, instrument, tmpDir).toFile());
                     }
                 }
             }

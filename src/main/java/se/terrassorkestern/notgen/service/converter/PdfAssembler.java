@@ -17,7 +17,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.List;
 
@@ -90,7 +89,7 @@ public class PdfAssembler implements Runnable {
             }
             doc.save(path.toFile());
             log.debug("Saving: {}", path);
-            storageService.saveScorePart(scorePart, path);
+            storageService.uploadScorePart(scorePart, path);
 
         } catch (IOException e) {
             log.error("Ooopsie", e);

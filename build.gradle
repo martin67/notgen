@@ -53,6 +53,8 @@ dependencies {
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.6'
     implementation 'com.h2database:h2:2.1.214'
     implementation 'com.google.guava:guava:31.1-jre'
+    implementation platform('software.amazon.awssdk:bom:2.17.290')
+    implementation 'software.amazon.awssdk:s3'
     implementation 'com.google.api-client:google-api-client:1.35.1'
     implementation 'com.google.apis:google-api-services-drive:v3-rev20220508-1.32.1'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev20220606-1.32.1'

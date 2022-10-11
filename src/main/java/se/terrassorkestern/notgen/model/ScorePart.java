@@ -52,6 +52,9 @@ public class ScorePart {
         this.id = new ScorePartId(score.getId(), instrument.getId());
     }
 
+    public String getPdfName() {
+        return String.format("%d-%d.pdf", score.getId(), instrument.getId());
+    }
 
     @Override
     public String toString() {
