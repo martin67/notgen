@@ -8,12 +8,12 @@ import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.TopListEntry;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
-    // custom query to search to blog post by title or content
     List<Score> findByTitle(String text);
 
     List<Score> findByTitleContaining(String text);
@@ -25,6 +25,8 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
     List<Score> findByIdGreaterThan(int id);
 
     List<Score> findByScorePartsInstrumentOrderByTitle(Instrument instrument);
+
+    List<Score> findDistinctByScoreParts_InstrumentInOrderByTitleAsc(Collection<Instrument> instruments);
 
     List<Score> findByScannedFalseOrderByTitle();
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
+import se.terrassorkestern.notgen.model.Setting;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
@@ -20,7 +21,6 @@ import se.terrassorkestern.notgen.service.ConverterService;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -41,7 +41,7 @@ public class PrintController {
 
     @GetMapping("/instrument")
     public String selectInstrument(@RequestParam(name = "id", required = false, defaultValue = "1") Integer id, Model model) {
-        Instrument instrument = instrumentRepository.findById(id).get();
+        Instrument instrument = instrumentRepository.findById(id).orElseThrow();
         model.addAttribute("scores", scoreRepository.findByScorePartsInstrumentOrderByTitle(instrument));
         model.addAttribute("instruments", instrumentRepository.findAll());
         model.addAttribute("selectedInstrument", id);
@@ -49,22 +49,46 @@ public class PrintController {
     }
 
     @GetMapping("/setting")
-    public String printSetting(Model model) {
-        model.addAttribute("scores", scoreRepository.findByOrderByTitle());
+    public String selectSetting(@RequestParam(name = "id", required = false, defaultValue = "1") Integer id, Model model) {
+        Setting setting = settingRepository.findById(id).orElseThrow();
+        model.addAttribute("scores", scoreRepository.findDistinctByScoreParts_InstrumentInOrderByTitleAsc(setting.getInstruments()));
         model.addAttribute("settings", settingRepository.findAll());
+        model.addAttribute("selectedSetting", id);
         return "printSetting";
     }
 
-    @GetMapping("/getpdf")
-    public ResponseEntity<InputStreamResource> printInstrument(@RequestParam(name = "instrument_id") Integer instrumentId,
-                                                               @RequestParam(name = "score_id") Integer scoreId) {
+    @GetMapping("/getscorepart")
+    public ResponseEntity<InputStreamResource> printScorePart(@RequestParam(name = "instrument_id") Integer instrumentId,
+                                                              @RequestParam(name = "score_id") Integer scoreId) {
 
-        List<Score> scores = List.of(scoreRepository.findById(scoreId).get());
-        List<Instrument> instruments = List.of(instrumentRepository.findById(instrumentId).get());
+        Score score = scoreRepository.findById(scoreId).orElseThrow();
+        Instrument instrument = instrumentRepository.findById(instrumentId).orElseThrow();
 
-        try (InputStream is = converterService.assemble(scores, instruments, false)) {
+        try (InputStream is = converterService.assemble(score, instrument)) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=playlist.pdf");
+            headers.add("Content-Disposition", "inline; filename=" + score.getTitle() + " (" + instrument.getShortName() + ").pdf");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(new InputStreamResource(is));
+
+        } catch (IOException | InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
+    }
+
+    @GetMapping("/getscore")
+    public ResponseEntity<InputStreamResource> printScore(@RequestParam(name = "setting_id") Integer settingId,
+                                                          @RequestParam(name = "score_id") Integer scoreId) {
+
+        Score score = scoreRepository.findById(scoreId).orElseThrow();
+        Setting setting = settingRepository.findById(settingId).orElseThrow();
+
+        try (InputStream is = converterService.assemble(score, setting)) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=" + score.getTitle() + " (" + setting.getName() + ").pdf");
 
             return ResponseEntity
                     .ok()

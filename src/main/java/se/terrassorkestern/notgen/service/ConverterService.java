@@ -200,6 +200,14 @@ public class ConverterService {
         return assemble(scores, new ArrayList<>(setting.getInstruments()), sortByInstrument);
     }
 
+    public InputStream assemble(Score score, Setting setting) throws IOException, InterruptedException {
+        return assemble(List.of(score), new ArrayList<>(setting.getInstruments()), false);
+    }
+
+    public InputStream assemble(Score score, Instrument instrument) throws IOException, InterruptedException {
+        return assemble(List.of(score), List.of(instrument), false);
+    }
+
     public InputStream assemble(Playlist playlist, Instrument instrument) throws IOException, InterruptedException {
         List<Score> scores = new ArrayList<>();
         List<Instrument> instruments = List.of(instrument);
@@ -220,7 +228,7 @@ public class ConverterService {
 
         // Todo: Can we assume that the input always will be sorted?
         //scores.sort(Comparator.comparing(Score::getTitle));
-        //instruments.sort(Comparator.comparing(Instrument::getSortOrder));
+        List<Instrument> sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).collect(Collectors.toList());
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -255,7 +263,7 @@ public class ConverterService {
 
         // Create PDF
         if (sortByInstrument) {
-            for (Instrument instrument : instruments) {
+            for (Instrument instrument : sortedInstruments) {
                 log.info("Adding instrument: {} to pdf output", instrument.getName());
                 for (Score score : scores) {
                     if (score.getInstruments().contains(instrument)) {
@@ -266,8 +274,9 @@ public class ConverterService {
         } else {
             for (Score score : scores) {
                 log.info("Adding score: {} ({}) to pdf output", score.getTitle(), score.getId());
-                for (Instrument instrument : instruments) {
+                for (Instrument instrument : sortedInstruments) {
                     if (score.getInstruments().contains(instrument)) {
+                        log.debug("Score: {}, instrument: {}", score.getTitle(), instrument.getName());
                         pdfMergerUtility.addSource(storageService.downloadScorePart(score, instrument, tmpDir).toFile());
                     }
                 }

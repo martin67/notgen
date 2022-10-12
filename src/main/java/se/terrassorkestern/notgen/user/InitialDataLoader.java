@@ -51,9 +51,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
                 createPrivilegeIfNotFound("EDIT_SONG"),
                 createPrivilegeIfNotFound("EDIT_INSTRUMENT"),
                 createPrivilegeIfNotFound("EDIT_PLAYLIST"),
-                createPrivilegeIfNotFound("EDIT_USER"),
-                createPrivilegeIfNotFound("CONVERT_SCORE"),
-                createPrivilegeIfNotFound("UPDATE_TOC"));
+                createPrivilegeIfNotFound("EDIT_USER"));
 
         List<Privilege> userPrivileges = Arrays.asList(
                 createPrivilegeIfNotFound("PRINT_SCORE"),
@@ -66,7 +64,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         User user = new User();
         user.setUsername("admin");
         user.setFullname("Thore Terrass");
-        user.setPassword(passwordEncoder.encode("plettLagg"));
+        user.setPassword(passwordEncoder.encode("admin"));
         user.setRoles(Collections.singletonList(adminRole));
         user.setEnabled(true);
         userRepository.save(user);

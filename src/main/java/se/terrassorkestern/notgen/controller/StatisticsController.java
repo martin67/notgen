@@ -46,7 +46,6 @@ public class StatisticsController {
 
     @GetMapping(value = {"/unscanned"})
     public void unscanned(HttpServletResponse servletResponse) throws IOException {
-        servletResponse.setContentType(TEXT_CSV);
         statisticsService.writeUnscannedToCsv(servletResponse.getWriter());
     }
 }
