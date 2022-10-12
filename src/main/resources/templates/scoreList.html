@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="sv">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
     <th:block th:replace="fragments/general :: header-css"></th:block>
     <title>Lista noter</title>
@@ -8,16 +8,6 @@
 <body>
 <div th:replace="fragments/general :: header"></div>
 
-<script type="text/javascript" charset="UTF-8">
-    //<[CDATA[
-    jQuery(document).ready(function ($) {
-        $(".clickable-row").click(function () {
-            window.location = $(this).data("href");
-        });
-    });
-    //]]>
-</script>
-
 <div class="container">
     <br>
     <table class="table table-bordered table-striped table-hover table-sm">
@@ -25,29 +15,28 @@
         <tr>
             <th scope="col">Namn</th>
             <th scope="col">Genre</th>
-            <th scope="col"><a sec:authorize="hasAuthority('EDIT_SONG')" th:href="@{/score/new}"><i
-                    class="material-icons" title="Lägg till låt">add_box</i></a></th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="score : ${scores}" class="clickable-row" data-href="http://www.google.se">
+        <tr th:each="score : ${scores}" th:data-link="@{edit(id=${score.id})}">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
-            <td>
-                <a th:href="@{/score/edit(id=${score.id})}"><i class="material-icons text-secondary" title="Ändra låt">mode_edit</i></a>
-                <a sec:authorize="hasAuthority('PRINT_SCORE')" th:if="${score.googleIdFull}"
-                   th:href="@{https://drive.google.com/open(id=${score.googleIdFull})}"><i
-                        class="material-icons text-secondary" title="Skriv ut fullt arr">print</i></a>
-                <a sec:authorize="hasAuthority('PRINT_SCORE')" th:if="${score.googleIdTo}"
-                   th:href="@{https://drive.google.com/open(id=${score.googleIdTo})}"><i
-                        class="material-icons text-secondary" title="Skriv ut TO arr">print</i></a>
-            </td>
         </tr>
         </tbody>
     </table>
+    <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_SONG')" th:href="@{/score/new}">Lägg till</a>
 </div>
 
 
 <footer th:replace="fragments/general :: footer"></footer>
 </body>
+
+<script>
+    $(function () {
+        $("table tbody tr").click(function (e) {
+            window.location.href = $(this).data("link");
+        });
+    });
+</script>
+
 </html>
