@@ -64,15 +64,15 @@ public class StorageService {
     }
 
     public Path downloadScore(Score score, Path location) throws IOException {
-        return backendStorage.download(score, location);
+        return backendStorage.downloadScore(score, location);
     }
 
     public Path downloadScorePart(Score score, Instrument instrument, Path location) throws IOException {
-        return backendStorage.download(score, instrument, location);
+        return backendStorage.downloadScorePart(score, instrument, location);
     }
 
     public Path downloadScorePart(ScorePart scorePart, Path location) throws IOException {
-        return backendStorage.download(scorePart, location);
+        return backendStorage.downloadScorePart(scorePart, location);
     }
 
     public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {

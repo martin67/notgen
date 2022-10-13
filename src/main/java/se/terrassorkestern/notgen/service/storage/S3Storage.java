@@ -14,6 +14,9 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -38,7 +41,7 @@ public class S3Storage implements BackendStorage {
     }
 
     @Override
-    public Path download(Score score, Path location) throws IOException {
+    public Path downloadScore(Score score, Path location) throws IOException {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(inputBucket).key(score.getFilename()).build();
         try {
             s3Client.getObject(getObjectRequest, ResponseTransformer.toFile(location.resolve(score.getFilename())));
@@ -50,12 +53,12 @@ public class S3Storage implements BackendStorage {
     }
 
     @Override
-    public Path download(ScorePart scorePart, Path location) throws IOException {
+    public Path downloadScorePart(ScorePart scorePart, Path location) throws IOException {
         return downloadScorePart(scorePart.getPdfName(), location);
     }
 
     @Override
-    public Path download(Score score, Instrument instrument, Path location) throws IOException {
+    public Path downloadScorePart(Score score, Instrument instrument, Path location) throws IOException {
         return downloadScorePart(getScorePartName(score, instrument), location);
     }
 
@@ -91,6 +94,47 @@ public class S3Storage implements BackendStorage {
             s3Client.putObject(objectRequest, RequestBody.fromFile(path));
         } catch (S3Exception e) {
             log.error("Error uploading {} to {}", path, scorePart.getPdfName(), e);
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    public void deleteScoreParts(Score score) throws IOException {
+        // List all objects in the bucket
+        Set<ObjectIdentifier> objectsToDelete = new HashSet<>();
+        String scoreName = String.format("%d-", score.getId());
+
+        try {
+            ListObjectsRequest listObjects = ListObjectsRequest
+                    .builder()
+                    .bucket(outputBucket)
+                    .build();
+
+            ListObjectsResponse res = s3Client.listObjects(listObjects);
+            List<S3Object> objects = res.contents();
+
+            for (S3Object myValue : objects) {
+                if (myValue.key().startsWith(scoreName)) {
+                    log.info("Deleting {}", myValue.key());
+                    objectsToDelete.add(ObjectIdentifier.builder().key(myValue.key()).build());
+                }
+            }
+
+            if (!objectsToDelete.isEmpty()) {
+                // Delete multiple objects in one request.
+                Delete del = Delete.builder()
+                        .objects(objectsToDelete)
+                        .build();
+
+                DeleteObjectsRequest multiObjectDeleteRequest = DeleteObjectsRequest.builder()
+                        .bucket(outputBucket)
+                        .delete(del)
+                        .build();
+
+                s3Client.deleteObjects(multiObjectDeleteRequest);
+            }
+        } catch (S3Exception e) {
+            log.error("Error deleting", e);
             throw new IOException(e);
         }
     }

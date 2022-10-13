@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -52,16 +51,16 @@ class PrintControllerTest {
 
         List<Score> allScores = List.of(foo, bar);
         given(scoreRepository.findByScorePartsInstrumentOrderByTitle(instrument)).willReturn(allScores);
-        given(scoreRepository.findById(1)).willReturn(Optional.of(foo));
         given(instrumentRepository.findById(2)).willReturn(Optional.of(instrument));
+        given(instrumentRepository.findAll()).willReturn(List.of(instrument));
     }
 
     @Test
     @DisplayName("Print instrument")
-    @WithAnonymousUser
+    @WithMockUser(authorities = "PRINT_SCORE")
     void whenPrintInstrument_thenReturnOk() throws Exception {
         mvc.perform(get("/print/instrument").param("id", "2")
-                .contentType(MediaType.TEXT_HTML))
+                        .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("printInstrument"))
                 .andExpect(model().attributeExists("scores"))
                 .andExpect(model().attribute("scores", hasSize(2)))
@@ -69,5 +68,4 @@ class PrintControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(status().isOk());
     }
-
 }

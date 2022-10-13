@@ -9,15 +9,17 @@ import java.nio.file.Path;
 
 public interface BackendStorage {
 
-    Path download(Score score, Path location) throws IOException;
+    Path downloadScore(Score score, Path location) throws IOException;
 
-    Path download(ScorePart scorePart, Path location) throws IOException;
+    Path downloadScorePart(ScorePart scorePart, Path location) throws IOException;
 
-    Path download(Score score, Instrument instrument, Path location) throws IOException;
+    Path downloadScorePart(Score score, Instrument instrument, Path location) throws IOException;
 
     boolean isScoreGenerated(Score score);
 
     void uploadScorePart(ScorePart scorePart, Path path) throws IOException;
 
-    void cleanOutput();
+    void deleteScoreParts(Score score) throws IOException;
+
+    void cleanOutput() throws IOException;
 }

@@ -179,7 +179,7 @@ public class ConverterService {
                 score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
 
                 Path tmpDir = storageService.getTmpDir(score);
-                stopWatch.start("download, " + score.getTitle());
+                stopWatch.start("downloadScorePart, " + score.getTitle());
                 storageService.downloadScore(score, tmpDir);
                 stopWatch.stop();
 
