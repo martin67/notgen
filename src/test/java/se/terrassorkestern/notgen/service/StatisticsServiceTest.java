@@ -1,5 +1,7 @@
 package se.terrassorkestern.notgen.service;
 
+import org.hibernate.Session;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,9 +26,9 @@ class StatisticsServiceTest {
 
 
     @Test
+    @Disabled
     void getStatistics() {
         Statistics statistics = statisticsService.getStatistics();
-
         assertThat(statistics.getNumberOfInstruments()).isEqualTo(39L);
         assertThat(statistics.getNumberOfPlaylists()).isEqualTo(7L);
         assertThat(statistics.getTopGenres().size()).isEqualTo(5L);

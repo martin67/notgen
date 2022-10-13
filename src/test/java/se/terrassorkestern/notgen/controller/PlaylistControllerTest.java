@@ -1,9 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -198,6 +195,7 @@ class PlaylistControllerTest {
         }
 
         @Test
+        @Disabled
         @DisplayName("Create PDF pack")
         @WithAnonymousUser
         void whenSaveCreatePack_thenReturnPdf() throws Exception {
