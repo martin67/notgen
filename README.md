@@ -1,4 +1,4 @@
-# Terrassorkesterns notgenerator 2.0
+# Terrassorkesterns notgenerator 3.0
 
 Detta program genererar noter i PDF format från scannat material. Programmet är skrivet i Java + Spring Boot och kräver tillgång till orkesterns databas samt till den filserver där noterna ligger.
 
@@ -6,13 +6,11 @@ Noterna ligger lagrade i antingen ZIP,  eller PDF-filer. Vanligast och standard 
 
 Arbetsgången är följande:
 1. Läs in info från databasen
-2. Läs in arkivfil (zip eller pdf)
+2. Läs in arkivfil (zip eller pdf) från storage (lokalt eller S3)
 3. Packa upp i en temporär katalog
 4. Bildbehandla de enskilda filerna
-5. Skapa en ny PDF med omslag och alla stämmor och ladda upp till Google Drive.
-6. Skapa en ny PDF med bara TO stämmor och ladda upp till Google Drive.
-7. Skapa en PDF per instrument och ladda upp till Google Drive.
-8. Ladda upp omslaget (om det finns) till Google Drive.
+5. Skapa en PDF för varje låt och stämma
+6. Spara omslaget (om det finns) lokalt
 
 ## Bildbehandling
 Huvuddelen av noterna är i ett mindre format än A4 och när de scannas så blir det en tom marginal längst ner och till höger (det är viktigt att man scannar med övre vänstre hörnet linjerat). Scanning skall också ske i färg och med en hög upplösning (300 DPI).
