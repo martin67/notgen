@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen.service;
 
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @SpringBootTest
 @Transactional
+@Tag("manual")
 @Sql({"/full-data.sql"})
 class ConverterServiceTest {
 
