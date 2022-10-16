@@ -31,14 +31,14 @@ on:
     branches: [ "master" ]
 
 env:
-  AWS_REGION: eu-north-1                      # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: hagelin                     # set this to your Amazon ECR repository name
-  ECS_SERVICE: sample-app-service             # set this to your Amazon ECS service name
-  ECS_CLUSTER: default                        # set this to your Amazon ECS cluster name
+  AWS_REGION: eu-north-1                         # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: hagelin                        # set this to your Amazon ECR repository name
+  ECS_SERVICE: notgen                            # set this to your Amazon ECS service name
+  ECS_CLUSTER: notgen                            # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: .aws/task-definition.json # set this to the path to your Amazon ECS task definition
-                                               # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: sample-app           # set this to the name of the container in the
-                                               # containerDefinitions section of your task definition
+                                                 # file, e.g. .aws/task-definition.json
+  CONTAINER_NAME: app                            # set this to the name of the container in the
+                                                 # containerDefinitions section of your task definition
 
 permissions:
   contents: read
