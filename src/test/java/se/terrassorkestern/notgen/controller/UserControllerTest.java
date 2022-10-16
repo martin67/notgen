@@ -2,7 +2,8 @@ package se.terrassorkestern.notgen.controller;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -13,7 +14,9 @@ import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,20 +30,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(UserController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 @DisplayName("User controller")
 class UserControllerTest {
 
+    static User normalUser;
+    static User adminUser;
     @Autowired
     private MockMvc mvc;
     @MockBean
     private UserRepository userRepository;
     @MockBean
     private RoleRepository roleRepository;
-
-    static User normalUser;
-    static User adminUser;
-
 
     @BeforeAll
     static void init() {
@@ -70,7 +72,7 @@ class UserControllerTest {
     @WithMockUser(authorities = "EDIT_USER")
     void whenListUsers_thenReturnOk() throws Exception {
         mvc.perform(get("/user/list")
-                .contentType(MediaType.TEXT_HTML))
+                        .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("userList"))
                 .andExpect(model().attributeExists("users"))
                 .andExpect(model().attribute("users", hasSize(2)))
@@ -83,7 +85,7 @@ class UserControllerTest {
     @WithMockUser(authorities = "EDIT_USER")
     void whenNewUser_thenReturnOk() throws Exception {
         mvc.perform(get("/user/new")
-                .contentType(MediaType.TEXT_HTML))
+                        .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("userEdit"))
                 .andExpect(model().attributeExists("user"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -98,7 +100,7 @@ class UserControllerTest {
         @DisplayName("Own user")
         void whenEditSelf_thenReturnOk() throws Exception {
             mvc.perform(get("/user/edit").with(user(normalUser))
-                    .contentType(MediaType.TEXT_HTML))
+                            .contentType(MediaType.TEXT_HTML))
                     .andExpect(view().name("userEdit"))
                     .andExpect(model().attributeExists("user"))
                     .andExpect(model().attribute("user", hasProperty("username", equalTo("normal"))))
@@ -110,8 +112,8 @@ class UserControllerTest {
         @DisplayName("Other user as admin")
         void whenEditValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/user/edit").with(user(adminUser))
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "1"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "1"))
                     .andExpect(view().name("userEdit"))
                     .andExpect(model().attributeExists("user"))
                     .andExpect(model().attribute("user", hasProperty("username", equalTo("normal"))))
@@ -123,8 +125,8 @@ class UserControllerTest {
         @DisplayName("Other user as non-admin")
         void whenEditValidFakeAdmin_thenReturnOk() throws Exception {
             mvc.perform(get("/user/edit").with(user(normalUser))
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "2"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "2"))
                     .andExpect(view().name("redirect:/"))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/*"));
@@ -134,8 +136,8 @@ class UserControllerTest {
         @DisplayName("Non-existing user")
         void whenEditNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/user/edit").with(user(adminUser))
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "0"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "0"))
                     .andExpect(status().isNotFound());
         }
     }
@@ -148,12 +150,12 @@ class UserControllerTest {
         @DisplayName("Valid input")
         void whenSaveValidInput_thenReturnRedirect() throws Exception {
             mvc.perform(post("/user/save").with(csrf()).with(user(adminUser))
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .param("username", "newuser")
-                    .param("fullname", "New User")
-                    .param("password", "password")
-                    .param("matchingPassword", "password")
-                    .param("email", "dummy@dummy.net"))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("username", "newuser")
+                            .param("fullname", "New User")
+                            .param("password", "password")
+                            .param("matchingPassword", "password")
+                            .param("email", "dummy@dummy.net"))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/*"));
         }
@@ -162,11 +164,11 @@ class UserControllerTest {
         @DisplayName("Invalid input")
         void whenSaveInvalidInput_thenReturnReload() throws Exception {
             mvc.perform(post("/user/save").with(csrf()).with(user(adminUser))
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .param("id", "1")
-                    .param("password", "password1")
-                    .param("matchingPassword", "password2")
-                    .param("email", "dummy"))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("id", "1")
+                            .param("password", "password1")
+                            .param("matchingPassword", "password2")
+                            .param("email", "dummy"))
                     .andExpect(model().attributeExists("user"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                     .andExpect(status().isOk());
@@ -177,7 +179,7 @@ class UserControllerTest {
         @WithMockUser(authorities = "EDIT_USER")
         void whenSaveWithoutCsrf_thenReturnForbidden() throws Exception {
             mvc.perform(post("/user/save")
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                     .andExpect(status().isForbidden());
         }
     }
@@ -191,8 +193,8 @@ class UserControllerTest {
         @WithMockUser(authorities = "EDIT_USER")
         void whenDeleteValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/user/delete")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "1"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "1"))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/user/list*"));
         }
@@ -202,8 +204,8 @@ class UserControllerTest {
         @WithMockUser(authorities = "EDIT_USER")
         void whenDeleteNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/user/delete")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "0"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "0"))
                     .andExpect(status().isNotFound());
         }
     }

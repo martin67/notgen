@@ -5,14 +5,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.model.Score;
+import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 
@@ -28,7 +29,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ScoreController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 @DisplayName("Score controller")
 class ScoreControllerTest {
 
@@ -57,7 +59,7 @@ class ScoreControllerTest {
     @WithAnonymousUser
     void whenListScores_thenReturnOk() throws Exception {
         mvc.perform(get("/score/list")
-                .contentType(MediaType.TEXT_HTML))
+                        .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("scoreList"))
                 .andExpect(model().attributeExists("scores"))
                 .andExpect(model().attribute("scores", hasSize(2)))
@@ -70,7 +72,7 @@ class ScoreControllerTest {
     @WithMockUser(authorities = "EDIT_SONG")
     void whenNewScore_thenReturnOk() throws Exception {
         mvc.perform(get("/score/new")
-                .contentType(MediaType.TEXT_HTML))
+                        .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("scoreEdit"))
                 .andExpect(model().attributeExists("score"))
                 .andExpect(model().attributeExists("allInstruments"))
@@ -87,8 +89,8 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenEditValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/score/edit")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "1"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "1"))
                     .andExpect(view().name("scoreEdit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(model().attributeExists("allInstruments"))
@@ -101,8 +103,8 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenEditNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/score/edit")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "0"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "0"))
                     .andExpect(status().isNotFound());
         }
     }
@@ -118,8 +120,8 @@ class ScoreControllerTest {
             Score score = new Score();
             score.setTitle("My title");
             mvc.perform(post("/score/save").with(csrf())
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .sessionAttr("score", score))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .sessionAttr("score", score))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/score/list*"));
         }
@@ -130,8 +132,8 @@ class ScoreControllerTest {
         void whenSaveInvalidInput_thenReturnReload() throws Exception {
             Score score = new Score();
             mvc.perform(post("/score/save").with(csrf())
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .sessionAttr("score", score))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .sessionAttr("score", score))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                     .andExpect(status().isOk());
@@ -142,8 +144,8 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenSaveAddRow_thenReturnOk() throws Exception {
             mvc.perform(post("/score/save").with(csrf())
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .param("addRow", "dummy"))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("addRow", "dummy"))
                     .andExpect(view().name("scoreEdit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -155,8 +157,8 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenSaveDeleteRow_thenReturnOk() throws Exception {
             mvc.perform(post("/score/save").with(csrf())
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .param("deleteRow", "0"))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("deleteRow", "0"))
                     .andExpect(view().name("scoreEdit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -168,7 +170,7 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenSaveWithoutCsrf_thenReturnForbidden() throws Exception {
             mvc.perform(post("/score/save")
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                     .andExpect(status().isForbidden());
         }
     }
@@ -182,8 +184,8 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenDeleteValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/score/delete")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "1"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "1"))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/score/list*"));
         }
@@ -193,8 +195,8 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenDeleteNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/score/delete")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "0"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "0"))
                     .andExpect(status().isNotFound());
         }
     }

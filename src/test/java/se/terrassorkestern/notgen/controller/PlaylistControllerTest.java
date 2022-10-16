@@ -2,7 +2,8 @@ package se.terrassorkestern.notgen.controller;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -13,10 +14,10 @@ import se.terrassorkestern.notgen.model.Playlist;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
+import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.PlaylistPackService;
 import se.terrassorkestern.notgen.service.PlaylistPdfService;
-import se.terrassorkestern.notgen.repository.UserRepository;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,8 +33,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-@WebMvcTest(PlaylistController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 @DisplayName("Playlist controller")
 class PlaylistControllerTest {
 
