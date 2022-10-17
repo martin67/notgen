@@ -21,6 +21,9 @@ public class Instrument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
     @NotBlank(message = "Instrumentnamn måste anges")
     private String name;
     private String shortName;

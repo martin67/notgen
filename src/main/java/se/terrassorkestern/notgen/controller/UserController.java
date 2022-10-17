@@ -16,7 +16,7 @@ import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.user.UserDto;
 
 import javax.validation.Valid;
-import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -79,12 +79,12 @@ public class UserController {
             return "userEdit";
         }
 
-        User user = userRepository.findByUsername(userDto.getUsername());
-        if (user == null) {
-            user = new User();
-            user.setUsername(userDto.getUsername());
-            user.setRoles(Collections.singletonList(roleRepository.findByName("ROLE_USER")));
-        }
+        User user = userRepository.findByUsername(userDto.getUsername()).orElseGet(() -> {
+            User u = new User();
+            u.setUsername(userDto.getUsername());
+            u.setRoles(List.of(roleRepository.findByName("ROLE_USER")));
+            return u;
+        });
         user.setFullname(userDto.getFullname());
         user.setEmail(userDto.getEmail());
 

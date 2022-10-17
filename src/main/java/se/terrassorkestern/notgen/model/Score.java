@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -8,13 +9,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "score")
 public class Score extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
     @ManyToOne
     private Song song;
     @NotBlank(message = "Titel måste anges")
@@ -32,11 +37,6 @@ public class Score extends Auditable<String> {
     private String comment;
     @Lob
     private String internalComment;
-
-    private String googleIdFull;
-    private String googleIdTo;
-    private String googleIdCover;
-    private String googleIdThumbnail;
 
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScorePart> scoreParts = new ArrayList<>();

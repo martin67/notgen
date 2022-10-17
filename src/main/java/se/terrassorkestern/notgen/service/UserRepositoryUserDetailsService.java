@@ -4,13 +4,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.UserRepository;
 
-import javax.transaction.Transactional;
-
 @Service
-@Transactional
 public class UserRepositoryUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -22,11 +18,8 @@ public class UserRepositoryUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user != null) {
-            return user;
-        }
-        throw new UsernameNotFoundException("User '" + username + "' not found");
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User '" + username + "' not found"));
     }
 
 }

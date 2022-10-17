@@ -6,17 +6,17 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import se.terrassorkestern.notgen.model.Organization;
 import se.terrassorkestern.notgen.model.Privilege;
 import se.terrassorkestern.notgen.model.Role;
 import se.terrassorkestern.notgen.model.User;
+import se.terrassorkestern.notgen.repository.OrganizationRepository;
 import se.terrassorkestern.notgen.repository.PrivilegeRepository;
 import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -26,14 +26,16 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PrivilegeRepository privilegeRepository;
+    private final OrganizationRepository organizationRepository;
     private final PasswordEncoder passwordEncoder;
 
-
     public InitialDataLoader(UserRepository userRepository, RoleRepository roleRepository,
-                             PrivilegeRepository privilegeRepository, PasswordEncoder passwordEncoder) {
+                             PrivilegeRepository privilegeRepository, OrganizationRepository organizationRepository,
+                             PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.privilegeRepository = privilegeRepository;
+        this.organizationRepository = organizationRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -41,39 +43,46 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
-        if (userRepository.findByUsername("admin") != null) {
-            return;
+        User user = userRepository.findByUsername("admin").orElseGet(() -> {
+            log.info("Creating initial user admin with admin rights");
+
+            createRoleIfNotFound("ROLE_SUPERADMIN", List.of(
+                    createPrivilegeIfNotFound("EDIT_ORGANIZATION")));
+
+            createRoleIfNotFound("ROLE_ADMIN", List.of(
+                    createPrivilegeIfNotFound("EDIT_SONG"),
+                    createPrivilegeIfNotFound("EDIT_INSTRUMENT"),
+                    createPrivilegeIfNotFound("EDIT_USER")));
+
+            createRoleIfNotFound("ROLE_USER", List.of(
+                    createPrivilegeIfNotFound("PRINT_SCORE"),
+                    createPrivilegeIfNotFound("EDIT_PLAYLIST")));
+
+            List<Role> adminRoles = roleRepository.findAll();
+            User u = new User();
+            u.setUsername("admin");
+            u.setFullname("Thore Terrass");
+            u.setPassword(passwordEncoder.encode("admin"));
+            u.setRoles(adminRoles);
+            u.setEnabled(true);
+            userRepository.save(u);
+            return u;
+        });
+
+        if (organizationRepository.findByName("Terrassorkestern").isEmpty()) {
+            log.info("Creating initial band");
+            Organization organization = new Organization();
+            organization.setName("Terrassorkestern");
+            organizationRepository.save(organization);
+
+            user.setOrganization(organization);
+            userRepository.save(user);
         }
-        log.info("Creating initial user admin with admin rights");
-
-        List<Privilege> adminPrivileges = Arrays.asList(
-                createPrivilegeIfNotFound("PRINT_SCORE"),
-                createPrivilegeIfNotFound("EDIT_SONG"),
-                createPrivilegeIfNotFound("EDIT_INSTRUMENT"),
-                createPrivilegeIfNotFound("EDIT_PLAYLIST"),
-                createPrivilegeIfNotFound("EDIT_USER"));
-
-        List<Privilege> userPrivileges = Arrays.asList(
-                createPrivilegeIfNotFound("PRINT_SCORE"),
-                createPrivilegeIfNotFound("EDIT_PLAYLIST"));
-
-        createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-        createRoleIfNotFound("ROLE_USER", userPrivileges);
-
-        Role adminRole = roleRepository.findByName("ROLE_ADMIN");
-        User user = new User();
-        user.setUsername("admin");
-        user.setFullname("Thore Terrass");
-        user.setPassword(passwordEncoder.encode("admin"));
-        user.setRoles(Collections.singletonList(adminRole));
-        user.setEnabled(true);
-        userRepository.save(user);
     }
 
 
     @Transactional
     Privilege createPrivilegeIfNotFound(String name) {
-
         Privilege privilege = privilegeRepository.findByName(name);
         if (privilege == null) {
             privilege = new Privilege(name);
@@ -84,9 +93,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
 
 
     @Transactional
-    void createRoleIfNotFound(
-            String name, Collection<Privilege> privileges) {
-
+    void createRoleIfNotFound(String name, Collection<Privilege> privileges) {
         Role role = roleRepository.findByName(name);
         if (role == null) {
             role = new Role(name);
