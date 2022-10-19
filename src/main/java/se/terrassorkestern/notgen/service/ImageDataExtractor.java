@@ -105,7 +105,7 @@ public class ImageDataExtractor {
         }
     }
 
-    private List<Path> split(Path tmpDir, Score score) {
+    private List<Path> split(Path tmpDir, Score score) throws IOException {
 
         List<Path> extractedFilesList = new ArrayList<>();
 
@@ -121,17 +121,11 @@ public class ImageDataExtractor {
         // Unzip files into temp directory
         log.debug("Extracting {} to {}", inFile, tmpDir);
         if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("zip")) {
-            try {
-                // Initiate ZipFile object with the path/name of the zip file.
-                ZipFile zipFile = new ZipFile(inFile);
-
+            // Initiate ZipFile object with the path/name of the zip file.
+            try (ZipFile zipFile = new ZipFile(inFile)) {
                 // Extracts all files to the path specified
                 zipFile.extractAll(tmpDir.toString());
-
-            } catch (ZipException e) {
-                e.printStackTrace();
             }
-
         } else if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("pdf")) {
             try {
                 PDDocument document = PDDocument.load(new File(inFile.toString()));
@@ -142,8 +136,7 @@ public class ImageDataExtractor {
 
                     for (COSName name : pdResources.getXObjectNames()) {
                         PDXObject o = pdResources.getXObject(name);
-                        if (o instanceof PDImageXObject) {
-                            PDImageXObject image = (PDImageXObject) o;
+                        if (o instanceof PDImageXObject image) {
                             String filename = tmpDir + File.separator + "extracted-image-" + i;
                             //ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
                             if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {

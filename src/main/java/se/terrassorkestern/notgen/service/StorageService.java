@@ -26,14 +26,9 @@ public class StorageService {
                           S3Storage s3Storage, LocalStorage localStorage) {
         tmp = Path.of(tempDir);
         switch (storage) {
-            case "s3":
-                this.backendStorage = s3Storage;
-                break;
-            case "local":
-                this.backendStorage = localStorage;
-                break;
-            default:
-                throw new IllegalArgumentException("notgen.storage " + storage + " not valid");
+            case "s3" -> this.backendStorage = s3Storage;
+            case "local" -> this.backendStorage = localStorage;
+            default -> throw new IllegalArgumentException("notgen.storage " + storage + " not valid");
         }
     }
 

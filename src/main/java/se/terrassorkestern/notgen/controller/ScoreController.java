@@ -1,18 +1,13 @@
 package se.terrassorkestern.notgen.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.exceptions.NotFoundException;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Score;
+import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
-import se.terrassorkestern.notgen.model.ScorePart;
-import se.terrassorkestern.notgen.model.ScorePartId;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +17,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/score")
-@SessionAttributes("score")
+@SessionAttributes({"score", "band"})
 public class ScoreController {
 
     private final ScoreRepository scoreRepository;
@@ -35,8 +30,9 @@ public class ScoreController {
     }
 
     @GetMapping("/list")
-    public String songList(Model model) {
-        model.addAttribute("scores", scoreRepository.findByOrderByTitle());
+    public String songList(Model model, @ModelAttribute("band") Organization organization) {
+        //model.addAttribute("scores", scoreRepository.findByOrderByTitle());
+        model.addAttribute("scores", scoreRepository.findByOrganizationOrderByTitleAsc(organization));
         return "scoreList";
     }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="sv">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
     <th:block th:replace="fragments/general :: header-css"></th:block>
     <title>Administration</title>
@@ -12,6 +12,8 @@
     <h2>Administration av notgeneratorn</h2>
 
     <ul class="list-group">
+        <li sec:authorize="hasAuthority('EDIT_ORGANIZATION')" class="list-group-item"><a
+                th:href="@{/organization/list}">Band</a></li>
         <li class="list-group-item"><a th:href="@{/user/list}">Användare</a></li>
         <li class="list-group-item"><a th:href="@{/instrument/list}">Instrument</a></li>
         <li class="list-group-item"><a th:href="@{/setting/list}">Sättningar</a></li>
