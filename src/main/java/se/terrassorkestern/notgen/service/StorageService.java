@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.ScorePart;
+import se.terrassorkestern.notgen.service.storage.AzureStorage;
 import se.terrassorkestern.notgen.service.storage.BackendStorage;
 import se.terrassorkestern.notgen.service.storage.LocalStorage;
 import se.terrassorkestern.notgen.service.storage.S3Storage;
@@ -23,12 +24,20 @@ public class StorageService {
     private final BackendStorage backendStorage;
 
     public StorageService(@Value("${notgen.folders.tempdir}") String tempDir, @Value("${notgen.storage}") String storage,
-                          S3Storage s3Storage, LocalStorage localStorage) {
+                          S3Storage s3Storage, AzureStorage azureStorage, LocalStorage localStorage) {
         tmp = Path.of(tempDir);
         switch (storage) {
-            case "s3" -> this.backendStorage = s3Storage;
-            case "local" -> this.backendStorage = localStorage;
-            default -> throw new IllegalArgumentException("notgen.storage " + storage + " not valid");
+            case "s3":
+                this.backendStorage = s3Storage;
+                break;
+            case "azure":
+                this.backendStorage = azureStorage;
+                break;
+            case "local":
+                this.backendStorage = localStorage;
+                break;
+            default:
+                throw new IllegalArgumentException("notgen.storage " + storage + " not valid");
         }
     }
 
