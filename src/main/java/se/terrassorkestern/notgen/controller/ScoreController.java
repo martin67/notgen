@@ -17,7 +17,8 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/score")
-@SessionAttributes({"score", "band"})
+@SessionAttributes("score")
+//@SessionAttributes({"score", "band"})
 public class ScoreController {
 
     private final ScoreRepository scoreRepository;
@@ -30,9 +31,9 @@ public class ScoreController {
     }
 
     @GetMapping("/list")
-    public String songList(Model model, @ModelAttribute("band") Organization organization) {
-        //model.addAttribute("scores", scoreRepository.findByOrderByTitle());
-        model.addAttribute("scores", scoreRepository.findByOrganizationOrderByTitleAsc(organization));
+    public String songList(Model model) {
+        model.addAttribute("scores", scoreRepository.findByOrderByTitle());
+        //model.addAttribute("scores", scoreRepository.findByOrganizationOrderByTitleAsc(organization));
         return "scoreList";
     }
 
