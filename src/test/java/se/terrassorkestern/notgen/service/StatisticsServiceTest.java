@@ -1,21 +1,14 @@
 package se.terrassorkestern.notgen.service;
 
-import org.hibernate.Session;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
-import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.Statistics;
 
 import javax.transaction.Transactional;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

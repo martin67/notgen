@@ -3,8 +3,6 @@ package se.terrassorkestern.notgen.service;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.PlaylistEntry;

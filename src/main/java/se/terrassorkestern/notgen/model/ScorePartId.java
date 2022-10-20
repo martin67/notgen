@@ -1,13 +1,15 @@
 package se.terrassorkestern.notgen.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
 // See doc at https://vladmihalcea.com/the-best-way-to-map-a-many-to-many-association-with-extra-columns-when-using-jpa-and-hibernate/
-@Data
+@Getter
+@Setter
 @Embeddable
 public class ScorePartId implements Serializable {
 

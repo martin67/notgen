@@ -1,0 +1,165 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1666015429053-1
+      author: hagelin (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: organizationPK
+                  name: id
+                  type: INT
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+            tableName: organization
+  - changeSet:
+      id: 1666015429053-2
+      author: hagelin (generated)
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: organization_id
+                  type: integer
+            tableName: instrument
+  - changeSet:
+      id: 1666015429053-3
+      author: hagelin (generated)
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: organization_id
+                  type: integer
+            tableName: score
+  - changeSet:
+      id: 1666015429053-4
+      author: hagelin (generated)
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: organization_id
+                  type: integer
+            tableName: setting
+  - changeSet:
+      id: 1666015429053-5
+      author: hagelin (generated)
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: organization_id
+                  type: integer
+            tableName: user_
+  - changeSet:
+      id: 1666015429053-6
+      author: hagelin (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: organization_id
+            baseTableName: setting
+            constraintName: FK1dg03ap1ubegmgbaunvlqkexm
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: organization
+            validate: true
+  - changeSet:
+      id: 1666015429053-7
+      author: hagelin (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: organization_id
+            baseTableName: score
+            constraintName: FKj9hs6ivq5o0m6pu3b7vxfx0ox
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: organization
+            validate: true
+  - changeSet:
+      id: 1666015429053-8
+      author: hagelin (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: organization_id
+            baseTableName: instrument
+            constraintName: FKmpyslaidkm442g9tunauji39l
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: organization
+            validate: true
+  - changeSet:
+      id: 1666015429053-9
+      author: hagelin (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: organization_id
+            baseTableName: user_
+            constraintName: FKrb7dlbu1ieuxw0cllmxpo8h7o
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: organization
+            validate: true
+  - changeSet:
+      id: 1666015429053-10
+      author: hagelin (generated)
+      changes:
+        - dropColumn:
+            columnName: google_id_cover
+            tableName: score
+  - changeSet:
+      id: 1666015429053-11
+      author: hagelin (generated)
+      changes:
+        - dropColumn:
+            columnName: google_id_full
+            tableName: score
+  - changeSet:
+      id: 1666015429053-12
+      author: hagelin (generated)
+      changes:
+        - dropColumn:
+            columnName: google_id_thumbnail
+            tableName: score
+  - changeSet:
+      id: 1666015429053-13
+      author: hagelin (generated)
+      changes:
+        - dropColumn:
+            columnName: google_id_to
+            tableName: score
+  - changeSet:
+      id: 1666038441713-1
+      author: hagelin (generated)
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: organization_id
+                  type: integer
+            tableName: playlist
+  - changeSet:
+      id: 1666038441713-2
+      author: hagelin (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: organization_id
+            baseTableName: playlist
+            constraintName: FKqxq8nbyepp3rqadhwoaojogu7
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: organization
+            validate: true

@@ -6,7 +6,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,12 +51,14 @@ public class SecurityConfig {
                 .antMatchers("/score/new/**", "/score/delete/**", "/score/save/**").hasAuthority("EDIT_SONG")
                 .antMatchers("/user/new/**", "/user/delete/**", "/user/list/**").hasAuthority("EDIT_USER")
                 .antMatchers("/print/**").hasAuthority("PRINT_SCORE")
+                .antMatchers("/organization/**").hasAuthority("EDIT_ORGANIZATION")
                 .antMatchers("/user/edit/**", "/user/save/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/playlist/new/**", "/playlist/delete/**", "/playlist/copy/**").hasAuthority("EDIT_PLAYLIST")
                 .antMatchers("/admin/**", "/actuator/**").hasRole("ADMIN")
                 .antMatchers("/", "/**").permitAll()
                 .and()
                 .formLogin()
+                .failureHandler((request, response, exception) -> System.out.println(exception))
                 .and()
                 .logout()
                 .logoutSuccessUrl("/");

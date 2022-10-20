@@ -1,7 +1,8 @@
 package se.terrassorkestern.notgen.model;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -11,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "playlist")
 public class Playlist extends Auditable<String> {
@@ -19,6 +21,9 @@ public class Playlist extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
     @NotBlank(message = "Låtlistan måste ha ett namn")
     private String name;
     private String comment;

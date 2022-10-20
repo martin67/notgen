@@ -72,7 +72,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     liquibaseRuntime 'info.picocli:picocli:4.6.3'
     liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:4.16.1'
-    //liquibaseRuntime sourceSets.main.output
+    liquibaseRuntime sourceSets.main.output
 
     liquibase {
         activities {
@@ -82,6 +82,7 @@ dependencies {
                 //changeLogFile 'db.changelog-master.yaml'
                 //classpath 'src/main/resources'
                 url "jdbc:h2:file:./todb"
+                defaultSchemaName "PUBLIC"
                 referenceUrl "hibernate:spring:se.terrassorkestern.notgen.model?dialect=org.hibernate.dialect.H2Dialect&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
                 username "sa"
                 password "sa"

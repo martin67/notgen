@@ -16,6 +16,9 @@ public class Setting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    Organization organization;
     @NotBlank
     private String name;
 

@@ -90,7 +90,7 @@ public class ConverterService {
 
     }
 
-    private List<Path> split(Path tmpDir, NoteConverterStats stats, Score score) {
+    private List<Path> split(Path tmpDir, NoteConverterStats stats, Score score) throws IOException {
 
         List<Path> extractedFilesList = new ArrayList<>();
 
@@ -107,15 +107,10 @@ public class ConverterService {
         // Unzip files into temp directory
         log.debug("Extracting {} to {}", inFile, tmpDir);
         if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("zip")) {
-            try {
-                // Initiate ZipFile object with the path/name of the zip file.
-                ZipFile zipFile = new ZipFile(inFile);
-
+            // Initiate ZipFile object with the path/name of the zip file.
+            try (ZipFile zipFile = new ZipFile(inFile)) {
                 // Extracts all files to the path specified
                 zipFile.extractAll(tmpDir.toString());
-
-            } catch (ZipException e) {
-                e.printStackTrace();
             }
 
         } else if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("pdf")) {
@@ -128,8 +123,7 @@ public class ConverterService {
 
                     for (COSName name : pdResources.getXObjectNames()) {
                         PDXObject o = pdResources.getXObject(name);
-                        if (o instanceof PDImageXObject) {
-                            PDImageXObject image = (PDImageXObject) o;
+                        if (o instanceof PDImageXObject image) {
                             String filename = tmpDir + File.separator + "extracted-image-" + i;
                             //ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
                             if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
@@ -228,7 +222,7 @@ public class ConverterService {
 
         // Todo: Can we assume that the input always will be sorted?
         //scores.sort(Comparator.comparing(Score::getTitle));
-        List<Instrument> sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).collect(Collectors.toList());
+        List<Instrument> sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

@@ -17,8 +17,6 @@ import se.terrassorkestern.notgen.repository.UserRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
@@ -37,6 +35,9 @@ class UserControllerTest {
 
     static User normalUser;
     static User adminUser;
+    static Role userRole;
+    static Role adminRole;
+
     @Autowired
     private MockMvc mvc;
     @MockBean
@@ -48,23 +49,25 @@ class UserControllerTest {
     static void init() {
         normalUser = new User();
         normalUser.setUsername("normal");
-        Role userRole = new Role("ROLE_USER");
+        userRole = new Role("ROLE_USER");
         userRole.setPrivileges(Collections.emptySet());
-        normalUser.setRoles(Collections.singleton(userRole));
+        normalUser.setRoles(List.of(userRole));
 
         adminUser = new User();
         adminUser.setUsername("admin");
-        Role adminRole = new Role("ROLE_ADMIN");
-        adminRole.setPrivileges(Collections.singleton(new Privilege("EDIT_USER")));
-        adminUser.setRoles(Collections.singleton(adminRole));
+        adminRole = new Role("ROLE_ADMIN");
+        adminRole.setPrivileges(List.of(new Privilege("EDIT_USER")));
+        adminUser.setRoles(List.of(adminRole));
     }
 
     @BeforeEach
     void initTest() {
-        List<User> allUsers = Stream.of(normalUser, adminUser).collect(Collectors.toList());
+        List<User> allUsers = List.of(normalUser, adminUser);
         given(userRepository.findAll()).willReturn(allUsers);
         given(userRepository.findById(1L)).willReturn(Optional.of(normalUser));
         given(userRepository.findById(2L)).willReturn(Optional.of(adminUser));
+        given(roleRepository.findByName("ROLE_ADMIN")).willReturn(adminRole);
+        given(roleRepository.findByName("ROLE_USER")).willReturn(userRole);
     }
 
     @Test
