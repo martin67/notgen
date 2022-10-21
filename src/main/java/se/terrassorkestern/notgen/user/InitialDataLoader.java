@@ -2,6 +2,7 @@ package se.terrassorkestern.notgen.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,9 @@ import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,15 +32,17 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     private final PrivilegeRepository privilegeRepository;
     private final OrganizationRepository organizationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Path configPath;
 
     public InitialDataLoader(UserRepository userRepository, RoleRepository roleRepository,
                              PrivilegeRepository privilegeRepository, OrganizationRepository organizationRepository,
-                             PasswordEncoder passwordEncoder) {
+                             PasswordEncoder passwordEncoder, @Value("${notgen.folders.static}") String configFolder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.privilegeRepository = privilegeRepository;
         this.organizationRepository = organizationRepository;
         this.passwordEncoder = passwordEncoder;
+        this.configPath = Path.of(configFolder);
     }
 
     @Override
@@ -77,6 +83,13 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
 
             user.setOrganization(organization);
             userRepository.save(user);
+        }
+
+        // Create config directory
+        try {
+            Files.createDirectories(configPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -20,12 +20,15 @@ import java.nio.file.Path;
 @Service
 public class StorageService {
 
-    private final Path tmp;
+    private Path tmp = null;
     private final BackendStorage backendStorage;
 
-    public StorageService(@Value("${notgen.folders.tempdir}") String tempDir, @Value("${notgen.storage}") String storage,
+    public StorageService(@Value("${notgen.folders.tempdir:notset}") String tempDir, @Value("${notgen.storage}") String storage,
                           S3Storage s3Storage, AzureStorage azureStorage, LocalStorage localStorage) {
-        tmp = Path.of(tempDir);
+
+        if (!tempDir.equals("notset")) {
+            tmp = Path.of(tempDir);
+        }
         switch (storage) {
             case "s3" -> this.backendStorage = s3Storage;
             case "azure" -> this.backendStorage = azureStorage;
