@@ -88,6 +88,11 @@ public class S3Storage implements BackendStorage {
     }
 
     @Override
+    public void uploadScore(Score score, Path path) throws IOException {
+
+    }
+
+    @Override
     public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
         PutObjectRequest objectRequest = PutObjectRequest.builder().bucket(outputBucket).key(scorePart.getPdfName()).build();
         try {
@@ -96,6 +101,11 @@ public class S3Storage implements BackendStorage {
             log.error("Error uploading {} to {}", path, scorePart.getPdfName(), e);
             throw new IOException(e);
         }
+    }
+
+    @Override
+    public void deleteScore(Score score) throws IOException {
+
     }
 
     @Override

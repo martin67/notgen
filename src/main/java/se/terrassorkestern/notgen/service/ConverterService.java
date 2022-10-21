@@ -90,32 +90,24 @@ public class ConverterService {
 
     }
 
-    private List<Path> split(Path tmpDir, NoteConverterStats stats, Score score) throws IOException {
+    private List<Path> split(Path tmpDir, NoteConverterStats stats, Path downloadedScore) throws IOException {
 
-        List<Path> extractedFilesList = new ArrayList<>();
-
-        if (!Files.exists(tmpDir)) {
+        if (!Files.exists(tmpDir) || !Files.exists(downloadedScore)) {
             return null;
         }
-
-        File inFile = new File(tmpDir.toFile(), score.getFilename());
-        if (!inFile.exists()) {
-            return null;
-        }
-        //String inFile = new File(tmpDir.toFile(), song.getFilename()).toString();
 
         // Unzip files into temp directory
-        log.debug("Extracting {} to {}", inFile, tmpDir);
-        if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("zip")) {
-            // Initiate ZipFile object with the path/name of the zip file.
-            try (ZipFile zipFile = new ZipFile(inFile)) {
-                // Extracts all files to the path specified
-                zipFile.extractAll(tmpDir.toString());
-            }
+        switch (com.google.common.io.Files.getFileExtension(downloadedScore.getFileName().toString().toLowerCase())) {
+            case "zip":
+                // Initiate ZipFile object with the path/name of the zip file.
+                try (ZipFile zipFile = new ZipFile(downloadedScore.toFile())) {
+                    // Extracts all files to the path specified
+                    zipFile.extractAll(tmpDir.toString());
+                }
+                break;
 
-        } else if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("pdf")) {
-            try {
-                PDDocument document = PDDocument.load(new File(inFile.toString()));
+            case "pdf":
+                PDDocument document = PDDocument.load(downloadedScore.toFile());
                 PDPageTree list = document.getPages();
                 int i = 100;
                 for (PDPage page : list) {
@@ -136,14 +128,17 @@ public class ConverterService {
                     }
                 }
                 document.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            log.error("Unknown file format for {}", score.getFilename());
+                break;
+
+            default:
+                log.error("Unknown file format for {}", downloadedScore);
+                break;
         }
+
         // Store name of all extracted files. Order is important!
         // Exclude source file (zip or pdf)
+        List<Path> extractedFilesList = new ArrayList<>();
+
         try {
             extractedFilesList = Files
                     .list(tmpDir)
@@ -174,10 +169,10 @@ public class ConverterService {
 
                 Path tmpDir = storageService.getTmpDir(score);
                 stopWatch.start("downloadScorePart, " + score.getTitle());
-                storageService.downloadScore(score, tmpDir);
+                Path downloadedScore = storageService.downloadScore(score, tmpDir);
                 stopWatch.stop();
 
-                List<Path> extractedFilesList = split(tmpDir, stats, score);
+                List<Path> extractedFilesList = split(tmpDir, stats, downloadedScore);
 
                 stopWatch.start("image process, " + score.getTitle());
                 imageProcess(tmpDir, extractedFilesList, score);

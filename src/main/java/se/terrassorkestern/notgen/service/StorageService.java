@@ -32,6 +32,7 @@ public class StorageService {
             case "local" -> this.backendStorage = localStorage;
             default -> throw new IllegalArgumentException("notgen.storage " + storage + " not valid");
         }
+        log.info("Using storage: {}", storage);
     }
 
     public Path getTmpDir(Score score) throws IOException {
@@ -76,7 +77,7 @@ public class StorageService {
         backendStorage.uploadScorePart(scorePart, path);
     }
 
-    boolean isScoreGenerated(Score score) {
+    boolean isScoreGenerated(Score score) throws IOException {
         return backendStorage.isScoreGenerated(score);
     }
 

@@ -15,9 +15,13 @@ public interface BackendStorage {
 
     Path downloadScorePart(Score score, Instrument instrument, Path location) throws IOException;
 
-    boolean isScoreGenerated(Score score);
+    boolean isScoreGenerated(Score score) throws IOException;
+
+    void uploadScore(Score score, Path path) throws IOException;
 
     void uploadScorePart(ScorePart scorePart, Path path) throws IOException;
+
+    void deleteScore(Score score) throws IOException;
 
     void deleteScoreParts(Score score) throws IOException;
 

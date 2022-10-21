@@ -65,9 +65,19 @@ public class LocalStorage implements BackendStorage {
     }
 
     @Override
+    public void uploadScore(Score score, Path path) throws IOException {
+
+    }
+
+    @Override
     public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
         Path scoreOutput = Files.createDirectories(output.resolve(String.valueOf(scorePart.getScore().getId())));
         Files.copy(path, scoreOutput.resolve(scorePart.getPdfName()), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public void deleteScore(Score score) throws IOException {
+
     }
 
     @Override
