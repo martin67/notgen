@@ -88,6 +88,8 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         // Create config directory
         try {
             Files.createDirectories(configPath);
+            Files.createDirectories(configPath.resolve("covers"));
+            Files.createDirectories(configPath.resolve("thumbnails"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
