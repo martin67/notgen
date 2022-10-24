@@ -1,7 +1,7 @@
 package se.terrassorkestern.notgen.service.converter;
 
+import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -38,7 +38,7 @@ public class PdfAssembler implements Runnable {
     @Override
     public void run() {
         Score score = scorePart.getScore();
-        Path path = Path.of(tmpDir.toString(), FilenameUtils.getBaseName(score.getFilename()).substring(7)
+        Path path = Path.of(tmpDir.toString(), Files.getNameWithoutExtension(score.getFilename()).substring(7)
                 + " - " + scorePart.getInstrument().getName() + ".pdf");
         log.debug("Creating separate score ({}) {}", scorePart.getLength(), path);
 
@@ -67,8 +67,8 @@ public class PdfAssembler implements Runnable {
             for (int i = scorePart.getPage(); i < (scorePart.getPage() + scorePart.getLength()); i++) {
                 PDPage page = new PDPage(PDRectangle.A4);
                 doc.addPage(page);
-                File png = new File(FilenameUtils.removeExtension(extractedFilesList.get(i - 1).toString()) + ".png");
-                File jpg = new File(FilenameUtils.removeExtension(extractedFilesList.get(i - 1).toString()) + ".jpg");
+                File png = new File(Files.getNameWithoutExtension(extractedFilesList.get(i - 1).toString()) + ".png");
+                File jpg = new File(Files.getNameWithoutExtension(extractedFilesList.get(i - 1).toString()) + ".jpg");
                 File file;
                 if (png.exists()) {
                     file = png;

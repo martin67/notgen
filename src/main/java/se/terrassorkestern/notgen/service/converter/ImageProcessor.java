@@ -1,7 +1,7 @@
 package se.terrassorkestern.notgen.service.converter;
 
+import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
@@ -19,14 +19,14 @@ public class ImageProcessor implements Runnable {
 
     private final Path path;
     private final Path tmpDir;
-    private final String staticContentDir;
+    private final Path staticContentDir;
     private final Score score;
     private boolean firstPage;
 
     public ImageProcessor(Path path, Path tmpDir, String staticContentDir, Score score, boolean firstPage) {
         this.path = path;
         this.tmpDir = tmpDir;
-        this.staticContentDir = staticContentDir;
+        this.staticContentDir = Path.of(staticContentDir);
         this.score = score;
         this.firstPage = firstPage;
     }
@@ -42,8 +42,9 @@ public class ImageProcessor implements Runnable {
 
             image = ImageIO.read(path.toFile());
 
-            String basename = FilenameUtils.getName(path.toString());
-            log.debug("Image processing {} ({}x{})", FilenameUtils.getName(path.toString()), image.getWidth(), image.getHeight());
+
+            String basename = path.getFileName().toString();
+            log.debug("Image processing {} ({}x{})", basename, image.getWidth(), image.getHeight());
 
             //
             // Ta först hand om vissa specialfall i bildbehandlingen
@@ -58,7 +59,7 @@ public class ImageProcessor implements Runnable {
                 g2d.drawImage(image, -image.getHeight(), 0, null);
                 g2d.dispose();
                 // Spara i det format som den filen hade från början
-                ImageIO.write(rotated, FilenameUtils.getExtension(path.toString()), new File(path.toString()));
+                ImageIO.write(rotated, basename, new File(path.toString()));
                 return;
             }
 
@@ -106,13 +107,13 @@ public class ImageProcessor implements Runnable {
                 //
                 if (firstPage && score.getCover() && score.getColor()) {
                     log.debug("Saving cover");
-                    ImageIO.write(image, "jpg", Path.of(staticContentDir).resolve(String.format("covers/%d.jpg", score.getId())).toFile());
+                    ImageIO.write(image, "jpg", staticContentDir.resolve(String.format("covers/%d.jpg", score.getId())).toFile());
 
                     BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
                     g = thumbnail.createGraphics();
                     g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
                     g.dispose();
-                    ImageIO.write(thumbnail, "png", Path.of(staticContentDir).resolve(String.format("thumbnails/%d.png", score.getId())).toFile());
+                    ImageIO.write(thumbnail, "png", staticContentDir.resolve(String.format("thumbnails/%d.png", score.getId())).toFile());
                     return;
                 }
 
@@ -136,7 +137,7 @@ public class ImageProcessor implements Runnable {
 
             if (firstPage && score.getCover() && score.getColor()) {
                 // Don't convert the first page to grey/BW
-                ImageIO.write(image, "jpg", new File(FilenameUtils.removeExtension(path.toString()) + ".jpg"));
+                ImageIO.write(image, "jpg", new File(Files.getNameWithoutExtension(path.toString()) + ".jpg"));
                 firstPage = false;
                 return;
             }
@@ -168,7 +169,7 @@ public class ImageProcessor implements Runnable {
             }
 
             // Write final picture back to original
-            ImageIO.write(image, "png", new File(FilenameUtils.removeExtension(path.toString()) + ".png"));
+            ImageIO.write(image, "png", new File(Files.getNameWithoutExtension(path.toString()) + ".png"));
 
             log.debug("Time converting page {}, {} ms", 1, onePageWatch.getTotalTimeMillis());
             log.trace(onePageWatch.prettyPrint());

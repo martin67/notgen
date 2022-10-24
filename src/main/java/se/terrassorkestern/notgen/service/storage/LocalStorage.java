@@ -17,7 +17,7 @@ import java.nio.file.StandardCopyOption;
  * Storage on local disk.
  * <p>
  * The scores are organized in folders, one for each score
- *
+ * <p>
  * <output_dir>/<score_id>/<score_id>-<instrument_id>.pdf
  * <p>
  * Example: /var/lib/notgen/output/488/488-12.pdf

@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.configuration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -13,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.service.UserRepositoryUserDetailsService;
 
+@Slf4j
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
@@ -58,7 +60,7 @@ public class SecurityConfig {
                 .antMatchers("/", "/**").permitAll()
                 .and()
                 .formLogin()
-                .failureHandler((request, response, exception) -> System.out.println(exception))
+                .failureHandler((request, response, exception) -> log.error("Login error", exception))
                 .and()
                 .logout()
                 .logoutSuccessUrl("/");

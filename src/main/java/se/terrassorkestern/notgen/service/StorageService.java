@@ -1,9 +1,9 @@
 package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.ScorePart;
@@ -20,8 +20,8 @@ import java.nio.file.Path;
 @Service
 public class StorageService {
 
-    private Path tmp = null;
     private final BackendStorage backendStorage;
+    private Path tmp = null;
 
     public StorageService(@Value("${notgen.folders.tempdir:notset}") String tempDir, @Value("${notgen.storage}") String storage,
                           S3Storage s3Storage, AzureStorage azureStorage, LocalStorage localStorage) {
@@ -41,9 +41,9 @@ public class StorageService {
     public Path getTmpDir(Score score) throws IOException {
         Path t;
         if (tmp != null) {
-            t = Files.createDirectories(tmp.resolve("score-" + score.getId()));
-            // Remove all files in directory
-            FileUtils.cleanDirectory(t.toFile());
+            Path dir = tmp.resolve("score-" + score.getId());
+            FileSystemUtils.deleteRecursively(dir);
+            t = Files.createDirectories(dir);
         } else {
             t = Files.createTempDirectory("notkonv-");
         }
@@ -54,9 +54,9 @@ public class StorageService {
     public Path getTmpDir() throws IOException {
         Path t;
         if (tmp != null) {
-            t = Files.createDirectories(tmp.resolve("tmp"));
-            // Remove all files in directory
-            FileUtils.cleanDirectory(t.toFile());
+            Path dir = tmp.resolve("tmp");
+            FileSystemUtils.deleteRecursively(dir);
+            t = Files.createDirectories(dir);
         } else {
             t = Files.createTempDirectory("notgen");
         }

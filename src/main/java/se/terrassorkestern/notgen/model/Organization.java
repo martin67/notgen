@@ -2,7 +2,6 @@ package se.terrassorkestern.notgen.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.persistence.*;
 

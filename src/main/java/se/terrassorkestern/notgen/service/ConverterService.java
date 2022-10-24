@@ -2,8 +2,6 @@ package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
@@ -29,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -55,7 +54,7 @@ public class ConverterService {
 
         ExecutorService executorService = null;
         try {
-            executorService = Executors.newFixedThreadPool(4);
+            executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             for (Path path : extractedFilesList) {
                 executorService.submit(new ImageProcessor(path, tmpDir, staticContentDir, score, firstPage));
                 firstPage = false;
@@ -75,8 +74,7 @@ public class ConverterService {
         }
         ExecutorService executorService = null;
         try {
-            executorService = Executors.newCachedThreadPool();
-            //executorService = Executors.newFixedThreadPool(4);
+            executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             for (ScorePart scorePart : score.getScoreParts()) {
                 executorService.submit(new PdfAssembler(scorePart, tmpDir, storageService, extractedFilesList));
             }
@@ -137,18 +135,15 @@ public class ConverterService {
 
         // Store name of all extracted files. Order is important!
         // Exclude source file (zip or pdf)
-        List<Path> extractedFilesList = new ArrayList<>();
+        List<Path> extractedFilesList;
 
-        try {
-            extractedFilesList = Files
-                    .list(tmpDir)
+        try (Stream<Path> paths = Files.list(tmpDir)) {
+            extractedFilesList = paths
                     .filter(Files::isRegularFile)
                     .filter(p -> (p.toString().toLowerCase().endsWith(".png") || p.toString().toLowerCase().endsWith(".jpg")))
                     .collect(Collectors.toCollection(ArrayList::new));
             Collections.sort(extractedFilesList);
             stats.addNumberOfSrcImg(extractedFilesList.size());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return extractedFilesList;

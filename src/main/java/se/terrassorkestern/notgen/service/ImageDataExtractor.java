@@ -2,11 +2,9 @@ package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ImageMetadata;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -35,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.imaging.Imaging.getImageInfo;
 import static org.apache.commons.imaging.Imaging.getMetadata;
@@ -120,13 +119,13 @@ public class ImageDataExtractor {
 
         // Unzip files into temp directory
         log.debug("Extracting {} to {}", inFile, tmpDir);
-        if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("zip")) {
+        if (com.google.common.io.Files.getFileExtension(score.getFilename()).equalsIgnoreCase("zip")) {
             // Initiate ZipFile object with the path/name of the zip file.
             try (ZipFile zipFile = new ZipFile(inFile)) {
                 // Extracts all files to the path specified
                 zipFile.extractAll(tmpDir.toString());
             }
-        } else if (FilenameUtils.getExtension(score.getFilename()).equalsIgnoreCase("pdf")) {
+        } else if (com.google.common.io.Files.getFileExtension(score.getFilename()).equalsIgnoreCase("pdf")) {
             try {
                 PDDocument document = PDDocument.load(new File(inFile.toString()));
                 PDPageTree list = document.getPages();
@@ -157,15 +156,13 @@ public class ImageDataExtractor {
         }
         // Store name of all extracted files. Order is important!
         // Exclude source file (zip or pdf)
-        try {
-            extractedFilesList = Files
-                    .list(tmpDir)
+
+        try (Stream<Path> paths = Files.list(tmpDir)) {
+            extractedFilesList = paths
                     .filter(Files::isRegularFile)
                     .filter(p -> (p.toString().toLowerCase().endsWith(".png") || p.toString().toLowerCase().endsWith(".jpg")))
                     .collect(Collectors.toCollection(ArrayList::new));
             Collections.sort(extractedFilesList);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return extractedFilesList;
