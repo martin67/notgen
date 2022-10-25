@@ -50,7 +50,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .antMatchers("/instrument/**").hasAuthority("EDIT_INSTRUMENT")
-                .antMatchers("/score/new/**", "/score/delete/**", "/score/save/**").hasAuthority("EDIT_SONG")
+                .antMatchers("/score/create", "/score/delete/**", "/score/save/**", "/score/edit/**").hasAuthority("EDIT_SONG")
                 .antMatchers("/user/new/**", "/user/delete/**", "/user/list/**").hasAuthority("EDIT_USER")
                 .antMatchers("/print/**").hasAuthority("PRINT_SCORE")
                 .antMatchers("/organization/**").hasAuthority("EDIT_ORGANIZATION")

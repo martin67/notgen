@@ -19,8 +19,6 @@ import se.terrassorkestern.notgen.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
@@ -49,7 +47,7 @@ class ScoreControllerTest {
         Score foo = new Score();
         Score bar = new Score();
 
-        List<Score> allScores = Stream.of(foo, bar).collect(Collectors.toList());
+        List<Score> allScores = List.of(foo, bar);
         given(scoreRepository.findByOrderByTitle()).willReturn(allScores);
         given(scoreRepository.findById(1)).willReturn(Optional.of(foo));
     }
@@ -60,7 +58,7 @@ class ScoreControllerTest {
     void whenListScores_thenReturnOk() throws Exception {
         mvc.perform(get("/score/list")
                         .contentType(MediaType.TEXT_HTML))
-                .andExpect(view().name("scoreList"))
+                .andExpect(view().name("score/list"))
                 .andExpect(model().attributeExists("scores"))
                 .andExpect(model().attribute("scores", hasSize(2)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -71,9 +69,9 @@ class ScoreControllerTest {
     @DisplayName("New")
     @WithMockUser(authorities = "EDIT_SONG")
     void whenNewScore_thenReturnOk() throws Exception {
-        mvc.perform(get("/score/new")
+        mvc.perform(get("/score/create")
                         .contentType(MediaType.TEXT_HTML))
-                .andExpect(view().name("scoreEdit"))
+                .andExpect(view().name("score/edit"))
                 .andExpect(model().attributeExists("score"))
                 .andExpect(model().attributeExists("allInstruments"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -91,7 +89,7 @@ class ScoreControllerTest {
             mvc.perform(get("/score/edit")
                             .contentType(MediaType.TEXT_HTML)
                             .param("id", "1"))
-                    .andExpect(view().name("scoreEdit"))
+                    .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(model().attributeExists("allInstruments"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -146,7 +144,7 @@ class ScoreControllerTest {
             mvc.perform(post("/score/save").with(csrf())
                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                             .param("addRow", "dummy"))
-                    .andExpect(view().name("scoreEdit"))
+                    .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                     .andExpect(status().isOk());
@@ -159,7 +157,7 @@ class ScoreControllerTest {
             mvc.perform(post("/score/save").with(csrf())
                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                             .param("deleteRow", "0"))
-                    .andExpect(view().name("scoreEdit"))
+                    .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                     .andExpect(status().isOk());
@@ -210,9 +208,11 @@ class ScoreControllerTest {
         @WithAnonymousUser
         void whenAccessProtectedContentAsAnonymousUser_redirectToLogin() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/new")).andExpect(status().isFound())
+            mvc.perform(get("/score/view?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/score/create")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(get("/score/edit?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/score/edit?id=1")).andExpect(status().isFound())
+                    .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(get("/score/delete?id=1")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(post("/score/save").with(csrf())).andExpect(status().isFound())
@@ -225,8 +225,9 @@ class ScoreControllerTest {
         @WithMockUser
         void whenAccessProtectedContentAsNormalUser_returnForbidden() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/new")).andExpect(status().isForbidden());
-            mvc.perform(get("/score/edit?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/score/view?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/score/create")).andExpect(status().isForbidden());
+            mvc.perform(get("/score/edit?id=1")).andExpect(status().isForbidden());
             mvc.perform(get("/score/delete?id=1")).andExpect(status().isForbidden());
             mvc.perform(post("/score/save").with(csrf())).andExpect(status().isForbidden());
             mvc.perform(get("/score/nonexistent")).andExpect(status().isNotFound());
@@ -237,7 +238,8 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenAccessProtectedContentAsAdminUser_returnForbiddenOk() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/new")).andExpect(status().isOk());
+            mvc.perform(get("/score/view?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/score/create")).andExpect(status().isOk());
             mvc.perform(get("/score/edit?id=1")).andExpect(status().isOk());
             mvc.perform(get("/score/delete?id=1")).andExpect(status().isFound());
             mvc.perform(get("/score/nonexistent")).andExpect(status().isNotFound());
