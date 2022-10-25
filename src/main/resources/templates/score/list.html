@@ -18,13 +18,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="score : ${scores}" th:data-link="@{edit(id=${score.id})}">
+        <tr th:each="score : ${scores}" th:data-link="@{view(id=${score.id})}">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
         </tr>
         </tbody>
     </table>
-    <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_SONG')" th:href="@{/score/new}">Lägg till</a>
+    <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_SONG')" th:href="@{/score/create}">Lägg till</a>
 </div>
 
 

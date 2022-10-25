@@ -34,11 +34,11 @@ public class ScoreController {
     public String songList(Model model) {
         model.addAttribute("scores", scoreRepository.findByOrderByTitle());
         //model.addAttribute("scores", scoreRepository.findByOrganizationOrderByTitleAsc(organization));
-        return "scoreList";
+        return "score/list";
     }
 
     @GetMapping("/delete")
-    public String songDelete(@RequestParam("id") Integer id) {
+    public String delete(@RequestParam("id") Integer id) {
         Score score = scoreRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
         log.info("Tar bort låt {} [{}]", score.getTitle(), score.getId());
@@ -46,17 +46,25 @@ public class ScoreController {
         return "redirect:/score/list";
     }
 
+    @GetMapping("/view")
+    public String view(@RequestParam("id") Integer id, Model model) {
+        Score score = scoreRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
+        model.addAttribute("score", score);
+        return "score/view";
+    }
+
     @GetMapping("/edit")
-    public String songEdit(@RequestParam("id") Integer id, Model model) {
+    public String edit(@RequestParam("id") Integer id, Model model) {
         Score score = scoreRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
         model.addAttribute("score", score);
         model.addAttribute("allInstruments", instrumentRepository.findAll());
-        return "scoreEdit";
+        return "score/edit";
     }
 
-    @GetMapping("/new")
-    public String songNew(Model model) {
+    @GetMapping("/create")
+    public String create(Model model) {
         Score score = new Score();
         // Fyll på med standardinstrumenten så går det lite fortare att editera...
         for (Instrument instrument : instrumentRepository.findAll()) {
@@ -64,14 +72,14 @@ public class ScoreController {
         }
         model.addAttribute("score", score);
         model.addAttribute("allInstruments", instrumentRepository.findAll());
-        return "scoreEdit";
+        return "score/edit";
     }
 
     @PostMapping("/save")
-    public String songSave(@Valid @ModelAttribute Score score, Errors errors, Model model) {
+    public String save(@Valid @ModelAttribute Score score, Errors errors, Model model) {
         if (errors.hasErrors()) {
             model.addAttribute("allInstruments", instrumentRepository.findAll());
-            return "scoreEdit";
+            return "score/edit";
         }
         log.info("Sparar låt {} [{}]", score.getTitle(), score.getId());
         // scorePart måste fixas till efter formuläret
@@ -90,7 +98,7 @@ public class ScoreController {
         score.getScoreParts().add(new ScorePart());
         model.addAttribute("score", score);
         model.addAttribute("allInstruments", instrumentRepository.findAll());
-        return "scoreEdit";
+        return "score/edit";
     }
 
     @PostMapping(value = "/save", params = {"deleteRow"})
@@ -106,7 +114,7 @@ public class ScoreController {
             model.addAttribute("allInstruments", instrumentRepository.findAll());
         } catch (NumberFormatException ignore) {
         }
-        return "scoreEdit";
+        return "score/edit";
     }
 
     @GetMapping(value = "/scores.json")

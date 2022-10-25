@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
+<head>
+    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <title>Visa noter</title>
+</head>
+
+<body>
+<div th:replace="fragments/general :: header"></div>
+
+
+<div class="container">
+    <h1 th:text="${score.title}"/>
+
+    <figure class="text-center">
+        <img class="figure-img img-fluid rounded" th:src="@{${score.getThumbnailPath()}}" alt="thumbnail"/>
+    </figure>
+
+    <table class="table table-sm table-borderless">
+        <tbody>
+        <tr th:if="${score.title}">
+            <td>Titel</td>
+            <td th:text="${score.title}"/>
+        </tr>
+        <tr th:if="${score.subTitle}">
+            <td>Subtitel</td>
+            <td th:text="${score.subTitle}"/>
+        </tr>
+        <tr th:if="${score.genre}">
+            <td>Genre</td>
+            <td th:text="${score.genre}"/>
+        </tr>
+        <tr th:if="${score.year}">
+            <td>År</td>
+            <td th:text="${score.year}"/>
+        </tr>
+        <tr th:if="${score.composer}">
+            <td>Kompositör</td>
+            <td th:text="${score.composer}"/>
+        </tr>
+        <tr th:if="${score.author}">
+            <td>Författare</td>
+            <td th:text="${score.author}"/>
+        </tr>
+        <tr th:if="${score.arranger}">
+            <td>Arrangör</td>
+            <td th:text="${score.arranger}"/>
+        </tr>
+        <tr th:if="${score.publisher}">
+            <td>Förlag</td>
+            <td th:text="${score.publisher}"/>
+        </tr>
+        <tr th:if="${score.comment}">
+            <td>Kommentar</td>
+            <td th:text="${score.comment}"/>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>Sättning</h3>
+
+    <table class="table table-sm table-borderless table-striped table-hover">
+        <tbody>
+        <tr th:each="scorePart : ${score.scoreParts}"
+            th:data-link="@{/print/getscorepart(instrument_id=${scorePart.instrument.id},score_id=${score.id})}">
+            <td th:text="${scorePart.instrument.name}"/>
+            <td th:text="${scorePart.comment}"/>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <h3>Detaljer</h3>
+    <div class="row">
+        <div class="col">
+            <input type="checkbox" th:checked="${score.scanned}" onclick="return false;"> Inscannad<br>
+            <input type="checkbox" th:checked="${score.imageProcess}" onclick="return false;"> Bildbehandlas<br>
+            <input type="checkbox" th:checked="${score.upperleft}" onclick="return false;"> Linjerad i hörn<br>
+        </div>
+        <div class="col">
+            <input type="checkbox" th:checked="${score.cover}" onclick="return false;"> Omslag<br>
+            <input type="checkbox" th:checked="${score.color}" onclick="return false;"> Omslag i färg<br>
+            <input type="checkbox" th:checked="${score.archived}" onclick="return false;"> Original i arkivet
+            <span th:text="${score.archived}?  ' [' + ${score.archiveLocation} + ']'"/> <br>
+        </div>
+    </div>
+
+    <hr>
+
+    <div>
+        <a class="btn btn-secondary" sec:authorize="hasAuthority('PRINT_SCORE')"
+           th:href="@{/print/getscore(score_id=${score.id},instrument_id=2)}">Skriv ut</a>
+        <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_SONG')"
+           th:href="@{edit(id=${score.id})}">Ändra</a>
+    </div>
+</div>
+
+<footer th:replace=" fragments/general :: footer"></footer>
+
+</body>
+
+<script>
+    $(function () {
+        $("table tbody tr").click(function (e) {
+            window.location.href = $(this).data("link");
+        });
+    });
+</script>
+
+</html>
