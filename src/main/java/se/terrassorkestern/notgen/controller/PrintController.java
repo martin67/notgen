@@ -57,7 +57,7 @@ public class PrintController {
         return "printSetting";
     }
 
-    @GetMapping("/getscorepart")
+    @GetMapping(value = "/getscorepart", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printScorePart(@RequestParam(name = "instrument_id") Integer instrumentId,
                                                               @RequestParam(name = "score_id") Integer scoreId) {
 
@@ -79,7 +79,7 @@ public class PrintController {
         }
     }
 
-    @GetMapping("/getscore")
+    @GetMapping(value = "/getscore", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printScore(@RequestParam(name = "setting_id") Integer settingId,
                                                           @RequestParam(name = "score_id") Integer scoreId) {
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
+<head>
+    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <title>Visa låtlista</title>
+</head>
+
+<body>
+<div th:replace="fragments/general :: header"></div>
+
+<div class="container">
+    <h1 th:text="${playlist.name}"/>
+
+    <table class="table table-sm table-borderless">
+        <tbody>
+        <tr th:if="${playlist.name}">
+            <td>Namn</td>
+            <td th:text="${playlist.name}"/>
+        </tr>
+        <tr th:if="${playlist.setting}">
+            <td>Sättning</td>
+            <td th:text="${playlist.setting.name}"/>
+        </tr>
+        <tr th:if="${playlist.date}">
+            <td>Datum</td>
+            <td th:text="${playlist.date}"/>
+        </tr>
+        <tr th:if="${playlist.comment}">
+            <td>Kommentar</td>
+            <td th:text="${playlist.comment}"/>
+        </tr>
+        <tr th:if="${playlist.comment}">
+            <td>Antal låtar</td>
+            <td th:text="${playlist.numberOfSongs()}"/>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>Låtar</h3>
+    <table class="table table-sm">
+        <tbody>
+        <tr th:each="playListentry : ${playlist.playlistEntries}">
+            <td th:text="${playListentry.text}"/>
+            <td th:text="${playListentry.comment}"/>
+        </tr>
+        </tbody>
+    </table>
+
+    <hr>
+    <div class="row">
+        <div class="col-auto">
+            <a class="btn btn-primary" th:href="@{createPdf(id=${playlist.id})}">Skriv PDF</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+               th:href="@{edit(id=${playlist.id})}">Ändra</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+               th:href="@{copy(id=${playlist.id})}">Kopiera</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+               th:href="@{create}">Skapa</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-danger" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+               th:href="@{copy(id=${playlist.id}}">Ta bort</a>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments/general :: footer"></footer>
+
+</body>
+</html>

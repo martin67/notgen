@@ -52,7 +52,7 @@ class InstrumentControllerTest {
         trumpet.setSortOrder(20);
 
         List<Instrument> allInstruments = Stream.of(sax, trumpet).collect(Collectors.toList());
-        given(instrumentRepository.findAll()).willReturn(allInstruments);
+        given(instrumentRepository.findByOrderBySortOrder()).willReturn(allInstruments);
         given(instrumentRepository.findById(1)).willReturn(Optional.of(sax));
     }
 
@@ -61,8 +61,8 @@ class InstrumentControllerTest {
     @WithMockUser(authorities = "EDIT_INSTRUMENT")
     void whenListInstruments_thenReturnOk() throws Exception {
         mvc.perform(get("/instrument/list")
-                .contentType(MediaType.TEXT_HTML))
-                .andExpect(view().name("instrumentList"))
+                        .contentType(MediaType.TEXT_HTML))
+                .andExpect(view().name("instrument/list"))
                 .andExpect(model().attributeExists("instruments"))
                 .andExpect(model().attribute("instruments", hasSize(2)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -73,9 +73,9 @@ class InstrumentControllerTest {
     @DisplayName("New")
     @WithMockUser(authorities = "EDIT_INSTRUMENT")
     void whenNewInstrument_thenReturnOk() throws Exception {
-        mvc.perform(get("/instrument/new")
-                .contentType(MediaType.TEXT_HTML))
-                .andExpect(view().name("instrumentEdit"))
+        mvc.perform(get("/instrument/create")
+                        .contentType(MediaType.TEXT_HTML))
+                .andExpect(view().name("instrument/edit"))
                 .andExpect(model().attributeExists("instrument"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(status().isOk());
@@ -90,9 +90,9 @@ class InstrumentControllerTest {
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
         void whenEditValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/instrument/edit")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "1"))
-                    .andExpect(view().name("instrumentEdit"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "1"))
+                    .andExpect(view().name("instrument/edit"))
                     .andExpect(model().attributeExists("instrument"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                     .andExpect(status().isOk());
@@ -103,8 +103,8 @@ class InstrumentControllerTest {
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
         void whenEditNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/instrument/edit")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "0"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "0"))
                     .andExpect(status().isNotFound());
         }
     }
@@ -118,9 +118,9 @@ class InstrumentControllerTest {
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
         void whenSaveValidInput_thenReturnRedirect() throws Exception {
             mvc.perform(post("/instrument/save").with(csrf())
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .param("name", "trombone")
-                    .param("sortOrder", "5"))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("name", "trombone")
+                            .param("sortOrder", "5"))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/instrument/list*"));
         }
@@ -130,8 +130,8 @@ class InstrumentControllerTest {
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
         void whenSaveInvalidInput_thenReturnReload() throws Exception {
             mvc.perform(post("/instrument/save").with(csrf())
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .param("id", "1"))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("id", "1"))
                     .andExpect(model().attributeExists("instrument"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                     .andExpect(status().isOk());
@@ -142,7 +142,7 @@ class InstrumentControllerTest {
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
         void whenSaveWithoutCsrf_thenReturnForbidden() throws Exception {
             mvc.perform(post("/instrument/save")
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                     .andExpect(status().isForbidden());
         }
     }
@@ -156,8 +156,8 @@ class InstrumentControllerTest {
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
         void whenDeleteValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/instrument/delete")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "1"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "1"))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/instrument/list*"));
         }
@@ -167,8 +167,8 @@ class InstrumentControllerTest {
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
         void whenDeleteNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/instrument/delete")
-                    .contentType(MediaType.TEXT_HTML)
-                    .param("id", "0"))
+                            .contentType(MediaType.TEXT_HTML)
+                            .param("id", "0"))
                     .andExpect(status().isNotFound());
         }
     }
@@ -183,7 +183,7 @@ class InstrumentControllerTest {
         void whenAccessProtectedContentAsAnonymousUser_redirectToLogin() throws Exception {
             mvc.perform(get("/instrument/list")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(get("/instrument/new")).andExpect(status().isFound())
+            mvc.perform(get("/instrument/create")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(get("/instrument/edit")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
@@ -191,7 +191,6 @@ class InstrumentControllerTest {
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(post("/instrument/save").with(csrf())).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-
             mvc.perform(get("/instrument/nonexistent")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
         }
@@ -201,11 +200,10 @@ class InstrumentControllerTest {
         @WithMockUser
         void whenAccessProtectedContentAsNormalUser_returnForbidden() throws Exception {
             mvc.perform(get("/instrument/list")).andExpect(status().isForbidden());
-            mvc.perform(get("/instrument/new")).andExpect(status().isForbidden());
+            mvc.perform(get("/instrument/create")).andExpect(status().isForbidden());
             mvc.perform(get("/instrument/edit")).andExpect(status().isForbidden());
             mvc.perform(get("/instrument/delete")).andExpect(status().isForbidden());
             mvc.perform(post("/instrument/save")).andExpect(status().isForbidden());
-
             mvc.perform(get("/instrument/nonexistent")).andExpect(status().isForbidden());
         }
 
@@ -214,8 +212,7 @@ class InstrumentControllerTest {
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
         void whenAccessProtectedContentAsAdminUser_returnForbiddenOk() throws Exception {
             mvc.perform(get("/instrument/list")).andExpect(status().isOk());
-            mvc.perform(get("/instrument/new")).andExpect(status().isOk());
-
+            mvc.perform(get("/instrument/create")).andExpect(status().isOk());
             mvc.perform(get("/instrument/nonexistent")).andExpect(status().isNotFound());
         }
 

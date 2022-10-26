@@ -217,7 +217,8 @@ class ScoreControllerTest {
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(post("/score/save").with(csrf())).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(get("/score/nonexistent")).andExpect(status().isNotFound());
+            mvc.perform(get("/score/nonexistent")).andExpect(status().isFound())
+                    .andExpect(redirectedUrlPattern("**/login"));
         }
 
         @Test
@@ -230,7 +231,7 @@ class ScoreControllerTest {
             mvc.perform(get("/score/edit?id=1")).andExpect(status().isForbidden());
             mvc.perform(get("/score/delete?id=1")).andExpect(status().isForbidden());
             mvc.perform(post("/score/save").with(csrf())).andExpect(status().isForbidden());
-            mvc.perform(get("/score/nonexistent")).andExpect(status().isNotFound());
+            mvc.perform(get("/score/nonexistent")).andExpect(status().isForbidden());
         }
 
         @Test
@@ -241,7 +242,8 @@ class ScoreControllerTest {
             mvc.perform(get("/score/view?id=1")).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isOk());
             mvc.perform(get("/score/edit?id=1")).andExpect(status().isOk());
-            mvc.perform(get("/score/delete?id=1")).andExpect(status().isFound());
+            mvc.perform(get("/score/delete?id=1")).andExpect(redirectedUrl("/score/list"));
+            mvc.perform(post("/score/save").with(csrf())).andExpect(status().isOk());
             mvc.perform(get("/score/nonexistent")).andExpect(status().isNotFound());
         }
 

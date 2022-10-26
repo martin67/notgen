@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -11,12 +12,12 @@ import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 
 import javax.validation.Valid;
+import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/instrument")
 public class InstrumentController {
-    static final Logger log = LoggerFactory.getLogger(InstrumentController.class);
-
     private final InstrumentRepository instrumentRepository;
 
 
@@ -25,27 +26,41 @@ public class InstrumentController {
     }
 
     @GetMapping("/list")
-    public String instrumentList(Model model) {
-        model.addAttribute("instruments", instrumentRepository.findAll());
-        return "instrumentList";
+    public String list(Model model) {
+        model.addAttribute("instruments", instrumentRepository.findByOrderBySortOrder());
+        return "instrument/list";
     }
 
-    @GetMapping("/edit")
-    public String instrumentEdit(@RequestParam("id") Integer id, Model model) {
+    @GetMapping("/view")
+    public String view(@RequestParam("id") Integer id, Model model) {
         Instrument instrument = instrumentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
         model.addAttribute("instrument", instrument);
-        return "instrumentEdit";
+        return "instrument/view";
     }
 
-    @GetMapping("/new")
-    public String instrumentNew(Model model) {
+    @GetMapping("/edit")
+    public String edit(@RequestParam("id") Integer id, Model model) {
+        Instrument instrument = instrumentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
+        model.addAttribute("instrument", instrument);
+        return "instrument/edit";
+    }
+
+    @GetMapping("/editOrder")
+    public String editOrder(Model model) {
+        model.addAttribute("instruments", instrumentRepository.findByOrderBySortOrder());
+        return "instrument/editOrder";
+    }
+
+    @GetMapping("/create")
+    public String create(Model model) {
         model.addAttribute("instrument", new Instrument());
-        return "instrumentEdit";
+        return "instrument/edit";
     }
 
     @GetMapping("/delete")
-    public String instrumentDelete(@RequestParam("id") Integer id) {
+    public String delete(@RequestParam("id") Integer id) {
         Instrument instrument = instrumentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
         log.info("Tar bort instrument {} [{}]", instrument.getName(), instrument.getId());
@@ -54,13 +69,22 @@ public class InstrumentController {
     }
 
     @PostMapping("/save")
-    public String instrumentSave(@Valid @ModelAttribute Instrument instrument, Errors errors) {
+    public String save(@Valid @ModelAttribute Instrument instrument, Errors errors) {
         if (errors.hasErrors()) {
-            return "instrumentEdit";
+            return "instrument/edit";
         }
         log.info("Sparar instrument {} [{}]", instrument.getName(), instrument.getId());
         instrumentRepository.save(instrument);
         return "redirect:/instrument/list";
     }
 
+    @PostMapping("/saveOrder")
+    public String saveOrder(@Valid @ModelAttribute List<Instrument> instruments) {
+        log.info("Sparar allla instrument {}", instruments);
+        for (Instrument instrument : instruments) {
+            log.info("Sparar instrument {}", instrument);
+            //instrumentRepository.save(instrument);
+        }
+        return "redirect:/instrument/list";
+    }
 }

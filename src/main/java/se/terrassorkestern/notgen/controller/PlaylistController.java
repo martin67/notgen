@@ -53,7 +53,14 @@ public class PlaylistController {
     @GetMapping("/list")
     public String playlistList(Model model) {
         model.addAttribute("playlists", playlistRepository.findAllByOrderByDateDesc());
-        return "playlistList";
+        return "playlist/list";
+    }
+
+    @GetMapping("/view")
+    public String view(@RequestParam("id") Integer id, Model model) {
+        model.addAttribute("playlist", playlistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id))));
+        return "playlist/view";
     }
 
     @GetMapping("/edit")
@@ -65,15 +72,15 @@ public class PlaylistController {
         model.addAttribute("instruments", instrumentRepository.findAll());
         Integer selectedInstrument = 0;
         model.addAttribute("selectedInstrument", selectedInstrument);
-        return "playlistEdit";
+        return "playlist/edit";
     }
 
-    @GetMapping("/new")
+    @GetMapping("/create")
     public String playlistNew(Model model) {
         model.addAttribute("playlist", new Playlist());
         model.addAttribute("settings", settingRepository.findAll());
         model.addAttribute("instruments", instrumentRepository.findAll());
-        return "playlistEdit";
+        return "playlist/edit";
     }
 
     @GetMapping("/delete")
@@ -98,7 +105,7 @@ public class PlaylistController {
     @PostMapping("/save")
     public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors) {
         if (errors.hasErrors()) {
-            return "playlistEdit";
+            return "playlist/edit";
         }
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
@@ -114,7 +121,7 @@ public class PlaylistController {
         playlistEntry.setSortOrder(playlist.getPlaylistEntries().size() + 1);
         playlist.getPlaylistEntries().add(playlistEntry);
         model.addAttribute("playlist", playlist);
-        return "playlistEdit";
+        return "playlist/edit";
     }
 
     @PostMapping(value = "/save", params = {"deleteRow"})
@@ -125,7 +132,7 @@ public class PlaylistController {
             model.addAttribute("playlist", playlist);
         } catch (NumberFormatException ignored) {
         }
-        return "playlistEdit";
+        return "playlist/edit";
     }
 
     @PostMapping(value = "/save", params = {"createPack"})

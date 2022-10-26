@@ -64,11 +64,13 @@ public class PlaylistPdfService {
             contents.showText(playlistEntry.getText());
             contents.endText();
 
-            contents.beginText();
-            contents.setFont(songCommentFont, 10);
-            contents.newLineAtOffset(400, ypos);
-            contents.showText(playlistEntry.getComment());
-            contents.endText();
+            if (playlistEntry.getComment() != null) {
+                contents.beginText();
+                contents.setFont(songCommentFont, 10);
+                contents.newLineAtOffset(400, ypos);
+                contents.showText(playlistEntry.getComment());
+                contents.endText();
+            }
 
             ypos -= 20;
             if (playlistEntry.getBold()) {

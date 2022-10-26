@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
+<head>
+    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <title>Ändra ordning</title>
+</head>
+
+<body>
+<div th:replace="fragments/general :: header"></div>
+
+
+<div class="container">
+    <h1>Ändra ordning</h1>
+
+    <form role="form" th:action="@{/instrument/saveOrder}" th:object="${instruments}" th:method="post">
+
+        <table class="table table-bordered table-striped table-hover table-sm">
+            <thead>
+            <tr>
+                <th>Namn</th>
+                <th>Förkortning</th>
+                <th>Ordning</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="instrument : ${instruments}" th:data-link="@{view(id=${instrument.id})}">
+                <td th:text="${instrument.name}"></td>
+                <td th:text="${instrument.shortName}"></td>
+                <td th:text="${instrument.sortOrder}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <hr>
+        <div class="row">
+            <div class="col-auto">
+                <a class="btn btn-secondary" th:href="@{/instrument/list}">Tillbaka</a>
+                <input sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="submit" class="btn btn-primary"
+                       value="Spara"/>
+            </div>
+        </div>
+    </form>
+</div>
+
+<footer th:replace="fragments/general :: footer"></footer>
+</body>
+</html>

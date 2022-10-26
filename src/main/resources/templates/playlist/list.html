@@ -45,13 +45,13 @@
         </tr>
         </thead>
 
-        <tr th:each="playlist : ${playlists}">
+        <tr th:each="playlist : ${playlists}" th:data-link="@{view(id=${playlist.id})}">
             <td th:text="${playlist.name}"></td>
             <td th:text="${playlist.setting?.name}"></td>
             <td th:text="${playlist.date}"></td>
             <td th:text="${playlist.playlistEntries.size()}"></td>
             <td>
-                <a th:href="@{/playlist/edit(id=${playlist.id})}"><i class="material-icons text-secondary"
+                <a th:href="@{/playlist/view(id=${playlist.id})}"><i class="material-icons text-secondary"
                                                                      title="Ändra låtlists">mode_edit</i></a>
                 <a sec:authorize="hasAuthority('EDIT_PLAYLIST')" th:href="@{/playlist/copy(id=${playlist.id})}"><i
                         class="material-icons text-secondary" title="Kopiera låtlista">file_copy</i></a>
@@ -88,4 +88,13 @@
 
 <footer th:replace="fragments/general :: footer"></footer>
 </body>
+
+<script>
+    $(function () {
+        $("table tbody tr").click(function (e) {
+            window.location.href = $(this).data("link");
+        });
+    });
+</script>
+
 </html>

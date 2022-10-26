@@ -54,4 +54,8 @@ public class Playlist extends Auditable<String> {
         }
         return newPlaylist;
     }
+
+    public long numberOfSongs() {
+        return playlistEntries.stream().filter(playlistEntry -> !playlistEntry.getBold()).count();
+    }
 }
