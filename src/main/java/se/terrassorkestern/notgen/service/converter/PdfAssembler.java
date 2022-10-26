@@ -14,7 +14,6 @@ import se.terrassorkestern.notgen.model.ScorePart;
 import se.terrassorkestern.notgen.service.StorageService;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Calendar;
@@ -67,15 +66,8 @@ public class PdfAssembler implements Runnable {
             for (int i = scorePart.getPage(); i < (scorePart.getPage() + scorePart.getLength()); i++) {
                 PDPage page = new PDPage(PDRectangle.A4);
                 doc.addPage(page);
-                File png = new File(Files.getNameWithoutExtension(extractedFilesList.get(i - 1).toString()) + ".png");
-                File jpg = new File(Files.getNameWithoutExtension(extractedFilesList.get(i - 1).toString()) + ".jpg");
-                File file;
-                if (png.exists()) {
-                    file = png;
-                } else {
-                    file = jpg;
-                }
-                PDImageXObject pdImage = PDImageXObject.createFromFile(file.toString(), doc);
+                Path image = storageService.replaceExtension(extractedFilesList.get(i-1), ".png");
+                PDImageXObject pdImage = PDImageXObject.createFromFile(image.toString(), doc);
                 PDPageContentStream contents = new PDPageContentStream(doc, page);
                 PDRectangle mediaBox = page.getMediaBox();
                 contents.drawImage(pdImage, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());

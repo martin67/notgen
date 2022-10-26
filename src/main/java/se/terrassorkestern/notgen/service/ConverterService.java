@@ -56,7 +56,7 @@ public class ConverterService {
         try {
             executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             for (Path path : extractedFilesList) {
-                executorService.submit(new ImageProcessor(path, tmpDir, staticContentDir, score, firstPage));
+                executorService.submit(new ImageProcessor(path, tmpDir, staticContentDir, score, storageService, firstPage));
                 firstPage = false;
             }
         } finally {
@@ -66,6 +66,7 @@ public class ConverterService {
         if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
             log.error("problem terminating image processing");
         }
+        log.debug("Finished with image processing");
     }
 
     private void createPdfs(Path tmpDir, List<Path> extractedFilesList, Score score) throws InterruptedException {
@@ -162,19 +163,20 @@ public class ConverterService {
                 // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
                 score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
 
-                Path tmpDir = storageService.getTmpDir(score);
+                Path tempDir = storageService.createTempDir();
                 stopWatch.start("downloadScorePart, " + score.getTitle());
-                Path downloadedScore = storageService.downloadScore(score, tmpDir);
+                Path downloadedScore = storageService.downloadScore(score, tempDir);
                 stopWatch.stop();
 
-                List<Path> extractedFilesList = split(tmpDir, stats, downloadedScore);
+                List<Path> extractedFilesList = split(tempDir, stats, downloadedScore);
 
                 stopWatch.start("image process, " + score.getTitle());
-                imageProcess(tmpDir, extractedFilesList, score);
+                imageProcess(tempDir, extractedFilesList, score);
                 stopWatch.stop();
                 stopWatch.start("pdf creation, " + score.getTitle());
-                createPdfs(tmpDir, extractedFilesList, score);
+                createPdfs(tempDir, extractedFilesList, score);
                 stopWatch.stop();
+                storageService.deleteTempDir(tempDir);
             }
         }
         log.debug("Finishing main convert loop, time: {}", stopWatch.prettyPrint());
@@ -243,7 +245,7 @@ public class ConverterService {
         }
 
         // temp directory for all downloads and assembly
-        Path tmpDir = storageService.getTmpDir();
+        Path tempDir = storageService.createTempDir();
 
         // Create PDF
         if (sortByInstrument) {
@@ -251,7 +253,7 @@ public class ConverterService {
                 log.info("Adding instrument: {} to pdf output", instrument.getName());
                 for (Score score : scores) {
                     if (score.getInstruments().contains(instrument)) {
-                        pdfMergerUtility.addSource(storageService.downloadScorePart(score, instrument, tmpDir).toFile());
+                        pdfMergerUtility.addSource(storageService.downloadScorePart(score, instrument, tempDir).toFile());
                     }
                 }
             }
@@ -261,12 +263,13 @@ public class ConverterService {
                 for (Instrument instrument : sortedInstruments) {
                     if (score.getInstruments().contains(instrument)) {
                         log.debug("Score: {}, instrument: {}", score.getTitle(), instrument.getName());
-                        pdfMergerUtility.addSource(storageService.downloadScorePart(score, instrument, tmpDir).toFile());
+                        pdfMergerUtility.addSource(storageService.downloadScorePart(score, instrument, tempDir).toFile());
                     }
                 }
             }
         }
         pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+        storageService.deleteTempDir(tempDir);
 
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }

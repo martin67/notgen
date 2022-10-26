@@ -9,6 +9,7 @@ import se.terrassorkestern.notgen.exceptions.NotFoundException;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
+import se.terrassorkestern.notgen.repository.SettingRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -23,11 +24,13 @@ public class ScoreController {
 
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
+    private final SettingRepository settingRepository;
 
-
-    public ScoreController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository) {
+    public ScoreController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
+                           SettingRepository settingRepository) {
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
+        this.settingRepository = settingRepository;
     }
 
     @GetMapping("/list")
@@ -50,7 +53,9 @@ public class ScoreController {
     public String view(@RequestParam("id") Integer id, Model model) {
         Score score = scoreRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
+        List<Setting> settings = settingRepository.findAll();
         model.addAttribute("score", score);
+        model.addAttribute("settings", settings);
         return "score/view";
     }
 

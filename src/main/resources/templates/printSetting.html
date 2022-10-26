@@ -20,7 +20,7 @@
 
     <div class="form-group">
         <label for="setting" th:text="#{setting}">Sättning</label>
-        <select class="form-control" id="setting" onchange="gotopage(this)">
+        <select class="form-select" id="setting" onchange="gotopage(this)">
             <option th:each="s : ${settings}" th:value="${s.id}" th:text="${s.name}"
                     th:selected="${s.id} == ${selectedSetting} ? true : false"/>
         </select>

@@ -21,14 +21,12 @@ import java.nio.file.Path;
 public class StorageService {
 
     private final BackendStorage backendStorage;
-    private Path tmp = null;
+    private final boolean keepTempDir;
 
-    public StorageService(@Value("${notgen.folders.tempdir:notset}") String tempDir, @Value("${notgen.storage}") String storage,
+    public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir, @Value("${notgen.storage}") String storage,
                           S3Storage s3Storage, AzureStorage azureStorage, LocalStorage localStorage) {
+        this.keepTempDir = keepTempDir;
 
-        if (!tempDir.equals("notset")) {
-            tmp = Path.of(tempDir);
-        }
         switch (storage) {
             case "s3" -> this.backendStorage = s3Storage;
             case "azure" -> this.backendStorage = azureStorage;
@@ -38,30 +36,17 @@ public class StorageService {
         log.info("Using storage: {}", storage);
     }
 
-    public Path getTmpDir(Score score) throws IOException {
-        Path t;
-        if (tmp != null) {
-            Path dir = tmp.resolve("score-" + score.getId());
-            FileSystemUtils.deleteRecursively(dir);
-            t = Files.createDirectories(dir);
-        } else {
-            t = Files.createTempDirectory("notkonv-");
-        }
-        log.debug("Creating temporary directory {}", t.toString());
+    public Path createTempDir() throws IOException {
+        Path t = Files.createTempDirectory("notgen");
+        log.debug("Creating temporary directory {}", t);
         return t;
     }
 
-    public Path getTmpDir() throws IOException {
-        Path t;
-        if (tmp != null) {
-            Path dir = tmp.resolve("tmp");
-            FileSystemUtils.deleteRecursively(dir);
-            t = Files.createDirectories(dir);
-        } else {
-            t = Files.createTempDirectory("notgen");
+    public void deleteTempDir(Path tempDir) throws IOException {
+        if (!keepTempDir) {
+            log.debug("Deleting temporary directory {}", tempDir);
+            FileSystemUtils.deleteRecursively(tempDir);
         }
-        log.debug("Creating temporary directory {}", t.toString());
-        return t;
     }
 
     public Path downloadScore(Score score, Path location) throws IOException {
@@ -80,8 +65,13 @@ public class StorageService {
         backendStorage.uploadScorePart(scorePart, path);
     }
 
-    boolean isScoreGenerated(Score score) throws IOException {
+    public boolean isScoreGenerated(Score score) throws IOException {
         return backendStorage.isScoreGenerated(score);
     }
 
+    public Path replaceExtension(Path path, String newExtension) {
+        Path parent = path.getParent();
+        String fileName = path.getFileName().toString();
+        return parent.resolve(com.google.common.io.Files.getNameWithoutExtension(fileName) + newExtension);
+    }
 }

@@ -20,7 +20,7 @@
 
     <div class="form-group">
         <label for="instrument" th:text="#{instrument}">Instrument</label>
-        <select class="form-control" id="instrument" onchange="gotopage(this)">
+        <select class="form-select" id="instrument" onchange="gotopage(this)">
             <option th:each="i : ${instruments}" th:value="${i.id}" th:text="${i.name}"
                     th:selected="${i.id} == ${selectedInstrument} ? true : false">bla
             </option>

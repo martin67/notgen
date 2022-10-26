@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.Score;
+import se.terrassorkestern.notgen.service.StorageService;
 import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
 import se.terrassorkestern.notgen.service.converter.filters.GreyScaler;
 import se.terrassorkestern.notgen.service.converter.filters.Standard;
@@ -21,13 +22,15 @@ public class ImageProcessor implements Runnable {
     private final Path tmpDir;
     private final Path staticContentDir;
     private final Score score;
+    private final StorageService storageService;
     private boolean firstPage;
 
-    public ImageProcessor(Path path, Path tmpDir, String staticContentDir, Score score, boolean firstPage) {
+    public ImageProcessor(Path path, Path tmpDir, String staticContentDir, Score score, StorageService storageService, boolean firstPage) {
         this.path = path;
         this.tmpDir = tmpDir;
         this.staticContentDir = Path.of(staticContentDir);
         this.score = score;
+        this.storageService = storageService;
         this.firstPage = firstPage;
     }
 
@@ -41,7 +44,6 @@ public class ImageProcessor implements Runnable {
             BufferedImage image;
 
             image = ImageIO.read(path.toFile());
-
 
             String basename = path.getFileName().toString();
             log.debug("Image processing {} ({}x{})", basename, image.getWidth(), image.getHeight());
@@ -169,9 +171,9 @@ public class ImageProcessor implements Runnable {
             }
 
             // Write final picture back to original
-            ImageIO.write(image, "png", new File(Files.getNameWithoutExtension(path.toString()) + ".png"));
+            ImageIO.write(image, "png", storageService.replaceExtension(path, ".png").toFile());
 
-            log.debug("Time converting page {}, {} ms", 1, onePageWatch.getTotalTimeMillis());
+            log.debug("Time converting page {}, {} ms", path, onePageWatch.getTotalTimeMillis());
             log.trace(onePageWatch.prettyPrint());
             image.flush();
         } catch (Exception e) {
