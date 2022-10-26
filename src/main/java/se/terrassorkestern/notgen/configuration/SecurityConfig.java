@@ -65,7 +65,12 @@ public class SecurityConfig {
                 .failureHandler((request, response, exception) -> log.error("Login error", exception))
                 .and()
                 .logout()
-                .logoutSuccessUrl("/");
+                .deleteCookies("JSESSIONID")
+                .logoutSuccessUrl("/")
+                .and()
+                .rememberMe()
+                .userDetailsService(userDetailsService())
+                .key("jaksdladnsdasd");
         return http.build();
     }
 
