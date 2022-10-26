@@ -60,6 +60,7 @@ public class PlaylistController {
     public String view(@RequestParam("id") Integer id, Model model) {
         model.addAttribute("playlist", playlistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id))));
+        model.addAttribute("instruments", instrumentRepository.findByOrderBySortOrder());
         return "playlist/view";
     }
 

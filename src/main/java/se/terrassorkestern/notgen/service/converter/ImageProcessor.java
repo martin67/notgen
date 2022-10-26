@@ -61,7 +61,7 @@ public class ImageProcessor implements Runnable {
                 g2d.drawImage(image, -image.getHeight(), 0, null);
                 g2d.dispose();
                 // Spara i det format som den filen hade från början
-                ImageIO.write(rotated, basename, new File(path.toString()));
+                ImageIO.write(rotated, Files.getFileExtension(path.toString()), path.toFile());
                 return;
             }
 
@@ -170,7 +170,7 @@ public class ImageProcessor implements Runnable {
                 ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-4-bw.png"));
             }
 
-            // Write final picture back to original
+            // Write final picture back to original.
             ImageIO.write(image, "png", storageService.replaceExtension(path, ".png").toFile());
 
             log.debug("Time converting page {}, {} ms", path, onePageWatch.getTotalTimeMillis());

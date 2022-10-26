@@ -8,6 +8,14 @@
 <body>
 <div th:replace="fragments/general :: header"></div>
 
+<script type="text/javascript" th:inline="javascript">
+    function setPrintButton() {
+        let instrument_id = document.getElementById("instrument").value;
+        let playlist_id = /*[[${playlist.id}]]*/ 'bla';
+        document.getElementById("print-button").href = "/print/playlist?playlist_id=" + playlist_id + "&instrument_id=" + instrument_id;
+    }
+</script>
+
 <div class="container">
     <h1 th:text="${playlist.name}"/>
 
@@ -33,6 +41,10 @@
             <td>Antal låtar</td>
             <td th:text="${playlist.numberOfSongs()}"/>
         </tr>
+        <tr th:if="${playlist.getLastModifiedBy()}">
+            <td>Uppdaterad</td>
+            <td th:text="${playlist.getLastModifiedDate()} + ' av ' + ${playlist.getLastModifiedBy()}"/>
+        </tr>
         </tbody>
     </table>
 
@@ -40,32 +52,45 @@
     <table class="table table-sm">
         <tbody>
         <tr th:each="playListentry : ${playlist.playlistEntries}">
-            <td th:text="${playListentry.text}"/>
+            <td th:class="${playListentry.bold}? 'fw-bold text-center'" th:text="${playListentry.text}"/>
             <td th:text="${playListentry.comment}"/>
         </tr>
         </tbody>
     </table>
 
     <hr>
-    <div class="row">
-        <div class="col-auto">
-            <a class="btn btn-primary" th:href="@{createPdf(id=${playlist.id})}">Skriv PDF</a>
-        </div>
-        <div class="col-auto">
-            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
-               th:href="@{edit(id=${playlist.id})}">Ändra</a>
-        </div>
-        <div class="col-auto">
-            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
-               th:href="@{copy(id=${playlist.id})}">Kopiera</a>
-        </div>
-        <div class="col-auto">
-            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
-               th:href="@{create}">Skapa</a>
-        </div>
-        <div class="col-auto">
-            <a class="btn btn-danger" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
-               th:href="@{copy(id=${playlist.id}}">Ta bort</a>
+    <div class="container">
+        <div class="row gy-2">
+            <div class="col-auto">
+                <a class="btn btn-primary" th:href="@{createPdf(id=${playlist.id})}">Skriv PDF</a>
+            </div>
+
+            <div class="col-auto" sec:authorize="hasAuthority('PRINT_SCORE')">
+                <div class="input-group">
+                    <a class="btn btn-secondary" id="print-button">Skriv ut</a>
+                    <select class="form-select form-select-sm" id="instrument" onchange="setPrintButton()">
+                        <option th:each="instrument : ${instruments}" th:value="${instrument.id}"
+                                th:text="${instrument.name}"/>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-auto">
+                <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+                   th:href="@{edit(id=${playlist.id})}">Ändra</a>
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+                   th:href="@{copy(id=${playlist.id})}">Kopiera</a>
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+                   th:href="@{create}">Skapa</a>
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-danger" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+                   th:href="@{delete(id=${playlist.id})}">Ta bort</a>
+            </div>
         </div>
     </div>
 </div>

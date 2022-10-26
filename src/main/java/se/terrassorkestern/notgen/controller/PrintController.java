@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.terrassorkestern.notgen.model.Instrument;
+import se.terrassorkestern.notgen.model.Playlist;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.Setting;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
+import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
 import se.terrassorkestern.notgen.service.ConverterService;
@@ -29,12 +31,16 @@ public class PrintController {
 
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
+    private final PlaylistRepository playlistRepository;
     private final SettingRepository settingRepository;
     private final ConverterService converterService;
 
-    public PrintController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository, SettingRepository settingRepository, ConverterService converterService) {
+    public PrintController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
+                           PlaylistRepository playlistRepository, SettingRepository settingRepository,
+                           ConverterService converterService) {
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
+        this.playlistRepository = playlistRepository;
         this.settingRepository = settingRepository;
         this.converterService = converterService;
     }
@@ -101,4 +107,25 @@ public class PrintController {
         }
     }
 
+    @GetMapping(value = "/playlist", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> printPlaylist(@RequestParam(name = "playlist_id") Integer playlistId,
+                                                             @RequestParam(name = "instrument_id") Integer instrumentId) {
+
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow();
+        Instrument instrument = instrumentRepository.findById(instrumentId).orElseThrow();
+
+        try (InputStream is = converterService.assemble(playlist, instrument)) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=" + playlist.getName() + " (" + instrument.getShortName() + ").pdf");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(new InputStreamResource(is));
+
+        } catch (IOException | InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
+    }
 }

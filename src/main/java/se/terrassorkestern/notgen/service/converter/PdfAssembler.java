@@ -66,7 +66,17 @@ public class PdfAssembler implements Runnable {
             for (int i = scorePart.getPage(); i < (scorePart.getPage() + scorePart.getLength()); i++) {
                 PDPage page = new PDPage(PDRectangle.A4);
                 doc.addPage(page);
-                Path image = storageService.replaceExtension(extractedFilesList.get(i-1), ".png");
+                // Logic: PDF will be extracted to jpg-files
+                //        ZIP will be extracted to jpg-files, but then image processed to png
+                // They will have the same basename. So the logic is to take the png first if it exists
+                Path image;
+                Path pngPath = storageService.replaceExtension(extractedFilesList.get(i - 1), ".png");
+                Path jpgPath = storageService.replaceExtension(extractedFilesList.get(i - 1), ".jpg");
+                if (pngPath.toFile().exists()) {
+                    image = pngPath;
+                } else {
+                    image = jpgPath;
+                }
                 PDImageXObject pdImage = PDImageXObject.createFromFile(image.toString(), doc);
                 PDPageContentStream contents = new PDPageContentStream(doc, page);
                 PDRectangle mediaBox = page.getMediaBox();
