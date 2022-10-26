@@ -243,7 +243,7 @@ class ScoreControllerTest {
             mvc.perform(get("/score/create")).andExpect(status().isOk());
             mvc.perform(get("/score/edit?id=1")).andExpect(status().isOk());
             mvc.perform(get("/score/delete?id=1")).andExpect(redirectedUrl("/score/list"));
-            mvc.perform(post("/score/save").with(csrf())).andExpect(status().isOk());
+            mvc.perform(post("/score/save").sessionAttr("score", new Score()).with(csrf())).andExpect(status().isOk());
             mvc.perform(get("/score/nonexistent")).andExpect(status().isNotFound());
         }
 

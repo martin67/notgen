@@ -286,9 +286,8 @@ class PlaylistControllerTest {
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(get("/playlist/copy")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(post("/playlist/save")).andExpect(status().isFound())
-                    .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(get("/playlist/nonexistent")).andExpect(status().isNotFound());
+            mvc.perform(post("/playlist/save")).andExpect(status().isForbidden());
+            mvc.perform(get("/playlist/nonexistent")).andExpect(redirectedUrlPattern("**/login"));
         }
 
         @Test
@@ -302,7 +301,7 @@ class PlaylistControllerTest {
             mvc.perform(get("/playlist/delete?id=1")).andExpect(status().isForbidden());
             mvc.perform(post("/playlist/save")).andExpect(status().isForbidden());
             mvc.perform(get("/playlist/copy")).andExpect(status().isForbidden());
-            mvc.perform(get("/playlist/nonexistent")).andExpect(status().isNotFound());
+            mvc.perform(get("/playlist/nonexistent")).andExpect(status().isForbidden());
         }
 
         @Test
