@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="sv">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
     <th:block th:replace="fragments/general :: header-css"></th:block>
     <title>Lista användare</title>
@@ -31,6 +31,17 @@
         </tbody>
     </table>
 
+    <div>
+        <hr>
+        <div class="row">
+            <div class="col-auto" sec:authorize="hasAuthority('EDIT_USER')">
+                <a class="btn btn-secondary" th:href="@{/admin}">Tillbaka</a>
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-secondary" th:href="@{create}">Lägg till</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <footer th:replace="fragments/general :: footer"></footer>

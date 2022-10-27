@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="sv">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
     <th:block th:replace="fragments/general :: header-css"></th:block>
     <title>Redigera låtlista</title>
@@ -9,20 +9,18 @@
 <div th:replace="fragments/general :: header"></div>
 
 <!-- Modal -->
-<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Ta bort låtlista</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Vill du verkligen ta bort denna låtlista?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
                 <a class="btn btn-danger" th:href="@{/playlist/delete(id=${playlist.id})}">Ta bort</a>
             </div>
         </div>
@@ -67,21 +65,15 @@
                 <table class="table table-bordered table-sm">
                     <thead>
                     <tr>
-                        <th></th>
                         <th scope="col">Låt</th>
                         <th scope="col">Fet</th>
                         <th scope="col">Kommentar</th>
-                        <th>
-                            <button sec:authorize="hasAuthority('EDIT_PLAYLIST')" class="btn btn-primary btn-sm"
-                                    type="submit" name="addRow">Lägg till
-                            </button>
-                        </th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
 
                     <tr th:each="playlistEntry,rowStat : ${playlist.playlistEntries}">
-                        <td class="align-middle"><i class="material-icons">open_with</i></td>
                         <td>
                             <div id="prefetch">
                                 <input type="text" class="form-control form-control-sm typeahead" autocomplete="off"
@@ -105,8 +97,9 @@
                             <input type="hidden"
                                    class="form-control" th:field="*{playlistEntries[__${rowStat.index}__].sortOrder}"
                                    th:value="${playlistEntry.sortOrder}"/>
-                            <button sec:authorize="hasAuthority('EDIT_PLAYLIST')" class="btn btn-sm btn-danger"
-                                    type="submit" name="deleteRow" th:value="${rowStat.index}">Ta bort
+                            <button sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+                                    class="btn btn-sm btn-danger icon-save"
+                                    type="submit" name="deleteRow" th:value="${rowStat.index}"><i class="bi-trash"></i>
                             </button>
                         </td>
 
@@ -116,23 +109,51 @@
             </div>
         </div>
 
+        <button sec:authorize="hasAuthority('EDIT_PLAYLIST')" class="btn btn-primary" type="submit" name="addRow">
+            Lägg till låt/rad
+        </button>
 
-        <div class="row">
-            <div class="col">
-                <a class="btn btn-secondary" th:href="@{/playlist/list}">Tillbaka</a>
-                <button sec:authorize="hasAuthority('EDIT_PLAYLIST')" type="button" class="btn btn-danger"
-                        data-toggle="modal" data-target="#deleteModal">Ta bort
-                </button>
-                <input sec:authorize="hasAuthority('EDIT_PLAYLIST')" type="submit" class="btn btn-primary"
-                       value="Spara"/>
-                <a class="btn btn-secondary" th:href="@{/playlist/createPdf(id=${playlist.id})}">Skapa PDF</a>
-                <button type="submit" class="btn btn-secondary" name="createPack">Skapa instrumentpack</button>
-                <select name="selectedInstrument">
-                    <option th:each="instrument : ${instruments}" th:value="${instrument.id}"
-                            th:text="${instrument.name}"></option>
-                </select>
+        <hr>
+        <div class="container">
+            <div class="row gy-2">
+                <div class="col-auto">
+                    <a class="btn btn-secondary" th:href="@{/playlist/list}">Tillbaka</a>
+                </div>
+                <div class="col-auto">
+                    <input sec:authorize="hasAuthority('EDIT_PLAYLIST')" type="submit" class="btn btn-primary"
+                           value="Spara"/>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-primary" th:href="@{createPdf(id=${playlist.id})}">Skriv ut</a>
+                </div>
+
+                <div class="col-auto" sec:authorize="hasAuthority('PRINT_SCORE')">
+                    <div class="input-group">
+                        <a class="btn btn-secondary" id="print-button">Skriv ut noter</a>
+                        <select class="form-select form-select-sm" id="instrument" onchange="setPrintButton()">
+                            <option th:each="instrument : ${instruments}" th:value="${instrument.id}"
+                                    th:text="${instrument.name}"/>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-auto">
+                    <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+                       th:href="@{copy(id=${playlist.id})}">Kopiera</a>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+                       th:href="@{create}">Skapa</a>
+                </div>
+                <div class="col-auto">
+                    <button sec:authorize="hasAuthority('EDIT_PLAYLIST')" type="button" class="btn btn-danger"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal">Ta bort
+                    </button>
+                </div>
             </div>
         </div>
+
+
         <div class="row" th:if="${playlist.lastModifiedDate}">
             <div class="col">
                 <br>

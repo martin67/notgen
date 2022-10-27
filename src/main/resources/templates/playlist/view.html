@@ -43,7 +43,7 @@
         </tr>
         <tr th:if="${playlist.getLastModifiedBy()}">
             <td>Uppdaterad</td>
-            <td th:text="${playlist.getLastModifiedDate()} + ' av ' + ${playlist.getLastModifiedBy()}"/>
+            <td th:text="${#dates.format(playlist.lastModifiedDate, 'yyyy-MM-dd HH:mm')} + ' av ' + ${playlist.getLastModifiedBy()}"/>
         </tr>
         </tbody>
     </table>
@@ -62,12 +62,12 @@
     <div class="container">
         <div class="row gy-2">
             <div class="col-auto">
-                <a class="btn btn-primary" th:href="@{createPdf(id=${playlist.id})}">Skriv PDF</a>
+                <a class="btn btn-primary" th:href="@{createPdf(id=${playlist.id})}">Skriv ut</a>
             </div>
 
             <div class="col-auto" sec:authorize="hasAuthority('PRINT_SCORE')">
                 <div class="input-group">
-                    <a class="btn btn-secondary" id="print-button">Skriv ut</a>
+                    <a class="btn btn-secondary" id="print-button">Skriv ut noter</a>
                     <select class="form-select form-select-sm" id="instrument" onchange="setPrintButton()">
                         <option th:each="instrument : ${instruments}" th:value="${instrument.id}"
                                 th:text="${instrument.name}"/>
@@ -86,10 +86,6 @@
             <div class="col-auto">
                 <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
                    th:href="@{create}">Skapa</a>
-            </div>
-            <div class="col-auto">
-                <a class="btn btn-danger" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
-                   th:href="@{delete(id=${playlist.id})}">Ta bort</a>
             </div>
         </div>
     </div>

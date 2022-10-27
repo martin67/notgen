@@ -103,7 +103,7 @@ public class UserController {
         }
         userRepository.save(user);
         // Also need to save the details to the current running object??
-        return "redirect:/";
+        return "redirect:/admin";
     }
 
     @GetMapping("/delete")
