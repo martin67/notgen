@@ -6,10 +6,13 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.model.Setting;
+import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
+import se.terrassorkestern.notgen.repository.UserRepository;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @Slf4j
 @Controller
@@ -18,11 +21,13 @@ public class SettingController {
 
     private final SettingRepository settingRepository;
     private final InstrumentRepository instrumentRepository;
+    private final UserRepository userRepository;
 
-
-    public SettingController(SettingRepository settingRepository, InstrumentRepository instrumentRepository) {
+    public SettingController(SettingRepository settingRepository, InstrumentRepository instrumentRepository,
+                             UserRepository userRepository) {
         this.settingRepository = settingRepository;
         this.instrumentRepository = instrumentRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/list")
@@ -56,10 +61,12 @@ public class SettingController {
     }
 
     @PostMapping("/save")
-    public String settingSave(@Valid @ModelAttribute Setting setting, Errors errors) {
+    public String settingSave(@Valid @ModelAttribute Setting setting, Principal principal, Errors errors) {
         if (errors.hasErrors()) {
             return "settingEdit";
         }
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow();
+        setting.setOrganization(user.getOrganization());
         log.info("Sparar sättning {} [{}]", setting.getName(), setting.getId());
         settingRepository.save(setting);
         return "redirect:/setting/list";

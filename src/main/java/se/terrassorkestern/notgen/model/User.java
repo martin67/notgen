@@ -40,6 +40,13 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
 
+    public String getRoleNames() {
+        StringBuilder sb = new StringBuilder();
+        for (Role role : roles) {
+            sb.append(role.getName()).append(" ");
+        }
+        return sb.toString();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

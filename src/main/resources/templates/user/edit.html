@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="sv">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
     <th:block th:replace="fragments/general :: header-css"></th:block>
     <title>Redigera användare</title>
@@ -71,7 +71,7 @@
 
         <div class="row">
             <div class="col">
-                <a class="btn btn-secondary" th:href="@{/}">Tillbaka</a>
+                <a class="btn btn-secondary" th:href="@{/static}">Tillbaka</a>
                 <input type="submit" class="btn btn-primary" value="Spara"/>
             </div>
         </div>

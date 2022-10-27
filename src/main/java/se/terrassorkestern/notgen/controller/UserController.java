@@ -10,7 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.exceptions.NotFoundException;
+import se.terrassorkestern.notgen.model.Organization;
 import se.terrassorkestern.notgen.model.User;
+import se.terrassorkestern.notgen.repository.OrganizationRepository;
 import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.user.UserDto;
@@ -25,30 +27,34 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final OrganizationRepository organizationRepository;
     private final PasswordEncoder passwordEncoder;
 
 
-    public UserController(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserController(UserRepository userRepository, RoleRepository roleRepository,
+                          OrganizationRepository organizationRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.organizationRepository = organizationRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/list")
-    public String userList(Model model) {
+    public String list(Model model) {
         model.addAttribute("users", userRepository.findAll());
-        return "userList";
-
+        return "user/list";
     }
 
-    @GetMapping("/new")
-    public String userNew(Model model) {
+    @GetMapping("/create")
+    public String create(Model model) {
+        List<Organization> organizations = organizationRepository.findAll();
         model.addAttribute("user", new UserDto());
-        return "userEdit";
+        model.addAttribute("organizations", organizations);
+        return "user/edit";
     }
 
     @GetMapping("/edit")
-    public String userEdit(Model model, @RequestParam(value = "id", required = false) Long id) {
+    public String edit(Model model, @RequestParam(value = "id", required = false) Long id) {
 
         User u;
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
@@ -69,14 +75,14 @@ public class UserController {
         userDto.setFullname(u.getFullname());
         userDto.setEmail(u.getEmail());
         model.addAttribute("user", userDto);
-        return "userEdit";
+        return "user/edit";
     }
 
 
     @PostMapping("/save")
-    public String userSave(Model model, @Valid @ModelAttribute("user") UserDto userDto, Errors errors) {
+    public String save(Model model, @Valid @ModelAttribute("user") UserDto userDto, Errors errors) {
         if (errors.hasErrors()) {
-            return "userEdit";
+            return "user/edit";
         }
 
         User user = userRepository.findByUsername(userDto.getUsername()).orElseGet(() -> {
@@ -101,7 +107,7 @@ public class UserController {
     }
 
     @GetMapping("/delete")
-    public String userDelete(@RequestParam("id") Long id) {
+    public String delete(@RequestParam("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
         log.info("Tar bort användare {} [{}]", user.getUsername(), user.getId());

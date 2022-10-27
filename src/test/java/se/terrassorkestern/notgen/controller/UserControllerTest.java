@@ -76,7 +76,7 @@ class UserControllerTest {
     void whenListUsers_thenReturnOk() throws Exception {
         mvc.perform(get("/user/list")
                         .contentType(MediaType.TEXT_HTML))
-                .andExpect(view().name("userList"))
+                .andExpect(view().name("user/list"))
                 .andExpect(model().attributeExists("users"))
                 .andExpect(model().attribute("users", hasSize(2)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -87,9 +87,9 @@ class UserControllerTest {
     @DisplayName("New")
     @WithMockUser(authorities = "EDIT_USER")
     void whenNewUser_thenReturnOk() throws Exception {
-        mvc.perform(get("/user/new")
+        mvc.perform(get("/user/create")
                         .contentType(MediaType.TEXT_HTML))
-                .andExpect(view().name("userEdit"))
+                .andExpect(view().name("user/edit"))
                 .andExpect(model().attributeExists("user"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(status().isOk());
@@ -104,7 +104,7 @@ class UserControllerTest {
         void whenEditSelf_thenReturnOk() throws Exception {
             mvc.perform(get("/user/edit").with(user(normalUser))
                             .contentType(MediaType.TEXT_HTML))
-                    .andExpect(view().name("userEdit"))
+                    .andExpect(view().name("user/edit"))
                     .andExpect(model().attributeExists("user"))
                     .andExpect(model().attribute("user", hasProperty("username", equalTo("normal"))))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -117,7 +117,7 @@ class UserControllerTest {
             mvc.perform(get("/user/edit").with(user(adminUser))
                             .contentType(MediaType.TEXT_HTML)
                             .param("id", "1"))
-                    .andExpect(view().name("userEdit"))
+                    .andExpect(view().name("user/edit"))
                     .andExpect(model().attributeExists("user"))
                     .andExpect(model().attribute("user", hasProperty("username", equalTo("normal"))))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -222,7 +222,7 @@ class UserControllerTest {
         void whenAccessProtectedContentAsAnonymousUser_redirectToLogin() throws Exception {
             mvc.perform(get("/user/list")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(get("/user/new")).andExpect(status().isFound())
+            mvc.perform(get("/user/create")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(get("/user/edit")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
@@ -230,7 +230,7 @@ class UserControllerTest {
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(post("/user/save").with(csrf())).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(get("/user/nonexistent")).andExpect(status().isNotFound());
+            mvc.perform(get("/user/nonexistent")).andExpect(redirectedUrlPattern("**/login"));
         }
 
         @Test
@@ -238,9 +238,9 @@ class UserControllerTest {
         @DisplayName("Normal user")
         void whenAccessProtectedContentAsNormalUser_returnForbidden() throws Exception {
             mvc.perform(get("/user/list")).andExpect(status().isForbidden());
-            mvc.perform(get("/user/new")).andExpect(status().isForbidden());
+            mvc.perform(get("/user/create")).andExpect(status().isForbidden());
             mvc.perform(get("/user/delete")).andExpect(status().isForbidden());
-            mvc.perform(get("/user/nonexistent")).andExpect(status().isNotFound());
+            mvc.perform(get("/user/nonexistent")).andExpect(status().isForbidden());
         }
 
         @Test
@@ -248,7 +248,7 @@ class UserControllerTest {
         @WithMockUser(authorities = "EDIT_USER")
         void whenAccessProtectedContentAsAdminUser_returnForbiddenOk() throws Exception {
             mvc.perform(get("/user/list")).andExpect(status().isOk());
-            mvc.perform(get("/user/new")).andExpect(status().isOk());
+            mvc.perform(get("/user/create")).andExpect(status().isOk());
             mvc.perform(get("/user/nonexistent")).andExpect(status().isNotFound());
         }
 

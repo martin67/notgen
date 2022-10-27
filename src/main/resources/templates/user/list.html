@@ -15,24 +15,18 @@
         <tr>
             <th>Användarnamn</th>
             <th>Namn</th>
+            <th>Band</th>
             <th>Aktiv</th>
             <th>Roll</th>
-            <th><a th:href="@{/user/new}"><i class="material-icons"
-                                             title="Lägg till användare">add_box</i></a></th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user : ${users}">
+        <tr th:each="user : ${users}" th:data-link="@{edit(id=${user.id})}">
             <td th:text="${user.username}"></td>
             <td th:text="${user.fullname}"></td>
+            <td th:text="${user.organization} ? ${user.organization.name} : '---'"></td>
             <td><input type="checkbox" th:checked="${user.enabled}" ? 'checked' /></td>
-            <td></td>
-            <td>
-                <a th:href="@{/user/edit(id=${user.id})}">
-                    <i class="material-icons text-secondary" title="Ändra användare">mode_edit</i></a>
-                <a th:href="@{/user/delete(id=${user.id})}">
-                    <i class="material-icons text-danger" title="Ta bort användare">delete</i></a>
-            </td>
+            <td th:text="${user.getRoleNames()}"></td>
         </tr>
         </tbody>
     </table>
@@ -41,4 +35,13 @@
 
 <footer th:replace="fragments/general :: footer"></footer>
 </body>
+
+<script>
+    $(function () {
+        $("table tbody tr").click(function (e) {
+            window.location.href = $(this).data("link");
+        });
+    });
+</script>
+
 </html>
