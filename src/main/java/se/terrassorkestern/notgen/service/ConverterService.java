@@ -8,7 +8,6 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.*;
@@ -35,8 +34,6 @@ public class ConverterService {
 
     private final ScoreRepository scoreRepository;
     private final StorageService storageService;
-    @Value("${notgen.folders.static}")
-    private String staticContentDir;
 
     public ConverterService(ScoreRepository scoreRepository,
                             StorageService storageService) {
@@ -56,7 +53,7 @@ public class ConverterService {
         try {
             executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             for (Path path : extractedFilesList) {
-                executorService.submit(new ImageProcessor(path, tmpDir, staticContentDir, score, storageService, firstPage));
+                executorService.submit(new ImageProcessor(path, tmpDir, score, storageService, firstPage));
                 firstPage = false;
             }
         } finally {

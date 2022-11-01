@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.OutputStream;
 import java.nio.file.Path;
 
 @Slf4j
@@ -20,15 +21,13 @@ public class ImageProcessor implements Runnable {
 
     private final Path path;
     private final Path tmpDir;
-    private final Path staticContentDir;
     private final Score score;
     private final StorageService storageService;
     private boolean firstPage;
 
-    public ImageProcessor(Path path, Path tmpDir, String staticContentDir, Score score, StorageService storageService, boolean firstPage) {
+    public ImageProcessor(Path path, Path tmpDir, Score score, StorageService storageService, boolean firstPage) {
         this.path = path;
         this.tmpDir = tmpDir;
-        this.staticContentDir = Path.of(staticContentDir);
         this.score = score;
         this.storageService = storageService;
         this.firstPage = firstPage;
@@ -109,13 +108,17 @@ public class ImageProcessor implements Runnable {
                 //
                 if (firstPage && score.getCover() && score.getColor()) {
                     log.debug("Saving cover");
-                    ImageIO.write(image, "jpg", staticContentDir.resolve(String.format("covers/%d.jpg", score.getId())).toFile());
+                    try (OutputStream outputStream = storageService.getCoverOutputStream(score)) {
+                        ImageIO.write(image, "jpg", outputStream);
+                    }
 
                     BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
                     g = thumbnail.createGraphics();
                     g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
                     g.dispose();
-                    ImageIO.write(thumbnail, "png", staticContentDir.resolve(String.format("thumbnails/%d.png", score.getId())).toFile());
+                    try (OutputStream outputStream = storageService.getThumbnailOutputStream(score)) {
+                        ImageIO.write(thumbnail, "png", outputStream);
+                    }
                     return;
                 }
 

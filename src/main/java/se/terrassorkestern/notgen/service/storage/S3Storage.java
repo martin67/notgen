@@ -13,6 +13,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
@@ -54,7 +56,7 @@ public class S3Storage implements BackendStorage {
 
     @Override
     public Path downloadScorePart(ScorePart scorePart, Path location) throws IOException {
-        return downloadScorePart(scorePart.getPdfName(), location);
+        return downloadScorePart(getScorePartName(scorePart), location);
     }
 
     @Override
@@ -77,10 +79,10 @@ public class S3Storage implements BackendStorage {
     public boolean isScoreGenerated(Score score) {
         for (ScorePart scorePart : score.getScoreParts()) {
             try {
-                HeadObjectRequest objectRequest = HeadObjectRequest.builder().bucket(outputBucket).key(scorePart.getPdfName()).build();
+                HeadObjectRequest objectRequest = HeadObjectRequest.builder().bucket(outputBucket).key(getScorePartName(scorePart)).build();
                 s3Client.headObject(objectRequest);
             } catch (S3Exception e) {
-                log.debug("Could not find scorePart {}, {}", scorePart.getPdfName(), e.awsErrorDetails().errorMessage());
+                log.debug("Could not find scorePart {}, {}", getScorePartName(scorePart), e.awsErrorDetails().errorMessage());
                 return false;
             }
         }
@@ -94,13 +96,23 @@ public class S3Storage implements BackendStorage {
 
     @Override
     public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
-        PutObjectRequest objectRequest = PutObjectRequest.builder().bucket(outputBucket).key(scorePart.getPdfName()).build();
+        PutObjectRequest objectRequest = PutObjectRequest.builder().bucket(outputBucket).key(getScorePartName(scorePart)).build();
         try {
             s3Client.putObject(objectRequest, RequestBody.fromFile(path));
         } catch (S3Exception e) {
-            log.error("Error uploading {} to {}", path, scorePart.getPdfName(), e);
+            log.error("Error uploading {} to {}", path, getScorePartName(scorePart), e);
             throw new IOException(e);
         }
+    }
+
+    @Override
+    public OutputStream getCoverOutputStream(Score score) throws IOException {
+        return null;
+    }
+
+    @Override
+    public OutputStream getThumbnailOutputStream(Score score) throws IOException {
+        return null;
     }
 
     @Override
@@ -152,10 +164,6 @@ public class S3Storage implements BackendStorage {
     @Override
     public void cleanOutput() {
 
-    }
-
-    private String getScorePartName(Score score, Instrument instrument) {
-        return String.format("%d-%d.pdf", score.getId(), instrument.getId());
     }
 
 }

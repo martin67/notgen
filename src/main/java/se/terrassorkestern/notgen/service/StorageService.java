@@ -13,6 +13,7 @@ import se.terrassorkestern.notgen.service.storage.LocalStorage;
 import se.terrassorkestern.notgen.service.storage.S3Storage;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -74,4 +75,13 @@ public class StorageService {
         String fileName = path.getFileName().toString();
         return parent.resolve(com.google.common.io.Files.getNameWithoutExtension(fileName) + newExtension);
     }
+
+    public OutputStream getCoverOutputStream(Score score) throws IOException {
+        return backendStorage.getCoverOutputStream(score);
+    }
+
+    public OutputStream getThumbnailOutputStream(Score score) throws IOException {
+        return backendStorage.getThumbnailOutputStream(score);
+    }
+
 }

@@ -9,6 +9,8 @@ import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.ScorePart;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -26,30 +28,33 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class LocalStorage implements BackendStorage {
 
-    private final Path input;
-    private final Path output;
+    private final Path inputDir;
+    private final Path outputDir;
+    private final Path staticDir;
 
     public LocalStorage(@Value("${notgen.storage.local.input}") String inputDir,
-                        @Value("${notgen.storage.local.output}") String outputDir) {
-        input = Path.of(inputDir);
-        output = Path.of(outputDir);
+                        @Value("${notgen.storage.local.output}") String outputDir,
+                        @Value("${notgen.folders.static}") String staticDir) {
+        this.inputDir = Path.of(inputDir);
+        this.outputDir = Path.of(outputDir);
+        this.staticDir = Path.of(staticDir);
     }
 
     @Override
     public Path downloadScore(Score score, Path location) throws IOException {
-        return Files.copy(input.resolve(score.getFilename()), location.resolve(score.getFilename()), StandardCopyOption.REPLACE_EXISTING);
+        return Files.copy(inputDir.resolve(score.getFilename()), location.resolve(score.getFilename()), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
     public Path downloadScorePart(ScorePart scorePart, Path location) throws IOException {
-        return Files.copy(output.resolve(String.valueOf(scorePart.getScore().getId())).resolve(scorePart.getPdfName()),
-                location.resolve(scorePart.getPdfName()), StandardCopyOption.REPLACE_EXISTING);
+        return Files.copy(outputDir.resolve(String.valueOf(scorePart.getScore().getId())).resolve(getScorePartName(scorePart)),
+                location.resolve(getScorePartName(scorePart)), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
     public Path downloadScorePart(Score score, Instrument instrument, Path location) throws IOException {
         String filename = getScorePartName(score, instrument);
-        return Files.copy(output.resolve(String.valueOf(score.getId())).resolve(filename),
+        return Files.copy(outputDir.resolve(String.valueOf(score.getId())).resolve(filename),
                 location.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
     }
 
@@ -57,7 +62,7 @@ public class LocalStorage implements BackendStorage {
     public boolean isScoreGenerated(Score score) {
         boolean allFilesExist = true;
         for (ScorePart scorePart : score.getScoreParts()) {
-            if (!Files.exists(output.resolve(String.valueOf(scorePart.getScore().getId())).resolve(scorePart.getPdfName()))) {
+            if (!Files.exists(outputDir.resolve(String.valueOf(scorePart.getScore().getId())).resolve(getScorePartName(scorePart)))) {
                 allFilesExist = false;
             }
         }
@@ -71,8 +76,30 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
-        Path scoreOutput = Files.createDirectories(output.resolve(String.valueOf(scorePart.getScore().getId())));
-        Files.copy(path, scoreOutput.resolve(scorePart.getPdfName()), StandardCopyOption.REPLACE_EXISTING);
+        Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(scorePart.getScore().getId())));
+        Files.copy(path, scoreOutput.resolve(getScorePartName(scorePart)), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public void uploadCover(Score score, InputStream inputStream) throws IOException {
+        Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(score.getId())));
+        Files.copy(inputStream, scoreOutput.resolve(getCoverName(score)), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public void uploadThumbnail(Score score, Path path) throws IOException {
+        Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(score.getId())));
+        Files.copy(path, scoreOutput.resolve(getThumbnailName(score)), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public OutputStream getCoverOutputStream(Score score) throws IOException {
+        Path outputPath = staticDir.resolve(getCoverName(score));
+        return Files.newOutputStream(outputPath);
+    }
+
+    @Override
+    public OutputStream getThumbnailOutputStream(Score score) throws IOException {
+        Path outputPath = staticDir.resolve(getThumbnailName(score));
+        return Files.newOutputStream(outputPath);
     }
 
     @Override
@@ -82,15 +109,12 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public void deleteScoreParts(Score score) throws IOException {
-        FileSystemUtils.deleteRecursively(output.resolve(String.valueOf(score.getId())));
+        FileSystemUtils.deleteRecursively(outputDir.resolve(String.valueOf(score.getId())));
     }
 
     @Override
     public void cleanOutput() throws IOException {
-        FileSystemUtils.deleteRecursively(output);
+        FileSystemUtils.deleteRecursively(outputDir);
     }
 
-    private String getScorePartName(Score score, Instrument instrument) {
-        return String.format("%d-%d.pdf", score.getId(), instrument.getId());
-    }
 }

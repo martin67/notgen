@@ -13,6 +13,7 @@ import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.ScorePart;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +31,8 @@ public class AzureStorage implements BackendStorage {
     private String scoreContainer;
     @Value("${notgen.storage.azure.output-container}")
     private String scorePartsContainer;
+    @Value("${notgen.storage.azure.static-container}")
+    private String staticContainer;
 
 
     public AzureStorage(@Qualifier("azureStorageBlobProtocolResolver") ResourceLoader resourceLoader,
@@ -56,7 +59,7 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public Path downloadScorePart(ScorePart scorePart, Path location) throws IOException {
-        String fileName = scorePart.getPdfName();
+        String fileName = getScorePartName(scorePart);
         Path destination = location.resolve(fileName);
         Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, fileName));
         Files.copy(resource.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
@@ -93,12 +96,36 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
-        String fileName = scorePart.getPdfName();
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, fileName));
-        try (OutputStream os = ((WritableResource) storageBlobResource).getOutputStream()) {
-            Files.copy(path, os);
-            log.debug("write data to container={}, fileName={}", scorePartsContainer, fileName);
+        String fileName = getScorePartName(scorePart);
+        upload(fileName, path, scorePartsContainer);
+    }
+
+    private void upload(String fileName, Path path, String container) throws IOException {
+        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, container, fileName));
+        try (OutputStream outputStream = ((WritableResource) storageBlobResource).getOutputStream()) {
+            Files.copy(path, outputStream);
+            log.debug("write data to container={}, fileName={}", container, fileName);
         }
+    }
+
+    private void upload(String fileName, InputStream inputStream, String container) throws IOException {
+        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, container, fileName));
+        try (OutputStream outputStream = ((WritableResource) storageBlobResource).getOutputStream()) {
+            inputStream.transferTo(outputStream);
+            log.debug("write data to container={}, fileName={}", container, fileName);
+        }
+    }
+
+    @Override
+    public OutputStream getCoverOutputStream(Score score) throws IOException {
+        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getCoverName(score)));
+        return ((WritableResource) storageBlobResource).getOutputStream();
+    }
+
+    @Override
+    public OutputStream getThumbnailOutputStream(Score score) throws IOException {
+        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getThumbnailName(score)));
+        return ((WritableResource) storageBlobResource).getOutputStream();
     }
 
     @Override
@@ -116,7 +143,4 @@ public class AzureStorage implements BackendStorage {
 
     }
 
-    private String getScorePartName(Score score, Instrument instrument) {
-        return String.format("%d-%d.pdf", score.getId(), instrument.getId());
-    }
 }
