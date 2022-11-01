@@ -73,7 +73,7 @@ public class Score extends Auditable<String> {
     }
 
     public String getThumbnailPath() {
-        return cover ? String.format("/%d.png", id) : "/images/thoreehrling.jpg";
+        return cover ? String.format("/%d-thumbnail.png", id) : "/images/thoreehrling.jpg";
     }
 
     public String getCoverPath() {

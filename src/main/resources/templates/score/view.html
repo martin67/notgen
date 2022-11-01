@@ -20,7 +20,8 @@
     <h1 th:text="${score.title}"/>
 
     <figure class="text-center">
-        <img class="figure-img img-fluid rounded" th:src="@{${score.getThumbnailPath()}}" alt="thumbnail"/>
+        <img class="figure-img img-fluid rounded" th:src="@{${score.getThumbnailPath()}}" alt="thumbnail"
+             th:href="@{${score.getCoverPath()}}"/>
     </figure>
 
     <table class="table table-sm table-borderless">
