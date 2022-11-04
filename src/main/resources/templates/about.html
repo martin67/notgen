@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sv">
+<head>
+    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <title>Notgeneratorn</title>
+</head>
+
+<body>
+<div th:replace="fragments/general :: header"></div>
+
+<div class="container">
+
+    <h1>Om Notgeneratorn</h1>
+
+    <p>Notgeneratorn är ett program som hanterar noter!</p>
+
+    <p>Mer info om programmet, inklusive källkod finns på <a href="https://github.com/martin67/notgen">Github</a>.</p>
+
+    <p>Om det är något som inte fungerar eller som du tycker skall ändras, använd då följande <a
+            href="https://github.com/martin67/notgen/issues">länk</a>.</p>
+
+    <h5>Aktuell version</h5>
+    <ul>
+        <li th:text="|Build: ${@environment.getProperty('git.commit.id.abbrev')}|"/>
+        <li th:text="|Time: ${@environment.getProperty('git.commit.time')}|"/>
+    </ul>
+    <p th:text="|Git build ${@environment.getProperty('git.commit.id.abbrev')} ${@environment.getProperty('git.commit.time')}|">
+        ss</p>
+</div>
+
+<footer th:replace="fragments/general :: footer"></footer>
+</body>
+</html>

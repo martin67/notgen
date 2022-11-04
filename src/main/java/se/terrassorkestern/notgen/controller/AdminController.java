@@ -12,6 +12,8 @@ import se.terrassorkestern.notgen.service.ImageDataExtractor;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/admin")
@@ -49,7 +51,9 @@ public class AdminController {
     public void export(HttpServletResponse response) throws IOException, SQLException {
         response.setContentType("application/zip");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.addHeader("Content-Disposition", "attachment; filename=\"notgen_dump.zip\"");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd_HHmm");
+        String fileName = String.format("notgen_dump_%s.zip", LocalDateTime.now().format(formatter));
+        response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         adminService.export(response.getOutputStream());
     }
 
