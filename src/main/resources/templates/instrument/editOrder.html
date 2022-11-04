@@ -8,7 +8,6 @@
 <body>
 <div th:replace="fragments/general :: header"></div>
 
-
 <div class="container">
     <h1>Ändra ordning</h1>
 
@@ -31,10 +30,11 @@
             </tbody>
         </table>
 
-        <hr>
-        <div class="row">
+        <div class="row gy-2 mb-3">
             <div class="col-auto">
-                <a class="btn btn-secondary" th:href="@{/instrument/list}">Tillbaka</a>
+                <a class="btn btn-secondary" th:href="@{list}">Tillbaka</a>
+            </div>
+            <div class="col-auto">
                 <input sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="submit" class="btn btn-primary"
                        value="Spara"/>
             </div>

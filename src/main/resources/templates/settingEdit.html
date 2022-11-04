@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="sv">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
     <th:block th:replace="fragments/general :: header-css"></th:block>
     <title>Redigera inställningar</title>
@@ -34,10 +34,10 @@
 
     <form role="form" th:action="@{/setting/save}" th:object="${setting}" th:method="post">
         <input type="hidden" th:field="*{id}" th:value="${setting.id}"/>
-        <div class="form-group">
-            <label for="name">Namn</label>
+        <div class="form-floating mb-3">
             <input type="text" class="form-control" th:field="*{name}" th:value="${setting.name}" id="name"/>
             <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
+            <label for="name">Namn</label>
         </div>
         <div class="form-group">
             <label for="instrumentSelect">Instrument</label>

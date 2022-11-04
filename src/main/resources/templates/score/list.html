@@ -24,7 +24,15 @@
         </tr>
         </tbody>
     </table>
-    <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_SONG')" th:href="@{/score/create}">Lägg till</a>
+
+    <div class="row">
+        <div class="col-auto">
+            <a class="btn btn-secondary" th:href="@{/}">Tillbaka</a>
+        </div>
+        <div class="col-auto" sec:authorize="hasAuthority('EDIT_SONG')">
+            <a class="btn btn-secondary" th:href="@{create}">Lägg till</a>
+        </div>
+    </div>
 </div>
 
 

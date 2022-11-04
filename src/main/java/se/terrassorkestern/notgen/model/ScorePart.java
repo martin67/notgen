@@ -26,24 +26,7 @@ public class ScorePart {
     private int page;
     private int length = 1;
     private String comment;
-    private String googleId;
-  
 
-  /* Behövs inte om man kör standard
-    @Id
-    @ManyToOne
-    @JoinColumn(name="repertoire_id")
-    private Song song;
-   */
-
-  /*
-    @Id
-    @ManyToOne
-    @JoinColumn(name="instrument_id")
-    private Instrument instrument;
-   */
-
-    // Nytt försök
 
     public ScorePart() {
     }

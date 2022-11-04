@@ -35,28 +35,22 @@
     <form role="form" th:action="@{/organization/save}" th:object="${organization}" th:method="post">
         <input type="hidden" th:field="*{id}" th:value="${organization.id}"/>
 
-        <div class="row">
-            <div class="form-group col">
-                <label for="name">Namn</label>
-                <input type="text" class="form-control" th:field="*{name}" th:value="${organization.name}" id="name"/>
-                <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
-            </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" th:field="*{name}" th:value="${organization.name}" id="name"/>
+            <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
+            <label for="name">Namn</label>
         </div>
-        <div class="row">
-            <div class="form-group col">
-                <label for="shortName">Beskrivning</label>
-                <input type="text" class="form-control" th:field="*{description}" th:value="${organization.description}"
-                       id="shortName"/>
-            </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" th:field="*{description}" th:value="${organization.description}"
+                   id="shortName"/>
+            <label for="shortName">Beskrivning</label>
         </div>
 
-        <div class="row">
-            <div class="col-sm-9">
-                <a class="btn btn-secondary" th:href="@{/organization/list}">Tillbaka</a>
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
-                </button>
-                <input type="submit" class="btn btn-primary" value="Spara"/>
-            </div>
+        <div class="col-sm-9">
+            <a class="btn btn-secondary" th:href="@{/organization/list}">Tillbaka</a>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
+            </button>
+            <input type="submit" class="btn btn-primary" value="Spara"/>
         </div>
     </form>
 </div>

@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +44,7 @@ public class Score extends Auditable<String> {
     @JoinColumn(name = "score_id")
     private List<Imagedata> imageData = new ArrayList<>();
 
+    private ScoreType scoreType;
     private Boolean scanned = true;
     private Boolean cover = true;
     private Boolean imageProcess = true;
@@ -55,14 +55,6 @@ public class Score extends Auditable<String> {
     private String archiveLocation = "A";
 
     private String filename;
-
-    // Stuff to remove; first from DB then here
-    private Boolean aktiv;
-    private Boolean standard;
-    private LocalDateTime inforskaffad;
-    private String movie;
-    private String orgText;
-    private Integer betyg;
 
     public List<Instrument> getInstruments() {
         List<Instrument> result = new ArrayList<>();

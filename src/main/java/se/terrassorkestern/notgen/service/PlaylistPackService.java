@@ -91,12 +91,12 @@ public class PlaylistPackService {
                 continue;
             }
 
-            if (scorePart.getGoogleId() == null) {
-                log.warn("Inga scannade noter för {} i låten {}", instrument.getName(), score.getTitle());
-                continue;
-            }
+//            if (scorePart.getGoogleId() == null) {
+//                log.warn("Inga scannade noter för {} i låten {}", instrument.getName(), score.getTitle());
+//                continue;
+//            }
 
-            log.info("Downloading {}/{} [{}]", score.getTitle(), instrument.getName(), scorePart.getGoogleId());
+//            log.info("Downloading {}/{} [{}]", score.getTitle(), instrument.getName(), scorePart.getGoogleId());
 //            try {
 //                File f = googleDriveService.downloadFile(scorePart.getGoogleId(), index++, tmpDir);
 //                pdfMergerUtility.addSource(f);

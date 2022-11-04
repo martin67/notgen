@@ -26,13 +26,12 @@
         </tr>
     </table>
 
-    <hr>
     <div class="row">
         <div class="col-auto">
             <a class="btn btn-secondary" th:href="@{/}">Tillbaka</a>
         </div>
         <div class="col-auto" sec:authorize="hasAuthority('EDIT_PLAYLIST')">
-            <a class="btn btn-secondary" th:href="@{create}">Lägg till</a>
+            <a class="btn btn-secondary" th:href="@{create}">Skapa</a>
         </div>
     </div>
 

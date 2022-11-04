@@ -13,6 +13,7 @@ import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.service.converter.ImageProcessor;
+import se.terrassorkestern.notgen.service.converter.ImageProcessorFactory;
 import se.terrassorkestern.notgen.service.converter.PdfAssembler;
 
 import javax.imageio.ImageIO;
@@ -53,7 +54,10 @@ public class ConverterService {
         try {
             executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             for (Path path : extractedFilesList) {
-                executorService.submit(new ImageProcessor(path, tmpDir, score, storageService, firstPage));
+                ImageProcessor imageProcessor = ImageProcessorFactory.create(path, tmpDir, score, storageService, firstPage);
+                if (imageProcessor != null) {
+                    executorService.submit(imageProcessor);
+                }
                 firstPage = false;
             }
         } finally {

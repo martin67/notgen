@@ -76,12 +76,14 @@
         </tbody>
     </table>
 
-    <h3>Detaljer</h3>
-    <div class="row">
+    <div class="row" sec:authorize="hasAuthority('EDIT_SONG')">
+        <h3>Detaljer</h3>
         <div class="col">
             <input type="checkbox" th:checked="${score.scanned}" onclick="return false;"> Inscannad<br>
             <input type="checkbox" th:checked="${score.imageProcess}" onclick="return false;"> Bildbehandlas<br>
             <input type="checkbox" th:checked="${score.upperleft}" onclick="return false;"> Linjerad i hörn<br>
+            Bildbehandling <span th:text="${score.scoreType}?  ' [' + ${score.scoreType.getShortDescription()} + ']'"/>
+            <br>
         </div>
         <div class="col">
             <input type="checkbox" th:checked="${score.cover}" onclick="return false;"> Omslag<br>
@@ -91,8 +93,10 @@
         </div>
     </div>
 
-    <hr>
     <div class="row">
+        <div class="col-auto">
+            <a class="btn btn-secondary" th:href="@{list}">Tillbaka</a>
+        </div>
         <div class="col-auto" sec:authorize="hasAuthority('PRINT_SCORE')">
             <div class="input-group">
                 <a class="btn btn-secondary" id="print-button">Skriv ut</a>
@@ -112,5 +116,11 @@
 <footer th:replace=" fragments/general :: footer"></footer>
 
 </body>
-
+<script>
+    $(function () {
+        $("table tbody tr").click(function (e) {
+            window.location.href = $(this).data("link");
+        });
+    });
+</script>
 </html>

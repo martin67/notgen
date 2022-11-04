@@ -16,6 +16,25 @@
     }
 </script>
 
+<!-- Modal -->
+<div class="modal" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ta bort låtlista</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Vill du verkligen ta bort denna låtlista?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                <a class="btn btn-danger" th:href="@{/playlist/delete(id=${playlist.id})}">Ta bort</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <h1 th:text="${playlist.name}"/>
 
@@ -58,34 +77,41 @@
         </tbody>
     </table>
 
-    <hr>
-    <div class="container">
-        <div class="row gy-2">
-            <div class="col-auto">
-                <a class="btn btn-primary" th:href="@{createPdf(id=${playlist.id})}">Skriv ut</a>
-            </div>
+    <br>
 
-            <div class="col-auto" sec:authorize="hasAuthority('PRINT_SCORE')">
-                <div class="input-group">
-                    <a class="btn btn-secondary" id="print-button">Skriv ut noter</a>
-                    <select class="form-select form-select-sm" id="instrument" onchange="setPrintButton()">
-                        <option th:each="instrument : ${instruments}" th:value="${instrument.id}"
-                                th:text="${instrument.name}"/>
-                    </select>
-                </div>
-            </div>
-
-            <div class="col-auto">
-                <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
-                   th:href="@{edit(id=${playlist.id})}">Ändra</a>
-            </div>
-            <div class="col-auto">
-                <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
-                   th:href="@{copy(id=${playlist.id})}">Kopiera</a>
-            </div>
-            <div class="col-auto">
-                <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
-                   th:href="@{create}">Skapa</a>
+    <div class="row gy-2 mb-3">
+        <div class="col-auto">
+            <a class="btn btn-secondary" th:href="@{list}">Tillbaka</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-primary" th:href="@{createPdf(id=${playlist.id})}">Skriv ut</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+               th:href="@{edit(id=${playlist.id})}">Ändra</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+               th:href="@{create}">Skapa</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_PLAYLIST')"
+               th:href="@{copy(id=${playlist.id})}">Kopiera</a>
+        </div>
+        <div class="col-auto">
+            <button sec:authorize="hasAuthority('EDIT_PLAYLIST')" type="button" class="btn btn-danger"
+                    data-bs-toggle="modal" data-bs-target="#deleteModal">Ta bort
+            </button>
+        </div>
+    </div>
+    <div class="row gy-2">
+        <div class="col-auto" sec:authorize="hasAuthority('PRINT_SCORE')">
+            <div class="input-group">
+                <a class="btn btn-secondary" id="print-button">Skriv ut noter</a>
+                <select class="form-select form-select-sm" id="instrument" onchange="setPrintButton()">
+                    <option th:each="instrument : ${instruments}" th:value="${instrument.id}"
+                            th:text="${instrument.name}"/>
+                </select>
             </div>
         </div>
     </div>
