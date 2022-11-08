@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.ZipFile;
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ImageMetadata;
@@ -43,17 +42,17 @@ import static org.apache.commons.imaging.Imaging.getMetadata;
 public class ImageDataExtractor {
 
     private final ScoreRepository scoreRepository;
+    private final StorageService storageService;
 
-    @Value("${notgen.google.id.original}")
-    private String googleFileIdOriginal;
     @Value("${notgen.cache.location}")
     private String cacheLocation;
     @Value("${notgen.cache.ttl:100}")
     private int cacheTtl;
 
 
-    public ImageDataExtractor(ScoreRepository scoreRepository) {
+    public ImageDataExtractor(ScoreRepository scoreRepository, StorageService storageService) {
         this.scoreRepository = scoreRepository;
+        this.storageService = storageService;
     }
 
     public void extract(List<Score> scores) throws IOException, ImageReadException {
@@ -120,11 +119,7 @@ public class ImageDataExtractor {
         // Unzip files into temp directory
         log.debug("Extracting {} to {}", inFile, tmpDir);
         if (com.google.common.io.Files.getFileExtension(score.getFilename()).equalsIgnoreCase("zip")) {
-            // Initiate ZipFile object with the path/name of the zip file.
-            try (ZipFile zipFile = new ZipFile(inFile)) {
-                // Extracts all files to the path specified
-                zipFile.extractAll(tmpDir.toString());
-            }
+            storageService.extractZip(inFile.toPath(), tmpDir);
         } else if (com.google.common.io.Files.getFileExtension(score.getFilename()).equalsIgnoreCase("pdf")) {
             try {
                 PDDocument document = PDDocument.load(new File(inFile.toString()));
