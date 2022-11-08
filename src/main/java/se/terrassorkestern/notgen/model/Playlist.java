@@ -36,7 +36,7 @@ public class Playlist extends Auditable<String> {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "playlist_id", nullable = false)
     @OrderBy("sortOrder")
-    List<PlaylistEntry> playlistEntries = new ArrayList<>();
+    private List<PlaylistEntry> playlistEntries = new ArrayList<>();
 
     public Playlist copy() {
         Playlist newPlaylist = new Playlist();

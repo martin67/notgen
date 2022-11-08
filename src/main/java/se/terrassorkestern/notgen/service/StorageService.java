@@ -12,15 +12,17 @@ import se.terrassorkestern.notgen.service.storage.BackendStorage;
 import se.terrassorkestern.notgen.service.storage.LocalStorage;
 import se.terrassorkestern.notgen.service.storage.S3Storage;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Slf4j
 @Service
 public class StorageService {
 
+    private static final int BUFFER_SIZE = 4096;
     private final BackendStorage backendStorage;
     private final boolean keepTempDir;
 
@@ -84,4 +86,26 @@ public class StorageService {
         return backendStorage.getThumbnailOutputStream(score);
     }
 
+    public int extractZip(Path zipFile, Path dir) throws IOException {
+        int numberOfFiles = 0;
+        try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile.toFile())))) {
+            ZipEntry zipEntry;
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                if (zipEntry.isDirectory()) {
+                    log.warn("zip {} contains a directory {}", zipFile, zipEntry.getName());
+                } else {
+                    // if the entry is a file, extracts it
+                    try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dir.resolve(zipEntry.getName()).toFile()))) {
+                        byte[] bytesIn = new byte[BUFFER_SIZE];
+                        int read;
+                        while ((read = zipInputStream.read(bytesIn)) != -1) {
+                            bos.write(bytesIn, 0, read);
+                        }
+                        numberOfFiles++;
+                    }
+                }
+            }
+        }
+        return numberOfFiles;
+    }
 }

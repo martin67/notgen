@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.ZipFile;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
@@ -28,6 +27,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Slf4j
 @Service
@@ -99,11 +100,7 @@ public class ConverterService {
         // Unzip files into temp directory
         switch (com.google.common.io.Files.getFileExtension(downloadedScore.getFileName().toString().toLowerCase())) {
             case "zip":
-                // Initiate ZipFile object with the path/name of the zip file.
-                try (ZipFile zipFile = new ZipFile(downloadedScore.toFile())) {
-                    // Extracts all files to the path specified
-                    zipFile.extractAll(tmpDir.toString());
-                }
+                storageService.extractZip(downloadedScore, tmpDir);
                 break;
 
             case "pdf":
@@ -183,7 +180,8 @@ public class ConverterService {
         log.debug("Finishing main convert loop, time: {}", stopWatch.prettyPrint());
     }
 
-    public InputStream assemble(List<Score> scores, Setting setting, boolean sortByInstrument) throws IOException, InterruptedException {
+    public InputStream assemble(List<Score> scores, Setting setting, boolean sortByInstrument) throws
+            IOException, InterruptedException {
         return assemble(scores, new ArrayList<>(setting.getInstruments()), sortByInstrument);
     }
 
@@ -211,7 +209,8 @@ public class ConverterService {
         return assemble(scores, instruments, false);
     }
 
-    public InputStream assemble(List<Score> scores, List<Instrument> instruments, boolean sortByInstrument) throws IOException, InterruptedException {
+    public InputStream assemble(List<Score> scores, List<Instrument> instruments, boolean sortByInstrument) throws
+            IOException, InterruptedException {
 
         // Todo: Can we assume that the input always will be sorted?
         //scores.sort(Comparator.comparing(Score::getTitle));

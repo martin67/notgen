@@ -13,6 +13,7 @@ sonarqube {
         property "sonar.projectKey", "martin67_notgen2"
         property "sonar.organization", "martin-hagelin"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.projectBaseDir", "$projectDir"
     }
 }
 java {
@@ -58,7 +59,7 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time'
-    implementation 'org.liquibase:liquibase-core:4.17.0'
+    implementation 'org.liquibase:liquibase-core:4.17.1'
     implementation 'mysql:mysql-connector-java:8.0.30'
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.6'
     implementation 'com.microsoft.sqlserver:mssql-jdbc:11.2.1.jre17'
@@ -67,7 +68,6 @@ dependencies {
     implementation platform('software.amazon.awssdk:bom:2.18.6')
     implementation 'software.amazon.awssdk:s3'
     implementation 'com.azure.spring:spring-cloud-azure-starter-storage-blob:4.4.1'
-    implementation 'net.lingala.zip4j:zip4j:2.11.2'
     implementation 'org.apache.commons:commons-csv:1.9.0'
     implementation 'org.apache.commons:commons-imaging:1.0-alpha2'
     implementation 'org.apache.pdfbox:pdfbox:2.0.27'
