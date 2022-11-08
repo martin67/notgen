@@ -15,46 +15,46 @@ databaseChangeLog:
       changes:
         - dropColumn:
             columnName: AKTIV
-            tableName: SCORE
+            tableName: score
   - changeSet:
       id: 1667462118947-3
       author: hagelin (generated)
       changes:
         - dropColumn:
             columnName: BETYG
-            tableName: SCORE
+            tableName: score
   - changeSet:
       id: 1667462118947-4
       author: hagelin (generated)
       changes:
         - dropColumn:
             columnName: GOOGLE_ID
-            tableName: SCORE_INSTRUMENT
+            tableName: score_instrument
   - changeSet:
       id: 1667462118947-5
       author: hagelin (generated)
       changes:
         - dropColumn:
             columnName: INFORSKAFFAD
-            tableName: SCORE
+            tableName: score
   - changeSet:
       id: 1667462118947-6
       author: hagelin (generated)
       changes:
         - dropColumn:
             columnName: MOVIE
-            tableName: SCORE
+            tableName: score
   - changeSet:
       id: 1667462118947-7
       author: hagelin (generated)
       changes:
         - dropColumn:
             columnName: ORG_TEXT
-            tableName: SCORE
+            tableName: score
   - changeSet:
       id: 1667462118947-8
       author: hagelin (generated)
       changes:
         - dropColumn:
             columnName: STANDARD
-            tableName: SCORE
+            tableName: score
