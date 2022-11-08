@@ -18,7 +18,7 @@ public class Setting {
     private int id;
     @ManyToOne
     @JoinColumn(name = "organization_id")
-    Organization organization;
+    private Organization organization;
     @NotBlank
     private String name;
 
