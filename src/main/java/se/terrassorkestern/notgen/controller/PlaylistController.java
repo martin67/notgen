@@ -148,7 +148,7 @@ public class PlaylistController {
 
         log.debug("Startar createPack för instrument id " + id);
 
-        Instrument instrument = instrumentRepository.findById(id).get();
+        Instrument instrument = instrumentRepository.findById(id).orElseThrow();
         try (InputStream is = converterService.assemble(playlist, instrument)) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=playlist.pdf");
