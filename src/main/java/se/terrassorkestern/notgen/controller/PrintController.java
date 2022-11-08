@@ -72,7 +72,7 @@ public class PrintController {
 
         try (InputStream is = converterService.assemble(score, instrument)) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=" + score.getTitle() + " (" + instrument.getShortName() + ").pdf");
+            headers.add("Content-Disposition", "inline; filename=\"" + score.getTitle() + "\" (" + instrument.getShortName() + ").pdf");
 
             return ResponseEntity
                     .ok()
@@ -94,7 +94,7 @@ public class PrintController {
 
         try (InputStream is = converterService.assemble(score, setting)) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=" + score.getTitle() + " (" + setting.getName() + ").pdf");
+            headers.add("Content-Disposition", "inline; filename=\"" + score.getTitle() + "\" (" + setting.getName() + ").pdf");
 
             return ResponseEntity
                     .ok()
@@ -116,7 +116,7 @@ public class PrintController {
 
         try (InputStream is = converterService.assemble(playlist, instrument)) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=" + playlist.getName() + " (" + instrument.getShortName() + ").pdf");
+            headers.add("Content-Disposition", "inline; filename=\"" + playlist.getName() + "\" (" + instrument.getShortName() + ").pdf");
 
             return ResponseEntity
                     .ok()
