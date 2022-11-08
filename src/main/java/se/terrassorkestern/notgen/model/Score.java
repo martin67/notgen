@@ -72,4 +72,11 @@ public class Score extends Auditable<String> {
         return cover ? String.format("/%d-cover.jpg", id) : "/images/thoreehrling.jpg";
     }
 
+    @Override
+    public String toString() {
+        return "Score{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                '}';
+    }
 }

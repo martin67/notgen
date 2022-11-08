@@ -22,10 +22,10 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class AdminService {
 
+    public static final List<String> tables = List.of("song", "organization", "score", "instrument", "user_",
+            "setting", "playlist", "role", "privilege",
+            "score_instrument", "setting_instrument", "score_playlist", "role_privilege", "user_role");
     private final DataSource dataSource;
-    private final List<String> tables = List.of("score", "instrument", "organization", "playlist",
-            "privilege", "role", "role_privilege", "score_instrument", "score_playlist", "setting",
-            "setting_instrument", "song", "user_", "user_role");
 
     public AdminService(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -35,12 +35,11 @@ public class AdminService {
         CSVFormat format = CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').build();
 
         try (ZipOutputStream zos = new ZipOutputStream(outputStream);
-             Connection conn = dataSource.getConnection()
-        ) {
+             Connection conn = dataSource.getConnection()) {
 
             String sb = "Database dump created: " + LocalDateTime.now() +
-                    "\nDatabase type:         " + dataSource.getConnection().getMetaData().getDatabaseProductName() +
-                    "\nDatabase url:          " + dataSource.getConnection().getMetaData().getURL();
+                    "\nDatabase type:         " + conn.getMetaData().getDatabaseProductName() +
+                    "\nDatabase url:          " + conn.getMetaData().getURL();
             ZipEntry infoEntry = new ZipEntry("info.txt");
             zos.putNextEntry(infoEntry);
             zos.write(sb.getBytes());
