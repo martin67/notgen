@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
+import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.MemoryUsageSetting;
@@ -214,6 +215,8 @@ public class ConverterService {
 
         // Todo: Can we assume that the input always will be sorted?
         //scores.sort(Comparator.comparing(Score::getTitle));
+        StopWatch stopWatch = new StopWatch("Assemble");
+        stopWatch.start("setup");
         List<Instrument> sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
@@ -237,12 +240,16 @@ public class ConverterService {
             pdfMergerUtility.setDestinationDocumentInformation(docInfo);
         }
 
+        stopWatch.stop();
+        stopWatch.start("convert");
         // Check so that all pdfs have been generated before assembling
         for (Score score : scores) {
             if (!storageService.isScoreGenerated(score)) {
                 convert(List.of(score));
             }
         }
+        stopWatch.stop();
+        stopWatch.start("convert");
 
         // temp directory for all downloads and assembly
         Path tempDir = storageService.createTempDir();

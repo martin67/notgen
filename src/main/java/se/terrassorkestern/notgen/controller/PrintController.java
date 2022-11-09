@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,14 +67,23 @@ public class PrintController {
     @GetMapping(value = "/getscorepart", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printScorePart(@RequestParam(name = "instrument_id") Integer instrumentId,
                                                               @RequestParam(name = "score_id") Integer scoreId) {
-
+        StopWatch stopWatch = new StopWatch("get scorepart");
+        stopWatch.start("read score");
         Score score = scoreRepository.findById(scoreId).orElseThrow();
+        stopWatch.stop();
+        stopWatch.start("read instrument");
         Instrument instrument = instrumentRepository.findById(instrumentId).orElseThrow();
 
-        try (InputStream is = converterService.assemble(score, instrument)) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=" + score.getTitle() + " (" + instrument.getShortName() + ").pdf");
+        stopWatch.stop();
+        stopWatch.start("start convert");
 
+        try (InputStream is = converterService.assemble(score, instrument)) {
+            stopWatch.stop();
+            stopWatch.start("send response");
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=\"" + score.getTitle() + "\" (" + instrument.getShortName() + ").pdf");
+            stopWatch.stop();
+            log.info("time: {}", stopWatch.prettyPrint());
             return ResponseEntity
                     .ok()
                     .headers(headers)
@@ -83,6 +93,7 @@ public class PrintController {
         } catch (IOException | InterruptedException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
+
     }
 
     @GetMapping(value = "/getscore", produces = MediaType.APPLICATION_PDF_VALUE)
@@ -94,7 +105,7 @@ public class PrintController {
 
         try (InputStream is = converterService.assemble(score, setting)) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=" + score.getTitle() + " (" + setting.getName() + ").pdf");
+            headers.add("Content-Disposition", "inline; filename=\"" + score.getTitle() + "\" (" + setting.getName() + ").pdf");
 
             return ResponseEntity
                     .ok()
@@ -116,7 +127,7 @@ public class PrintController {
 
         try (InputStream is = converterService.assemble(playlist, instrument)) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=" + playlist.getName() + " (" + instrument.getShortName() + ").pdf");
+            headers.add("Content-Disposition", "inline; filename=\"" + playlist.getName() + "\" (" + instrument.getShortName() + ").pdf");
 
             return ResponseEntity
                     .ok()

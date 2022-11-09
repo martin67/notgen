@@ -23,7 +23,7 @@ import static se.terrassorkestern.notgen.service.AdminService.tables;
 
 /*
  * Simple database uploader
- *
+ * on Windows, run with -Dfile.encoding=UTF8
  */
 
 @Slf4j
@@ -40,11 +40,11 @@ public class BackupImporter {
         }
         String filename = args[0];
 
-        List<String> revereseTables = new ArrayList<>(tables);
-        Collections.reverse(revereseTables);
+        List<String> reverseTables = new ArrayList<>(tables);
+        Collections.reverse(reverseTables);
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
             StringBuilder sb = new StringBuilder();
-            for (String table : revereseTables) {
+            for (String table : reverseTables) {
                 sb.append(String.format("delete from %s; ", table));
             }
             log.debug("SQL: {}", sb);

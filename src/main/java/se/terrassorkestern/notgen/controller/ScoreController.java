@@ -1,8 +1,10 @@
 package se.terrassorkestern.notgen.controller;
 
+import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StopWatch;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.exceptions.NotFoundException;
@@ -35,8 +37,12 @@ public class ScoreController {
 
     @GetMapping("/list")
     public String songList(Model model) {
+        StopWatch listWatch = new StopWatch("list");
+        listWatch.start();
         model.addAttribute("scores", scoreRepository.findByOrderByTitle());
         //model.addAttribute("scores", scoreRepository.findByOrganizationOrderByTitleAsc(organization));
+        listWatch.stop();
+        log.info("list: {}", listWatch.getTotalTimeMillis());
         return "score/list";
     }
 
