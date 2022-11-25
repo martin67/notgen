@@ -79,4 +79,7 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
             " new se.terrassorkestern.notgen.model.TopListEntry(s.publisher, count(s.publisher)) " +
             " FROM Score s GROUP BY s.publisher ORDER BY COUNT(s.publisher) DESC")
     List<TopListEntry> findTopPublishers(Pageable pageable);
+
+    @Query("SELECT SUM(sp.length) FROM ScorePart sp")
+    long numberOfPages();
 }

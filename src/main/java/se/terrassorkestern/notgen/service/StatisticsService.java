@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.ScorePart;
 import se.terrassorkestern.notgen.model.Statistics;
-import se.terrassorkestern.notgen.repository.ImagedataRepository;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
@@ -29,15 +27,13 @@ public class StatisticsService {
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
     private final PlaylistRepository playlistRepository;
-    private final ImagedataRepository imagedataRepository;
 
 
     public StatisticsService(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
-                             PlaylistRepository playlistRepository, ImagedataRepository imagedataRepository) {
+                             PlaylistRepository playlistRepository) {
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
         this.playlistRepository = playlistRepository;
-        this.imagedataRepository = imagedataRepository;
     }
 
     public Statistics getStatistics() {
@@ -53,14 +49,7 @@ public class StatisticsService {
         stopWatch.stop();
 
         stopWatch.start("setNumberOfScannedPages");
-        // Todo: solve this directly in JPA instead
-        int scannedPages = 0;
-        for (Score score : scoreRepository.findAll()) {
-            for (ScorePart scorePart : score.getScoreParts()) {
-                scannedPages += scorePart.getLength();
-            }
-        }
-        statistics.setNumberOfScannedPages(scannedPages);
+        statistics.setNumberOfScannedPages(scoreRepository.numberOfPages());
         stopWatch.stop();
 
         stopWatch.start("setNumberOfInstruments");

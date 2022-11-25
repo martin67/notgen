@@ -1,6 +1,5 @@
 package se.terrassorkestern.notgen.service;
 
-import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.MemoryUsageSetting;
@@ -28,8 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 @Slf4j
 @Service
@@ -100,11 +97,8 @@ public class ConverterService {
 
         // Unzip files into temp directory
         switch (com.google.common.io.Files.getFileExtension(downloadedScore.getFileName().toString().toLowerCase())) {
-            case "zip":
-                storageService.extractZip(downloadedScore, tmpDir);
-                break;
-
-            case "pdf":
+            case "zip" -> storageService.extractZip(downloadedScore, tmpDir);
+            case "pdf" -> {
                 PDDocument document = PDDocument.load(downloadedScore.toFile());
                 PDPageTree list = document.getPages();
                 int i = 100;
@@ -126,11 +120,8 @@ public class ConverterService {
                     }
                 }
                 document.close();
-                break;
-
-            default:
-                log.error("Unknown file format for {}", downloadedScore);
-                break;
+            }
+            default -> log.error("Unknown file format for {}", downloadedScore);
         }
 
         // Store name of all extracted files. Order is important!
@@ -275,9 +266,12 @@ public class ConverterService {
                 }
             }
         }
+        stopWatch.stop();
+        stopWatch.start("merge");
         pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
         storageService.deleteTempDir(tempDir);
 
+        stopWatch.stop();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 }
