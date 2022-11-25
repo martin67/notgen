@@ -39,11 +39,10 @@ permissions:
   pull-requests: read # allows SonarCloud to decorate PRs with analysis results
 
 jobs:
-  Analysis:
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Analyze with SonarCloud
       - uses: actions/checkout@v2
         with:
           # Shallow clones should be disabled for a better relevancy of analysis
@@ -64,7 +63,7 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Analyze
+      - name: Build and analyze
         run: ./gradlew sonarqube --info
         env:
           # Needed to get some information about the pull request, if any
