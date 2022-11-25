@@ -73,12 +73,4 @@ public class SecurityConfig {
                 .key("jaksdladnsdasd");
         return http.build();
     }
-
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.debug(false)
-//                .ignoring()
-//                .antMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico");
-//    }
-
 }
