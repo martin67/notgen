@@ -11,7 +11,10 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "score")
+@Table(name = "score", indexes = {
+        @Index(name = "idx_title", columnList = "title"),
+        @Index(name = "idx_organization", columnList = "organization_id")
+})
 public class Score extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

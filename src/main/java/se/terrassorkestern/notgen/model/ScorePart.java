@@ -15,11 +15,11 @@ public class ScorePart {
     @EmbeddedId
     private ScorePartId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("scoreId")
     private Score score;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("instrumentId")
     @OrderBy("sortOrder")
     private Instrument instrument;
