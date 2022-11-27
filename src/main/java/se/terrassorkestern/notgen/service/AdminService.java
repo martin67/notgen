@@ -51,8 +51,11 @@ public class AdminService {
                 zos.putNextEntry(entry);
 
                 CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(zos), format);  // There is no need for staging the CSV on filesystem or reading bytes into memory. Directly write bytes to the output stream.
-                PreparedStatement pstmt = conn.prepareStatement("select * from " + table);
-                ResultSet rs = pstmt.executeQuery();
+                ResultSet rs;
+                try (PreparedStatement pstmt = conn.prepareStatement("select * from ?")) {
+                    pstmt.setString(1, table);
+                    rs = pstmt.executeQuery();
+                }
                 csvPrinter.printRecords(rs, true);
                 csvPrinter.flush(); // flush the writer. Very important!
                 zos.closeEntry(); // close the entry. Note : we are not closing the zos just yet as we need to add more files to our ZIP
