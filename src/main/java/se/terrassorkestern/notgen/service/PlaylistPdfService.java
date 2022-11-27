@@ -8,8 +8,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.stereotype.Service;
-import se.terrassorkestern.notgen.model.PlaylistEntry;
 import se.terrassorkestern.notgen.model.Playlist;
+import se.terrassorkestern.notgen.model.PlaylistEntry;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,55 +39,55 @@ public class PlaylistPdfService {
         PDFont songFontBold = PDType1Font.HELVETICA_BOLD;
         PDFont songCommentFont = PDType1Font.HELVETICA;
 
-        PDPageContentStream contents = new PDPageContentStream(doc, page);
+        try (PDPageContentStream contents = new PDPageContentStream(doc, page)) {
 
-        contents.beginText();
-        contents.setFont(titleFont, 16);
-        contents.newLineAtOffset(200, 775);
-        contents.showText(playlist.getName() + "  " + playlist.getDate().toString());
-        contents.endText();
-
-        float ypos = drawMultiLineText(playlist.getComment(), 75, 740, 475,
-                page, contents, commentFont, 10, 15) - 20;
-
-        //float ypos = 750;
-        for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
             contents.beginText();
-
-            if (playlistEntry.getBold()) {
-                ypos -= 10;
-                contents.setFont(songFontBold, 12);
-            } else {
-                contents.setFont(songFont, 12);
-            }
-            contents.newLineAtOffset(75, ypos);
-            contents.showText(playlistEntry.getText());
+            contents.setFont(titleFont, 16);
+            contents.newLineAtOffset(200, 775);
+            contents.showText(playlist.getName() + "  " + playlist.getDate().toString());
             contents.endText();
 
-            if (playlistEntry.getComment() != null) {
+            float ypos = drawMultiLineText(playlist.getComment(), 75, 740, 475,
+                    page, contents, commentFont, 10, 15) - 20;
+
+            //float ypos = 750;
+            for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
                 contents.beginText();
-                contents.setFont(songCommentFont, 10);
-                contents.newLineAtOffset(400, ypos);
-                contents.showText(playlistEntry.getComment());
+
+                if (playlistEntry.getBold()) {
+                    ypos -= 10;
+                    contents.setFont(songFontBold, 12);
+                } else {
+                    contents.setFont(songFont, 12);
+                }
+                contents.newLineAtOffset(75, ypos);
+                contents.showText(playlistEntry.getText());
                 contents.endText();
-            }
 
-            ypos -= 20;
-            if (playlistEntry.getBold()) {
-                ypos -= 10;
-            }
+                if (playlistEntry.getComment() != null) {
+                    contents.beginText();
+                    contents.setFont(songCommentFont, 10);
+                    contents.newLineAtOffset(400, ypos);
+                    contents.showText(playlistEntry.getComment());
+                    contents.endText();
+                }
 
-            // Add page(s) if needed
-            if (ypos < 50) {
-                contents.close();
-                page = new PDPage(PDRectangle.A4);
-                doc.addPage(page);
-                contents = new PDPageContentStream(doc, page);
-                ypos = 750;
+                ypos -= 20;
+                if (playlistEntry.getBold()) {
+                    ypos -= 10;
+                }
+
+                // Add page(s) if needed
+                // TODO: fix
+                if (ypos < 50) {
+                    //contents.close();
+                    page = new PDPage(PDRectangle.A4);
+                    doc.addPage(page);
+                    //contents = new PDPageContentStream(doc, page);
+                    ypos = 750;
+                }
             }
         }
-        contents.close();
-
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
