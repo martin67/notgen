@@ -52,7 +52,8 @@ public class AdminService {
 
                 CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(zos), format);  // There is no need for staging the CSV on filesystem or reading bytes into memory. Directly write bytes to the output stream.
                 ResultSet rs;
-                try (PreparedStatement pstmt = conn.prepareStatement("select * from " + table)) {
+                try (PreparedStatement pstmt = conn.prepareStatement("select * from ?")) {
+                    pstmt.setString(1, table);
                     rs = pstmt.executeQuery();
                 }
                 csvPrinter.printRecords(rs, true);

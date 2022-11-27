@@ -48,14 +48,14 @@ public class BackupImporter {
                 sb.append(String.format("delete from %s; ", table));
             }
             log.debug("SQL: {}", sb);
-            PreparedStatement pstmt = conn.prepareStatement(sb.toString());
-            pstmt.execute();
-
+            try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
+                pstmt.execute();
+            }
             sb = new StringBuilder();
             sb.append("alter table score alter column id restart with 1;");
-            pstmt = conn.prepareStatement(sb.toString());
-            pstmt.execute();
-
+            try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
+                pstmt.execute();
+            }
             // import
             try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
                 ZipEntry zipEntry;
@@ -79,8 +79,9 @@ public class BackupImporter {
                             values.delete(values.length() - 2, values.length());
                             String sql = String.format("INSERT INTO %s (%s) VALUES (%s)", table, keys, values);
                             log.debug("sql: {}", sql);
-                            pstmt = conn.prepareStatement(sql);
-                            pstmt.execute();
+                            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                                pstmt.execute();
+                            }
                         }
                     }
                 }
