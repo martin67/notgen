@@ -2,6 +2,7 @@ package se.terrassorkestern.notgen.utils;
 
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.cli.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -24,16 +25,32 @@ import static se.terrassorkestern.notgen.service.AdminService.tables;
 /*
  * Simple database uploader
  * on Windows, run with -Dfile.encoding=UTF8
+ * -d jdbc:h2:file:./todb
  */
 
 @Slf4j
 public class BackupImporter {
 
-    static final String DB_URL = "jdbc:h2:file:./todb";
-    static final String USER = "sa";
-    static final String PASS = "sa";
-
     public static void main(String[] args) throws SQLException, IOException {
+
+        CommandLineParser parser = new DefaultParser();
+        Options options = new Options();
+        options.addOption("database", true, "Database URI");
+        options.addOption("username", true, "Username");
+        options.addOption("password", true, "Password");
+
+        String database;
+        String username;
+        String password;
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            database = cmd.getOptionValue("database");
+            username = cmd.getOptionValue("username");
+            password = cmd.getOptionValue("password");
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
         if (args.length != 1) {
             log.error("wrong argument");
             exit(-1);
@@ -42,7 +59,7 @@ public class BackupImporter {
 
         List<String> reverseTables = new ArrayList<>(tables);
         Collections.reverse(reverseTables);
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+        try (Connection conn = DriverManager.getConnection(database, username, password)) {
             StringBuilder sb = new StringBuilder();
             for (String table : reverseTables) {
                 sb.append(String.format("delete from %s; ", table));

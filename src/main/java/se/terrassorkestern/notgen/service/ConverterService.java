@@ -20,7 +20,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -89,7 +88,7 @@ public class ConverterService {
 
     }
 
-    private List<Path> split(Path tmpDir, NoteConverterStats stats, Path downloadedScore) throws IOException {
+    private List<Path> split(Path tmpDir, Path downloadedScore) throws IOException {
 
         if (!Files.exists(tmpDir) || !Files.exists(downloadedScore)) {
             return null;
@@ -134,7 +133,6 @@ public class ConverterService {
                     .filter(p -> (p.toString().toLowerCase().endsWith(".png") || p.toString().toLowerCase().endsWith(".jpg")))
                     .collect(Collectors.toCollection(ArrayList::new));
             Collections.sort(extractedFilesList);
-            stats.addNumberOfSrcImg(extractedFilesList.size());
         }
 
         return extractedFilesList;
@@ -142,8 +140,6 @@ public class ConverterService {
 
     public void convert(List<Score> scores) throws IOException, InterruptedException {
         log.debug("Starting main convert loop");
-        NoteConverterStats stats = new NoteConverterStats();
-        stats.setStartTime(Instant.now());
         StopWatch stopWatch = new StopWatch("convert scores");
 
         for (Score score : scores) {
@@ -158,7 +154,7 @@ public class ConverterService {
                 Path downloadedScore = storageService.downloadScore(score, tempDir);
                 stopWatch.stop();
 
-                List<Path> extractedFilesList = split(tempDir, stats, downloadedScore);
+                List<Path> extractedFilesList = split(tempDir, downloadedScore);
 
                 stopWatch.start("image process, " + score.getTitle());
                 imageProcess(tempDir, extractedFilesList, score);

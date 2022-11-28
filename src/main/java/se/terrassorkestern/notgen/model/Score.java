@@ -22,8 +22,6 @@ public class Score extends Auditable<String> {
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
-    @ManyToOne
-    private Song song;
     @NotBlank(message = "Titel måste anges")
     private String title;
     private String subTitle;
