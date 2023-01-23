@@ -20,7 +20,6 @@ public class NoteStats implements InfoContributor {
     private final @NonNull InstrumentRepository instrumentRepository;
     private final @NonNull PlaylistRepository playlistRepository;
 
-
     @Override
     public void contribute(Info.Builder builder) {
         Map<String, Object> noteMap = new HashMap<>();

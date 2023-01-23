@@ -62,7 +62,7 @@ public class SecurityConfig {
                 .antMatchers("/", "/**").permitAll()
                 .and()
                 .formLogin()
-                .failureHandler((request, response, exception) -> log.error("Login error", exception))
+                //.failureHandler((request, response, exception) -> log.error("Login error", exception))
                 .and()
                 .logout()
                 .deleteCookies("JSESSIONID")
