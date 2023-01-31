@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,13 +41,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService)
-            throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder)
-                .and()
-                .build();
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
     }
 
     @Bean
@@ -65,20 +65,6 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**", "/actuator/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
-/*
-                .antMatchers("/instrument/**").hasAuthority("EDIT_INSTRUMENT")
-                .antMatchers("/score/list", "/score/view/**").permitAll()
-                .antMatchers("/score/**").hasAuthority("EDIT_SONG")
-                .antMatchers("/user/edit/**", "/user/save").authenticated()
-                .antMatchers("/user/**").hasAuthority("EDIT_USER")
-                .antMatchers("/print/**").hasAuthority("PRINT_SCORE")
-                .antMatchers("/organization/**").hasAuthority("EDIT_ORGANIZATION")
-                .antMatchers("/playlist/list", "/playlist/view/**", "/playlist/createPdf/**").permitAll()
-                .antMatchers("/playlist/**").hasAuthority("EDIT_PLAYLIST")
-                .antMatchers("/admin/**", "/actuator/**").hasRole("ADMIN")
-                .antMatchers("/", "/**").permitAll()
-                .and()
-*/
                 .formLogin()
                 //.failureHandler((request, response, exception) -> log.error("Login error", exception))
                 .and()
