@@ -13,6 +13,7 @@ import se.terrassorkestern.notgen.service.storage.LocalStorage;
 import se.terrassorkestern.notgen.service.storage.S3Storage;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
@@ -88,7 +89,8 @@ public class StorageService {
 
     public int extractZip(Path zipFile, Path dir) throws IOException {
         int numberOfFiles = 0;
-        try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile.toFile())))) {
+        try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile.toFile())), Charset.forName("CP437"))
+        ) {
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (zipEntry.isDirectory()) {

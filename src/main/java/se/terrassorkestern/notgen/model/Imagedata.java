@@ -1,10 +1,10 @@
 package se.terrassorkestern.notgen.model;
 
-import lombok.*;
-import org.hibernate.Hibernate;
-
-import javax.persistence.*;
-import java.util.Objects;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter

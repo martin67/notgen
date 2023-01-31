@@ -42,7 +42,16 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public Path downloadScore(Score score, Path location) throws IOException {
-        return Files.copy(inputDir.resolve(score.getFilename()), location.resolve(score.getFilename()), StandardCopyOption.REPLACE_EXISTING);
+        String fileName = String.format("%d-%d", score.getOrganization().getId(), score.getId());
+        String[] files = inputDir.toFile().list((d, name) -> name.startsWith(fileName));
+        if (files == null || files.length == 0) {
+            log.error("No files found for pattern {}", fileName);
+            return null;
+        } else if (files.length > 1) {
+            log.warn("Multiple resources found for pattern {}, using the first", fileName);
+        }
+
+        return Files.copy(inputDir.resolve(files[0]), location.resolve(files[0]), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override

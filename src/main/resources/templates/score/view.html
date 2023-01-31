@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
-    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <th:block th:replace="~{fragments/general :: header-css}"></th:block>
     <title>Visa noter</title>
 </head>
 
 <body onload="setPrintButton()">
-<div th:replace="fragments/general :: header"></div>
+<div th:replace="~{fragments/general :: header}"></div>
 
 <script type="text/javascript" th:inline="javascript">
     function setPrintButton() {
@@ -113,7 +113,7 @@
     </div>
 </div>
 
-<footer th:replace=" fragments/general :: footer"></footer>
+<footer th:replace=" ~{fragments/general :: footer}"></footer>
 
 </body>
 <script>

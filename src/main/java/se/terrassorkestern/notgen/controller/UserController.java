@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,7 +18,6 @@ import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.user.UserDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j

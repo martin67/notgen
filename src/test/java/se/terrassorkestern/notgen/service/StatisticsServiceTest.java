@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import se.terrassorkestern.notgen.model.Statistics;
 
-import javax.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

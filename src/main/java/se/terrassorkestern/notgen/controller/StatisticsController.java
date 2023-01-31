@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import se.terrassorkestern.notgen.model.Statistics;
 import se.terrassorkestern.notgen.service.StatisticsService;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j

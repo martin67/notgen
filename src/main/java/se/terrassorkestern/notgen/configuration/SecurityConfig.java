@@ -1,10 +1,12 @@
 package se.terrassorkestern.notgen.configuration;
 
+import jakarta.servlet.DispatcherType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,8 +17,9 @@ import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.service.UserRepositoryUserDetailsService;
 
 @Slf4j
+@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final UserRepository userRepository;
@@ -48,7 +51,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
+                .authorizeHttpRequests((authorize) -> authorize
+                        .shouldFilterAllDispatcherTypes(true)
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+                        .requestMatchers("/score/list", "/score/view/**").permitAll()
+                        .requestMatchers("/score/**").hasAuthority("EDIT_SONG")
+                        .requestMatchers("/user/edit/**", "/user/save").authenticated()
+                        .requestMatchers("/user/**").hasAuthority("EDIT_USER")
+                        .requestMatchers("/print/**").hasAuthority("PRINT_SCORE")
+                        .requestMatchers("/organization/**").hasAuthority("EDIT_ORGANIZATION")
+                        .requestMatchers("/playlist/list", "/playlist/view/**", "/playlist/createPdf/**").permitAll()
+                        .requestMatchers("/playlist/**").hasAuthority("EDIT_PLAYLIST")
+                        .requestMatchers("/admin/**", "/actuator/**").hasRole("ADMIN")
+                        .anyRequest().permitAll()
+                )
+/*
                 .antMatchers("/instrument/**").hasAuthority("EDIT_INSTRUMENT")
                 .antMatchers("/score/list", "/score/view/**").permitAll()
                 .antMatchers("/score/**").hasAuthority("EDIT_SONG")
@@ -61,6 +78,7 @@ public class SecurityConfig {
                 .antMatchers("/admin/**", "/actuator/**").hasRole("ADMIN")
                 .antMatchers("/", "/**").permitAll()
                 .and()
+*/
                 .formLogin()
                 //.failureHandler((request, response, exception) -> log.error("Login error", exception))
                 .and()

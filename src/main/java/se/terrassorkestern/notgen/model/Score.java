@@ -1,10 +1,10 @@
 package se.terrassorkestern.notgen.model;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
