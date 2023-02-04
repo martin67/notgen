@@ -7,7 +7,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.SQLServer2012Dialect
+        dialect: org.hibernate.dialect.SQLServerDialect
 
 # Storage config
 notgen:
