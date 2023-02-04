@@ -1,9 +1,9 @@
 package se.terrassorkestern.notgen.repository;
 
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import se.terrassorkestern.notgen.model.ScoreType;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.util.stream.Stream;
 
 @Converter(autoApply = true)

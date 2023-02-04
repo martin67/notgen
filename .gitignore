@@ -26,3 +26,7 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+# Development db
+todb.mv.db
+todb.trace.db

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
-    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <th:block th:replace="~{fragments/general :: header-css}"></th:block>
     <title>Lista användare</title>
 </head>
 
 <body>
-<div th:replace="fragments/general :: header"></div>
+<div th:replace="~{fragments/general :: header}"></div>
 
 <div class="container">
     <h2>Användare</h2>
@@ -14,19 +14,23 @@
         <thead>
         <tr>
             <th>Användarnamn</th>
+            <th>Visningsnamn</th>
             <th>Namn</th>
             <th>Band</th>
             <th>Aktiv</th>
             <th>Roll</th>
+            <th>Provider</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="user : ${users}" th:data-link="@{edit(id=${user.id})}">
             <td th:text="${user.username}"></td>
-            <td th:text="${user.fullname}"></td>
-            <td th:text="${user.organization} ? ${user.organization.name} : '---'"></td>
+            <td th:text="${user.getDisplayName()}"></td>
+            <td th:text="${user.getFullName()}"></td>
+            <td th:text="${user.band} ? ${user.band.name} : '---'"></td>
             <td><input type="checkbox" th:checked="${user.enabled}" ? 'checked' /></td>
             <td th:text="${user.getRoleNames()}"></td>
+            <td th:text="${user.getProvider()}"></td>
         </tr>
         </tbody>
     </table>
@@ -43,7 +47,7 @@
     </div>
 </div>
 
-<footer th:replace="fragments/general :: footer"></footer>
+<footer th:replace="~{fragments/general :: footer}"></footer>
 </body>
 
 <script>

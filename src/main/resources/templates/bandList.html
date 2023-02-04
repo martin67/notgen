@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="sv">
 <head>
-    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <th:block th:replace="~{fragments/general :: header-css}"></th:block>
     <title>Lista band</title>
 </head>
 
 <body>
-<div th:replace="fragments/general :: header"></div>
+<div th:replace="~{fragments/general :: header}"></div>
 
 <div class="container">
     <h2>Band</h2>
@@ -15,21 +15,21 @@
         <tr>
             <th>Namn</th>
             <th>Beskrivning</th>
-            <th><a th:href="@{/organization/new}"><i class="material-icons" title="Lägg till band">add_box</i></a>
+            <th><a th:href="@{/band/new}"><i class="material-icons" title="Lägg till band">add_box</i></a>
             </th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="organization : ${organizations}">
-            <td th:text="${organization.name}"></td>
-            <td th:text="${organization.description}"></td>
-            <td><a th:href="@{/organization/edit(id=${organization.id})}"><i
+        <tr th:each="band : ${bands}">
+            <td th:text="${band.name}"></td>
+            <td th:text="${band.description}"></td>
+            <td><a th:href="@{/band/edit(id=${band.id})}"><i
                     class="material-icons text-secondary" title="Ändra band">mode_edit</i></a></td>
         </tr>
         </tbody>
     </table>
 </div>
 
-<footer th:replace="fragments/general :: footer"></footer>
+<footer th:replace="~{fragments/general :: footer}"></footer>
 </body>
 </html>

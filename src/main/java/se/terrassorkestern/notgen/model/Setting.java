@@ -1,10 +1,11 @@
 package se.terrassorkestern.notgen.model;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,15 +18,12 @@ public class Setting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "band_id")
+    private Band band;
     @NotBlank
     private String name;
 
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    }, fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name = "setting_instrument",
             joinColumns = @JoinColumn(name = "setting_id"),

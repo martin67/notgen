@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
-    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <th:block th:replace="~{fragments/general :: header-css}"></th:block>
     <title>Administration</title>
 </head>
 
 <body>
-<div th:replace="fragments/general :: header"></div>
+<div th:replace="~{fragments/general :: header}"></div>
 
 <div class="container">
     <h2>Administration av notgeneratorn</h2>
 
     <ul class="list-group">
-        <li sec:authorize="hasAuthority('EDIT_ORGANIZATION')" class="list-group-item"><a
-                th:href="@{/organization/list}">Band</a></li>
+        <li sec:authorize="hasAuthority('EDIT_BAND')" class="list-group-item"><a
+                th:href="@{/band/list}">Band</a></li>
         <li class="list-group-item"><a th:href="@{/user/list}">Användare</a></li>
         <li class="list-group-item"><a th:href="@{/instrument/list}">Instrument</a></li>
         <li class="list-group-item"><a th:href="@{/setting/list}">Sättningar</a></li>
@@ -25,6 +25,6 @@
     <a href="/admin/export" class="btn btn-info" role="button">Exportera databasen</a>
 </div>
 
-<footer th:replace="fragments/general :: footer"></footer>
+<footer th:replace="~{fragments/general :: footer}"></footer>
 </body>
 </html>

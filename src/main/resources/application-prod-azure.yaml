@@ -1,0 +1,23 @@
+#
+# Prod environment for Azure
+#
+spring:
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServer2012Dialect
+
+# Storage config
+notgen:
+  storage:
+    type: azure
+    input: scores
+    output: scoreparts
+    static: static
+
+  # Local folders
+  # Mounted from static container
+  folders:
+    static: /var/lib/notgen/static

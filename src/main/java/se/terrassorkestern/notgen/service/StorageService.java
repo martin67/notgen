@@ -13,6 +13,7 @@ import se.terrassorkestern.notgen.service.storage.LocalStorage;
 import se.terrassorkestern.notgen.service.storage.S3Storage;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
@@ -26,7 +27,7 @@ public class StorageService {
     private final BackendStorage backendStorage;
     private final boolean keepTempDir;
 
-    public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir, @Value("${notgen.storage}") String storage,
+    public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir, @Value("${notgen.storage.type}") String storage,
                           S3Storage s3Storage, AzureStorage azureStorage, LocalStorage localStorage) {
         this.keepTempDir = keepTempDir;
 
@@ -34,7 +35,7 @@ public class StorageService {
             case "s3" -> this.backendStorage = s3Storage;
             case "azure" -> this.backendStorage = azureStorage;
             case "local" -> this.backendStorage = localStorage;
-            default -> throw new IllegalArgumentException("notgen.storage " + storage + " not valid");
+            default -> throw new IllegalArgumentException("notgen.storage.type " + storage + " not valid");
         }
         log.info("Using storage: {}", storage);
     }
@@ -88,7 +89,8 @@ public class StorageService {
 
     public int extractZip(Path zipFile, Path dir) throws IOException {
         int numberOfFiles = 0;
-        try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile.toFile())))) {
+        try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile.toFile())), Charset.forName("CP437"))
+        ) {
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (zipEntry.isDirectory()) {

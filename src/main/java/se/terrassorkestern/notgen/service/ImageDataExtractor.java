@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.ImageReadException;
@@ -19,7 +20,6 @@ import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 
 import javax.imageio.ImageIO;
-import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

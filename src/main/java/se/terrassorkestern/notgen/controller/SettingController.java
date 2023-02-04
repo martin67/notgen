@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +12,6 @@ import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 
-import javax.validation.Valid;
 import java.security.Principal;
 
 @Slf4j
@@ -66,7 +66,7 @@ public class SettingController {
             return "settingEdit";
         }
         User user = userRepository.findByUsername(principal.getName()).orElseThrow();
-        setting.setOrganization(user.getOrganization());
+        setting.setBand(user.getBand());
         log.info("Sparar sättning {} [{}]", setting.getName(), setting.getId());
         settingRepository.save(setting);
         return "redirect:/setting/list";

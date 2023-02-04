@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.imaging.ImageReadException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,7 +10,6 @@ import se.terrassorkestern.notgen.service.AdminService;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.ImageDataExtractor;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;

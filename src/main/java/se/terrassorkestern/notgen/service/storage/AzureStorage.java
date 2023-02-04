@@ -27,11 +27,11 @@ public class AzureStorage implements BackendStorage {
     private static final String BLOB_RESOURCE_PATTERN = "azure-blob://%s/%s";
     private final ResourceLoader resourceLoader;
     private final AzureStorageBlobProtocolResolver azureStorageBlobProtocolResolver;
-    @Value("${notgen.storage.azure.input-container}")
+    @Value("${notgen.storage.input}")
     private String scoreContainer;
-    @Value("${notgen.storage.azure.output-container}")
+    @Value("${notgen.storage.output}")
     private String scorePartsContainer;
-    @Value("${notgen.storage.azure.static-container}")
+    @Value("${notgen.storage.static}")
     private String staticContainer;
 
 
@@ -44,7 +44,7 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public Path downloadScore(Score score, Path location) throws IOException {
-        String fileName = String.format("%d-%d.*", score.getOrganization().getId(), score.getId());
+        String fileName = String.format("%d-%d.*", score.getBand().getId(), score.getId());
         Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
         if (resources.length == 0) {
             log.error("No resource found for pattern {}", fileName);
@@ -85,7 +85,7 @@ public class AzureStorage implements BackendStorage {
 
     public void uploadScore(Score score, Path path) throws IOException {
         log.info("Uploading {}, file {}", score.getTitle(), path);
-        String fileName = String.format("%d-%d.%s", score.getOrganization().getId(), score.getId(),
+        String fileName = String.format("%d-%d.%s", score.getBand().getId(), score.getId(),
                 com.google.common.io.Files.getFileExtension(score.getFilename()));
         Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
         try (OutputStream os = ((WritableResource) storageBlobResource).getOutputStream()) {
@@ -129,17 +129,17 @@ public class AzureStorage implements BackendStorage {
     }
 
     @Override
-    public void deleteScore(Score score) throws IOException {
+    public void deleteScore(Score score) {
 
     }
 
     @Override
-    public void deleteScoreParts(Score score) throws IOException {
+    public void deleteScoreParts(Score score) {
 
     }
 
     @Override
-    public void cleanOutput() throws IOException {
+    public void cleanOutput() {
 
     }
 

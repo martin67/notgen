@@ -1,0 +1,36 @@
+#
+# Local development with external database
+#
+
+# DB access
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  # Use thymeleaf templates from source so that changes are visible immediately
+  thymeleaf:
+    prefix: file:src/main/resources/templates/
+    cache: false
+  web:
+    resources:
+      static-locations: file:${notgen.folders.static}/,file:src/main/resources/static/
+
+# Full logging on the notgen parts
+logging:
+  level:
+    se.terrassorkestern.notgen: DEBUG
+
+  # Don't delete the temporary directories (useful for debugging). Default is false
+  #notgen.keep.tempdir=true
+
+# Storage
+notgen:
+  storage:
+    type: azure
+    input: scores
+    output: scoreparts
+    static: static

@@ -15,4 +15,9 @@ public class HomeController {
     public String about() {
         return "about";
     }
+
+    @RequestMapping("/login")
+    public String login() {
+        return "login";
+    }
 }

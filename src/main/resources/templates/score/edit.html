@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
-    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <th:block th:replace="~{fragments/general :: header-css}"></th:block>
     <title>Redigera noter</title>
 </head>
 
 <body>
-<div th:replace="fragments/general :: header"></div>
+<div th:replace="~{fragments/general :: header}"></div>
 
 <!-- Modal -->
 <div class="modal" id="deleteModal" tabindex="-1" role="dialog">
@@ -51,13 +51,13 @@
                 </div>
                 <div class="row g-2">
                     <div class="col-md" id="prefetch-genres">
-                        <div class="form-floating">
+                        <div>
+                            <label for="genre">Genre</label>
                             <input type="text" class="form-control typeahead" id="genre" autocomplete="off"
                                    th:field="*{genre}"
                                    th:value="${score.genre}"/>
                             <span class="text-danger" th:if="${#fields.hasErrors('genre')}"
                                   th:errors="*{genre}">Error</span>
-                            <label for="genre">Genre</label>
                         </div>
                     </div>
                     <div class="col-md">
@@ -83,24 +83,24 @@
                    th:value="${score.composer}"/>
             <label for="composer">Kompositör</label>
         </div>
-        <div class="form-floating mb-3" id="prefetch-authors">
+        <div class="mb-3" id="prefetch-authors">
+            <label for="author">Författare</label>
             <input type="text" class="form-control typeahead" id="author" autocomplete="off"
                    th:field="*{author}"
                    th:value="${score.author}"/>
-            <label for="author">Författare</label>
         </div>
 
-        <div class="form-floating mb-3" id="prefetch-arrangers">
+        <div class="mb-3" id="prefetch-arrangers">
+            <label for="arranger">Arrangör</label>
             <input type="text" class="form-control typeahead" id="arranger" autocomplete="off"
                    th:field="*{arranger}"
-                   th:value="${score.arranger}"/>
-            <label for="arranger">Arrangör</label>
+                   th:value="${score.arranger}" placeholder="arr"/>
         </div>
-        <div class="form-floating mb-3" id="prefetch-publishers">
+        <div class="mb-3" id="prefetch-publishers">
+            <label for="publisher">Förlag</label>
             <input type="text" class="form-control typeahead" id="publisher" autocomplete="off"
                    th:field="*{publisher}"
                    th:value="${score.publisher}"/>
-            <label for="publisher">Förlag</label>
         </div>
         <div class="form-floating mb-3">
                 <textarea class="form-control" rows="4" id="comment" th:field="*{comment}"
@@ -240,7 +240,7 @@
     </form>
 </div>
 
-<footer th:replace="fragments/general :: footer"></footer>
+<footer th:replace="~{fragments/general :: footer}"></footer>
 
 <script type="text/javascript">
     window.onload = function () {

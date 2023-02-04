@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="sv">
 <head>
-    <th:block th:replace="fragments/general :: header-css"></th:block>
+    <th:block th:replace="~{fragments/general :: header-css}"></th:block>
     <title>Redigera band</title>
 </head>
 
 <body>
-<div th:replace="fragments/general :: header"></div>
+<div th:replace="~{fragments/general :: header}"></div>
 
 <!-- Modal -->
 <div class="modal" id="deleteModal" tabindex="-1" role="dialog">
@@ -23,7 +23,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                <a class="btn btn-danger" th:href="@{/organization/delete(id=${organization.id})}">Ta bort</a>
+                <a class="btn btn-danger" th:href="@{/band/delete(id=${band.id})}">Ta bort</a>
             </div>
         </div>
     </div>
@@ -32,22 +32,22 @@
 <div class="container">
     <h1>Redigera band</h1>
 
-    <form role="form" th:action="@{/organization/save}" th:object="${organization}" th:method="post">
-        <input type="hidden" th:field="*{id}" th:value="${organization.id}"/>
+    <form role="form" th:action="@{/band/save}" th:object="${band}" th:method="post">
+        <input type="hidden" th:field="*{id}" th:value="${band.id}"/>
 
         <div class="form-floating mb-3">
-            <input type="text" class="form-control" th:field="*{name}" th:value="${organization.name}" id="name"/>
+            <input type="text" class="form-control" th:field="*{name}" th:value="${band.name}" id="name"/>
             <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
             <label for="name">Namn</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="text" class="form-control" th:field="*{description}" th:value="${organization.description}"
+            <input type="text" class="form-control" th:field="*{description}" th:value="${band.description}"
                    id="shortName"/>
             <label for="shortName">Beskrivning</label>
         </div>
 
         <div class="col-sm-9">
-            <a class="btn btn-secondary" th:href="@{/organization/list}">Tillbaka</a>
+            <a class="btn btn-secondary" th:href="@{/band/list}">Tillbaka</a>
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Ta bort
             </button>
             <input type="submit" class="btn btn-primary" value="Spara"/>
@@ -55,6 +55,6 @@
     </form>
 </div>
 
-<footer th:replace="fragments/general :: footer"></footer>
+<footer th:replace="~{fragments/general :: footer}"></footer>
 </body>
 </html>

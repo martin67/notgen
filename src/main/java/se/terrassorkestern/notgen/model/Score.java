@@ -1,10 +1,11 @@
 package se.terrassorkestern.notgen.model;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,17 +14,15 @@ import java.util.List;
 @Entity
 @Table(name = "score", indexes = {
         @Index(name = "idx_title", columnList = "title"),
-        @Index(name = "idx_organization", columnList = "organization_id")
+        @Index(name = "idx_band", columnList = "band_id")
 })
 public class Score extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
-    @ManyToOne
-    private Song song;
+    @JoinColumn(name = "band_id")
+    private Band band;
     @NotBlank(message = "Titel måste anges")
     private String title;
     private String subTitle;

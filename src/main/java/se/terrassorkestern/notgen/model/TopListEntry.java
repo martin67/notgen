@@ -1,9 +1,11 @@
 package se.terrassorkestern.notgen.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class TopListEntry {
     private String name;

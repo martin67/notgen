@@ -22,7 +22,7 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class AdminService {
 
-    public static final List<String> tables = List.of("song", "organization", "score", "instrument", "user_",
+    public static final List<String> tables = List.of("song", "band", "score", "instrument", "user_",
             "setting", "playlist", "role", "privilege",
             "score_instrument", "setting_instrument", "score_playlist", "role_privilege", "user_role");
     private final DataSource dataSource;
