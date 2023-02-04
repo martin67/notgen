@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Organization;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.TopListEntry;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
-    List<Score> findByOrganizationOrderByTitleAsc(Organization organization);
+    List<Score> findByBandOrderByTitleAsc(Band band);
 
     List<Score> findByTitle(String text);
 
@@ -80,6 +80,7 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
             " FROM Score s GROUP BY s.publisher ORDER BY COUNT(s.publisher) DESC")
     List<TopListEntry> findTopPublishers(Pageable pageable);
 
+    //@Query("SELECT SUM(sp.length) FROM ScorePart sp")
     @Query("SELECT SUM(sp.length) FROM ScorePart sp")
     long numberOfPages();
 }

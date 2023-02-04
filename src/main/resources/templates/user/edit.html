@@ -11,53 +11,63 @@
 <div class="container">
     <h1>Redigera användare</h1>
 
-    <form role="form" autocomplete="off" th:action="@{/user/save}" th:object="${user}" th:method="post">
+    <form class="needs-validation" autocomplete="off" th:action="@{/user/save}" th:object="${user}" th:method="post">
+        <input type="hidden" th:field="*{id}" th:value="${user.id}"/>
 
         <p class="text-danger" th:if="${#fields.hasGlobalErrors()}" th:each="error : ${#fields.errors('global')}"
            th:text="${error}">Validation error</p>
 
-        <div class="form-floating mb-2" sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="form-floating mb-3" sec:authorize="hasRole('ROLE_ADMIN')" th:unless="${user.isRemoteUser()}">
             <input type="text" class="form-control" th:field="*{username}" th:value="${user.username}"
                    id="username"/>
+            <label class="form-label" for="username">Användarnamn</label>
             <span class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</span>
-            <label for="username">Användarnamn</label>
-        </div>
-
-        <input sec:authorize="!hasRole('ROLE_ADMIN')" type="hidden" th:field="*{username}" th:value="${user.username}"/>
-
-        <div class="form-floating mb-2">
-            <input type="text" class="form-control" th:field="*{fullname}" th:value="${user.fullname}"
-                   id="fullname"/>
-            <span class="text-danger" th:if="${#fields.hasErrors('fullname')}" th:errors="*{fullname}">Error</span>
-            <label for="fullname">Namn</label>
-        </div>
-
-        <div class="form-floating mb-2">
-            <input type="text" class="form-control" th:field="*{email}" th:value="${user.email}" id="email"/>
-            <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</span>
-            <label for="email">E-post</label>
-        </div>
-
-        <div class="form-floating mb-2">
-            <input type="password" class="form-control" th:field="*{password}" th:value="${user.password}"
-                   id="password"/>
-            <span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error</span>
-            <label for="password">Lösenord</label>
         </div>
 
         <div class="form-floating mb-3">
-            <input type="password" class="form-control" th:field="*{matchingPassword}"
-                   th:value="${user.matchingPassword}" id="matchingPassword"/>
-            <span class="text-danger" th:if="${#fields.hasErrors('matchingPassword')}"
-                  th:errors="*{matchingPassword}">Error</span>
-            <label for="matchingPassword">Upprepa lösenord</label>
+            <input type="text" class="form-control" th:field="*{fullName}" th:value="${user.fullName}" id="fullname"
+                   th:disabled="${user.isRemoteUser()}" required/>
+            <label class="form-label" for="fullName">Namn</label>
+            <span class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Error</span>
         </div>
 
-        <div sec:authorize="hasRole('ROLE_ADMIN')" class="row">
-            <div class="col"><h3>Roll & behörighet</h3></div>
-            <div class="col"></div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" th:field="*{displayName}" th:value="${user.displayName}"
+                   id="displayName"/>
+            <label class="form-label" for="displayName">Visningsnamn</label>
+            <span class="text-danger" th:if="${#fields.hasErrors('displayName')}"
+                  th:errors="*{displayName}">Error</span>
         </div>
-        <input sec:authorize="!hasRole('ROLE_ADMIN')" type="hidden" th:field="*{enabled}" th:value="${user.enabled}"/>
+
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" th:field="*{email}" th:value="${user.email}" id="email"
+                   th:disabled="${user.isRemoteUser()}" required/>
+            <label class="form-label" for="email">E-post</label>
+            <span class=" text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</span>
+        </div>
+
+        <div class="form-floating mb-3" th:unless="${user.isRemoteUser()}">
+            <input type="password" class="form-control" th:field="*{password}" th:value="${user.password}"
+                   id="password"/>
+            <label class="form-label" for="password">Lösenord</label>
+            <span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error</span>
+        </div>
+
+        <div class="form-floating mb-3" th:unless="${user.isRemoteUser()}">
+            <input type="password" class="form-control" th:field="*{matchingPassword}"
+                   th:value="${user.matchingPassword}" id="matchingPassword"/>
+            <label class="form-label" for="matchingPassword">Upprepa lösenord</label>
+            <span class="text-danger" th:if="${#fields.hasErrors('matchingPassword')}"
+                  th:errors="*{matchingPassword}">Error</span>
+        </div>
+
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+            <h3>Roll & behörighet</h3>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" th:value="${user.enabled}" th:field="*{enabled}" id="enabled">
+                <label class="form-check-label" for="enabled">Aktiv</label>
+            </div>
+        </div>
 
         <div class="row gy-2 mb-3">
             <div class="col-auto">

@@ -13,6 +13,7 @@ import se.terrassorkestern.notgen.model.Role;
 import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
+import se.terrassorkestern.notgen.user.UserPrincipal;
 
 import java.util.Collections;
 import java.util.List;
@@ -102,7 +103,7 @@ class UserControllerTest {
         @Test
         @DisplayName("Own user")
         void whenEditSelf_thenReturnOk() throws Exception {
-            mvc.perform(get("/user/edit").with(user(normalUser))
+            mvc.perform(get("/user/edit").with(user(UserPrincipal.create(normalUser)))
                             .contentType(MediaType.TEXT_HTML))
                     .andExpect(view().name("user/edit"))
                     .andExpect(model().attributeExists("user"))
@@ -114,7 +115,7 @@ class UserControllerTest {
         @Test
         @DisplayName("Other user as admin")
         void whenEditValidInput_thenReturnOk() throws Exception {
-            mvc.perform(get("/user/edit").with(user(adminUser))
+            mvc.perform(get("/user/edit").with(user(UserPrincipal.create(adminUser)))
                             .contentType(MediaType.TEXT_HTML)
                             .param("id", "1"))
                     .andExpect(view().name("user/edit"))
@@ -127,7 +128,7 @@ class UserControllerTest {
         @Test
         @DisplayName("Other user as non-admin")
         void whenEditValidFakeAdmin_thenReturnOk() throws Exception {
-            mvc.perform(get("/user/edit").with(user(normalUser))
+            mvc.perform(get("/user/edit").with(user(UserPrincipal.create(normalUser)))
                             .contentType(MediaType.TEXT_HTML)
                             .param("id", "2"))
                     .andExpect(view().name("redirect:/"))
@@ -138,7 +139,7 @@ class UserControllerTest {
         @Test
         @DisplayName("Non-existing user")
         void whenEditNonValidInput_thenReturnNotFound() throws Exception {
-            mvc.perform(get("/user/edit").with(user(adminUser))
+            mvc.perform(get("/user/edit").with(user(UserPrincipal.create(adminUser)))
                             .contentType(MediaType.TEXT_HTML)
                             .param("id", "0"))
                     .andExpect(status().isNotFound());
@@ -152,7 +153,7 @@ class UserControllerTest {
         @Test
         @DisplayName("Valid input")
         void whenSaveValidInput_thenReturnRedirect() throws Exception {
-            mvc.perform(post("/user/save").with(csrf()).with(user(adminUser))
+            mvc.perform(post("/user/save").with(csrf()).with(user(UserPrincipal.create(adminUser)))
                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                             .param("username", "newuser")
                             .param("fullname", "New User")
@@ -160,13 +161,13 @@ class UserControllerTest {
                             .param("matchingPassword", "password")
                             .param("email", "dummy@dummy.net"))
                     .andExpect(status().isFound())
-                    .andExpect(redirectedUrlPattern("/*"));
+                    .andExpect(redirectedUrlPattern("/user/list*"));
         }
 
         @Test
         @DisplayName("Invalid input")
         void whenSaveInvalidInput_thenReturnReload() throws Exception {
-            mvc.perform(post("/user/save").with(csrf()).with(user(adminUser))
+            mvc.perform(post("/user/save").with(csrf()).with(user(UserPrincipal.create(adminUser)))
                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                             .param("id", "1")
                             .param("password", "password1")

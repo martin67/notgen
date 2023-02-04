@@ -18,7 +18,12 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
-        return (validateEmail(email));
+        if (email == null) {
+            // Ok with null as Oauth2 users have this field disabled, and then it sends null
+            return true;
+        } else {
+            return (validateEmail(email));
+        }
     }
 
     public boolean validateEmail(String email) {

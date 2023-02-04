@@ -14,19 +14,23 @@
         <thead>
         <tr>
             <th>Användarnamn</th>
+            <th>Visningsnamn</th>
             <th>Namn</th>
             <th>Band</th>
             <th>Aktiv</th>
             <th>Roll</th>
+            <th>Provider</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="user : ${users}" th:data-link="@{edit(id=${user.id})}">
             <td th:text="${user.username}"></td>
-            <td th:text="${user.fullname}"></td>
-            <td th:text="${user.organization} ? ${user.organization.name} : '---'"></td>
+            <td th:text="${user.getDisplayName()}"></td>
+            <td th:text="${user.getFullName()}"></td>
+            <td th:text="${user.band} ? ${user.band.name} : '---'"></td>
             <td><input type="checkbox" th:checked="${user.enabled}" ? 'checked' /></td>
             <td th:text="${user.getRoleNames()}"></td>
+            <td th:text="${user.getProvider()}"></td>
         </tr>
         </tbody>
     </table>

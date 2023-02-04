@@ -1,0 +1,37 @@
+#
+# Local development with database on H2 (persistent)
+#
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./todb
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:sa}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+  thymeleaf:
+    # Use thymeleaf templates from source so that changes are visible immediately
+    prefix: file:src/main/resources/templates/
+    cache: false
+  liquibase:
+    enabled: false
+
+# Full logging on the notgen parts
+logging:
+  level:
+    se.terrassorkestern.notgen: DEBUG
+
+# Don't delete the temporary directories (useful for debugging). Default is false
+#notgen.keep.tempdir=true
+
+# Storage
+notgen:
+  storage:
+    type: local
+    input: /Work/TO/notgen/score_input
+    output: /Work/TO/notgen/score_output
+  folders:
+    static: /Work/TO/notgen/static_content

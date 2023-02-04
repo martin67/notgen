@@ -8,11 +8,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import se.terrassorkestern.notgen.model.Organization;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Privilege;
 import se.terrassorkestern.notgen.model.Role;
 import se.terrassorkestern.notgen.model.User;
-import se.terrassorkestern.notgen.repository.OrganizationRepository;
+import se.terrassorkestern.notgen.repository.BandRepository;
 import se.terrassorkestern.notgen.repository.PrivilegeRepository;
 import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
@@ -30,17 +30,17 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PrivilegeRepository privilegeRepository;
-    private final OrganizationRepository organizationRepository;
+    private final BandRepository bandRepository;
     private final PasswordEncoder passwordEncoder;
     private final Path configPath;
 
     public InitialDataLoader(UserRepository userRepository, RoleRepository roleRepository,
-                             PrivilegeRepository privilegeRepository, OrganizationRepository organizationRepository,
+                             PrivilegeRepository privilegeRepository, BandRepository bandRepository,
                              PasswordEncoder passwordEncoder, @Value("${notgen.folders.static}") String configFolder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.privilegeRepository = privilegeRepository;
-        this.organizationRepository = organizationRepository;
+        this.bandRepository = bandRepository;
         this.passwordEncoder = passwordEncoder;
         this.configPath = Path.of(configFolder);
     }
@@ -53,7 +53,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
             log.info("Creating initial user admin with admin rights");
 
             createRoleIfNotFound("ROLE_SUPERADMIN", List.of(
-                    createPrivilegeIfNotFound("EDIT_ORGANIZATION")));
+                    createPrivilegeIfNotFound("EDIT_BAND")));
 
             createRoleIfNotFound("ROLE_ADMIN", List.of(
                     createPrivilegeIfNotFound("EDIT_SONG"),
@@ -67,21 +67,23 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
             List<Role> adminRoles = roleRepository.findAll();
             User u = new User();
             u.setUsername("admin");
-            u.setFullname("Thore Terrass");
+            u.setFullName("Administrator");
+            u.setDisplayName("The Admin");
             u.setPassword(passwordEncoder.encode("admin"));
             u.setRoles(adminRoles);
             u.setEnabled(true);
+            u.setProvider(AuthProvider.local);
             userRepository.save(u);
             return u;
         });
 
-        if (organizationRepository.findByName("Terrassorkestern").isEmpty()) {
+        if (bandRepository.findByName("Terrassorkestern").isEmpty()) {
             log.info("Creating initial band");
-            Organization organization = new Organization();
-            organization.setName("Terrassorkestern");
-            organizationRepository.save(organization);
+            Band band = new Band();
+            band.setName("Terrassorkestern");
+            bandRepository.save(band);
 
-            user.setOrganization(organization);
+            user.setBand(band);
             userRepository.save(user);
         }
 

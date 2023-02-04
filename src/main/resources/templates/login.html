@@ -2,23 +2,46 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
     <title>Please Log In</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>
 </head>
 <body>
-<h1>Please Log In</h1>
-<div th:if="${param.error}">
-    Invalid username and password.
+<div class="container">
+    <form class="form-signin" th:action="@{/login}" method="post">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <div class="alert alert-danger" role="alert" th:if="${param.error}">
+            Invalid username and/or password.
+        </div>
+        <div class="alert alert-success" role="alert" th:if="${param.logout}">
+            You have been logged out.
+        </div>
+
+        <table class="table">
+            <tr>
+                <td><a href="/oauth2/authorization/facebook">Sign in with Facebook</a></td>
+            </tr>
+            <tr>
+                <td><a href="/oauth2/authorization/google">Sign in with Google</a></td>
+            </tr>
+        </table>
+
+        <p>
+            <label for="username" class="sr-only">Username</label>
+            <input type="text" id="username" class="form-control" name="username" placeholder="Username" required
+                   autofocus/>
+        </p>
+        <p>
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+        </p>
+        <p><input type='checkbox' name='remember-me'/> Remember me on this computer.</p>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
 </div>
-<div th:if="${param.logout}">
-    You have been logged out.
-</div>
-<form th:action="@{/login}" method="post">
-    <div>
-        <input type="text" name="username" placeholder="Username"/>
-    </div>
-    <div>
-        <input type="password" name="password" placeholder="Password"/>
-    </div>
-    <input type="submit" value="Log in"/>
-</form>
 </body>
 </html>

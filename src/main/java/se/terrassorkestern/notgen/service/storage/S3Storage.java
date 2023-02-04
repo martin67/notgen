@@ -24,9 +24,9 @@ import java.util.Set;
 public class S3Storage implements BackendStorage {
 
     private final S3Client s3Client;
-    @Value("${notgen.storage.s3.input-bucket}")
+    @Value("${notgen.storage.input}")
     private String inputBucket;
-    @Value("${notgen.storage.s3.output-bucket}")
+    @Value("${notgen.storage.output}")
     private String outputBucket;
 
     public S3Storage() {
@@ -89,7 +89,7 @@ public class S3Storage implements BackendStorage {
     }
 
     @Override
-    public void uploadScore(Score score, Path path) throws IOException {
+    public void uploadScore(Score score, Path path) {
 
     }
 
@@ -105,17 +105,17 @@ public class S3Storage implements BackendStorage {
     }
 
     @Override
-    public OutputStream getCoverOutputStream(Score score) throws IOException {
+    public OutputStream getCoverOutputStream(Score score) {
         return null;
     }
 
     @Override
-    public OutputStream getThumbnailOutputStream(Score score) throws IOException {
+    public OutputStream getThumbnailOutputStream(Score score) {
         return null;
     }
 
     @Override
-    public void deleteScore(Score score) throws IOException {
+    public void deleteScore(Score score) {
 
     }
 

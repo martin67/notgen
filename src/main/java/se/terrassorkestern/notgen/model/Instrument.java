@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,8 +23,8 @@ public class Instrument {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "band_id")
+    private Band band;
     @NotBlank(message = "Instrumentnamn måste anges")
     private String name;
     private String shortName;

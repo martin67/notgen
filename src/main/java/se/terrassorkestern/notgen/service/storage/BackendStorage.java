@@ -26,7 +26,7 @@ public interface BackendStorage {
 
     OutputStream getThumbnailOutputStream(Score score) throws IOException;
 
-    void deleteScore(Score score) throws IOException;
+    void deleteScore(Score score);
 
     void deleteScoreParts(Score score) throws IOException;
 

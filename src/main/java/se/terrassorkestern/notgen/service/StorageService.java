@@ -27,7 +27,7 @@ public class StorageService {
     private final BackendStorage backendStorage;
     private final boolean keepTempDir;
 
-    public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir, @Value("${notgen.storage}") String storage,
+    public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir, @Value("${notgen.storage.type}") String storage,
                           S3Storage s3Storage, AzureStorage azureStorage, LocalStorage localStorage) {
         this.keepTempDir = keepTempDir;
 
@@ -35,7 +35,7 @@ public class StorageService {
             case "s3" -> this.backendStorage = s3Storage;
             case "azure" -> this.backendStorage = azureStorage;
             case "local" -> this.backendStorage = localStorage;
-            default -> throw new IllegalArgumentException("notgen.storage " + storage + " not valid");
+            default -> throw new IllegalArgumentException("notgen.storage.type " + storage + " not valid");
         }
         log.info("Using storage: {}", storage);
     }

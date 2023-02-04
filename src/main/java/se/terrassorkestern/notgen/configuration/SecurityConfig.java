@@ -4,10 +4,8 @@ import jakarta.servlet.DispatcherType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.service.UserRepositoryUserDetailsService;
+import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
+import se.terrassorkestern.notgen.user.CustomOidcUserService;
 
 @Slf4j
 @Configuration
@@ -25,9 +25,14 @@ import se.terrassorkestern.notgen.service.UserRepositoryUserDetailsService;
 public class SecurityConfig {
 
     private final UserRepository userRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOidcUserService customOidcUserService;
 
-    public SecurityConfig(UserRepository userRepository) {
+    public SecurityConfig(UserRepository userRepository, CustomOAuth2UserService customOAuth2UserService,
+                          CustomOidcUserService customOidcUserService) {
         this.userRepository = userRepository;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.customOidcUserService = customOidcUserService;
     }
 
     @Bean
@@ -59,22 +64,32 @@ public class SecurityConfig {
                         .requestMatchers("/user/edit/**", "/user/save").authenticated()
                         .requestMatchers("/user/**").hasAuthority("EDIT_USER")
                         .requestMatchers("/print/**").hasAuthority("PRINT_SCORE")
-                        .requestMatchers("/organization/**").hasAuthority("EDIT_ORGANIZATION")
+                        .requestMatchers("/band/**").hasAuthority("EDIT_BAND")
                         .requestMatchers("/playlist/list", "/playlist/view/**", "/playlist/createPdf/**").permitAll()
                         .requestMatchers("/playlist/**").hasAuthority("EDIT_PLAYLIST")
+                        .requestMatchers("/instrument/**").hasAuthority("EDIT_INSTRUMENT")
                         .requestMatchers("/admin/**", "/actuator/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
-                .formLogin()
-                //.failureHandler((request, response, exception) -> log.error("Login error", exception))
-                .and()
-                .logout()
-                .deleteCookies("JSESSIONID")
-                .logoutSuccessUrl("/")
-                .and()
-                .rememberMe()
-                .userDetailsService(userDetailsService())
-                .key("jaksdladnsdasd");
+                .formLogin((formLogin) -> formLogin
+                        .loginPage("/login")
+                )
+                .logout((logout) -> logout
+                        .logoutUrl("/logout")
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessUrl("/")
+                )
+                .rememberMe((rememberMe) -> rememberMe
+                        .userDetailsService(userDetailsService())
+                        .key("asdasdsad")
+                )
+                .oauth2Login((oauth2Login) -> oauth2Login
+                        .loginPage("/login")
+                        .userInfoEndpoint()
+                        .userService(customOAuth2UserService)
+                        .oidcUserService(customOidcUserService)
+                );
+
         return http.build();
     }
 }

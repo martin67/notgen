@@ -1,0 +1,58 @@
+#
+# Common properties for notgen
+#
+
+
+spring:
+  web:
+    resources:
+      # Add thumbnails directory to web server content path
+      static-locations: classpath:/static,file:${notgen.folders.static}
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  config:
+    import: git.properties
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+          facebook:
+            client-id: ${FACEBOOK_CLIENT_ID}
+            client-secret: ${FACEBOOK_CLIENT_SECRET}
+  cloud:
+    azure:
+      storage:
+        account-name: ${AZURE_STORAGE_ACCOUNT_NAME}
+        account-key: ${AZURE_STORAGE_ACCOUNT_KEY}
+        endpoint: https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${AZURE_STORAGE_ACCOUNT_NAME}
+
+management:
+  info:
+    env:
+      enabled: true
+    git:
+      mode: full
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# Local storage config
+notgen:
+  storage:
+    type: local
+    input: /var/lib/notgen/input
+    output: /var/lib/notgen/output
+  folders:
+    # Static content such as thumbnails and folders are stored here
+    static: /var/lib/notgen/static

@@ -23,8 +23,8 @@ public class Playlist extends Auditable<String> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "band_id")
+    private Band band;
     @NotBlank(message = "Låtlistan måste ha ett namn")
     private String name;
     private String comment;

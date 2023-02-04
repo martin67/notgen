@@ -15,15 +15,15 @@
         <tr>
             <th>Namn</th>
             <th>Beskrivning</th>
-            <th><a th:href="@{/organization/new}"><i class="material-icons" title="Lägg till band">add_box</i></a>
+            <th><a th:href="@{/band/new}"><i class="material-icons" title="Lägg till band">add_box</i></a>
             </th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="organization : ${organizations}">
-            <td th:text="${organization.name}"></td>
-            <td th:text="${organization.description}"></td>
-            <td><a th:href="@{/organization/edit(id=${organization.id})}"><i
+        <tr th:each="band : ${bands}">
+            <td th:text="${band.name}"></td>
+            <td th:text="${band.description}"></td>
+            <td><a th:href="@{/band/edit(id=${band.id})}"><i
                     class="material-icons text-secondary" title="Ändra band">mode_edit</i></a></td>
         </tr>
         </tbody>
