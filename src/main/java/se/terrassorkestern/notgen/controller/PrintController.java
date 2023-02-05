@@ -47,8 +47,13 @@ public class PrintController {
     }
 
     @GetMapping("/instrument")
-    public String selectInstrument(@RequestParam(name = "id", required = false, defaultValue = "1") Integer id, Model model) {
-        Instrument instrument = instrumentRepository.findById(id).orElseThrow();
+    public String selectInstrument(@RequestParam(name = "id", required = false, defaultValue = "-1") int id, Model model) {
+        Instrument instrument;
+        if (id == -1) {
+            instrument = instrumentRepository.findFirstBy();
+        } else {
+            instrument = instrumentRepository.findById(id).orElseThrow();
+        }
         model.addAttribute("scores", scoreRepository.findByScorePartsInstrumentOrderByTitle(instrument));
         model.addAttribute("instruments", instrumentRepository.findAll());
         model.addAttribute("selectedInstrument", id);
@@ -56,8 +61,13 @@ public class PrintController {
     }
 
     @GetMapping("/setting")
-    public String selectSetting(@RequestParam(name = "id", required = false, defaultValue = "1") Integer id, Model model) {
-        Setting setting = settingRepository.findById(id).orElseThrow();
+    public String selectSetting(@RequestParam(name = "id", required = false, defaultValue = "-1") int id, Model model) {
+        Setting setting;
+        if (id == -1) {
+            setting = settingRepository.findFirstBy();
+        } else {
+            setting = settingRepository.findById(id).orElseThrow();
+        }
         model.addAttribute("scores", scoreRepository.findDistinctByScoreParts_InstrumentInOrderByTitleAsc(setting.getInstruments()));
         model.addAttribute("settings", settingRepository.findAll());
         model.addAttribute("selectedSetting", id);

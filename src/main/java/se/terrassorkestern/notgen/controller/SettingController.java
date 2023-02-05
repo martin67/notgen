@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.model.Setting;
 import se.terrassorkestern.notgen.model.User;
+import se.terrassorkestern.notgen.repository.BandRepository;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
@@ -21,13 +22,13 @@ public class SettingController {
 
     private final SettingRepository settingRepository;
     private final InstrumentRepository instrumentRepository;
-    private final UserRepository userRepository;
+    private final BandRepository bandRepository;
 
     public SettingController(SettingRepository settingRepository, InstrumentRepository instrumentRepository,
-                             UserRepository userRepository) {
+                             BandRepository bandRepository) {
         this.settingRepository = settingRepository;
         this.instrumentRepository = instrumentRepository;
-        this.userRepository = userRepository;
+        this.bandRepository = bandRepository;
     }
 
     @GetMapping("/list")
@@ -65,8 +66,8 @@ public class SettingController {
         if (errors.hasErrors()) {
             return "settingEdit";
         }
-        User user = userRepository.findByUsername(principal.getName()).orElseThrow();
-        //setting.setBand(user.getBand());
+        // Todo: use active band from session
+        setting.setBand(bandRepository.findAll().get(0));
         log.info("Sparar sättning {} [{}]", setting.getName(), setting.getId());
         settingRepository.save(setting);
         return "redirect:/setting/list";

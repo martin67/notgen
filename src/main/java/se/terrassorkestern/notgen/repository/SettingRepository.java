@@ -11,4 +11,5 @@ public interface SettingRepository extends JpaRepository<Setting, Integer> {
 
     List<Setting> findByName(String text);
 
+    Setting findFirstBy();
 }
