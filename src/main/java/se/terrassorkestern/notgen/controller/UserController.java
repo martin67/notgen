@@ -74,6 +74,8 @@ public class UserController {
         }
         UserFormData userFormData = new UserFormData(user);
         model.addAttribute("user", userFormData);
+        model.addAttribute("roles", roleRepository.findAll());
+        model.addAttribute("bands", bandRepository.findAll());
         return "user/edit";
     }
 
@@ -101,7 +103,7 @@ public class UserController {
             u.setUsername(userFormData.getUsername());
             u.setEmail(userFormData.getEmail());
             u.setProvider(AuthProvider.local);
-            u.setRoles(List.of(roleRepository.findByName("ROLE_USER")));
+            u.setRole(roleRepository.findByName("ROLE_USER"));
             return u;
         });
 
@@ -127,6 +129,8 @@ public class UserController {
             // admin user can change enable status and username (if local user). But not for the superadmin ("admin") account
             if (user.isRemoteUser() || !user.getUsername().equals("admin")) {
                 user.setEnabled(userFormData.isEnabled());
+                user.setBands(userFormData.getBands());
+                user.setRole(userFormData.getRole());
                 if (user.isLocalUser() && !userFormData.getUsername().equals(user.getUsername())) {
                     if (userRepository.findByUsername(userFormData.getUsername()).isPresent()) {
                         throw new UserAlreadyExistAuthenticationException("username " + userFormData.getUsername() + " already exist");

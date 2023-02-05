@@ -44,7 +44,8 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public Path downloadScore(Score score, Path location) throws IOException {
-        String fileName = String.format("%d-%d.*", score.getBand().getId(), score.getId());
+        // Todo the second digit should be the arrangmenet (in the case of multiple arrangements of the same score)
+        String fileName = String.format("%d-%d.*", score.getId(), 1);
         Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
         if (resources.length == 0) {
             log.error("No resource found for pattern {}", fileName);
@@ -85,7 +86,7 @@ public class AzureStorage implements BackendStorage {
 
     public void uploadScore(Score score, Path path) throws IOException {
         log.info("Uploading {}, file {}", score.getTitle(), path);
-        String fileName = String.format("%d-%d.%s", score.getBand().getId(), score.getId(),
+        String fileName = String.format("%d-1.%s", score.getId(),
                 com.google.common.io.Files.getFileExtension(score.getFilename()));
         Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
         try (OutputStream os = ((WritableResource) storageBlobResource).getOutputStream()) {

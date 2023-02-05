@@ -11,11 +11,10 @@ import lombok.ToString;
 @ToString
 @RequiredArgsConstructor
 @Entity
-@Table(name = "imagedata")
 public class Imagedata {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     private int page;
     private long fileSize;
     private String format;

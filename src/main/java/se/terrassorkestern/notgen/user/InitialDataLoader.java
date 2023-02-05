@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class InitialDataLoader implements ApplicationListener<ContextRefreshedEvent> {
@@ -49,28 +50,33 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
-        User user = userRepository.findByUsername("admin").orElseGet(() -> {
+        User adminUser = userRepository.findByUsername("admin").orElseGet(() -> {
             log.info("Creating initial user admin with admin rights");
 
-            createRoleIfNotFound("ROLE_SUPERADMIN", List.of(
-                    createPrivilegeIfNotFound("EDIT_BAND")));
-
-            createRoleIfNotFound("ROLE_ADMIN", List.of(
+            Role superAdmin = createRoleIfNotFound("ROLE_SUPERADMIN", "Super admin", List.of(
+                    createPrivilegeIfNotFound("EDIT_BAND"),
                     createPrivilegeIfNotFound("EDIT_SONG"),
                     createPrivilegeIfNotFound("EDIT_INSTRUMENT"),
-                    createPrivilegeIfNotFound("EDIT_USER")));
-
-            createRoleIfNotFound("ROLE_USER", List.of(
+                    createPrivilegeIfNotFound("EDIT_USER"),
                     createPrivilegeIfNotFound("PRINT_SCORE"),
                     createPrivilegeIfNotFound("EDIT_PLAYLIST")));
+            createRoleIfNotFound("ROLE_ADMIN", "Admin", List.of(
+                    createPrivilegeIfNotFound("EDIT_SONG"),
+                    createPrivilegeIfNotFound("EDIT_INSTRUMENT"),
+                    createPrivilegeIfNotFound("EDIT_USER"),
+                    createPrivilegeIfNotFound("PRINT_SCORE"),
+                    createPrivilegeIfNotFound("EDIT_PLAYLIST")));
+            createRoleIfNotFound("ROLE_USER", "User", List.of(
+                    createPrivilegeIfNotFound("PRINT_SCORE"),
+                    createPrivilegeIfNotFound("EDIT_PLAYLIST")));
+            createRoleIfNotFound("ROLE_GUEST", "Guest", List.of());
 
-            List<Role> adminRoles = roleRepository.findAll();
             User u = new User();
             u.setUsername("admin");
             u.setFullName("Administrator");
             u.setDisplayName("The Admin");
             u.setPassword(passwordEncoder.encode("admin"));
-            u.setRoles(adminRoles);
+            u.setRole(superAdmin);
             u.setEnabled(true);
             u.setProvider(AuthProvider.local);
             userRepository.save(u);
@@ -83,8 +89,8 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
             band.setName("Terrassorkestern");
             bandRepository.save(band);
 
-            user.setBand(band);
-            userRepository.save(user);
+            adminUser.getBands().add(band);
+            userRepository.save(adminUser);
         }
 
         // Create config directory
@@ -95,9 +101,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         }
     }
 
-
-    @Transactional
-    Privilege createPrivilegeIfNotFound(String name) {
+    private Privilege createPrivilegeIfNotFound(String name) {
         Privilege privilege = privilegeRepository.findByName(name);
         if (privilege == null) {
             privilege = new Privilege(name);
@@ -106,14 +110,13 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         return privilege;
     }
 
-
-    @Transactional
-    void createRoleIfNotFound(String name, Collection<Privilege> privileges) {
+    private Role createRoleIfNotFound(String name, String displayName, Collection<Privilege> privileges) {
         Role role = roleRepository.findByName(name);
         if (role == null) {
-            role = new Role(name);
+            role = new Role(name, displayName);
             role.setPrivileges(privileges);
             roleRepository.save(role);
         }
+        return role;
     }
 }

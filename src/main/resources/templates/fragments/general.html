@@ -39,7 +39,7 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/statistics}">Statistik</a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+                <li sec:authorize="hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_ADMIN')" class="nav-item">
                     <a class="nav-link" th:href="@{/admin/}">Admin</a>
                 </li>
                 <li class="nav-item">

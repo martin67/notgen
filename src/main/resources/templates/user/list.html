@@ -27,9 +27,9 @@
             <td th:text="${user.username}"></td>
             <td th:text="${user.getDisplayName()}"></td>
             <td th:text="${user.getFullName()}"></td>
-            <td th:text="${user.band} ? ${user.band.name} : '---'"></td>
+            <td th:text="${user.getBandNames()}"></td>
             <td><input type="checkbox" th:checked="${user.enabled}" ? 'checked' /></td>
-            <td th:text="${user.getRoleNames()}"></td>
+            <td th:text="${user.role} ? ${user.role.displayName} : ''"></td>
             <td th:text="${user.getProvider()}"></td>
         </tr>
         </tbody>

@@ -11,12 +11,11 @@ import java.util.Collection;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "privilege")
 public class Privilege {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     private String name;
     @ManyToMany(mappedBy = "privileges")
     private Collection<Role> roles;

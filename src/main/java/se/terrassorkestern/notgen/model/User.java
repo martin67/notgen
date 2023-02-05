@@ -8,10 +8,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import se.terrassorkestern.notgen.user.AuthProvider;
 
 import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -25,9 +23,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne
-    @JoinColumn(name = "band_id")
-    private Band band;
+    @ManyToMany
+    @JoinTable(
+            name = "user_band",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "band_id"))
+    private Set<Band> bands = new HashSet<>();
     private String username;
     private String password;
     private String fullName;
@@ -38,20 +39,8 @@ public class User {
     private String providerId;
     private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private Collection<Role> roles = new HashSet<>();
-
-    public String getRoleNames() {
-        StringBuilder sb = new StringBuilder();
-        for (Role role : roles) {
-            sb.append(role.getName()).append(" ");
-        }
-        return sb.toString();
-    }
+    @ManyToOne
+    private Role role;
 
     public boolean isRemoteUser() {
         return (provider != AuthProvider.local);
@@ -63,7 +52,7 @@ public class User {
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        for (Role role : roles) {
+        if (role != null) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
             role.getPrivileges().stream()
                     .map(p -> new SimpleGrantedAuthority(p.getName()))
@@ -76,4 +65,7 @@ public class User {
         return enabled;
     }
 
+    public String getBandNames() {
+        return bands.stream().map(Band::getName).collect(Collectors.joining(", "));
+    }
 }

@@ -42,7 +42,7 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public Path downloadScore(Score score, Path location) throws IOException {
-        String fileName = String.format("%d-%d", score.getBand().getId(), score.getId());
+        String fileName = String.format("%d-1", score.getId());
         String[] files = inputDir.toFile().list((d, name) -> name.startsWith(fileName));
         if (files == null || files.length == 0) {
             log.error("No files found for pattern {}", fileName);

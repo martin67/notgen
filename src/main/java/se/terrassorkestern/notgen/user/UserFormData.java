@@ -1,7 +1,11 @@
 package se.terrassorkestern.notgen.user;
 
 import lombok.Data;
+import se.terrassorkestern.notgen.model.Band;
+import se.terrassorkestern.notgen.model.Role;
 import se.terrassorkestern.notgen.model.User;
+
+import java.util.Set;
 
 
 @Data
@@ -16,6 +20,8 @@ public class UserFormData {
     private String email;
     private boolean enabled;
     private boolean remoteUser;
+    private Role role;
+    private Set<Band> bands;
 
     public UserFormData() {
     }
@@ -28,5 +34,7 @@ public class UserFormData {
         this.email = user.getEmail();
         this.enabled = user.isEnabled();
         this.remoteUser = user.isRemoteUser();
+        this.role = user.getRole();
+        this.bands = user.getBands();
     }
 }

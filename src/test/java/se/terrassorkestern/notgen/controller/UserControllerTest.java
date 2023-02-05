@@ -52,13 +52,13 @@ class UserControllerTest {
         normalUser.setUsername("normal");
         userRole = new Role("ROLE_USER");
         userRole.setPrivileges(Collections.emptySet());
-        normalUser.setRoles(List.of(userRole));
+        normalUser.setRole(userRole);
 
         adminUser = new User();
         adminUser.setUsername("admin");
         adminRole = new Role("ROLE_ADMIN");
         adminRole.setPrivileges(List.of(new Privilege("EDIT_USER")));
-        adminUser.setRoles(List.of(adminRole));
+        adminUser.setRole(adminRole);
     }
 
     @BeforeEach

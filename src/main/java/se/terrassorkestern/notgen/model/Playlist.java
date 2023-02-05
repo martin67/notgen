@@ -16,21 +16,18 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "playlist")
 public class Playlist extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "band_id")
     private Band band;
     @NotBlank(message = "Låtlistan måste ha ett namn")
     private String name;
     private String comment;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
-
     @ManyToOne
     private Setting setting;
 
