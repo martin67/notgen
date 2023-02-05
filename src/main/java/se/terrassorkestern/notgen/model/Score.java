@@ -21,7 +21,6 @@ public class Score extends Auditable<String> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "band_id")
     private Band band;
     @NotBlank(message = "Titel måste anges")
     private String title;

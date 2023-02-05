@@ -68,7 +68,7 @@ public class SecurityConfig {
                         .requestMatchers("/playlist/list", "/playlist/view/**", "/playlist/createPdf/**").permitAll()
                         .requestMatchers("/playlist/**").hasAuthority("EDIT_PLAYLIST")
                         .requestMatchers("/instrument/**").hasAuthority("EDIT_INSTRUMENT")
-                        .requestMatchers("/admin/**", "/actuator/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**", "/actuator/**").hasAnyRole("SUPERADMIN", "ADMIN")
                         .anyRequest().permitAll()
                 )
                 .formLogin((formLogin) -> formLogin

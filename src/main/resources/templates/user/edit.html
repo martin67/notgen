@@ -61,12 +61,36 @@
                   th:errors="*{matchingPassword}">Error</span>
         </div>
 
-        <div sec:authorize="hasRole('ROLE_ADMIN')">
-            <h3>Roll & behörighet</h3>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" th:value="${user.enabled}" th:field="*{enabled}" id="enabled">
-                <label class="form-check-label" for="enabled">Aktiv</label>
+        <div sec:authorize="hasAuthority('EDIT_USER')">
+            <hr>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <div class="border rounded p-2">
+                    <div class="form-check">
+                        <label class="form-check-label" for="enabled">Aktiv</label>
+                        <input class="form-check-input" type="checkbox" th:value="${user.enabled}" th:field="*{enabled}"
+                               id="enabled">
+                    </div>
+                </div>
             </div>
+            <div class="mb-3">
+                <label class="form-label">Band</label>
+                <div class="border rounded p-2">
+                    <div class="form-check form-check-inline>" th:each="band : ${bands}">
+                        <input class="form-check-input" type="checkbox" name="bands" id="band"
+                               th:value="${band.id}"
+                               th:field="*{bands}"/>
+                        <label class="form-check-label" for="band" th:text="${band.name}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="role">Roll</label>
+                <select class="form-select" id="role" th:field="*{role}">
+                    <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.displayName}"></option>
+                </select>
+            </div>
+
         </div>
 
         <div class="row gy-2 mb-3">

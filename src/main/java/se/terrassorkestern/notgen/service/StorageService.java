@@ -10,7 +10,6 @@ import se.terrassorkestern.notgen.model.ScorePart;
 import se.terrassorkestern.notgen.service.storage.AzureStorage;
 import se.terrassorkestern.notgen.service.storage.BackendStorage;
 import se.terrassorkestern.notgen.service.storage.LocalStorage;
-import se.terrassorkestern.notgen.service.storage.S3Storage;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -28,11 +27,10 @@ public class StorageService {
     private final boolean keepTempDir;
 
     public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir, @Value("${notgen.storage.type}") String storage,
-                          S3Storage s3Storage, AzureStorage azureStorage, LocalStorage localStorage) {
+                          AzureStorage azureStorage, LocalStorage localStorage) {
         this.keepTempDir = keepTempDir;
 
         switch (storage) {
-            case "s3" -> this.backendStorage = s3Storage;
             case "azure" -> this.backendStorage = azureStorage;
             case "local" -> this.backendStorage = localStorage;
             default -> throw new IllegalArgumentException("notgen.storage.type " + storage + " not valid");

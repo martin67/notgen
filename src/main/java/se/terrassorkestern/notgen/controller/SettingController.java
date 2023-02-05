@@ -66,7 +66,7 @@ public class SettingController {
             return "settingEdit";
         }
         User user = userRepository.findByUsername(principal.getName()).orElseThrow();
-        setting.setBand(user.getBand());
+        //setting.setBand(user.getBand());
         log.info("Sparar sättning {} [{}]", setting.getName(), setting.getId());
         settingRepository.save(setting);
         return "redirect:/setting/list";

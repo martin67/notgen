@@ -12,15 +12,13 @@ import java.util.Collection;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "role")
 public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     private String name;
-    @ManyToMany(mappedBy = "roles")
-    private Collection<User> users;
+    private String displayName;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_privilege", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
@@ -29,6 +27,12 @@ public class Role {
 
     public Role(String name) {
         this.name = name;
+        this.displayName = "";
+    }
+
+    public Role(String name, String displayName) {
+        this.name = name;
+        this.displayName = displayName;
     }
 
 }

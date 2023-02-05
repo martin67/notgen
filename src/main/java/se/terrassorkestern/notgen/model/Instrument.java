@@ -1,29 +1,22 @@
 package se.terrassorkestern.notgen.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
-
-/**
- * DTO for Instrument
- */
 @Getter
 @Setter
 @Entity
-@Table(name = "instrument")
 public class Instrument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "band_id")
     private Band band;
     @NotBlank(message = "Instrumentnamn måste anges")
     private String name;

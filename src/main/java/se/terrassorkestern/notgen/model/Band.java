@@ -8,12 +8,11 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "band")
 public class Band {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private int id;
 
     private String name;
     private String description;

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import se.terrassorkestern.notgen.exceptions.OAuth2AuthenticationProcessingException;
 import se.terrassorkestern.notgen.model.User;
+import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 
 import java.util.Optional;
@@ -14,9 +15,11 @@ import java.util.Optional;
 public class CommonOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public CommonOAuth2UserService(UserRepository userRepository) {
+    public CommonOAuth2UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     UserPrincipal processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
@@ -50,6 +53,8 @@ public class CommonOAuth2UserService {
         user.setFullName(oAuth2UserInfo.getName());
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
+        user.setRole(roleRepository.findByName("ROLE_GUEST"));
+        user.setEnabled(true);
         return userRepository.save(user);
     }
 
