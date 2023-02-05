@@ -10,5 +10,6 @@ import java.util.List;
 public interface SettingRepository extends JpaRepository<Setting, Integer> {
 
     List<Setting> findByName(String text);
-    Setting findFirst();
+
+    Setting findFirstBy();
 }

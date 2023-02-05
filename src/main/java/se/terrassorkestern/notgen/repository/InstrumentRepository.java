@@ -16,7 +16,7 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Integer>
 
     List<Instrument> findByOrderBySortOrder();
 
-    Instrument findFirstOrderBySortOrder();
+    Instrument findFirstBy();
 
 //    List<Instrument> findByOrderByStandardDescSortOrder();
 //

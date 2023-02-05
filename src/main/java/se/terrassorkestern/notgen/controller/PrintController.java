@@ -50,7 +50,7 @@ public class PrintController {
     public String selectInstrument(@RequestParam(name = "id", required = false, defaultValue = "-1") int id, Model model) {
         Instrument instrument;
         if (id == -1) {
-            instrument = instrumentRepository.findFirstOrderBySortOrder();
+            instrument = instrumentRepository.findFirstBy();
         } else {
             instrument = instrumentRepository.findById(id).orElseThrow();
         }
@@ -64,7 +64,7 @@ public class PrintController {
     public String selectSetting(@RequestParam(name = "id", required = false, defaultValue = "-1") int id, Model model) {
         Setting setting;
         if (id == -1) {
-            setting = settingRepository.findFirst();
+            setting = settingRepository.findFirstBy();
         } else {
             setting = settingRepository.findById(id).orElseThrow();
         }
