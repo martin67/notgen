@@ -86,8 +86,9 @@ class UserControllerTest {
         mvc.perform(get("/user/list")
                         .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("user/list"))
-                .andExpect(model().attributeExists("users"))
-                .andExpect(model().attribute("users", hasSize(2)))
+                .andExpect(model().attributeExists("bandUsers"))
+                .andExpect(model().attributeExists("otherUsers"))
+                .andExpect(model().attribute("otherUsers", hasSize(2)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(status().isOk());
     }
