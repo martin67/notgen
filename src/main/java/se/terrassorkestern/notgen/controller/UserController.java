@@ -21,6 +21,7 @@ import se.terrassorkestern.notgen.user.AuthProvider;
 import se.terrassorkestern.notgen.user.UserFormData;
 import se.terrassorkestern.notgen.user.UserPrincipal;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -44,7 +45,21 @@ public class UserController {
 
     @GetMapping("/list")
     public String list(Model model) {
-        model.addAttribute("users", userRepository.findAll());
+        List<User> bandUsers = new ArrayList<>();
+        List<User> otherUsers = new ArrayList<>();
+
+        // Todo use band from session
+        Band band = bandRepository.findAll().get(0);
+
+        for (User user: userRepository.findAll()) {
+            if (user.getBands().contains(band)) {
+                bandUsers.add(user);
+            } else {
+                otherUsers.add(user);
+            }
+        }
+        model.addAttribute("bandUsers", bandUsers );
+        model.addAttribute("otherUsers", otherUsers);
         return "user/list";
     }
 

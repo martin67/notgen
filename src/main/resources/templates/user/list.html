@@ -10,6 +10,7 @@
 
 <div class="container">
     <h2>Användare</h2>
+    <h4>Bandmedlemmar</h4>
     <table class="table table-bordered table-striped table-hover table-sm">
         <thead>
         <tr>
@@ -23,7 +24,33 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user : ${users}" th:data-link="@{edit(id=${user.id})}">
+        <tr th:each="user : ${bandUsers}" th:data-link="@{edit(id=${user.id})}">
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.getDisplayName()}"></td>
+            <td th:text="${user.getFullName()}"></td>
+            <td th:text="${user.getBandNames()}"></td>
+            <td><input type="checkbox" th:checked="${user.enabled}" ? 'checked' /></td>
+            <td th:text="${user.role} ? ${user.role.displayName} : ''"></td>
+            <td th:text="${user.getProvider()}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h4>Andra användare</h4>
+    <table class="table table-bordered table-striped table-hover table-sm">
+        <thead>
+        <tr>
+            <th>Användarnamn</th>
+            <th>Visningsnamn</th>
+            <th>Namn</th>
+            <th>Band</th>
+            <th>Aktiv</th>
+            <th>Roll</th>
+            <th>Provider</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${otherUsers}" th:data-link="@{edit(id=${user.id})}">
             <td th:text="${user.username}"></td>
             <td th:text="${user.getDisplayName()}"></td>
             <td th:text="${user.getFullName()}"></td>

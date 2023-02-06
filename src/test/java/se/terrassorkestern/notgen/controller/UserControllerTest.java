@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
     static User normalUser;
+    static User disabledUser;
     static User adminUser;
     static Role userRole;
     static Role adminRole;
@@ -53,12 +54,19 @@ class UserControllerTest {
         userRole = new Role("ROLE_USER");
         userRole.setPrivileges(Collections.emptySet());
         normalUser.setRole(userRole);
+        normalUser.setEnabled(true);
+
+        disabledUser = new User();
+        disabledUser.setUsername("disabled");
+        disabledUser.setRole(userRole);
+        disabledUser.setEnabled(false);
 
         adminUser = new User();
         adminUser.setUsername("admin");
         adminRole = new Role("ROLE_ADMIN");
         adminRole.setPrivileges(List.of(new Privilege("EDIT_USER")));
         adminUser.setRole(adminRole);
+        adminUser.setEnabled(true);
     }
 
     @BeforeEach
@@ -78,8 +86,9 @@ class UserControllerTest {
         mvc.perform(get("/user/list")
                         .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("user/list"))
-                .andExpect(model().attributeExists("users"))
-                .andExpect(model().attribute("users", hasSize(2)))
+                .andExpect(model().attributeExists("bandUsers"))
+                .andExpect(model().attributeExists("otherUsers"))
+                .andExpect(model().attribute("otherUsers", hasSize(2)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(status().isOk());
     }
@@ -253,5 +262,19 @@ class UserControllerTest {
             mvc.perform(get("/user/nonexistent")).andExpect(status().isNotFound());
         }
 
+        @Test
+        @Disabled
+        @DisplayName("Disabled user")
+        void whenAccessAsDisabled_thenLoginError() throws Exception {
+            mvc.perform(post("/user/save").with(csrf()).with(user(UserPrincipal.create(disabledUser)))
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("id", "1")
+                            .param("password", "password1")
+                            .param("matchingPassword", "password2")
+                            .param("email", "dummy"))
+                    .andExpect(model().attributeExists("user"))
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                    .andExpect(status().isOk());
+        }
     }
 }
