@@ -42,12 +42,14 @@ test {
         excludeTags 'manual'
     }
     systemProperty "file.encoding", "UTF-8"
+    finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
     reports {
         xml.enabled true
     }
+    dependsOn test
 }
 
 springBoot {
