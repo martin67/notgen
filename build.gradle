@@ -14,17 +14,7 @@ sonarqube {
         property "sonar.projectKey", "martin67_notgen2"
         property "sonar.organization", "martin-hagelin"
         property "sonar.host.url", "https://sonarcloud.io"
-//        property 'sonar.branch.name', gitBranch()
     }
-}
-
-static String gitBranch() {
-    String branch = ""
-    Process proc = "git rev-parse --abbrev-ref HEAD".execute()
-    proc.in.eachLine { line -> branch = line }
-    proc.err.eachLine { line -> println line }
-    proc.waitFor()
-    return branch
 }
 
 java {
