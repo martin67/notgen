@@ -7,7 +7,9 @@ import lombok.Setter;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -37,13 +39,17 @@ public class Score extends Auditable<String> {
     private String comment;
     @Lob
     private String internalComment;
+    @Lob
+    private String text;
+    @Lob
+    private String presentation;
 
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScorePart> scoreParts = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "score_id")
-    private List<Imagedata> imageData = new ArrayList<>();
+    private Set<Imagedata> imageData = new HashSet<>();
 
     private ScoreType scoreType;
     private Boolean scanned = true;

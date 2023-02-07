@@ -162,65 +162,67 @@
                 </table>
             </div>
         </div>
-        <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Detaljer</label>
-            <div class="col-sm">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="scanned"
-                           th:field="*{scanned}" th:value="${score.scanned}"/>
-                    <label for="scanned" class="form-check-label">Inscannad</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="cover"
-                           th:field="*{cover}" th:value="${score.cover}"/>
-                    <label for="cover" class="form-check-label">Förstasida finns</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="color"
-                           th:field="*{color}" th:value="${score.color}"/>
-                    <label for="color" class="form-check-label">Förstasidan är i färg</label>
-                </div>
-                <div class="form-check">
-                    <label class="form-check-label">Scanningen är linjerad med övre vänstra hörnet
-                        <input class="form-check-input" type="checkbox"
-                               th:field="*{upperleft}" th:value="${score.upperleft}"/>
-                    </label>
-                </div>
-                <div class="form-check">
-                    <label class="form-check-label">Bildbehandla (beskär, fixa färger etc.)
-                        <input class="form-check-input" type="checkbox"
-                               th:field="*{imageProcess}" th:value="${score.imageProcess}"/>
-                    </label>
-                </div>
-                <div class="form-check">
-                    <label class="form-check-label">Scanningsklass
-                        <select th:field="*{scoreType}">
-                            <option th:each="st : ${T(se.terrassorkestern.notgen.model.ScoreType).values()}"
-                                    th:value="${st}"
-                                    th:text="${st.getShortDescription()}"/>
-                        </select>
-                    </label>
-                </div>
-            </div>
-            <div class="col-sm">
-                <div class="form-check">
-                    <label class="form-check-label">Original i arkivet
-                        <input class="form-check-input" type="checkbox" th:field="*{archived}"
-                               th:value="${score.archived}"/>
-                    </label>
-                </div>
-                <div class="form-group row">
-                    <label for="archiveLocation" class="col-sm-6 col-form-label">Arkivplats</label>
-                    <div class="col-sm-2">
-                        <input type="text" class="form-control" id="archiveLocation" th:field="*{archiveLocation}"
-                               th:value="${score.archiveLocation}"/>
+        <h3>Detaljer</h3>
+        <div class="form-row border mb-3 p-2">
+            <div class="form-group row">
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="scanned"
+                               th:field="*{scanned}" th:value="${score.scanned}"/>
+                        <label for="scanned" class="form-check-label">Inscannad</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="cover"
+                               th:field="*{cover}" th:value="${score.cover}"/>
+                        <label for="cover" class="form-check-label">Förstasida finns</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="color"
+                               th:field="*{color}" th:value="${score.color}"/>
+                        <label for="color" class="form-check-label">Förstasidan är i färg</label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">Scanningen är linjerad med övre vänstra hörnet
+                            <input class="form-check-input" type="checkbox"
+                                   th:field="*{upperleft}" th:value="${score.upperleft}"/>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">Bildbehandla (beskär, fixa färger etc.)
+                            <input class="form-check-input" type="checkbox"
+                                   th:field="*{imageProcess}" th:value="${score.imageProcess}"/>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">Scanningsklass
+                            <select th:field="*{scoreType}">
+                                <option th:each="st : ${T(se.terrassorkestern.notgen.model.ScoreType).values()}"
+                                        th:value="${st}"
+                                        th:text="${st.getShortDescription()}"/>
+                            </select>
+                        </label>
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="filename" class="col-sm-2 col-form-label">Filnamn</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" id="filename" th:field="*{filename}"
-                               th:value="${score.filename}"/>
+                <div class="col">
+                    <div class="form-check">
+                        <label class="form-check-label">Original i arkivet
+                            <input class="form-check-input" type="checkbox" th:field="*{archived}"
+                                   th:value="${score.archived}"/>
+                        </label>
+                    </div>
+                    <div class="form-group row">
+                        <label for="archiveLocation" class="col-sm-6 col-form-label">Arkivplats</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="archiveLocation" th:field="*{archiveLocation}"
+                                   th:value="${score.archiveLocation}"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="filename" class="col-sm-2 col-form-label">Filnamn</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="filename" th:field="*{filename}"
+                                   th:value="${score.filename}"/>
+                        </div>
                     </div>
                 </div>
             </div>

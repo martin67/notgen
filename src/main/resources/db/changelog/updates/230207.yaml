@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1675765790311-1
+      author: marhag (generated)
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: presentation
+                  type: text
+            tableName: score
+  - changeSet:
+      id: 1675765790311-2
+      author: marhag (generated)
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: text
+                  type: text
+            tableName: score

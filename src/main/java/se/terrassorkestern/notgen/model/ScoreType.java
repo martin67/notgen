@@ -6,6 +6,8 @@ import lombok.Getter;
 public enum ScoreType {
     NotScanned("NOT_SCANNED", "Ej inscannad", "Inte inscannad, ingen bildbehandling"),
     PDF("PDF", "PDF, ingen bildbehandling", ""),
+    PDF_R("PDF_R", "PDF, rotera höger", ""),
+    PDF_L("PDF_L", "PDF, rotera vänster", ""),
     ScannedTryckArr("SWPRINT", "Original tryckarr", "Inscannat i färg, över högre hörnet linjerar");
 
     private final String code;
