@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class UserRepositoryUserDetailsService implements UserDetailsService {
     public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User '" + username + "' not found"));
+        if (!user.isEnabled()) {
+            throw new DisabledException("Your account is disabled. Please contact the band admin.");
+        }
         return UserPrincipal.create(user);
     }
 
