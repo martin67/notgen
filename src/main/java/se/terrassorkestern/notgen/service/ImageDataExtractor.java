@@ -40,19 +40,14 @@ import static org.apache.commons.imaging.Imaging.getMetadata;
 @Slf4j
 @Service
 public class ImageDataExtractor {
-
     private final ScoreRepository scoreRepository;
     private final StorageService storageService;
+    private final ConverterService converterService;
 
-    @Value("${notgen.cache.location}")
-    private String cacheLocation;
-    @Value("${notgen.cache.ttl:100}")
-    private int cacheTtl;
-
-
-    public ImageDataExtractor(ScoreRepository scoreRepository, StorageService storageService) {
+    public ImageDataExtractor(ScoreRepository scoreRepository, StorageService storageService, ConverterService converterService) {
         this.scoreRepository = scoreRepository;
         this.storageService = storageService;
+        this.converterService = converterService;
     }
 
     public void extract(List<Score> scores) throws IOException, ImageReadException {
@@ -61,8 +56,12 @@ public class ImageDataExtractor {
             if (score.getScanned() && score.getFilename() != null) {
                 log.info("Extracting image data for {} ({})", score.getTitle(), score.getId());
 
-                Path tmpDir = download(score);
-                List<Path> extractedFilesList = split(tmpDir, score);
+                Path tempDir = storageService.createTempDir();
+                Path downloadedScore = storageService.downloadScore(score, tempDir);
+                List<Path> extractedFilesList = converterService.split(tempDir, downloadedScore);
+
+                // clear old imagedata
+                score.getImageData().clear();
 
                 int index = 0;
                 for (Path path : extractedFilesList) {
@@ -71,18 +70,7 @@ public class ImageDataExtractor {
                     ImageInfo imageInfo = getImageInfo(file);
                     ImageMetadata imageMetadata = getMetadata(file);
 
-                    Imagedata imageData;
-                    if (score.getImageData() == null) {
-                        score.setImageData(new ArrayList<>());
-                        imageData = new Imagedata();
-                        score.getImageData().add(index, imageData);
-                    } else if (index == score.getImageData().size()) {
-                        imageData = new Imagedata();
-                        score.getImageData().add(imageData);
-                    } else {
-                        imageData = score.getImageData().get(index);
-                    }
-
+                    Imagedata imageData = new Imagedata();
                     imageData.setPage(index + 1);
                     imageData.setFileSize(Files.size(path));
                     imageData.setFormat(imageInfo.getFormat().getName());
@@ -93,98 +81,18 @@ public class ImageDataExtractor {
                     imageData.setColorDepth(imageInfo.getBitsPerPixel());
                     imageData.setColorType(imageInfo.getColorType().toString());
 
+                    if (imageInfo.getWidth() > imageData.getHeight()) {
+                        log.warn("Picture is landscape, score: {}, page {}", score, index);
+                    }
+                    score.getImageData().add(imageData);
                     index++;
                 }
                 scoreRepository.save(score);
-                FileUtils.deleteDirectory(tmpDir.toFile());
+                storageService.deleteTempDir(tempDir);
             } else {
                 log.info("Skipping image data for {} ({})", score.getTitle(), score.getId());
             }
         }
-    }
-
-    private List<Path> split(Path tmpDir, Score score) throws IOException {
-
-        List<Path> extractedFilesList = new ArrayList<>();
-
-        if (!Files.exists(tmpDir)) {
-            return extractedFilesList;
-        }
-
-        File inFile = new File(tmpDir.toFile(), score.getFilename());
-        if (!inFile.exists()) {
-            return extractedFilesList;
-        }
-
-        // Unzip files into temp directory
-        log.debug("Extracting {} to {}", inFile, tmpDir);
-        if (com.google.common.io.Files.getFileExtension(score.getFilename()).equalsIgnoreCase("zip")) {
-            storageService.extractZip(inFile.toPath(), tmpDir);
-        } else if (com.google.common.io.Files.getFileExtension(score.getFilename()).equalsIgnoreCase("pdf")) {
-            try {
-                PDDocument document = PDDocument.load(new File(inFile.toString()));
-                PDPageTree list = document.getPages();
-                int i = 100;
-                for (PDPage page : list) {
-                    PDResources pdResources = page.getResources();
-
-                    for (COSName name : pdResources.getXObjectNames()) {
-                        PDXObject o = pdResources.getXObject(name);
-                        if (o instanceof PDImageXObject image) {
-                            String filename = tmpDir + File.separator + "extracted-image-" + i;
-                            //ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
-                            if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
-                                ImageIO.write(image.getImage(), "jpg", new File(filename + ".jpg"));
-                            } else {
-                                ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
-                            }
-                            i++;
-                        }
-                    }
-                }
-                document.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            log.error("Unknown file format for {}", score.getFilename());
-        }
-        // Store name of all extracted files. Order is important!
-        // Exclude source file (zip or pdf)
-
-        try (Stream<Path> paths = Files.list(tmpDir)) {
-            extractedFilesList = paths
-                    .filter(Files::isRegularFile)
-                    .filter(p -> (p.toString().toLowerCase().endsWith(".png") || p.toString().toLowerCase().endsWith(".jpg")))
-                    .collect(Collectors.toCollection(ArrayList::new));
-            Collections.sort(extractedFilesList);
-        }
-
-        return extractedFilesList;
-    }
-
-    private Path download(@NotNull Score score) throws IOException {
-
-        Path tmpDir = Files.createTempDirectory("notkonv-");
-        log.debug("Creating temporary directory {}", tmpDir.toString());
-
-        // If the cache is enabled, check if the file is present and not older than x days (TTL)
-        if (cacheLocation != null) {
-            Path cache = Path.of(cacheLocation);
-            FileTime ttl = FileTime.from(Instant.now().minus(Duration.ofDays(cacheTtl)));
-            Path cacheFile = cache.resolve(score.getFilename());
-            if (Files.exists(cacheFile) && Files.getLastModifiedTime(cacheFile).compareTo(ttl) > 0) {
-                log.debug("Copying {} from cache", score.getFilename());
-            } else {
-                log.debug("Downloading {} to cache", score.getFilename());
-                //googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), cache);
-            }
-            Files.copy(cacheFile, tmpDir.resolve(score.getFilename()));
-        } else {
-            log.debug("Downloading {} to {}", score.getFilename(), tmpDir);
-            //googleDriveService.downloadFile(googleFileIdOriginal, score.getFilename(), tmpDir);
-        }
-        return tmpDir;
     }
 
 }

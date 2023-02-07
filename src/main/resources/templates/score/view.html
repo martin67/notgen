@@ -76,13 +76,13 @@
         </tbody>
     </table>
 
-    <div class="row" sec:authorize="hasAuthority('EDIT_SONG')">
+    <div class="row mb-3" sec:authorize="hasAuthority('EDIT_SONG')">
         <h3>Detaljer</h3>
         <div class="col">
             <input type="checkbox" th:checked="${score.scanned}" onclick="return false;"> Inscannad<br>
             <input type="checkbox" th:checked="${score.imageProcess}" onclick="return false;"> Bildbehandlas<br>
             <input type="checkbox" th:checked="${score.upperleft}" onclick="return false;"> Linjerad i hörn<br>
-            Bildbehandling <span th:text="${score.scoreType}?  ' [' + ${score.scoreType.getShortDescription()} + ']'"/>
+            Bildbehandling: <span th:text="${score.scoreType}?  ' [' + ${score.scoreType.getShortDescription()} + ']'"/>
             <br>
         </div>
         <div class="col">
@@ -93,7 +93,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-3">
         <div class="col-auto">
             <a class="btn btn-secondary" th:href="@{list}">Tillbaka</a>
         </div>
@@ -105,6 +105,10 @@
                     </option>
                 </select>
             </div>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_SONG')"
+               th:href="@{convert(id=${score.id})}">Uppdatera PDF</a>
         </div>
         <div class="col-auto">
             <a class="btn btn-secondary" sec:authorize="hasAuthority('EDIT_SONG')"

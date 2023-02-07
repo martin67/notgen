@@ -88,7 +88,7 @@ public class ConverterService {
 
     }
 
-    private List<Path> split(Path tmpDir, Path downloadedScore) throws IOException {
+    public List<Path> split(Path tmpDir, Path downloadedScore) throws IOException {
 
         if (!Files.exists(tmpDir) || !Files.exists(downloadedScore)) {
             return null;

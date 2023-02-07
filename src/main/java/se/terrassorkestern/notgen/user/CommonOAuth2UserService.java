@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.user;
 
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ public class CommonOAuth2UserService {
                 throw new OAuth2AuthenticationProcessingException("Looks like you're signed up with " +
                         user.getProvider() + " account. Please use your " + user.getProvider() +
                         " account to login.");
+            }
+            if (!user.isEnabled()) {
+                throw new DisabledException("Your account is disabled. Please contact the band admin.");
             }
             user = updateExistingUser(user, oAuth2UserInfo);
         } else {

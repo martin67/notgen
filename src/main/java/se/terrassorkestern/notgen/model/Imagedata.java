@@ -14,7 +14,7 @@ import lombok.ToString;
 public class Imagedata {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
     private int page;
     private long fileSize;
     private String format;

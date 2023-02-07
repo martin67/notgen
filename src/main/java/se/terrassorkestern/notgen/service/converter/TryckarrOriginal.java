@@ -4,7 +4,6 @@ import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.ScoreType;
 import se.terrassorkestern.notgen.service.StorageService;
 import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
 import se.terrassorkestern.notgen.service.converter.filters.GreyScaler;
@@ -32,10 +31,6 @@ public class TryckarrOriginal implements ImageProcessor {
         this.score = score;
         this.storageService = storageService;
         this.firstPage = firstPage;
-    }
-
-    public ScoreType getScoreType() {
-        return ScoreType.ScannedTryckArr;
     }
 
     @Override

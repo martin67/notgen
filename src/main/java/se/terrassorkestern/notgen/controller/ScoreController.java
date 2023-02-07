@@ -13,7 +13,9 @@ import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
+import se.terrassorkestern.notgen.service.ConverterService;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -26,12 +28,14 @@ public class ScoreController {
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
     private final SettingRepository settingRepository;
+    private final ConverterService converterService;
 
     public ScoreController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
-                           SettingRepository settingRepository) {
+                           SettingRepository settingRepository, ConverterService converterService) {
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
         this.settingRepository = settingRepository;
+        this.converterService = converterService;
     }
 
     @GetMapping("/list")
@@ -125,6 +129,14 @@ public class ScoreController {
         } catch (NumberFormatException ignore) {
         }
         return "score/edit";
+    }
+
+    @GetMapping("/convert")
+    public String convert(@RequestParam("id") int id) throws IOException, InterruptedException {
+        Score score = scoreRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
+        converterService.convert(List.of(score));
+        return "redirect:/score/list";
     }
 
     @GetMapping(value = "/scores.json")

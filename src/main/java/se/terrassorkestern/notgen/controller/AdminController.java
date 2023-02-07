@@ -43,8 +43,9 @@ public class AdminController {
     }
 
     @GetMapping("/imageExtract")
-    public void extract() throws IOException, ImageReadException {
+    public String extract() throws IOException, ImageReadException {
         imageDataExtractor.extract(scoreRepository.findAll());
+        return "redirect:/admin";
     }
 
     @GetMapping("/export")
