@@ -102,10 +102,13 @@ public class PrintController {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(new InputStreamResource(is));
 
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        } catch (InterruptedException e) {
+            log.error("Interrupted", e);
+            Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
-
     }
 
     @GetMapping(value = "/getscore", produces = MediaType.APPLICATION_PDF_VALUE)
@@ -125,7 +128,11 @@ public class PrintController {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(new InputStreamResource(is));
 
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        } catch (InterruptedException e) {
+            log.error("Interrupted", e);
+            Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
     }
@@ -147,7 +154,11 @@ public class PrintController {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(new InputStreamResource(is));
 
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        } catch (InterruptedException e) {
+            log.error("Interrupted", e);
+            Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
     }

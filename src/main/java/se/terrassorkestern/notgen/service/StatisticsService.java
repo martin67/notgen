@@ -49,7 +49,6 @@ public class StatisticsService {
         stopWatch.stop();
 
         stopWatch.start("setNumberOfScannedPages");
-        long hej = scoreRepository.numberOfPages();
         statistics.setNumberOfScannedPages(scoreRepository.numberOfPages());
         stopWatch.stop();
 

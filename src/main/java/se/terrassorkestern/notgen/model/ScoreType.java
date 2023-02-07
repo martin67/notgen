@@ -8,6 +8,7 @@ public enum ScoreType {
     PDF("PDF", "PDF, ingen bildbehandling", ""),
     PDF_R("PDF_R", "PDF, rotera höger", ""),
     PDF_L("PDF_L", "PDF, rotera vänster", ""),
+    BW("BW", "Svartvitt", "Inscannat i svartvitt"),
     ScannedTryckArr("SWPRINT", "Original tryckarr", "Inscannat i färg, över högre hörnet linjerar");
 
     private final String code;
