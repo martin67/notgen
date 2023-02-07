@@ -177,7 +177,6 @@ public class PlaylistController {
         try {
             bis = playlistPdfService.create(playlist);
         } catch (IOException e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
 

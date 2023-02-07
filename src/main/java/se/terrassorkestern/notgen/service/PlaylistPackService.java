@@ -49,7 +49,6 @@ public class PlaylistPackService {
             log.debug("Creating temporary directory: {}", tmpDir.toString());
         } catch (IOException e) {
             log.error("Can't create temporary directory");
-            //e.printStackTrace();
             return null;
         }
 
@@ -112,7 +111,7 @@ public class PlaylistPackService {
             return output;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Oppsie: ", e);
             return null;
         }
     }

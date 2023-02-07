@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class PlaylistPdfService {
 
@@ -93,12 +95,12 @@ public class PlaylistPdfService {
         try {
             doc.save(byteArrayOutputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Ooopsie: ", e);
         }
         try {
             doc.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Ooopsie: ", e);
         }
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }

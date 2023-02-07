@@ -56,7 +56,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((authorize) -> authorize
+                .authorizeHttpRequests(authorize -> authorize
                         .shouldFilterAllDispatcherTypes(true)
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                         .requestMatchers("/score/list", "/score/view/**").permitAll()
@@ -71,19 +71,19 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**", "/actuator/**").hasAnyRole("SUPERADMIN", "ADMIN")
                         .anyRequest().permitAll()
                 )
-                .formLogin((formLogin) -> formLogin
+                .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                 )
-                .logout((logout) -> logout
+                .logout(logout -> logout
                         .logoutUrl("/logout")
                         .deleteCookies("JSESSIONID")
                         .logoutSuccessUrl("/")
                 )
-                .rememberMe((rememberMe) -> rememberMe
+                .rememberMe(rememberMe -> rememberMe
                         .userDetailsService(userDetailsService())
                         .key("asdasdsad")
                 )
-                .oauth2Login((oauth2Login) -> oauth2Login
+                .oauth2Login(oauth2Login -> oauth2Login
                         .loginPage("/login")
                         .userInfoEndpoint()
                         .userService(customOAuth2UserService)

@@ -37,6 +37,7 @@ public class UserPrincipal implements OAuth2User, OidcUser, UserDetails {
         return user.getId();
     }
 
+    @Override
     public String getEmail() {
         return user.getEmail();
     }
