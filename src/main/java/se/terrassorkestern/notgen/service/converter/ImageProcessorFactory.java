@@ -14,14 +14,15 @@ public class ImageProcessorFactory {
             if (score.getFilename().endsWith(".zip")) {
                 return new TryckarrOriginal(path, tmpDir, score, storageService, firstPage);
             } else if (score.getFilename().endsWith(".pdf")) {
-                return new ScannedPdf(path, tmpDir, score, storageService, firstPage);
+                return new ScannedPdf(path, score, storageService, firstPage);
             } else {
                 return null;
             }
         } else {
             return switch (score.getScoreType()) {
                 case NotScanned -> null;
-                case PDF, PDF_L, PDF_R -> new ScannedPdf(path, tmpDir, score, storageService, firstPage);
+                case PDF, PDF_L, PDF_R -> new ScannedPdf(path, score, storageService, firstPage);
+                case BW -> new BlackAndWhite(path, score, storageService, firstPage);
                 case ScannedTryckArr -> new TryckarrOriginal(path, tmpDir, score, storageService, firstPage);
             };
         }

@@ -23,7 +23,7 @@ public class TryckarrOriginal implements ImageProcessor {
     private final Path tmpDir;
     private final Score score;
     private final StorageService storageService;
-    private boolean firstPage;
+    private final boolean firstPage;
 
     public TryckarrOriginal(Path path, Path tmpDir, Score score, StorageService storageService, boolean firstPage) {
         this.path = path;

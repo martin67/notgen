@@ -15,17 +15,14 @@ import java.nio.file.Path;
 public class ScannedPdf implements ImageProcessor {
 
     private final Path path;
-    private final Path tmpDir;
     private final Score score;
     private final StorageService storageService;
     private final boolean firstPage;
 
-
     private enum Rotation {Left, Right}
 
-    public ScannedPdf(Path path, Path tmpDir, Score score, StorageService storageService, boolean firstPage) {
+    public ScannedPdf(Path path, Score score, StorageService storageService, boolean firstPage) {
         this.path = path;
-        this.tmpDir = tmpDir;
         this.score = score;
         this.storageService = storageService;
         this.firstPage = firstPage;
