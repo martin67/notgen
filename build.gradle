@@ -14,7 +14,7 @@ sonarqube {
         property "sonar.projectKey", "martin67_notgen2"
         property "sonar.organization", "martin-hagelin"
         property "sonar.host.url", "https://sonarcloud.io"
-        property 'sonar.branch.name', gitBranch()
+//        property 'sonar.branch.name', gitBranch()
     }
 }
 
