@@ -75,7 +75,6 @@ public class TryckarrOriginal implements ImageProcessor {
             int cropWidth;
             int cropHeight;
 
-
             //
             // Om bilderna är inscannade med övre vänstra hörnet mot kanten så kan man beskära och förstora.
             // Standard för sådant som jag scannar
@@ -101,32 +100,33 @@ public class TryckarrOriginal implements ImageProcessor {
                 if (log.isTraceEnabled()) {
                     ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-1-cropped.png"));
                 }
-
-                //
-                // Om det är ett omslag så skall det sparas en kopia separat här (innan det skalas om)
-                // Spara också en thumbnail i storlek 180 bredd
-                //
-                if (firstPage && score.getCover() && score.getColor()) {
-                    log.debug("Saving cover");
-                    try (OutputStream outputStream = storageService.getCoverOutputStream(score)) {
-                        ImageIO.write(image, "jpg", outputStream);
-                    }
-
-                    BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
-                    g = thumbnail.createGraphics();
-                    g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
-                    g.dispose();
-                    try (OutputStream outputStream = storageService.getThumbnailOutputStream(score)) {
-                        ImageIO.write(thumbnail, "png", outputStream);
-                    }
-                    return;
+            }
+            //
+            // Om det är ett omslag så skall det sparas en kopia separat här (innan det skalas om)
+            // Spara också en thumbnail i storlek 180 bredd
+            //
+            if (firstPage && score.getCover()) {
+                log.debug("Saving cover");
+                try (OutputStream outputStream = storageService.getCoverOutputStream(score)) {
+                    ImageIO.write(image, "jpg", outputStream);
                 }
 
+                BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
+                Graphics g = thumbnail.createGraphics();
+                g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
+                g.dispose();
+                try (OutputStream outputStream = storageService.getThumbnailOutputStream(score)) {
+                    ImageIO.write(thumbnail, "png", outputStream);
+                }
+                return;
+            }
+
+            if (score.getUpperleft()) {
                 // Resize
                 // Pad on both sides, 2550-2288=262, 262/2=131, => 131-(2288+131)-131
                 onePageWatch.start("resizing");
                 BufferedImage resized = new BufferedImage(2419, 3501, BufferedImage.TYPE_INT_RGB);
-                g = resized.getGraphics();
+                Graphics g = resized.getGraphics();
                 g.setColor(Color.WHITE);
                 g.fillRect(0, 0, resized.getWidth(), resized.getHeight());
                 g.drawImage(image, 149, 0, 2402, 3501, 0, 0, image.getWidth(), image.getHeight(), null);
@@ -139,19 +139,10 @@ public class TryckarrOriginal implements ImageProcessor {
                 }
             }
 
-
-            if (firstPage && score.getCover() && score.getColor()) {
-                // Don't convert the first page to grey/BW
-                ImageIO.write(image, "jpg", new File(Files.getNameWithoutExtension(path.toString()) + ".jpg"));
-                firstPage = false;
-                return;
-            }
-
             // Setup conversion filters
             GreyScaler greyScaler = new Standard();
             //Binarizer binarizer = new Otsu();
             Binarizer binarizer = new Standard();
-
 
             //
             // Change to grey

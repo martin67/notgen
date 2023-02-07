@@ -51,6 +51,7 @@ public class PrintController {
         Instrument instrument;
         if (id == -1) {
             instrument = instrumentRepository.findFirstBy();
+            id = instrument.getId();
         } else {
             instrument = instrumentRepository.findById(id).orElseThrow();
         }
@@ -65,6 +66,7 @@ public class PrintController {
         Setting setting;
         if (id == -1) {
             setting = settingRepository.findFirstBy();
+            id = setting.getId();
         } else {
             setting = settingRepository.findById(id).orElseThrow();
         }
