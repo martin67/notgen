@@ -16,13 +16,13 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        log.info("git.commit.id.abbrev: {}", GitCommit);
-        log.info("git.commit.time: {}", GitTime);
         return "home";
     }
 
     @GetMapping("/about")
     public String about() {
+        log.info("git.commit.id.abbrev: {}", GitCommit);
+        log.info("git.commit.time: {}", GitTime);
         return "about";
     }
 
