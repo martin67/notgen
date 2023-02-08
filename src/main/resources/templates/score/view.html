@@ -24,57 +24,79 @@
                                                      th:src="@{${score.getThumbnailPath()}}" alt="thumbnail"/></a>
     </figure>
 
-    <table class="table table-sm table-borderless">
-        <tbody>
-        <tr th:if="${score.title}">
-            <td>Titel</td>
-            <td th:text="${score.title}"/>
-        </tr>
-        <tr th:if="${score.subTitle}">
-            <td>Subtitel</td>
-            <td th:text="${score.subTitle}"/>
-        </tr>
-        <tr th:if="${score.genre}">
-            <td>Genre</td>
-            <td th:text="${score.genre}"/>
-        </tr>
-        <tr th:if="${score.year}">
-            <td>År</td>
-            <td th:text="${score.year}"/>
-        </tr>
-        <tr th:if="${score.composer}">
-            <td>Kompositör</td>
-            <td th:text="${score.composer}"/>
-        </tr>
-        <tr th:if="${score.author}">
-            <td>Författare</td>
-            <td th:text="${score.author}"/>
-        </tr>
-        <tr th:if="${score.arranger}">
-            <td>Arrangör</td>
-            <td th:text="${score.arranger}"/>
-        </tr>
-        <tr th:if="${score.publisher}">
-            <td>Förlag</td>
-            <td th:text="${score.publisher}"/>
-        </tr>
-        <tr th:if="${score.comment}">
-            <td>Kommentar</td>
-            <td th:text="${score.comment}"/>
-        </tr>
-        </tbody>
-    </table>
+    <div class="row mb-3">
+        <div clall="col">
+            <table class="table table-sm table-borderless">
+                <tbody>
+                <tr th:if="${score.title}">
+                    <td>Titel</td>
+                    <td th:text="${score.title}"/>
+                </tr>
+                <tr th:if="${score.subTitle}">
+                    <td>Subtitel</td>
+                    <td th:text="${score.subTitle}"/>
+                </tr>
+                <tr th:if="${score.genre}">
+                    <td>Genre</td>
+                    <td th:text="${score.genre}"/>
+                </tr>
+                <tr th:if="${score.year}">
+                    <td>År</td>
+                    <td th:text="${score.year}"/>
+                </tr>
+                <tr th:if="${score.composer}">
+                    <td>Kompositör</td>
+                    <td th:text="${score.composer}"/>
+                </tr>
+                <tr th:if="${score.author}">
+                    <td>Författare</td>
+                    <td th:text="${score.author}"/>
+                </tr>
+                <tr th:if="${score.arranger}">
+                    <td>Arrangör</td>
+                    <td th:text="${score.arranger}"/>
+                </tr>
+                <tr th:if="${score.publisher}">
+                    <td>Förlag</td>
+                    <td th:text="${score.publisher}"/>
+                </tr>
+                <tr th:if="${score.comment}">
+                    <td>Kommentar</td>
+                    <td th:text="${score.comment}"/>
+                </tr>
+                <tr th:if="${score.internalComment}" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')">
+                    <td></td>
+                </tr>
+                <tr th:if="${score.internalComment}" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')">
+                    <td class="text-danger">Intern kommentar</td>
+                    <td th:text="${score.internalComment}"/>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <h3>Sättning</h3>
-    <table class="table table-sm table-borderless table-striped table-hover">
-        <tbody>
-        <tr th:each="scorePart : ${score.scoreParts}"
-            th:data-link="@{/print/getscorepart(instrument_id=${scorePart.instrument.id},score_id=${score.id})}">
-            <td th:text="${scorePart.instrument.name}"/>
-            <td th:text="${scorePart.comment}"/>
-        </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col">
+            <h3>Sättning</h3>
+            <table class="table table-sm table-borderless table-striped table-hover">
+                <tbody>
+                <tr th:each="scorePart : ${score.scoreParts}"
+                    th:data-link="@{/print/getscorepart(instrument_id=${scorePart.instrument.id},score_id=${score.id})}">
+                    <td th:text="${scorePart.instrument.name}"/>
+                    <td th:text="${scorePart.comment}"/>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row mb-3" th:if="${score.text}" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')">
+        <div class="col">
+            <h3>Text</h3>
+            <div th:text="${score.text}"/>
+        </div>
+    </div>
 
     <div class="row mb-3" sec:authorize="hasAuthority('EDIT_SONG')">
         <h3>Detaljer</h3>

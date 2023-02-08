@@ -107,7 +107,7 @@ public class BackupImporter {
     }
 
     private static String escapeSql(String in) {
-        return in.replaceAll("'", "''");
+        return in.replace("'", "''");
     }
 }
 
