@@ -68,6 +68,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    implementation 'io.github.oxayotl:spring-boot-starter-meikik:0.9.1'
 //    implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time'
     implementation 'org.liquibase:liquibase-core:4.19.0'
     implementation 'mysql:mysql-connector-java:8.0.30'

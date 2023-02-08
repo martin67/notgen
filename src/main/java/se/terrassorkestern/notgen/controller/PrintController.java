@@ -93,7 +93,7 @@ public class PrintController {
             stopWatch.stop();
             stopWatch.start("send response");
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=\"" + score.getTitle() + "\" (" + instrument.getShortName() + ").pdf");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), instrument.getShortName()));
             stopWatch.stop();
             log.info("time: {}", stopWatch.prettyPrint());
             return ResponseEntity
@@ -120,7 +120,7 @@ public class PrintController {
 
         try (InputStream is = converterService.assemble(score, setting)) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=\"" + score.getTitle() + "\" (" + setting.getName() + ").pdf");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), setting.getName()));
 
             return ResponseEntity
                     .ok()
@@ -146,7 +146,7 @@ public class PrintController {
 
         try (InputStream is = converterService.assemble(playlist, instrument)) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=\"" + playlist.getName() + "\" (" + instrument.getShortName() + ").pdf");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(playlist.getName(), instrument.getShortName()));
 
             return ResponseEntity
                     .ok()
@@ -161,5 +161,9 @@ public class PrintController {
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
+    }
+
+    private String createContentDisposition(String name, String shortName) {
+        return "inline; filename=\"" + name + "\" (" + shortName + ").pdf";
     }
 }
