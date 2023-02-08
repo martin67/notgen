@@ -8,6 +8,11 @@ import java.nio.file.Path;
 
 @Slf4j
 public class ImageProcessorFactory {
+
+    private ImageProcessorFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static ImageProcessor create(Path path, Path tmpDir, Score score, StorageService storageService, boolean firstPage) {
         if (score.getScoreType() == null) {
             log.warn("scoreType not set for score {}", score);
