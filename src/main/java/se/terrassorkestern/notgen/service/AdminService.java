@@ -49,9 +49,9 @@ public class AdminService {
                 String filename = table + ".csv";
                 ZipEntry entry = new ZipEntry(filename); // create a zip entry and add it to ZipOutputStream
                 zos.putNextEntry(entry);
-
+                String sql = "select * from " + table;
                 CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(zos), format);  // There is no need for staging the CSV on filesystem or reading bytes into memory. Directly write bytes to the output stream.
-                try (PreparedStatement pstmt = conn.prepareStatement("select * from " + table)) {
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     ResultSet rs = pstmt.executeQuery();
                     csvPrinter.printRecords(rs, true);
                     csvPrinter.flush(); // flush the writer. Very important!
