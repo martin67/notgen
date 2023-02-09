@@ -48,7 +48,7 @@ springBoot {
 }
 
 compileJava.options.encoding = 'UTF-8'
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
@@ -69,7 +69,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-    implementation 'io.github.oxayotl:spring-boot-starter-meikik:0.9.1'
 //    implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time'
     implementation 'org.liquibase:liquibase-core:4.19.0'
     implementation 'mysql:mysql-connector-java:8.0.30'
@@ -100,10 +99,6 @@ dependencies {
         activities {
             main {
                 changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
-                //changeLogFile 'db/changelog/db.changelog-master.yaml'
-                //changeLogFile 'db.changelog-master.yaml'
-                //classpath 'src/main/resources'
-                //url "jdbc:h2:file:./todb"
                 defaultSchemaName "dbo"
                 referenceUrl "hibernate:spring:se.terrassorkestern.notgen.model?dialect=org.hibernate.dialect.SQLServerDialect&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
                 url System.getenv("SPRING_DATASOURCE_URL")
