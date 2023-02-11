@@ -26,8 +26,10 @@ import java.util.List;
 @SessionAttributes("score")
 //@SessionAttributes({"score", "band"})
 public class ScoreController {
-    @Value("${notgen.ocr.songids}")
-    private String songIds;
+    @Value("${notgen.ocr.enable:false}")
+    private boolean enableOcr;
+    @Value("${notgen.ocr.songids:0}")
+    private String ocrSongIds;
 
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
@@ -80,8 +82,8 @@ public class ScoreController {
                 .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
         model.addAttribute("score", score);
         // Check if the score has a song instrument. Only one for now
-        if (songIds != null && !songIds.isEmpty()) {
-            int songId = Integer.parseInt(songIds);
+        if (enableOcr) {
+            int songId = Integer.parseInt(ocrSongIds);
             if (score.getInstruments().stream().anyMatch(instrument -> instrument.getId() == songId)) {
                 model.addAttribute("doSongOcr", "true");
             } else {

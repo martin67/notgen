@@ -169,7 +169,7 @@
                       th:value="${score.text}"></textarea>
         </div>
         <div class="form-row mb-3">
-            <button type="button" class="btn btn-primary" th:disabled="${!doSongOcr}"
+            <button type="button" class="btn btn-primary" th:disabled="${doSongOcr}? ${!doSongOcr} : true"
                     th:onclick="'doOCR(' + ${score.id} + ')'" id="ocr-button">
                 OCR
             </button>

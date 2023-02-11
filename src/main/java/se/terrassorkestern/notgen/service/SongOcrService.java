@@ -27,13 +27,13 @@ import java.util.Map;
 @Service
 public class SongOcrService {
 
-    @Value("${notgen.ocr.enable}")
+    @Value("${notgen.ocr.enable:false}")
     private boolean enableOcr;
-    @Value("${notgen.ocr.songids}")
+    @Value("${notgen.ocr.songids:0}")
     private String songIds;
-    @Value("${notgen.ocr.username}")
+    @Value("${notgen.ocr.username:}")
     private String username;
-    @Value("${notgen.ocr.license}")
+    @Value("${notgen.ocr.license:}")
     private String license;
 
     private final InstrumentRepository instrumentRepository;
