@@ -49,6 +49,11 @@ management:
 
 # Local storage config
 notgen:
+  ocr:
+    enable: true
+    songids: 11
+    username: ${OCR_USERNAME}
+    license: ${OCR_LICENSE}
   storage:
     type: local
     input: /var/lib/notgen/input
