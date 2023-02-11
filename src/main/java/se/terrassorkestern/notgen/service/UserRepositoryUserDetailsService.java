@@ -18,8 +18,8 @@ public class UserRepositoryUserDetailsService implements UserDetailsService {
 
     @Override
     public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User '" + username + "' not found"));
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Email '" + username + "' not found"));
         if (!user.isEnabled()) {
             throw new DisabledException("Your account is disabled. Please contact the band admin.");
         }

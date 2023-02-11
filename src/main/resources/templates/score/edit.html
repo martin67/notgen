@@ -163,10 +163,20 @@
             </div>
         </div>
 
-        <div class="form-row mb-3">
-            <label for="text" class="form-label">Sångtext</label>
-            <textarea class="form-control" rows="10" id="text" th:field="*{text}"
+        <div class="form-row mb-1">
+            <label for="songtext" class="form-label">Sångtext</label>
+            <textarea class="form-control" rows="10" id="songtext" th:field="*{text}"
                       th:value="${score.text}"></textarea>
+        </div>
+        <div class="form-row mb-3">
+            <button type="button" class="btn btn-primary" th:disabled="${doSongOcr}? ${!doSongOcr} : true"
+                    th:onclick="'doOCR(' + ${score.id} + ')'" id="ocr-button">
+                OCR
+            </button>
+            <button type="button" class="btn btn-primary d-none" id="ocr-button-loading" disabled>
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+                Processing ...
+            </button>
         </div>
 
         <h3>Detaljer</h3>
@@ -324,6 +334,19 @@
                 name: 'publishers',
                 source: publishers
             });
+    }
+</script>
+
+<script>
+    function doOCR(id, songIds) {
+        $('#ocr-button').addClass('d-none');
+        $('#ocr-button-loading').removeClass('d-none')
+        $.get('/score/edit/ocr', {id: id}, function (data) {
+            $('#songtext').val(data);
+            $('#ocr-button-loading').addClass('d-none');
+            $('#ocr-button').removeClass('d-none');
+        });
+
     }
 </script>
 

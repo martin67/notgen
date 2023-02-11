@@ -3,6 +3,7 @@ package se.terrassorkestern.notgen.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StopWatch;
@@ -14,6 +15,7 @@ import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
 import se.terrassorkestern.notgen.service.ConverterService;
+import se.terrassorkestern.notgen.service.SongOcrService;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,18 +26,24 @@ import java.util.List;
 @SessionAttributes("score")
 //@SessionAttributes({"score", "band"})
 public class ScoreController {
+    @Value("${notgen.ocr.enable:false}")
+    private boolean enableOcr;
+    @Value("${notgen.ocr.songids:0}")
+    private String ocrSongIds;
 
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
     private final SettingRepository settingRepository;
     private final ConverterService converterService;
+    private final SongOcrService songOcrService;
 
     public ScoreController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
-                           SettingRepository settingRepository, ConverterService converterService) {
+                           SettingRepository settingRepository, ConverterService converterService, SongOcrService songOcrService) {
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
         this.settingRepository = settingRepository;
         this.converterService = converterService;
+        this.songOcrService = songOcrService;
     }
 
     @GetMapping("/list")
@@ -73,6 +81,15 @@ public class ScoreController {
         Score score = scoreRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
         model.addAttribute("score", score);
+        // Check if the score has a song instrument. Only one for now
+        if (enableOcr) {
+            int songId = Integer.parseInt(ocrSongIds);
+            if (score.getInstruments().stream().anyMatch(instrument -> instrument.getId() == songId)) {
+                model.addAttribute("doSongOcr", "true");
+            } else {
+                model.addAttribute("doSongOcr", "false");
+            }
+        }
         model.addAttribute("allInstruments", instrumentRepository.findAll());
         return "score/edit";
     }
@@ -137,6 +154,14 @@ public class ScoreController {
                 .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
         converterService.convert(List.of(score));
         return "redirect:/score/list";
+    }
+
+    @GetMapping("/edit/ocr")
+    public @ResponseBody
+    String ocr(@RequestParam("id") int id) throws Exception {
+        Score score = scoreRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
+        return songOcrService.process(score);
     }
 
     @GetMapping(value = "/scores.json")
