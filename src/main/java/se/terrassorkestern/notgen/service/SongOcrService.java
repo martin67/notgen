@@ -100,7 +100,7 @@ public class SongOcrService {
         // Build your OCR:
 
         // Extraction text with English language
-        String ocrURL = "http://www.ocrwebservice.com/restservices/processDocument?gettext=true&language=swedish&newline=1";
+        String ocrURL = "https://www.ocrwebservice.com/restservices/processDocument?gettext=true&language=swedish&newline=1";
 
         // Full path to uploaded document
         Instrument song = instrumentRepository.getReferenceById(Integer.parseInt(songIds));
@@ -133,10 +133,9 @@ public class SongOcrService {
         // Success request
         if (httpCode == HttpURLConnection.HTTP_OK) {
             // Get response stream
-            String jsonResponse = GetResponseToString(connection.getInputStream());
+            String jsonResponse = getResponseToString(connection.getInputStream());
 
             // Parse and print response from OCR server
-            //PrintOCRResponse(jsonResponse);
             JsonParser parser = JsonParserFactory.getJsonParser();
             Map<String, Object> jsonObj = parser.parseMap(jsonResponse);
             List<List<String>> texts = (List<List<String>>) jsonObj.get("OCRText");
@@ -145,10 +144,8 @@ public class SongOcrService {
             log.error("OCR Error Message: Unauthorized request");
         } else {
             // Error occurred
-            String jsonResponse = GetResponseToString(connection.getErrorStream());
+            String jsonResponse = getResponseToString(connection.getErrorStream());
 
-            //JSONParser parser = new JSONParser();
-            //JSONObject jsonObj = (JSONObject) parser.parse(jsonResponse);
             JsonParser parser = JsonParserFactory.getJsonParser();
             Map<String, Object> jsonObj = parser.parseMap(jsonResponse);
 
@@ -161,7 +158,7 @@ public class SongOcrService {
         return "";
     }
 
-    private static String GetResponseToString(InputStream inputStream) throws IOException {
+    private static String getResponseToString(InputStream inputStream) throws IOException {
         InputStreamReader responseStream = new InputStreamReader(inputStream);
 
         BufferedReader br = new BufferedReader(responseStream);
@@ -170,7 +167,6 @@ public class SongOcrService {
         while ((s = br.readLine()) != null) {
             strBuff.append(s);
         }
-
         return strBuff.toString();
     }
 
