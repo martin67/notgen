@@ -93,7 +93,7 @@
         </div>
     </div>
 
-    <div class="row mb-3 border p-2" th:if="${score.text}" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')">
+    <div class="row mb-3 border p-2">
         <div class="col">
             <h3>Text</h3>
             <div class="height-auto overflow-auto" style="white-space:pre" th:text="${score.text}"/>

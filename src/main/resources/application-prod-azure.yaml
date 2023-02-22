@@ -8,6 +8,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.SQLServerDialect
+        search:
+          backend.directory.root: /var/lib/notgen/index
 
 # Storage config
 notgen:

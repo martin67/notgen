@@ -47,6 +47,10 @@
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
+                <form class="d-flex" role="search" th:action="@{/search/}" method="post" name="searchForm">
+                    <input class="form-control me-2" type="search" placeholder="Låt, text, etc..." aria-label="Search" name="search">
+                    <button class="btn btn-outline-success" type="submit">Sök</button>
+                </form>
                 <li sec:authorize="!isAuthenticated()" class="nav-item">
                     <a class="nav-link" th:href="@{/login}">Logga in</a>
                 </li>

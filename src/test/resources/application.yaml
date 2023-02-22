@@ -7,6 +7,10 @@ spring:
     password: sa
   jpa:
     defer-datasource-initialization: true
+    properties:
+      hibernate:
+        search:
+          enabled: false
   # Don't use Liquibase for unit & integration tests
   liquibase:
     enabled: false
@@ -28,6 +32,7 @@ spring:
           facebook:
             client-id: notused
             client-secret: notused
+
 notgen:
   storage:
     type: local
