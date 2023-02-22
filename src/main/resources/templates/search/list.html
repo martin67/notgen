@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
+<head>
+    <th:block th:replace="~{fragments/general :: header-css}"></th:block>
+    <title>Lista noter</title>
+</head>
+
+<body>
+<div th:replace="~{fragments/general :: header}"></div>
+
+<div class="container">
+    <br>
+    <table class="table table-bordered table-striped table-hover table-sm">
+        <thead>
+        <tr>
+            <th scope="col">Namn</th>
+            <th scope="col">Genre</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="score : ${scores}" th:data-link="@{/score/view(id=${score.id})}">
+            <td th:text="${score.title}"></td>
+            <td th:text="${score.genre}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="row mb-3">
+        <div class="col-auto">
+            <a class="btn btn-secondary" th:href="@{/}">Tillbaka</a>
+        </div>
+    </div>
+</div>
+
+
+<footer th:replace="~{fragments/general :: footer}"></footer>
+</body>
+
+<script>
+    $(function () {
+        $("table tbody tr").click(function (e) {
+            window.location.href = $(this).data("link");
+        });
+    });
+</script>
+
+</html>

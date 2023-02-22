@@ -48,7 +48,7 @@ public class BandController {
                 .orElseThrow(() -> new NotFoundException(String.format("Band %d not found", id)));
         log.info("Tar bort band {} [{}]", band.getName(), band.getId());
         bandRepository.delete(band);
-        return "redirect:/bandlist";
+        return "redirect:/band/list";
     }
 
     @PostMapping("/save")

@@ -5,15 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Entity
+@Indexed
 @Getter
 @Setter
-@Entity
 @Table(name = "score", indexes = {
         @Index(name = "idx_title", columnList = "title"),
         @Index(name = "idx_band", columnList = "band_id")
@@ -25,21 +28,30 @@ public class Score extends Auditable<String> {
     @ManyToOne
     private Band band;
     @NotBlank(message = "Titel måste anges")
+    @FullTextField()
     private String title;
+    @FullTextField()
     private String subTitle;
     @NotBlank(message = "Genre måste anges")
+    @FullTextField()
     private String genre = "Foxtrot";
+    @FullTextField()
     private String composer;
+    @FullTextField()
     private String author;
+    @FullTextField()
     private String arranger;
     @Column(name = "year_")             // year is a reserved name in H2...
     private Integer year = 1940;
+    @FullTextField()
     private String publisher;
     @Lob
+    @FullTextField()
     private String comment;
     @Lob
     private String internalComment;
     @Lob
+    @FullTextField()
     private String text;
     @Lob
     private String presentation;

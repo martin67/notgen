@@ -3,6 +3,7 @@ package se.terrassorkestern.notgen.repository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Band;
@@ -13,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface ScoreRepository extends JpaRepository<Score, Integer> {
+public interface ScoreRepository extends SearchRepository<Score, Integer> {
 
     List<Score> findByBandOrderByTitleAsc(Band band);
 
