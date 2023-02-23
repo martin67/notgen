@@ -46,7 +46,7 @@
             </select>
         </div>
         <div class="form-group">
-            <a class="btn btn-secondary" th:href="@{/setting/list}">Tillbaka</a>
+            <a class="btn btn-secondary" onclick="history.back()">Tillbaka</a>
             <button sec:authorize="hasAuthority('EDIT_INSTRUMENT')" type="button" class="btn btn-danger"
                     data-toggle="modal" data-target="#deleteModal">Ta bort
             </button>
