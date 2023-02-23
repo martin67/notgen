@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
 <head>
     <th:block th:replace="~{fragments/general :: header-css}"></th:block>
-    <title>Visa noter</title>
+    <title th:text="${score.title}">Visa noter</title>
 </head>
 
 <body onload="setPrintButton()">
@@ -21,7 +21,7 @@
 
     <figure class="text-center">
         <a th:href="@{${score.getCoverPath()}}"><img class="figure-img img-fluid rounded"
-                                                     th:src="@{${score.getThumbnailPath()}}" alt="thumbnail"/></a>
+                                                     th:src="@{${score.getThumbnailPath()}}" th:alt="${score.title}"/></a>
     </figure>
 
     <div class="row mb-3 border p-2">

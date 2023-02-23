@@ -25,9 +25,7 @@ public class NotgenApplication {
 
         if (Boolean.parseBoolean(jpaSearchEnabled)) {
             log.info("Starting search indexer");
-            return (ApplicationArguments args) -> {
-                indexer.indexPersistedData("se.terrassorkestern.notgen.model.Score");
-            };
+            return (ApplicationArguments args) -> indexer.indexPersistedData("se.terrassorkestern.notgen.model.Score");
         } else {
             return null;
         }

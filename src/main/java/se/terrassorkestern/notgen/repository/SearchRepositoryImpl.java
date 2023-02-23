@@ -40,14 +40,12 @@ public class SearchRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     private SearchResult<T> getSearchResult(String text, int limit, String[] fields) {
         SearchSession searchSession = Search.session(entityManager);
 
-        SearchResult<T> result =
-                searchSession
-                        .search(getDomainClass())
-                        .where(f -> f.match()
-                                .fields(fields)
-                                .matching(text)
-                                .fuzzy(1))
-                        .fetch(limit);
-        return result;
+        return searchSession
+                .search(getDomainClass())
+                .where(f -> f.match()
+                        .fields(fields)
+                        .matching(text)
+                        .fuzzy(0))
+                .fetch(limit);
     }
 }

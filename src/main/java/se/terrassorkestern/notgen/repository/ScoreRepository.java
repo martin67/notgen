@@ -1,12 +1,10 @@
 package se.terrassorkestern.notgen.repository;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Band;
+import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.TopListEntry;
 

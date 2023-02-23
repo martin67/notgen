@@ -28,30 +28,30 @@ public class Score extends Auditable<String> {
     @ManyToOne
     private Band band;
     @NotBlank(message = "Titel måste anges")
-    @FullTextField()
+    @FullTextField(analyzer = "swedish")
     private String title;
-    @FullTextField()
+    @FullTextField(analyzer = "swedish")
     private String subTitle;
     @NotBlank(message = "Genre måste anges")
-    @FullTextField()
+    @FullTextField(analyzer = "swedish")
     private String genre = "Foxtrot";
-    @FullTextField()
+    @FullTextField(analyzer = "swedish")
     private String composer;
-    @FullTextField()
+    @FullTextField(analyzer = "swedish")
     private String author;
-    @FullTextField()
+    @FullTextField(analyzer = "swedish")
     private String arranger;
     @Column(name = "year_")             // year is a reserved name in H2...
     private Integer year = 1940;
-    @FullTextField()
+    @FullTextField(analyzer = "swedish")
     private String publisher;
     @Lob
-    @FullTextField()
+    @FullTextField(analyzer = "swedish")
     private String comment;
     @Lob
     private String internalComment;
     @Lob
-    @FullTextField()
+    @FullTextField(analyzer = "swedish")
     private String text;
     @Lob
     private String presentation;
