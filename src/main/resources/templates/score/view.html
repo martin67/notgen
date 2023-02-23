@@ -21,7 +21,8 @@
 
     <figure class="text-center">
         <a th:href="@{${score.getCoverPath()}}"><img class="figure-img img-fluid rounded"
-                                                     th:src="@{${score.getThumbnailPath()}}" th:alt="${score.title}"/></a>
+                                                     th:src="@{${score.getThumbnailPath()}}"
+                                                     th:alt="${score.title}"/></a>
     </figure>
 
     <div class="row mb-3 border p-2">
@@ -93,7 +94,7 @@
         </div>
     </div>
 
-    <div class="row mb-3 border p-2" th:unless="${score.text.isEmpty()}">
+    <div class="row mb-3 border p-2" th:if="${score.text}" th:unless="${score.text.isEmpty()}">
         <div class="col">
             <h3>Text</h3>
             <div class="height-auto overflow-auto" style="white-space:pre" th:text="${score.text}"/>
@@ -103,17 +104,41 @@
     <div class="row mb-3 border p-2" sec:authorize="hasAuthority('EDIT_SONG')">
         <h3>Detaljer</h3>
         <div class="col">
-            <input type="checkbox" th:checked="${score.scanned}" onclick="return false;"> Inscannad<br>
-            <input type="checkbox" th:checked="${score.imageProcess}" onclick="return false;"> Bildbehandlas<br>
-            <input type="checkbox" th:checked="${score.upperleft}" onclick="return false;"> Linjerad i hörn<br>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="scanned" th:checked="${score.scanned}"
+                       onclick="return false;">
+                <label class="form-check-label" for="scanned">Inscannad</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="imageProcess" th:checked="${score.imageProcess}"
+                       onclick="return false;">
+                <label class="form-check-label" for="imageProcess">Bildbehandlas</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="upperleft" th:checked="${score.upperleft}"
+                       onclick="return false;">
+                <label class="form-check-label" for="upperleft">Linjerad i hörn</label>
+            </div>
             Bildbehandling: <span th:text="${score.scoreType}?  ' [' + ${score.scoreType.getShortDescription()} + ']'"/>
             <br>
         </div>
         <div class="col">
-            <input type="checkbox" th:checked="${score.cover}" onclick="return false;"> Omslag<br>
-            <input type="checkbox" th:checked="${score.color}" onclick="return false;"> Omslag i färg<br>
-            <input type="checkbox" th:checked="${score.archived}" onclick="return false;"> Original i arkivet
-            <span th:text="${score.archived}?  ' [' + ${score.archiveLocation} + ']'"/> <br>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cover" th:checked="${score.cover}"
+                       onclick="return false;">
+                <label class="form-check-label" for="cover">Omslag</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="color" th:checked="${score.color}"
+                       onclick="return false;">
+                <label class="form-check-label" for="color">Omslag i färg</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="archived" th:checked="${score.archived}"
+                       onclick="return false;">
+                <label class="form-check-label" for="archived">Original i arkivet</label>
+                <span th:text="${score.archived}?  ' [' + ${score.archiveLocation} + ']'"/>
+            </div>
         </div>
     </div>
 
