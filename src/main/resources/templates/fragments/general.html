@@ -56,11 +56,11 @@
                         <a class="dropdown-item" href="javascript: document.logoutForm.submit()">Logga ut</a>
                     </div>
                 </li>
-            </ul>
+            </ul>    @FullTextField(analyzer = "swedish")
         </div>
         <div class="navbar-nav ms-auto">
             <form class="d-flex" role="search" th:action="@{/search/}" method="post" name="searchForm">
-                <input class="form-control me-2" type="search" placeholder="Låt, text, etc..." aria-label="Search"
+                <input class="form-control me-2" type="search" size=10 placeholder="Låt, text, etc..." aria-label="Search"
                        name="search">
                 <button class="btn btn-outline-success" type="submit">Sök</button>
             </form>

@@ -78,7 +78,7 @@
         </div>
     </div>
 
-    <div class="row mb-3 border pt-2 px-2">
+    <div class="row mb-3 border pt-2 px-2" th:unless="${score.scoreParts.isEmpty()}">
         <div class="col">
             <h3>Sättning</h3>
             <table class="table table-sm table-borderless table-striped table-hover">
@@ -93,7 +93,7 @@
         </div>
     </div>
 
-    <div class="row mb-3 border p-2">
+    <div class="row mb-3 border p-2" th:unless="${score.text.isEmpty()}">
         <div class="col">
             <h3>Text</h3>
             <div class="height-auto overflow-auto" style="white-space:pre" th:text="${score.text}"/>
@@ -119,7 +119,7 @@
 
     <div class="row mb-3">
         <div class="col-auto mb-2">
-            <a class="btn btn-secondary" th:href="@{list}">Tillbaka</a>
+            <a class="btn btn-secondary" onclick="history.back()">Tillbaka</a>
         </div>
         <div class="col-auto" sec:authorize="hasAuthority('PRINT_SCORE')">
             <div class="input-group">
