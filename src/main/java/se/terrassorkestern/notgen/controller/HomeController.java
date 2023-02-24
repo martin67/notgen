@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     @Value("${git.commit.id.abbrev}")
-    private String GitCommit;
+    private String gitCommit;
     @Value("${git.commit.time}")
-    private String GitTime;
+    private String gitTime;
 
     @GetMapping("/")
     public String home() {
@@ -21,8 +21,8 @@ public class HomeController {
 
     @GetMapping("/about")
     public String about() {
-        log.info("git.commit.id.abbrev: {}", GitCommit);
-        log.info("git.commit.time: {}", GitTime);
+        log.info("git.commit.id.abbrev: {}", gitCommit);
+        log.info("git.commit.time: {}", gitTime);
         return "about";
     }
 

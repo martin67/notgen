@@ -2,11 +2,13 @@ package se.terrassorkestern.notgen.index;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Transactional
 @Component
 public class Indexer {
@@ -31,7 +33,9 @@ public class Indexer {
         } catch (ClassNotFoundException e) {
             throw new IndexException("Invalid class " + indexClassName, e);
         } catch (InterruptedException e) {
-            throw new IndexException("Index Interrupted", e);
+            log.error("Index Interrupted", e);
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
         }
     }
 }

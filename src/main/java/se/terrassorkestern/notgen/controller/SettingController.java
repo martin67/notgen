@@ -7,11 +7,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.model.Setting;
-import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.BandRepository;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
-import se.terrassorkestern.notgen.repository.UserRepository;
 
 import java.security.Principal;
 

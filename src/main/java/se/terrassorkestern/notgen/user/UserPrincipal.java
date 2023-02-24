@@ -97,7 +97,7 @@ public class UserPrincipal implements OAuth2User, OidcUser, UserDetails {
 
     @Override
     public Map<String, Object> getClaims() {
-        return null;
+        return Map.of();
     }
 
     @Override
