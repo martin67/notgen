@@ -1,36 +1,61 @@
 package se.terrassorkestern.notgen.service;
 
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import se.terrassorkestern.notgen.model.Statistics;
+import se.terrassorkestern.notgen.repository.PlaylistRepository;
 
+import java.io.StringWriter;
+import java.io.Writer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.spy;
 
 @SpringBootTest
 @Transactional
-@Tag("manual")
-@Sql({"/full-data.sql"})
+@Sql({"/testdata/statistics.sql"})
 class StatisticsServiceTest {
 
     @Autowired
-    StatisticsService statisticsService;
-
+    private StatisticsService statisticsService;
 
     @Test
-    @Disabled
     void getStatistics() {
         Statistics statistics = statisticsService.getStatistics();
-        assertThat(statistics.getNumberOfInstruments()).isEqualTo(39L);
-        assertThat(statistics.getNumberOfPlaylists()).isEqualTo(7L);
-        assertThat(statistics.getTopGenres().size()).isEqualTo(5L);
-        assertThat(statistics.getNumberOfSongs()).isEqualTo(434L);
-        assertThat(statistics.getNumberOfScannedSongs()).isEqualTo(414L);
-        assertThat(statistics.getNumberOfScannedPages()).isEqualTo(6346L);
+        assertThat(statistics).isNotNull();
+        assertThat(statistics.getNumberOfInstruments()).isEqualTo(3);
+        assertThat(statistics.getNumberOfPlaylists()).isEqualTo(3);
+        assertThat(statistics.getTopGenres().size()).isEqualTo(2);
+        assertThat(statistics.getNumberOfSongs()).isEqualTo(3);
+        assertThat(statistics.getNumberOfScannedSongs()).isEqualTo(1);
+        assertThat(statistics.getNumberOfScannedPages()).isEqualTo(5);
     }
+
+    @Test
+    void writeScoresToCsv() {
+        Writer writer = new StringWriter();
+        statisticsService.writeScoresToCsv(writer);
+        assertThat(writer.toString()).contains("Titel");
+        assertThat(writer.toString()).hasLineCount(4);
+    }
+
+    @Test
+    void writeFullScoresToCsv() {
+        Writer writer = new StringWriter();
+        statisticsService.writeFullScoresToCsv(writer);
+        assertThat(writer.toString()).contains("Titel", "Instrument");
+        assertThat(writer.toString()).hasLineCount(4);
+    }
+
+    @Test
+    void writeUnscannedToCsv() {
+        Writer writer = new StringWriter();
+        statisticsService.writeUnscannedToCsv(writer);
+        assertThat(writer.toString()).hasLineCount(2);
+    }
+
 }
