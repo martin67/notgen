@@ -36,6 +36,7 @@ class HomeControllerTest {
 
 
     @Test
+    @DisplayName("Home")
     void testHomePage() throws Exception {
         mvc.perform(get("/")
                         .contentType(MediaType.TEXT_HTML))
@@ -44,6 +45,7 @@ class HomeControllerTest {
     }
 
     @Test
+    @DisplayName("About")
     void testAboutPage() throws Exception {
         mvc.perform(get("/about")
                         .contentType(MediaType.TEXT_HTML))

@@ -25,7 +25,7 @@ public class BandController {
     @GetMapping("/list")
     public String list(Model model) {
         model.addAttribute("bands", bandRepository.findAll());
-        return "bandList";
+        return "band/list";
     }
 
     @GetMapping("/edit")
@@ -33,13 +33,13 @@ public class BandController {
         Band band = bandRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Band %d not found", id)));
         model.addAttribute("band", band);
-        return "bandEdit";
+        return "band/edit";
     }
 
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("band", new Band());
-        return "bandEdit";
+        return "band/edit";
     }
 
     @GetMapping("/delete")
@@ -54,7 +54,7 @@ public class BandController {
     @PostMapping("/save")
     public String save(@Valid @ModelAttribute Band band, Errors errors) {
         if (errors.hasErrors()) {
-            return "bandEdit";
+            return "band/edit";
         }
         log.info("Sparar band {} [{}]", band.getName(), band.getId());
         bandRepository.save(band);

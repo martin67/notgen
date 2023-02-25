@@ -40,6 +40,7 @@ class StatisticsControllerTest {
     private CustomOidcUserService customOidcUserService;
 
     @Test
+    @DisplayName("Statistics")
     void statistics() throws Exception {
         Statistics statistics = new Statistics();
         given(statisticsService.getStatistics()).willReturn(statistics);

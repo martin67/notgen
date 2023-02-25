@@ -44,7 +44,6 @@ class PrintControllerTest {
     private SettingRepository settingRepository;
     @MockBean
     private PlaylistRepository playlistRepository;
-
     @MockBean
     private ConverterService converterService;
 
