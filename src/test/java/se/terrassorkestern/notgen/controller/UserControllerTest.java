@@ -2,17 +2,23 @@ package se.terrassorkestern.notgen.controller;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import se.terrassorkestern.notgen.configuration.SecurityConfig;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Privilege;
 import se.terrassorkestern.notgen.model.Role;
 import se.terrassorkestern.notgen.model.User;
+import se.terrassorkestern.notgen.repository.BandRepository;
 import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
+import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
+import se.terrassorkestern.notgen.user.CustomOidcUserService;
 import se.terrassorkestern.notgen.user.UserPrincipal;
 
 import java.util.Collections;
@@ -29,26 +35,39 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest
+@Import(UserController.class)
+@ContextConfiguration(classes = SecurityConfig.class)
 @DisplayName("User controller")
 class UserControllerTest {
 
-    static User normalUser;
-    static User disabledUser;
-    static User adminUser;
-    static Role userRole;
-    static Role adminRole;
+    private static Band theBand;
+    private static User normalUser;
+    private static User disabledUser;
+    private static User adminUser;
+    private static Role userRole;
+    private static Role adminRole;
 
     @Autowired
     private MockMvc mvc;
+
     @MockBean
-    private UserRepository userRepository;
+    private BandRepository bandRepository;
     @MockBean
     private RoleRepository roleRepository;
 
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private CustomOAuth2UserService customOAuth2UserService;
+    @MockBean
+    private CustomOidcUserService customOidcUserService;
+
+
     @BeforeAll
     static void init() {
+        theBand = new Band();
+
         normalUser = new User();
         normalUser.setUsername("normal");
         userRole = new Role("ROLE_USER");
@@ -72,6 +91,7 @@ class UserControllerTest {
     @BeforeEach
     void initTest() {
         List<User> allUsers = List.of(normalUser, adminUser);
+        given(bandRepository.findAll()).willReturn(List.of(theBand));
         given(userRepository.findAll()).willReturn(allUsers);
         given(userRepository.findById(1L)).willReturn(Optional.of(normalUser));
         given(userRepository.findById(2L)).willReturn(Optional.of(adminUser));
