@@ -5,16 +5,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import se.terrassorkestern.notgen.configuration.SecurityConfig;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
+import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
+import se.terrassorkestern.notgen.user.CustomOidcUserService;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,17 +32,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest
+@Import(InstrumentController.class)
+@ContextConfiguration(classes = SecurityConfig.class)
 @DisplayName("Instrument controller")
 class InstrumentControllerTest {
 
     @Autowired
     private MockMvc mvc;
+
     @MockBean
     private InstrumentRepository instrumentRepository;
+
     @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private CustomOAuth2UserService customOAuth2UserService;
+    @MockBean
+    private CustomOidcUserService customOidcUserService;
 
 
     @BeforeEach
@@ -210,7 +221,7 @@ class InstrumentControllerTest {
         @Test
         @DisplayName("Admin user")
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
-        void whenAccessProtectedContentAsAdminUser_returnForbiddenOk() throws Exception {
+        void whenAccessProtectedContentAsAdminUser_returnOk() throws Exception {
             mvc.perform(get("/instrument/list")).andExpect(status().isOk());
             mvc.perform(get("/instrument/create")).andExpect(status().isOk());
             mvc.perform(get("/instrument/nonexistent")).andExpect(status().isNotFound());

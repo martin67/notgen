@@ -51,14 +51,14 @@ public class UserController {
         // Todo use band from session
         Band band = bandRepository.findAll().get(0);
 
-        for (User user: userRepository.findAll()) {
+        for (User user : userRepository.findAll()) {
             if (user.getBands().contains(band)) {
                 bandUsers.add(user);
             } else {
                 otherUsers.add(user);
             }
         }
-        model.addAttribute("bandUsers", bandUsers );
+        model.addAttribute("bandUsers", bandUsers);
         model.addAttribute("otherUsers", otherUsers);
         return "user/list";
     }
@@ -96,7 +96,7 @@ public class UserController {
 
 
     @PostMapping("/save")
-    public String save(Model model, @Valid @ModelAttribute("user") UserFormData userFormData, Errors errors) {
+    public String save(@Valid @ModelAttribute("user") UserFormData userFormData, Errors errors) {
         if (errors.hasErrors()) {
             return "user/edit";
         }
@@ -140,18 +140,16 @@ public class UserController {
             }
         }
 
-        if (adminEdit) {
-            // admin user can change enable status and username (if local user). But not for the superadmin ("admin") account
-            if (user.isRemoteUser() || !user.getUsername().equals("admin")) {
-                user.setEnabled(userFormData.isEnabled());
-                user.setBands(userFormData.getBands());
-                user.setRole(userFormData.getRole());
-                if (user.isLocalUser() && !userFormData.getUsername().equals(user.getUsername())) {
-                    if (userRepository.findByUsername(userFormData.getUsername()).isPresent()) {
-                        throw new UserAlreadyExistAuthenticationException("username " + userFormData.getUsername() + " already exist");
-                    }
-                    user.setUsername(userFormData.getUsername());
+        // admin user can change enable status and username (if local user). But not for the superadmin ("admin") account
+        if (adminEdit && (user.isRemoteUser() || !user.getUsername().equals("admin"))) {
+            user.setEnabled(userFormData.isEnabled());
+            user.setBands(userFormData.getBands());
+            user.setRole(userFormData.getRole());
+            if (user.isLocalUser() && !userFormData.getUsername().equals(user.getUsername())) {
+                if (userRepository.findByUsername(userFormData.getUsername()).isPresent()) {
+                    throw new UserAlreadyExistAuthenticationException("username " + userFormData.getUsername() + " already exist");
                 }
+                user.setUsername(userFormData.getUsername());
             }
         }
 

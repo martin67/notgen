@@ -48,7 +48,7 @@ public class PdfAssembler implements Runnable {
             pdd.setSubject(score.getGenre());
             String keywords = scorePart.getInstrument().getName();
             keywords += (score.getArranger() == null) ? "" : ", " + score.getArranger();
-            keywords += (score.getYear() == null || score.getYear() == 0) ? "" : ", " + score.getYear().toString();
+            keywords += (score.getYear() == null || score.getYear() == 0) ? "" : ", " + score.getYear();
             pdd.setKeywords(keywords);
             pdd.setCustomMetadataValue("Musik", score.getComposer());
             pdd.setCustomMetadataValue("Text", score.getAuthor());

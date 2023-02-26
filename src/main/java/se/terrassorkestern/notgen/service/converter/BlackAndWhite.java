@@ -1,18 +1,12 @@
 package se.terrassorkestern.notgen.service.converter;
 
-import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
-import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
-import se.terrassorkestern.notgen.service.converter.filters.GreyScaler;
-import se.terrassorkestern.notgen.service.converter.filters.Standard;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.OutputStream;
 import java.nio.file.Path;
 

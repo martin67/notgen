@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.0.2'
+    id 'org.springframework.boot' version '3.0.3'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'io.freefair.lombok' version '6.6.1'
     id 'com.gorylenko.gradle-git-properties' version '2.4.1'
@@ -71,8 +71,8 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 //    implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time'
     implementation 'org.liquibase:liquibase-core:4.19.0'
-    implementation 'mysql:mysql-connector-java:8.0.30'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.6'
+    implementation 'com.mysql:mysql-connector-j:8.0.32'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.2'
     implementation 'com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre17'
     implementation 'com.h2database:h2:2.1.214'
     implementation 'com.google.guava:guava:31.1-jre'

@@ -38,38 +38,16 @@ public class StatisticsService {
 
     public Statistics getStatistics() {
         Statistics statistics = new Statistics();
-
-        StopWatch stopWatch = new StopWatch("admin statistics");
-
-        stopWatch.start("setNumberOfSongs");
         statistics.setNumberOfSongs(scoreRepository.count());
-        stopWatch.stop();
-        stopWatch.start("setNumberOfScannedSongs");
         statistics.setNumberOfScannedSongs(scoreRepository.countByScannedIsTrue());
-        stopWatch.stop();
-
-        stopWatch.start("setNumberOfScannedPages");
         statistics.setNumberOfScannedPages(scoreRepository.numberOfPages());
-        stopWatch.stop();
-
-        stopWatch.start("setNumberOfInstruments");
         statistics.setNumberOfInstruments(instrumentRepository.count());
-        stopWatch.stop();
-        stopWatch.start("setNumberOfPlaylists");
         statistics.setNumberOfPlaylists(playlistRepository.count());
-        stopWatch.stop();
-
-        stopWatch.start("setTop");
         statistics.setTopGenres(scoreRepository.findTopGenres(PageRequest.of(0, TOPLIST_COUNT)));
         statistics.setTopComposers(scoreRepository.findTopComposers(PageRequest.of(0, TOPLIST_COUNT)));
         statistics.setTopArrangers(scoreRepository.findTopArrangers(PageRequest.of(0, TOPLIST_COUNT)));
         statistics.setTopAuthors(scoreRepository.findTopAuthors(PageRequest.of(0, TOPLIST_COUNT)));
         statistics.setTopPublishers(scoreRepository.findTopPublishers(PageRequest.of(0, TOPLIST_COUNT)));
-        stopWatch.stop();
-
-        log.info(stopWatch.prettyPrint());
-        log.info("Total time: {} s", stopWatch.getTotalTimeSeconds());
-        log.info("Total time: {} ms", stopWatch.getTotalTimeMillis());
         return statistics;
     }
 

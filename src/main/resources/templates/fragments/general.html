@@ -36,9 +36,6 @@
                         <li><a class="dropdown-item" th:href="@{/print/setting}">Hela arr</a></li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/statistics}">Statistik</a>
-                </li>
                 <li sec:authorize="hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_ADMIN')" class="nav-item">
                     <a class="nav-link" th:href="@{/admin/}">Admin</a>
                 </li>
@@ -60,7 +57,7 @@
         </div>
         <div class="navbar-nav ms-auto">
             <form class="d-flex" role="search" th:action="@{/search/}" method="post" name="searchForm">
-                <input class="form-control me-2" type="search" size=10 placeholder="Låt, text, etc..." aria-label="Search"
+                <input class="form-control me-2" type="search" size=11 placeholder="Låt, text, etc..." aria-label="Search"
                        name="search">
                 <button class="btn btn-outline-success" type="submit">Sök</button>
             </form>

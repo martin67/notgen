@@ -38,8 +38,9 @@ public class AdminController {
     }
 
     @GetMapping("/noteCreate")
-    public void create() throws IOException, InterruptedException {
+    public String create() throws IOException, InterruptedException {
         converterService.convert(scoreRepository.findAll());
+        return "redirect:/admin";
     }
 
     @GetMapping("/imageExtract")

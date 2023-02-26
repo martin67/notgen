@@ -1,41 +1,20 @@
 package se.terrassorkestern.notgen.service;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.common.ImageMetadata;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageTree;
-import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.Imagedata;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.apache.commons.imaging.Imaging.getImageInfo;
-import static org.apache.commons.imaging.Imaging.getMetadata;
 
 @Slf4j
 @Service
@@ -68,7 +47,6 @@ public class ImageDataExtractor {
 
                     File file = new File(String.valueOf(path));
                     ImageInfo imageInfo = getImageInfo(file);
-                    ImageMetadata imageMetadata = getMetadata(file);
 
                     Imagedata imageData = new Imagedata();
                     imageData.setPage(index + 1);

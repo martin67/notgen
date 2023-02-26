@@ -15,7 +15,7 @@ spring:
           backend:
             type: lucene
             analysis.configurer: se.terrassorkestern.notgen.index.AnalysisConfig
-            directory.root: ./data/index
+            directory.root: ./build/index
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
