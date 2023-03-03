@@ -1,14 +1,17 @@
 package se.terrassorkestern.notgen.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Instrument;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InstrumentRepository extends JpaRepository<Instrument, Integer> {
+
+    List<Instrument> findByBandOrderBySortOrder(Band band);
 
     List<Instrument> findByName(String text);
 
@@ -18,10 +21,6 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Integer>
 
     Instrument findFirstBy();
 
-//    List<Instrument> findByOrderByStandardDescSortOrder();
-//
-//    List<Instrument> findByStandardIsTrueOrderBySortOrder();
+    Optional<Instrument> findByIdAndBand(int id, Band band);
 
-    @Query("SELECT sum(sortOrder) FROM Instrument")
-    Long sumSortOrder();
 }

@@ -10,10 +10,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
-import se.terrassorkestern.notgen.model.Band;
-import se.terrassorkestern.notgen.model.Privilege;
-import se.terrassorkestern.notgen.model.Role;
-import se.terrassorkestern.notgen.model.User;
+import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.BandRepository;
 import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
@@ -56,6 +53,8 @@ class UserControllerTest {
     @MockBean
     private RoleRepository roleRepository;
 
+    @MockBean
+    private ActiveBand activeBand;
     @MockBean
     private UserRepository userRepository;
     @MockBean

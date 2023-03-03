@@ -31,14 +31,17 @@ public class ScoreController {
     @Value("${notgen.ocr.songids:0}")
     private String ocrSongIds;
 
+    private final ActiveBand activeBand;
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
     private final SettingRepository settingRepository;
     private final ConverterService converterService;
     private final SongOcrService songOcrService;
 
-    public ScoreController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
-                           SettingRepository settingRepository, ConverterService converterService, SongOcrService songOcrService) {
+    public ScoreController(ActiveBand activeBand, ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
+                           SettingRepository settingRepository, ConverterService converterService,
+                           SongOcrService songOcrService) {
+        this.activeBand = activeBand;
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
         this.settingRepository = settingRepository;
@@ -50,8 +53,12 @@ public class ScoreController {
     public String songList(Model model) {
         StopWatch listWatch = new StopWatch("list");
         listWatch.start();
-        model.addAttribute("scores", scoreRepository.findByOrderByTitle());
-        //model.addAttribute("scores", scoreRepository.findByOrganizationOrderByTitleAsc(organization));
+
+        //model.addAttribute("scores", scoreRepository.findByOrderByTitle());
+        //int id = activeBand.getId();
+        Band band = activeBand.getBand();
+        model.addAttribute("scores", scoreRepository.findByBandOrderByTitleAsc(band));
+        //model.addAttribute("scores", scoreRepository.findByBandIdOrderByTitleAsc(id));
         listWatch.stop();
         log.info("list: {}", listWatch.getTotalTimeMillis());
         return "score/list";

@@ -12,6 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
+import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.service.AdminService;
@@ -41,6 +42,8 @@ class AdminControllerTest {
     @MockBean
     private AdminService adminService;
 
+    @MockBean
+    private ActiveBand activeBand;
     @MockBean
     private UserRepository userRepository;
     @MockBean

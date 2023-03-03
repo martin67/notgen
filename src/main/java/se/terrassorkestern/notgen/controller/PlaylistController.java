@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.exceptions.NotFoundException;
+import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Playlist;
 import se.terrassorkestern.notgen.model.PlaylistEntry;
@@ -34,15 +35,17 @@ import java.io.InputStream;
 @RequestMapping("/playlist")
 public class PlaylistController {
 
+    private final ActiveBand activeBand;
     private final PlaylistRepository playlistRepository;
     private final SettingRepository settingRepository;
     private final InstrumentRepository instrumentRepository;
     private final PlaylistPdfService playlistPdfService;
     private final ConverterService converterService;
 
-    public PlaylistController(PlaylistRepository playlistRepository, SettingRepository settingRepository,
+    public PlaylistController(ActiveBand activeBand, PlaylistRepository playlistRepository, SettingRepository settingRepository,
                               InstrumentRepository instrumentRepository, PlaylistPdfService playlistPdfService,
                               ConverterService converterService) {
+        this.activeBand = activeBand;
         this.playlistRepository = playlistRepository;
         this.settingRepository = settingRepository;
         this.instrumentRepository = instrumentRepository;
@@ -60,7 +63,7 @@ public class PlaylistController {
     public String view(@RequestParam("id") Integer id, Model model) {
         model.addAttribute("playlist", playlistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id))));
-        model.addAttribute("instruments", instrumentRepository.findByOrderBySortOrder());
+        model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
         return "playlist/view";
     }
 
@@ -70,7 +73,7 @@ public class PlaylistController {
                 .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
         model.addAttribute("playlist", playlist);
         model.addAttribute("settings", settingRepository.findAll());
-        model.addAttribute("instruments", instrumentRepository.findAll());
+        model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
         Integer selectedInstrument = 0;
         model.addAttribute("selectedInstrument", selectedInstrument);
         return "playlist/edit";

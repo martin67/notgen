@@ -14,6 +14,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
+import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
@@ -55,6 +57,8 @@ class ScoreControllerTest {
     private SongOcrService songOcrService;
 
     @MockBean
+    private ActiveBand activeBand;
+    @MockBean
     private UserRepository userRepository;
     @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
@@ -64,11 +68,14 @@ class ScoreControllerTest {
 
     @BeforeEach
     void initTest() {
+        Band band = new Band();
         Score foo = new Score();
         Score bar = new Score();
 
         List<Score> allScores = List.of(foo, bar);
+        given(activeBand.getBand()).willReturn(band);
         given(scoreRepository.findByOrderByTitle()).willReturn(allScores);
+        given(scoreRepository.findByBandOrderByTitleAsc(band)).willReturn(allScores);
         given(scoreRepository.findById(1)).willReturn(Optional.of(foo));
     }
 

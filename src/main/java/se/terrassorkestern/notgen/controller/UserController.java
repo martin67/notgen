@@ -67,6 +67,7 @@ public class UserController {
     public String create(Model model) {
         List<Band> bands = bandRepository.findAll();
         model.addAttribute("user", new UserFormData());
+        model.addAttribute("roles", roleRepository.findAll());
         model.addAttribute("bands", bands);
         return "user/edit";
     }

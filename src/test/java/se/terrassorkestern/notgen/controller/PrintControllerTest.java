@@ -12,6 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
+import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.*;
@@ -47,6 +48,8 @@ class PrintControllerTest {
     @MockBean
     private ConverterService converterService;
 
+    @MockBean
+    private ActiveBand activeBand;
     @MockBean
     private UserRepository userRepository;
     @MockBean

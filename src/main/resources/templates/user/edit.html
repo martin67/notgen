@@ -17,15 +17,15 @@
         <p class="text-danger" th:if="${#fields.hasGlobalErrors()}" th:each="error : ${#fields.errors('global')}"
            th:text="${error}">Validation error</p>
 
-        <div class="form-floating mb-3" sec:authorize="hasRole('ROLE_ADMIN')" th:unless="${user.isRemoteUser()}">
+        <div class="form-floating mb-3" sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')">
             <input type="text" class="form-control" th:field="*{username}" th:value="${user.username}"
-                   id="username"/>
+                   th:disabled="${user.isRemoteUser()}" id="username"/>
             <label class="form-label" for="username">Användarnamn</label>
             <span class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</span>
         </div>
 
         <div class="form-floating mb-3">
-            <input type="text" class="form-control" th:field="*{fullName}" th:value="${user.fullName}" id="fullname"
+            <input type="text" class="form-control" th:field="*{fullName}" th:value="${user.fullName}" id="fullName"
                    th:disabled="${user.isRemoteUser()}" required/>
             <label class="form-label" for="fullName">Namn</label>
             <span class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Error</span>

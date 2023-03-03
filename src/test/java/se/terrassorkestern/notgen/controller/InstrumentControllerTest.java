@@ -14,6 +14,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
+import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
@@ -22,8 +24,6 @@ import se.terrassorkestern.notgen.user.CustomOidcUserService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
@@ -45,6 +45,8 @@ class InstrumentControllerTest {
     private InstrumentRepository instrumentRepository;
 
     @MockBean
+    private ActiveBand activeBand;
+    @MockBean
     private UserRepository userRepository;
     @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
@@ -54,30 +56,57 @@ class InstrumentControllerTest {
 
     @BeforeEach
     void initTest() {
+        Band band1 = new Band();
+        Band band2 = new Band();
+
         Instrument sax = new Instrument();
         sax.setName("saxofon");
         sax.setSortOrder(10);
+        sax.setBand(band1);
 
         Instrument trumpet = new Instrument();
         trumpet.setName("trumpet");
         trumpet.setSortOrder(20);
+        trumpet.setBand(band1);
 
-        List<Instrument> allInstruments = Stream.of(sax, trumpet).collect(Collectors.toList());
-        given(instrumentRepository.findByOrderBySortOrder()).willReturn(allInstruments);
-        given(instrumentRepository.findById(1)).willReturn(Optional.of(sax));
+        Instrument flute = new Instrument();
+        trumpet.setName("flöjt");
+        trumpet.setSortOrder(10);
+        trumpet.setBand(band2);
+
+        given(activeBand.getBand()).willReturn(band1);
+        given(instrumentRepository.findByBandOrderBySortOrder(band1)).willReturn(List.of(sax, trumpet));
+        given(instrumentRepository.findByIdAndBand(1, band1)).willReturn(Optional.of(sax));
+        given(instrumentRepository.findByIdAndBand(3, band2)).willReturn(Optional.of(flute));
     }
 
-    @Test
+    @Nested
     @DisplayName("List")
-    @WithMockUser(authorities = "EDIT_INSTRUMENT")
-    void whenListInstruments_thenReturnOk() throws Exception {
-        mvc.perform(get("/instrument/list")
-                        .contentType(MediaType.TEXT_HTML))
-                .andExpect(view().name("instrument/list"))
-                .andExpect(model().attributeExists("instruments"))
-                .andExpect(model().attribute("instruments", hasSize(2)))
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(status().isOk());
+    class Ilist {
+        @Test
+        @DisplayName("Normal list")
+        @WithMockUser(authorities = "EDIT_INSTRUMENT")
+        void whenListInstruments_thenReturnOk() throws Exception {
+            mvc.perform(get("/instrument/list")
+                            .contentType(MediaType.TEXT_HTML))
+                    .andExpect(view().name("instrument/list"))
+                    .andExpect(model().attributeExists("instruments"))
+                    .andExpect(model().attribute("instruments", hasSize(2)))
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                    .andExpect(status().isOk());
+        }
+        @Test
+        @DisplayName("Normal list")
+        @WithMockUser(authorities = "EDIT_INSTRUMENT")
+        void whenListInstrumentsWithWrongBand_thenReturn404() throws Exception {
+            mvc.perform(get("/instrument/list")
+                            .contentType(MediaType.TEXT_HTML))
+                    .andExpect(view().name("instrument/list"))
+                    .andExpect(model().attributeExists("instruments"))
+                    .andExpect(model().attribute("instruments", hasSize(2)))
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                    .andExpect(status().isOk());
+        }
     }
 
     @Test

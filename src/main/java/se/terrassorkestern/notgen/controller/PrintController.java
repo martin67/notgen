@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -79,23 +78,12 @@ public class PrintController {
     @GetMapping(value = "/getscorepart", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printScorePart(@RequestParam(name = "instrument_id") Integer instrumentId,
                                                               @RequestParam(name = "score_id") Integer scoreId) {
-        StopWatch stopWatch = new StopWatch("get scorepart");
-        stopWatch.start("read score");
         Score score = scoreRepository.findById(scoreId).orElseThrow();
-        stopWatch.stop();
-        stopWatch.start("read instrument");
         Instrument instrument = instrumentRepository.findById(instrumentId).orElseThrow();
 
-        stopWatch.stop();
-        stopWatch.start("start convert");
-
         try (InputStream is = converterService.assemble(score, instrument)) {
-            stopWatch.stop();
-            stopWatch.start("send response");
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), instrument.getShortName()));
-            stopWatch.stop();
-            log.info("time: {}", stopWatch.prettyPrint());
             return ResponseEntity
                     .ok()
                     .headers(headers)

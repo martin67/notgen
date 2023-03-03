@@ -12,7 +12,7 @@
     <h2>Statistik</h2>
 
     <h4>Databasen</h4>
-    <table class="table table-bordered table-sm w-auto">
+    <table class="table table-bordered table-sm w-auto" aria-label="Database statistics">
         <tr>
             <td>Antal låtar</td>
             <td th:text="${statistics.numberOfSongs}"></td>
@@ -44,7 +44,7 @@
 
     <h4>10 i topp listor</h4>
     <h5>Populäraste genres</h5>
-    <table class="table table-bordered table-sm w-auto">
+    <table class="table table-bordered table-sm w-auto" aria-label="Top 10 genres">
         <tr th:each="genre : ${statistics.topGenres}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
@@ -52,7 +52,7 @@
     </table>
 
     <h5>Populäraste kompositörer</h5>
-    <table class="table table-bordered table-sm w-auto">
+    <table class="table table-bordered table-sm w-auto" aria-label="Top 10 composers">
         <tr th:each="genre : ${statistics.topComposers}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
@@ -60,7 +60,7 @@
     </table>
 
     <h5>Populäraste arrangörer</h5>
-    <table class="table table-bordered table-sm w-auto">
+    <table class="table table-bordered table-sm w-auto" aria-label="Top 10 arrangers">
         <tr th:each="genre : ${statistics.topArrangers}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
@@ -68,7 +68,7 @@
     </table>
 
     <h5>Populäraste textförfattare</h5>
-    <table class="table table-bordered table-sm w-auto">
+    <table class="table table-bordered table-sm w-auto" aria-label="Top 10 authors">
         <tr th:each="genre : ${statistics.topAuthors}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
@@ -76,7 +76,7 @@
     </table>
 
     <h5>Populäraste notförlag</h5>
-    <table class="table table-bordered table-sm w-auto">
+    <table class="table table-bordered table-sm w-auto" aria-label="Top 10 publishers">
         <tr th:each="genre : ${statistics.topPublishers}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>

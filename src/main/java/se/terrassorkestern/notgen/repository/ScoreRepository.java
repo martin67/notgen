@@ -16,6 +16,9 @@ public interface ScoreRepository extends SearchRepository<Score, Integer> {
 
     List<Score> findByBandOrderByTitleAsc(Band band);
 
+    @Query("SELECT s FROM Score s WHERE s.band.id = ?1 ORDER BY s.title")
+    List<Score> findByBandIdOrderByTitleAsc(int bandId);
+
     List<Score> findByTitle(String text);
 
     List<Score> findByTitleContaining(String text);
