@@ -14,9 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import se.terrassorkestern.notgen.repository.UserRepository;
-import se.terrassorkestern.notgen.service.UserRepositoryUserDetailsService;
 import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
 import se.terrassorkestern.notgen.user.CustomOidcUserService;
+import se.terrassorkestern.notgen.user.UserRepositoryUserDetailsService;
+import se.terrassorkestern.notgen.model.ActiveBand;
 
 @Slf4j
 @Configuration
@@ -27,17 +28,19 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOidcUserService customOidcUserService;
+    private final ActiveBand activeBand;
 
     public SecurityConfig(UserRepository userRepository, CustomOAuth2UserService customOAuth2UserService,
-                          CustomOidcUserService customOidcUserService) {
+                          CustomOidcUserService customOidcUserService, ActiveBand activeBand) {
         this.userRepository = userRepository;
         this.customOAuth2UserService = customOAuth2UserService;
         this.customOidcUserService = customOidcUserService;
+        this.activeBand = activeBand;
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserRepositoryUserDetailsService(userRepository);
+        return new UserRepositoryUserDetailsService(userRepository, activeBand);
     }
 
     @Bean

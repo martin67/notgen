@@ -76,8 +76,8 @@ class InstrumentControllerTest {
 
         given(activeBand.getBand()).willReturn(band1);
         given(instrumentRepository.findByBandOrderBySortOrder(band1)).willReturn(List.of(sax, trumpet));
-        given(instrumentRepository.findByIdAndBand(1, band1)).willReturn(Optional.of(sax));
-        given(instrumentRepository.findByIdAndBand(3, band2)).willReturn(Optional.of(flute));
+        given(instrumentRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(sax));
+        given(instrumentRepository.findByBandAndId(band2, 3)).willReturn(Optional.of(flute));
     }
 
     @Nested
@@ -87,18 +87,6 @@ class InstrumentControllerTest {
         @DisplayName("Normal list")
         @WithMockUser(authorities = "EDIT_INSTRUMENT")
         void whenListInstruments_thenReturnOk() throws Exception {
-            mvc.perform(get("/instrument/list")
-                            .contentType(MediaType.TEXT_HTML))
-                    .andExpect(view().name("instrument/list"))
-                    .andExpect(model().attributeExists("instruments"))
-                    .andExpect(model().attribute("instruments", hasSize(2)))
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                    .andExpect(status().isOk());
-        }
-        @Test
-        @DisplayName("Normal list")
-        @WithMockUser(authorities = "EDIT_INSTRUMENT")
-        void whenListInstrumentsWithWrongBand_thenReturn404() throws Exception {
             mvc.perform(get("/instrument/list")
                             .contentType(MediaType.TEXT_HTML))
                     .andExpect(view().name("instrument/list"))

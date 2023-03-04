@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminController extends CommonController {
 
     private final ConverterService converterService;
     private final ImageDataExtractor imageDataExtractor;
@@ -26,6 +26,7 @@ public class AdminController {
 
     public AdminController(ConverterService converterService, ImageDataExtractor imageDataExtractor,
                            ScoreRepository scoreRepository, AdminService adminService) {
+        super();
         this.converterService = converterService;
         this.imageDataExtractor = imageDataExtractor;
         this.scoreRepository = scoreRepository;

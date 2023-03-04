@@ -21,6 +21,6 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Integer>
 
     Instrument findFirstBy();
 
-    Optional<Instrument> findByIdAndBand(int id, Band band);
+    Optional<Instrument> findByBandAndId(Band band, int id);
 
 }

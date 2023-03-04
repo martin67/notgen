@@ -1,6 +1,5 @@
-package se.terrassorkestern.notgen.service;
+package se.terrassorkestern.notgen.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,17 +8,16 @@ import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.UserRepository;
-import se.terrassorkestern.notgen.user.UserPrincipal;
 
 @Service
 public class UserRepositoryUserDetailsService implements UserDetailsService {
+
     private final UserRepository userRepository;
+    private final ActiveBand activeBand;
 
-    @Autowired
-    private ActiveBand activeBand;
-
-    public UserRepositoryUserDetailsService(UserRepository userRepository) {
+    public UserRepositoryUserDetailsService(UserRepository userRepository, ActiveBand activeBand) {
         this.userRepository = userRepository;
+        this.activeBand = activeBand;
     }
 
     @Override

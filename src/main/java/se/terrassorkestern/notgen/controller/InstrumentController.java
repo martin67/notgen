@@ -16,35 +16,36 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/instrument")
-public class InstrumentController {
+public class InstrumentController extends CommonController {
 
     private final ActiveBand activeBand;
     private final InstrumentRepository instrumentRepository;
 
     public InstrumentController(ActiveBand activeBand, InstrumentRepository instrumentRepository) {
+        super();
         this.activeBand = activeBand;
         this.instrumentRepository = instrumentRepository;
     }
 
     @GetMapping("/list")
     public String list(Model model) {
-        model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
+        if (isSuperAdmin()) {
+            model.addAttribute("instruments", instrumentRepository.findByOrderBySortOrder());
+        } else {
+            model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
+        }
         return "instrument/list";
     }
 
     @GetMapping("/view")
     public String view(@RequestParam("id") Integer id, Model model) {
-        Instrument instrument = instrumentRepository.findByIdAndBand(id, activeBand.getBand())
-                .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
-        model.addAttribute("instrument", instrument);
+        model.addAttribute("instrument", getInstrument(id));
         return "instrument/view";
     }
 
     @GetMapping("/edit")
     public String edit(@RequestParam("id") Integer id, Model model) {
-        Instrument instrument = instrumentRepository.findByIdAndBand(id, activeBand.getBand())
-                .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
-        model.addAttribute("instrument", instrument);
+        model.addAttribute("instrument", getInstrument(id));
         return "instrument/edit";
     }
 
@@ -62,8 +63,7 @@ public class InstrumentController {
 
     @GetMapping("/delete")
     public String delete(@RequestParam("id") Integer id) {
-        Instrument instrument = instrumentRepository.findByIdAndBand(id, activeBand.getBand())
-                .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
+        Instrument instrument = getInstrument(id);
         log.info("Tar bort instrument {} [{}]", instrument.getName(), instrument.getId());
         instrumentRepository.delete(instrument);
         return "redirect:/instrument/list";
@@ -88,5 +88,17 @@ public class InstrumentController {
             //instrumentRepository.save(instrument);
         }
         return "redirect:/instrument/list";
+    }
+
+    private Instrument getInstrument(int id) {
+        Instrument instrument;
+        if (isSuperAdmin()) {
+            instrument = instrumentRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
+        } else {
+            instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id)
+                    .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
+        }
+        return instrument;
     }
 }

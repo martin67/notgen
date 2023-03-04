@@ -16,10 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.exceptions.NotFoundException;
-import se.terrassorkestern.notgen.model.ActiveBand;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Playlist;
-import se.terrassorkestern.notgen.model.PlaylistEntry;
+import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
@@ -29,11 +26,12 @@ import se.terrassorkestern.notgen.service.PlaylistPdfService;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @Slf4j
 @Controller
 @RequestMapping("/playlist")
-public class PlaylistController {
+public class PlaylistController extends CommonController {
 
     private final ActiveBand activeBand;
     private final PlaylistRepository playlistRepository;
@@ -55,24 +53,21 @@ public class PlaylistController {
 
     @GetMapping("/list")
     public String playlistList(Model model) {
-        model.addAttribute("playlists", playlistRepository.findAllByOrderByDateDesc());
+        model.addAttribute("playlists", getPlaylists());
         return "playlist/list";
     }
 
     @GetMapping("/view")
     public String view(@RequestParam("id") Integer id, Model model) {
-        model.addAttribute("playlist", playlistRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id))));
+        model.addAttribute("playlist", getPlaylist(id));
         model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
         return "playlist/view";
     }
 
     @GetMapping("/edit")
     public String playlistEdit(@RequestParam("id") Integer id, Model model) {
-        Playlist playlist = playlistRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
-        model.addAttribute("playlist", playlist);
-        model.addAttribute("settings", settingRepository.findAll());
+        model.addAttribute("playlist", getPlaylist(id));
+        model.addAttribute("settings", settingRepository.findByBand(activeBand.getBand()));
         model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
         Integer selectedInstrument = 0;
         model.addAttribute("selectedInstrument", selectedInstrument);
@@ -82,15 +77,14 @@ public class PlaylistController {
     @GetMapping("/create")
     public String playlistNew(Model model) {
         model.addAttribute("playlist", new Playlist());
-        model.addAttribute("settings", settingRepository.findAll());
-        model.addAttribute("instruments", instrumentRepository.findAll());
+        model.addAttribute("settings", settingRepository.findByBand(activeBand.getBand()));
+        model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
         return "playlist/edit";
     }
 
     @GetMapping("/delete")
     public String playlistDelete(@RequestParam("id") Integer id) {
-        Playlist playlist = playlistRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
+        Playlist playlist = getPlaylist(id);
         log.info("Tar bort låtlista {} [{}]", playlist.getName(), playlist.getId());
         playlistRepository.delete(playlist);
         return "redirect:/playlist/list";
@@ -98,8 +92,7 @@ public class PlaylistController {
 
     @GetMapping("/copy")
     public String playlistCopy(@RequestParam("id") Integer id) {
-        Playlist playlist = playlistRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
+        Playlist playlist = getPlaylist(id);
         log.info("Kopierar låtlista {} [{}]", playlist.getName(), playlist.getId());
         Playlist newPlaylist = playlist.copy();
         playlistRepository.save(newPlaylist);
@@ -114,6 +107,7 @@ public class PlaylistController {
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
             log.info("Sparar låtlista {} [{}]", playlist.getName(), playlist.getId());
+            playlist.setBand(activeBand.getBand());
             playlistRepository.save(playlist);
         }
         return "redirect:/playlist/list";
@@ -151,7 +145,7 @@ public class PlaylistController {
 
         log.debug("Startar createPack för instrument id " + id);
 
-        Instrument instrument = instrumentRepository.findById(id).orElseThrow();
+        Instrument instrument = instrumentRepository.findByBandAndId(activeBand.getBand(),  id).orElseThrow();
         try (InputStream is = converterService.assemble(playlist, instrument)) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=playlist.pdf");
@@ -173,9 +167,7 @@ public class PlaylistController {
 
     @GetMapping(value = "/createPdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> playlistCreatePdf(@RequestParam("id") Integer id) {
-        Playlist playlist = playlistRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
-
+        Playlist playlist = getPlaylist(id);
         ByteArrayInputStream bis;
         try {
             bis = playlistPdfService.create(playlist);
@@ -193,4 +185,25 @@ public class PlaylistController {
                 .body(new InputStreamResource(bis));
     }
 
+    private Playlist getPlaylist(int id) {
+        Playlist playlist;
+        if (isSuperAdmin()) {
+            playlist = playlistRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
+        } else {
+            playlist = playlistRepository.findByBandAndId(activeBand.getBand(), id)
+                    .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
+        }
+        return playlist;
+    }
+
+    private List<Playlist> getPlaylists() {
+        List<Playlist> playlists;
+        if (isSuperAdmin()) {
+            playlists = playlistRepository.findAllByOrderByDateDesc();
+        } else {
+            playlists = playlistRepository.findByBandOrderByDateDesc(activeBand.getBand());
+        }
+        return playlists;
+    }
 }

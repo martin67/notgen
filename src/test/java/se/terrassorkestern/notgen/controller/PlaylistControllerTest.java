@@ -13,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
 import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Playlist;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
@@ -71,15 +72,19 @@ class PlaylistControllerTest {
 
     @BeforeEach
     void initTest() throws IOException {
+        Band band1 = new Band();
         Playlist foo = new Playlist();
+        foo.setBand(band1);
         Playlist bar = new Playlist();
+        bar.setBand(band1);
         Instrument sax = new Instrument();
-
+        sax.setBand(band1);
         List<Playlist> allPlaylists = List.of(foo, bar);
 
-        given(playlistRepository.findAllByOrderByDateDesc()).willReturn(allPlaylists);
-        given(playlistRepository.findById(1)).willReturn(Optional.of(foo));
-        given(instrumentRepository.findById(1)).willReturn(Optional.of(sax));
+        given(activeBand.getBand()).willReturn(band1);
+        given(playlistRepository.findByBandOrderByDateDesc(band1)).willReturn(allPlaylists);
+        given(playlistRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(foo));
+        given(instrumentRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(sax));
         given(playlistPdfService.create(foo)).willReturn(new ByteArrayInputStream(new byte[0]));
 
         String sinkName = System.getProperty("os.name").toLowerCase().contains("windows") ? "NUL" : "/dev/null";
