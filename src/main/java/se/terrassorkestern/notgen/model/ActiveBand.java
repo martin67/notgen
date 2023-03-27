@@ -18,10 +18,6 @@ public class ActiveBand {
     private Band band;
 
     public ActiveBand(BandRepository bandRepository) {
-        //this.bandRepository = bandRepository;
-    log.info("Constructor");
-        // First time, use the default
-        //band = bandRepository.findById(1).orElseThrow();
         this.bandRepository = bandRepository;
     }
 
@@ -33,7 +29,7 @@ public class ActiveBand {
     }
 
     public void setBand(Band band) {
-        log.info("Setting band to: {}", band);
+        log.info("Setting band to: {} ({})", band.getName(), band.getId());
         this.band = band;
     }
 }

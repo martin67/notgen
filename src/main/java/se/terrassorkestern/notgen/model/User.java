@@ -37,7 +37,7 @@ public class User {
     private String providerId;
     private boolean enabled;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Role role;
 
     public boolean isRemoteUser() {
