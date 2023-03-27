@@ -11,9 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
 import se.terrassorkestern.notgen.model.*;
-import se.terrassorkestern.notgen.repository.BandRepository;
-import se.terrassorkestern.notgen.repository.RoleRepository;
-import se.terrassorkestern.notgen.repository.UserRepository;
+import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
 import se.terrassorkestern.notgen.user.CustomOidcUserService;
 import se.terrassorkestern.notgen.user.UserPrincipal;
@@ -58,6 +56,14 @@ class UserControllerTest {
     private ActiveBand activeBand;
     @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private InstrumentRepository instrumentRepository;
+    @MockBean
+    private SettingRepository settingRepository;
+    @MockBean
+    private PlaylistRepository playlistRepository;
+    @MockBean
+    private ScoreRepository scoreRepository;
     @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
     @MockBean

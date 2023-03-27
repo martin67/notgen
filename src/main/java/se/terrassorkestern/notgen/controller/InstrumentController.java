@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import se.terrassorkestern.notgen.exceptions.NotFoundException;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
@@ -22,18 +21,13 @@ public class InstrumentController extends CommonController {
     private final InstrumentRepository instrumentRepository;
 
     public InstrumentController(ActiveBand activeBand, InstrumentRepository instrumentRepository) {
-        super();
         this.activeBand = activeBand;
         this.instrumentRepository = instrumentRepository;
     }
 
     @GetMapping("/list")
     public String list(Model model) {
-        if (isSuperAdmin()) {
-            model.addAttribute("instruments", instrumentRepository.findByOrderBySortOrder());
-        } else {
-            model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
-        }
+        model.addAttribute("instruments", getInstruments());
         return "instrument/list";
     }
 
@@ -51,7 +45,7 @@ public class InstrumentController extends CommonController {
 
     @GetMapping("/editOrder")
     public String editOrder(Model model) {
-        model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
+        model.addAttribute("instruments", getInstruments());
         return "instrument/editOrder";
     }
 
@@ -90,15 +84,4 @@ public class InstrumentController extends CommonController {
         return "redirect:/instrument/list";
     }
 
-    private Instrument getInstrument(int id) {
-        Instrument instrument;
-        if (isSuperAdmin()) {
-            instrument = instrumentRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
-        } else {
-            instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
-        }
-        return instrument;
-    }
 }

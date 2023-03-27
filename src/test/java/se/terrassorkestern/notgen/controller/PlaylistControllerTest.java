@@ -16,10 +16,7 @@ import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Playlist;
-import se.terrassorkestern.notgen.repository.InstrumentRepository;
-import se.terrassorkestern.notgen.repository.PlaylistRepository;
-import se.terrassorkestern.notgen.repository.SettingRepository;
-import se.terrassorkestern.notgen.repository.UserRepository;
+import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.PlaylistPackService;
 import se.terrassorkestern.notgen.service.PlaylistPdfService;
@@ -64,6 +61,8 @@ class PlaylistControllerTest {
     private ActiveBand activeBand;
     @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private ScoreRepository scoreRepository;
     @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
     @MockBean

@@ -18,4 +18,6 @@ public interface SettingRepository extends JpaRepository<Setting, Integer> {
     Optional<Setting> findByIdAndBand(int id, Band band);
 
     Setting findFirstBy();
+
+    Setting findFirstByBand(Band band);
 }

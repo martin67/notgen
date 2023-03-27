@@ -185,25 +185,4 @@ public class PlaylistController extends CommonController {
                 .body(new InputStreamResource(bis));
     }
 
-    private Playlist getPlaylist(int id) {
-        Playlist playlist;
-        if (isSuperAdmin()) {
-            playlist = playlistRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
-        } else {
-            playlist = playlistRepository.findByBandAndId(activeBand.getBand(), id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
-        }
-        return playlist;
-    }
-
-    private List<Playlist> getPlaylists() {
-        List<Playlist> playlists;
-        if (isSuperAdmin()) {
-            playlists = playlistRepository.findAllByOrderByDateDesc();
-        } else {
-            playlists = playlistRepository.findByBandOrderByDateDesc(activeBand.getBand());
-        }
-        return playlists;
-    }
 }

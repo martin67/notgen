@@ -17,8 +17,7 @@ import se.terrassorkestern.notgen.configuration.SecurityConfig;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.repository.InstrumentRepository;
-import se.terrassorkestern.notgen.repository.UserRepository;
+import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
 import se.terrassorkestern.notgen.user.CustomOidcUserService;
 
@@ -48,6 +47,12 @@ class InstrumentControllerTest {
     private ActiveBand activeBand;
     @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private SettingRepository settingRepository;
+    @MockBean
+    private PlaylistRepository playlistRepository;
+    @MockBean
+    private ScoreRepository scoreRepository;
     @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
     @MockBean

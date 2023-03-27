@@ -13,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
 import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.*;
@@ -60,13 +61,16 @@ class PrintControllerTest {
 
     @BeforeEach
     void initTest() {
+        Band band = new Band();
         Score foo = new Score();
         Score bar = new Score();
         Instrument instrument = new Instrument();
 
         List<Score> allScores = List.of(foo, bar);
+        given(activeBand.getBand()).willReturn(band);
         given(scoreRepository.findByScorePartsInstrumentOrderByTitle(instrument)).willReturn(allScores);
         given(instrumentRepository.findById(2)).willReturn(Optional.of(instrument));
+        given(instrumentRepository.findByBandAndId(band, 2)).willReturn(Optional.of(instrument));
         given(instrumentRepository.findAll()).willReturn(List.of(instrument));
     }
 

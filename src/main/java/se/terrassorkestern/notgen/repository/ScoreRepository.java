@@ -10,9 +10,12 @@ import se.terrassorkestern.notgen.model.TopListEntry;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ScoreRepository extends SearchRepository<Score, Integer> {
+
+    Optional<Score> findByBandAndId(Band band, int id);
 
     List<Score> findByBandOrderByTitleAsc(Band band);
 
@@ -52,6 +55,10 @@ public interface ScoreRepository extends SearchRepository<Score, Integer> {
 
     @Query("SELECT DISTINCT s.publisher FROM Score s ORDER BY s.publisher")
     List<String> getAllPublishers();
+
+   @Query("SELECT DISTINCT s.publisher FROM Score s WHERE s.band = ?1 ORDER BY s.publisher")
+    List<String> getAllPublishersByBand(Band band);
+
 
 
     // Statistics

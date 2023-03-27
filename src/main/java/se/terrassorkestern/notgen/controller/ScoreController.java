@@ -6,14 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StopWatch;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import se.terrassorkestern.notgen.exceptions.NotFoundException;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
-import se.terrassorkestern.notgen.repository.SettingRepository;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.SongOcrService;
 
@@ -24,8 +21,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/score")
 @SessionAttributes("score")
-//@SessionAttributes({"score", "band"})
-public class ScoreController {
+public class ScoreController extends CommonController {
     @Value("${notgen.ocr.enable:false}")
     private boolean enableOcr;
     @Value("${notgen.ocr.songids:0}")
@@ -34,40 +30,28 @@ public class ScoreController {
     private final ActiveBand activeBand;
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
-    private final SettingRepository settingRepository;
     private final ConverterService converterService;
     private final SongOcrService songOcrService;
 
     public ScoreController(ActiveBand activeBand, ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
-                           SettingRepository settingRepository, ConverterService converterService,
+                           ConverterService converterService,
                            SongOcrService songOcrService) {
         this.activeBand = activeBand;
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
-        this.settingRepository = settingRepository;
         this.converterService = converterService;
         this.songOcrService = songOcrService;
     }
 
     @GetMapping("/list")
     public String songList(Model model) {
-        StopWatch listWatch = new StopWatch("list");
-        listWatch.start();
-
-        //model.addAttribute("scores", scoreRepository.findByOrderByTitle());
-        //int id = activeBand.getId();
-        Band band = activeBand.getBand();
-        model.addAttribute("scores", scoreRepository.findByBandOrderByTitleAsc(band));
-        //model.addAttribute("scores", scoreRepository.findByBandIdOrderByTitleAsc(id));
-        listWatch.stop();
-        log.info("list: {}", listWatch.getTotalTimeMillis());
+        model.addAttribute("scores", getScores());
         return "score/list";
     }
 
     @GetMapping("/delete")
     public String delete(@RequestParam("id") Integer id) {
-        Score score = scoreRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
+        Score score = getScore(id);
         log.info("Tar bort låt {} [{}]", score.getTitle(), score.getId());
         scoreRepository.delete(score);
         return "redirect:/score/list";
@@ -75,18 +59,14 @@ public class ScoreController {
 
     @GetMapping("/view")
     public String view(@RequestParam("id") Integer id, Model model) {
-        Score score = scoreRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
-        List<Setting> settings = settingRepository.findAll();
-        model.addAttribute("score", score);
-        model.addAttribute("settings", settings);
+        model.addAttribute("score", getScore(id));
+        model.addAttribute("settings", getSettings());
         return "score/view";
     }
 
     @GetMapping("/edit")
     public String edit(@RequestParam("id") Integer id, Model model) {
-        Score score = scoreRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
+        Score score = getScore(id);
         model.addAttribute("score", score);
         // Check if the score has a song instrument. Only one for now
         if (enableOcr) {
@@ -97,7 +77,7 @@ public class ScoreController {
                 model.addAttribute("doSongOcr", "false");
             }
         }
-        model.addAttribute("allInstruments", instrumentRepository.findAll());
+        model.addAttribute("allInstruments", getInstruments());
         return "score/edit";
     }
 
@@ -105,18 +85,18 @@ public class ScoreController {
     public String create(Model model) {
         Score score = new Score();
         // Fyll på med standardinstrumenten så går det lite fortare att editera...
-        for (Instrument instrument : instrumentRepository.findAll()) {
+        for (Instrument instrument : getInstruments()) {
             score.getScoreParts().add(new ScorePart(score, instrument));
         }
         model.addAttribute("score", score);
-        model.addAttribute("allInstruments", instrumentRepository.findAll());
+        model.addAttribute("allInstruments", getInstruments());
         return "score/edit";
     }
 
     @PostMapping("/save")
     public String save(@Valid @ModelAttribute Score score, Errors errors, Model model) {
         if (errors.hasErrors()) {
-            model.addAttribute("allInstruments", instrumentRepository.findAll());
+            model.addAttribute("allInstruments", getInstruments());
             return "score/edit";
         }
         log.info("Sparar låt {} [{}]", score.getTitle(), score.getId());
@@ -135,7 +115,7 @@ public class ScoreController {
     public String addRow(final Score score, Model model) {
         score.getScoreParts().add(new ScorePart());
         model.addAttribute("score", score);
-        model.addAttribute("allInstruments", instrumentRepository.findAll());
+        model.addAttribute("allInstruments", getInstruments());
         return "score/edit";
     }
 
@@ -149,7 +129,7 @@ public class ScoreController {
                 log.warn("Trying to remove non-existing score part {}", scorePartId);
             }
             model.addAttribute("score", score);
-            model.addAttribute("allInstruments", instrumentRepository.findAll());
+            model.addAttribute("allInstruments", getInstruments());
         } catch (NumberFormatException ignore) {
         }
         return "score/edit";
@@ -157,18 +137,14 @@ public class ScoreController {
 
     @GetMapping("/convert")
     public String convert(@RequestParam("id") int id) throws IOException, InterruptedException {
-        Score score = scoreRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
-        converterService.convert(List.of(score));
+        converterService.convert(List.of(getScore(id)));
         return "redirect:/score/list";
     }
 
     @GetMapping("/edit/ocr")
     public @ResponseBody
     String ocr(@RequestParam("id") int id) throws Exception {
-        Score score = scoreRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
-        return songOcrService.process(score);
+        return songOcrService.process(getScore(id));
     }
 
     @GetMapping(value = "/scores.json")
@@ -204,7 +180,11 @@ public class ScoreController {
     @GetMapping(value = "/publishers.json")
     public @ResponseBody
     List<String> getPublisherSuggestions() {
-        return scoreRepository.getAllPublishers();
+        if (isSuperAdmin()) {
+            return scoreRepository.getAllPublishers();
+        } else {
+            return scoreRepository.getAllPublishersByBand(activeBand.getBand());
+        }
     }
 
 }

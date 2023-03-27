@@ -26,7 +26,6 @@ public class AdminController extends CommonController {
 
     public AdminController(ConverterService converterService, ImageDataExtractor imageDataExtractor,
                            ScoreRepository scoreRepository, AdminService adminService) {
-        super();
         this.converterService = converterService;
         this.imageDataExtractor = imageDataExtractor;
         this.scoreRepository = scoreRepository;
