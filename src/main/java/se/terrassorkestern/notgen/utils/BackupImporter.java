@@ -1,13 +1,15 @@
 package se.terrassorkestern.notgen.utils;
 
-import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,9 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
-import static java.lang.System.exit;
 import static se.terrassorkestern.notgen.service.AdminService.tables;
 
 /*
@@ -35,27 +36,28 @@ public class BackupImporter {
 
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
-        options.addOption("database", true, "Database URI");
-        options.addOption("username", true, "Username");
-        options.addOption("password", true, "Password");
+        options.addOption("d", "database", true, "Database URI");
+        options.addOption("u", "username", true, "Username");
+        options.addOption("p", "password", true, "Password");
 
         String database;
         String username;
         String password;
+        String filename = null;
         try {
             CommandLine cmd = parser.parse(options, args);
             database = cmd.getOptionValue("database");
             username = cmd.getOptionValue("username");
             password = cmd.getOptionValue("password");
+
+            if (cmd.getArgs().length != 1) {
+                throw new IllegalArgumentException("Need filename as only argument");
+            } else {
+                filename = cmd.getArgs()[0];
+            }
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
-        if (args.length != 1) {
-            log.error("wrong argument");
-            exit(-1);
-        }
-        String filename = args[0];
 
         List<String> reverseTables = new ArrayList<>(tables);
         Collections.reverse(reverseTables);
@@ -64,7 +66,7 @@ public class BackupImporter {
             for (String table : reverseTables) {
                 sb.append(String.format("delete from %s; ", table));
             }
-            log.debug("SQL: {}", sb);
+            log.trace("SQL: {}", sb);
             try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
                 pstmt.execute();
             }
@@ -73,32 +75,31 @@ public class BackupImporter {
             try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
                 pstmt.execute();
             }
+
             // import
-            try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
-                ZipEntry zipEntry;
+
+            try (ZipFile zipFile = new ZipFile(filename)) {
                 CSVFormat format = CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').setHeader().build();
-                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                    log.info("Opening {}", zipEntry.getName());
-                    if (Files.getFileExtension(zipEntry.getName()).equals("csv")) {
-                        String table = Files.getNameWithoutExtension(zipEntry.getName());
-                        Reader reader = new InputStreamReader(zipInputStream);
-                        CSVParser csvParser = new CSVParser(reader, format);
-                        for (CSVRecord csvRecord : csvParser.getRecords()) {
-                            StringBuilder keys = new StringBuilder();
-                            StringBuilder values = new StringBuilder();
-                            for (Map.Entry<String, String> entry : csvRecord.toMap().entrySet()) {
-                                if (entry.getValue().length() > 0) {
-                                    keys.append(entry.getKey()).append(", ");
-                                    values.append("'").append(escapeSql(entry.getValue())).append("'").append(", ");
-                                }
+                for (String table : tables) {
+                    log.debug("Reading table: {}", table);
+                    ZipEntry zipEntry = zipFile.getEntry(table + ".csv");
+                    Reader reader = new InputStreamReader(zipFile.getInputStream(zipEntry), StandardCharsets.UTF_8);
+                    CSVParser csvParser = new CSVParser(reader, format);
+                    for (CSVRecord csvRecord : csvParser.getRecords()) {
+                        StringBuilder keys = new StringBuilder();
+                        StringBuilder values = new StringBuilder();
+                        for (Map.Entry<String, String> entry : csvRecord.toMap().entrySet()) {
+                            if (entry.getValue().length() > 0) {
+                                keys.append(entry.getKey()).append(", ");
+                                values.append("'").append(escapeSql(entry.getValue())).append("'").append(", ");
                             }
-                            keys.delete(keys.length() - 2, keys.length());
-                            values.delete(values.length() - 2, values.length());
-                            String sql = String.format("INSERT INTO %s (%s) VALUES (%s)", table, keys, values);
-                            log.debug("sql: {}", sql);
-                            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                                pstmt.execute();
-                            }
+                        }
+                        keys.delete(keys.length() - 2, keys.length());
+                        values.delete(values.length() - 2, values.length());
+                        String sql = String.format("INSERT INTO %s (%s) VALUES (%s)", table, keys, values);
+                        log.trace("sql: {}", sql);
+                        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                            pstmt.execute();
                         }
                     }
                 }
