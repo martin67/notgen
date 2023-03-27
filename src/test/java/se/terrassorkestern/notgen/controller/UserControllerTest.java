@@ -10,13 +10,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
-import se.terrassorkestern.notgen.model.Band;
-import se.terrassorkestern.notgen.model.Privilege;
-import se.terrassorkestern.notgen.model.Role;
-import se.terrassorkestern.notgen.model.User;
-import se.terrassorkestern.notgen.repository.BandRepository;
-import se.terrassorkestern.notgen.repository.RoleRepository;
-import se.terrassorkestern.notgen.repository.UserRepository;
+import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
 import se.terrassorkestern.notgen.user.CustomOidcUserService;
 import se.terrassorkestern.notgen.user.UserPrincipal;
@@ -41,7 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("User controller")
 class UserControllerTest {
 
-    private static Band theBand;
+    private static Band band1;
+    private static Band band2;
     private static User normalUser;
     private static User disabledUser;
     private static User adminUser;
@@ -57,7 +53,17 @@ class UserControllerTest {
     private RoleRepository roleRepository;
 
     @MockBean
+    private ActiveBand activeBand;
+    @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private InstrumentRepository instrumentRepository;
+    @MockBean
+    private SettingRepository settingRepository;
+    @MockBean
+    private PlaylistRepository playlistRepository;
+    @MockBean
+    private ScoreRepository scoreRepository;
     @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
     @MockBean
@@ -66,10 +72,11 @@ class UserControllerTest {
 
     @BeforeAll
     static void init() {
-        theBand = new Band();
-
+        band1 = new Band();
+        band2 = new Band();
         normalUser = new User();
         normalUser.setUsername("normal");
+        normalUser.getBands().add(band1);
         userRole = new Role("ROLE_USER");
         userRole.setPrivileges(Collections.emptySet());
         normalUser.setRole(userRole);
@@ -77,6 +84,7 @@ class UserControllerTest {
 
         disabledUser = new User();
         disabledUser.setUsername("disabled");
+        disabledUser.getBands().add(band2);
         disabledUser.setRole(userRole);
         disabledUser.setEnabled(false);
 
@@ -90,11 +98,13 @@ class UserControllerTest {
 
     @BeforeEach
     void initTest() {
-        List<User> allUsers = List.of(normalUser, adminUser);
-        given(bandRepository.findAll()).willReturn(List.of(theBand));
+        List<User> allUsers = List.of(normalUser, disabledUser, adminUser);
+        given(activeBand.getBand()).willReturn(band1);
+        given(bandRepository.findAll()).willReturn(List.of(band1));
         given(userRepository.findAll()).willReturn(allUsers);
-        given(userRepository.findById(1L)).willReturn(Optional.of(normalUser));
-        given(userRepository.findById(2L)).willReturn(Optional.of(adminUser));
+        given(userRepository.findByBandsContaining(band1)).willReturn(allUsers);
+        given(userRepository.findByBandsContainingAndId(band1, 1L)).willReturn(Optional.of(normalUser));
+        given(userRepository.findByBandsContainingAndId(band1, 2L)).willReturn(Optional.of(adminUser));
         given(roleRepository.findByName("ROLE_ADMIN")).willReturn(adminRole);
         given(roleRepository.findByName("ROLE_USER")).willReturn(userRole);
     }

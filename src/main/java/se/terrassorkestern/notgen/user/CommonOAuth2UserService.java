@@ -6,6 +6,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import se.terrassorkestern.notgen.exceptions.OAuth2AuthenticationProcessingException;
+import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
@@ -15,12 +17,14 @@ import java.util.Optional;
 @Service
 public class CommonOAuth2UserService {
 
+    private final ActiveBand activeBand;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
-    public CommonOAuth2UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public CommonOAuth2UserService(UserRepository userRepository, RoleRepository roleRepository, ActiveBand activeBand) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.activeBand = activeBand;
     }
 
     UserPrincipal processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
@@ -45,7 +49,10 @@ public class CommonOAuth2UserService {
         } else {
             user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
         }
+        // Todo use the default band for the user
+        Band band = user.getBands().iterator().next();
 
+        activeBand.setBand(band);
         return UserPrincipal.create(user, oAuth2User.getAttributes());
     }
 
@@ -58,6 +65,7 @@ public class CommonOAuth2UserService {
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
         user.setRole(roleRepository.findByName("ROLE_GUEST"));
+        // Band will be set by the admin
         user.setEnabled(true);
         return userRepository.save(user);
     }

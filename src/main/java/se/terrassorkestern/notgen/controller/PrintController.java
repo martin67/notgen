@@ -8,14 +8,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Playlist;
-import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.Setting;
+import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
@@ -28,20 +24,20 @@ import java.io.InputStream;
 @Slf4j
 @Controller
 @RequestMapping("/print")
-public class PrintController {
+public class PrintController extends CommonController {
 
+    private final ActiveBand activeBand;
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
-    private final PlaylistRepository playlistRepository;
     private final SettingRepository settingRepository;
     private final ConverterService converterService;
 
-    public PrintController(ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
-                           PlaylistRepository playlistRepository, SettingRepository settingRepository,
+    public PrintController(ActiveBand activeBand, ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
+                           SettingRepository settingRepository,
                            ConverterService converterService) {
+        this.activeBand = activeBand;
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
-        this.playlistRepository = playlistRepository;
         this.settingRepository = settingRepository;
         this.converterService = converterService;
     }
@@ -50,13 +46,13 @@ public class PrintController {
     public String selectInstrument(@RequestParam(name = "id", required = false, defaultValue = "-1") int id, Model model) {
         Instrument instrument;
         if (id == -1) {
-            instrument = instrumentRepository.findFirstBy();
+            instrument = instrumentRepository.findFirstByBand(activeBand.getBand()).orElseThrow();
             id = instrument.getId();
         } else {
-            instrument = instrumentRepository.findById(id).orElseThrow();
+            instrument = getInstrument(id);
         }
         model.addAttribute("scores", scoreRepository.findByScorePartsInstrumentOrderByTitle(instrument));
-        model.addAttribute("instruments", instrumentRepository.findAll());
+        model.addAttribute("instruments", getInstruments());
         model.addAttribute("selectedInstrument", id);
         return "printInstrument";
     }
@@ -65,13 +61,13 @@ public class PrintController {
     public String selectSetting(@RequestParam(name = "id", required = false, defaultValue = "-1") int id, Model model) {
         Setting setting;
         if (id == -1) {
-            setting = settingRepository.findFirstBy();
+            setting = settingRepository.findFirstByBand(activeBand.getBand());
             id = setting.getId();
         } else {
-            setting = settingRepository.findById(id).orElseThrow();
+            setting = getSetting(id);
         }
         model.addAttribute("scores", scoreRepository.findDistinctByScoreParts_InstrumentInOrderByTitleAsc(setting.getInstruments()));
-        model.addAttribute("settings", settingRepository.findAll());
+        model.addAttribute("settings", getSettings());
         model.addAttribute("selectedSetting", id);
         return "printSetting";
     }
@@ -79,23 +75,12 @@ public class PrintController {
     @GetMapping(value = "/getscorepart", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printScorePart(@RequestParam(name = "instrument_id") Integer instrumentId,
                                                               @RequestParam(name = "score_id") Integer scoreId) {
-        StopWatch stopWatch = new StopWatch("get scorepart");
-        stopWatch.start("read score");
         Score score = scoreRepository.findById(scoreId).orElseThrow();
-        stopWatch.stop();
-        stopWatch.start("read instrument");
-        Instrument instrument = instrumentRepository.findById(instrumentId).orElseThrow();
-
-        stopWatch.stop();
-        stopWatch.start("start convert");
+        Instrument instrument = getInstrument(instrumentId);
 
         try (InputStream is = converterService.assemble(score, instrument)) {
-            stopWatch.stop();
-            stopWatch.start("send response");
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), instrument.getShortName()));
-            stopWatch.stop();
-            log.info("time: {}", stopWatch.prettyPrint());
             return ResponseEntity
                     .ok()
                     .headers(headers)
@@ -116,7 +101,7 @@ public class PrintController {
                                                           @RequestParam(name = "score_id") Integer scoreId) {
 
         Score score = scoreRepository.findById(scoreId).orElseThrow();
-        Setting setting = settingRepository.findById(settingId).orElseThrow();
+        Setting setting = getSetting(settingId);
 
         try (InputStream is = converterService.assemble(score, setting)) {
             HttpHeaders headers = new HttpHeaders();
@@ -141,8 +126,8 @@ public class PrintController {
     public ResponseEntity<InputStreamResource> printPlaylist(@RequestParam(name = "playlist_id") Integer playlistId,
                                                              @RequestParam(name = "instrument_id") Integer instrumentId) {
 
-        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow();
-        Instrument instrument = instrumentRepository.findById(instrumentId).orElseThrow();
+        Playlist playlist = getPlaylist(playlistId);
+        Instrument instrument = getInstrument(instrumentId);
 
         try (InputStream is = converterService.assemble(playlist, instrument)) {
             HttpHeaders headers = new HttpHeaders();
@@ -166,4 +151,5 @@ public class PrintController {
     private String createContentDisposition(String name, String shortName) {
         return "inline; filename=\"" + name + "\" (" + shortName + ").pdf";
     }
+
 }

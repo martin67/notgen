@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
+import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Statistics;
 import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.service.StatisticsService;
@@ -32,6 +33,8 @@ class StatisticsControllerTest {
     @MockBean
     private StatisticsService statisticsService;
 
+    @MockBean
+    private ActiveBand activeBand;
     @MockBean
     private UserRepository userRepository;
     @MockBean

@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminController extends CommonController {
 
     private final ConverterService converterService;
     private final ImageDataExtractor imageDataExtractor;

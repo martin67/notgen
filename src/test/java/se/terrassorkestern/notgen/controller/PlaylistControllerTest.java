@@ -12,12 +12,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
+import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Playlist;
-import se.terrassorkestern.notgen.repository.InstrumentRepository;
-import se.terrassorkestern.notgen.repository.PlaylistRepository;
-import se.terrassorkestern.notgen.repository.SettingRepository;
-import se.terrassorkestern.notgen.repository.UserRepository;
+import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.PlaylistPackService;
 import se.terrassorkestern.notgen.service.PlaylistPdfService;
@@ -59,7 +58,11 @@ class PlaylistControllerTest {
     private ConverterService converterService;
 
     @MockBean
+    private ActiveBand activeBand;
+    @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private ScoreRepository scoreRepository;
     @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
     @MockBean
@@ -68,15 +71,19 @@ class PlaylistControllerTest {
 
     @BeforeEach
     void initTest() throws IOException {
+        Band band1 = new Band();
         Playlist foo = new Playlist();
+        foo.setBand(band1);
         Playlist bar = new Playlist();
+        bar.setBand(band1);
         Instrument sax = new Instrument();
-
+        sax.setBand(band1);
         List<Playlist> allPlaylists = List.of(foo, bar);
 
-        given(playlistRepository.findAllByOrderByDateDesc()).willReturn(allPlaylists);
-        given(playlistRepository.findById(1)).willReturn(Optional.of(foo));
-        given(instrumentRepository.findById(1)).willReturn(Optional.of(sax));
+        given(activeBand.getBand()).willReturn(band1);
+        given(playlistRepository.findByBandOrderByDateDesc(band1)).willReturn(allPlaylists);
+        given(playlistRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(foo));
+        given(instrumentRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(sax));
         given(playlistPdfService.create(foo)).willReturn(new ByteArrayInputStream(new byte[0]));
 
         String sinkName = System.getProperty("os.name").toLowerCase().contains("windows") ? "NUL" : "/dev/null";

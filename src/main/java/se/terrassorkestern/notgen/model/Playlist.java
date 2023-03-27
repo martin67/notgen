@@ -42,6 +42,7 @@ public class Playlist extends Auditable<String> {
         newPlaylist.setName("Kopia av " + this.getName());
         newPlaylist.setDate(this.getDate());
         newPlaylist.setComment(this.getComment());
+        newPlaylist.setBand(this.getBand());
         for (PlaylistEntry playlistEntry : this.getPlaylistEntries()) {
             PlaylistEntry newPlaylistEntry = new PlaylistEntry();
             newPlaylistEntry.setText(playlistEntry.getText());

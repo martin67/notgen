@@ -16,6 +16,7 @@
             <th>Namn</th>
             <th>Förkortning</th>
             <th>Ordning</th>
+            <th sec:authorize="hasRole('SUPERADMIN')">Band</th>
         </tr>
         </thead>
         <tbody>
@@ -23,6 +24,7 @@
             <td th:text="${instrument.name}"></td>
             <td th:text="${instrument.shortName}"></td>
             <td th:text="${instrument.sortOrder}"></td>
+            <td th:text="${instrument.band.name}" sec:authorize="hasRole('SUPERADMIN')"></td>
         </tr>
         </tbody>
     </table>

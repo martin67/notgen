@@ -12,6 +12,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.exceptions.NotFoundException;
 import se.terrassorkestern.notgen.exceptions.UserAlreadyExistAuthenticationException;
+import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.BandRepository;
@@ -27,20 +28,21 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends CommonController {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BandRepository bandRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final ActiveBand activeBand;
 
     public UserController(UserRepository userRepository, RoleRepository roleRepository,
-                          BandRepository bandRepository, PasswordEncoder passwordEncoder) {
+                          BandRepository bandRepository, PasswordEncoder passwordEncoder, ActiveBand activeBand) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bandRepository = bandRepository;
         this.passwordEncoder = passwordEncoder;
+        this.activeBand = activeBand;
     }
 
     @GetMapping("/list")
@@ -48,11 +50,8 @@ public class UserController {
         List<User> bandUsers = new ArrayList<>();
         List<User> otherUsers = new ArrayList<>();
 
-        // Todo use band from session
-        Band band = bandRepository.findAll().get(0);
-
         for (User user : userRepository.findAll()) {
-            if (user.getBands().contains(band)) {
+            if (user.getBands().contains(activeBand.getBand())) {
                 bandUsers.add(user);
             } else {
                 otherUsers.add(user);
@@ -67,6 +66,7 @@ public class UserController {
     public String create(Model model) {
         List<Band> bands = bandRepository.findAll();
         model.addAttribute("user", new UserFormData());
+        model.addAttribute("roles", roleRepository.findAll());
         model.addAttribute("bands", bands);
         return "user/edit";
     }
@@ -82,7 +82,7 @@ public class UserController {
         } else {
             // First check that the user has permission to edit user (i.e. is admin)
             if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_USER"))) {
-                user = userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
+                user = getUser(id);
             } else {
                 return "redirect:/";
             }
@@ -173,11 +173,21 @@ public class UserController {
 
     @GetMapping("/delete")
     public String delete(@RequestParam("id") long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
+        User user = getUser(id);
         log.info("Tar bort användare {} [{}]", user.getUsername(), user.getId());
         userRepository.delete(user);
         return "redirect:/user/list";
     }
 
+    private User getUser(long id) {
+        User user;
+        if (isSuperAdmin()) {
+            user = userRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
+        } else {
+            user = userRepository.findByBandsContainingAndId(activeBand.getBand(), id)
+                    .orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
+        }
+        return user;
+    }
 }

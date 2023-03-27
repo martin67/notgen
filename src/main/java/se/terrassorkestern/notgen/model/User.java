@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import se.terrassorkestern.notgen.user.AuthProvider;
 
-import java.io.Serial;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,13 +16,12 @@ import java.util.stream.Collectors;
 @Table(name = "user_")             // user is a reserved name in H2...
 public class User {
 
-    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_band",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -39,7 +37,7 @@ public class User {
     private String providerId;
     private boolean enabled;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Role role;
 
     public boolean isRemoteUser() {

@@ -12,8 +12,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
-import se.terrassorkestern.notgen.repository.ScoreRepository;
-import se.terrassorkestern.notgen.repository.UserRepository;
+import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.service.AdminService;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.ImageDataExtractor;
@@ -35,14 +35,23 @@ class AdminControllerTest {
     @MockBean
     private ConverterService converterService;
     @MockBean
+    private AdminService adminService;
+    @MockBean
     private ImageDataExtractor imageDataExtractor;
+
     @MockBean
     private ScoreRepository scoreRepository;
     @MockBean
-    private AdminService adminService;
-
+    private InstrumentRepository instrumentRepository;
+    @MockBean
+    private SettingRepository settingRepository;
+    @MockBean
+    private PlaylistRepository playlistRepository;
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private ActiveBand activeBand;
     @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
     @MockBean
