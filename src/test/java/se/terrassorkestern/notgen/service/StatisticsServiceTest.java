@@ -2,18 +2,15 @@ package se.terrassorkestern.notgen.service;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import se.terrassorkestern.notgen.model.Statistics;
-import se.terrassorkestern.notgen.repository.PlaylistRepository;
 
 import java.io.StringWriter;
 import java.io.Writer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
 
 @SpringBootTest
 @Transactional
@@ -29,7 +26,7 @@ class StatisticsServiceTest {
         assertThat(statistics).isNotNull();
         assertThat(statistics.getNumberOfInstruments()).isEqualTo(3);
         assertThat(statistics.getNumberOfPlaylists()).isEqualTo(3);
-        assertThat(statistics.getTopGenres().size()).isEqualTo(2);
+        assertThat(statistics.getTopGenres()).hasSize(2);
         assertThat(statistics.getNumberOfSongs()).isEqualTo(3);
         assertThat(statistics.getNumberOfScannedSongs()).isEqualTo(1);
         assertThat(statistics.getNumberOfScannedPages()).isEqualTo(5);

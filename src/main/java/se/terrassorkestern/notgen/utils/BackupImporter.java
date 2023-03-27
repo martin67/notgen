@@ -43,7 +43,7 @@ public class BackupImporter {
         String database;
         String username;
         String password;
-        String filename = null;
+        String filename;
         try {
             CommandLine cmd = parser.parse(options, args);
             database = cmd.getOptionValue("database");

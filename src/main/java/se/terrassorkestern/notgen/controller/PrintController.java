@@ -29,17 +29,15 @@ public class PrintController extends CommonController {
     private final ActiveBand activeBand;
     private final ScoreRepository scoreRepository;
     private final InstrumentRepository instrumentRepository;
-    private final PlaylistRepository playlistRepository;
     private final SettingRepository settingRepository;
     private final ConverterService converterService;
 
     public PrintController(ActiveBand activeBand, ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
-                           PlaylistRepository playlistRepository, SettingRepository settingRepository,
+                           SettingRepository settingRepository,
                            ConverterService converterService) {
         this.activeBand = activeBand;
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
-        this.playlistRepository = playlistRepository;
         this.settingRepository = settingRepository;
         this.converterService = converterService;
     }
