@@ -108,7 +108,6 @@ public class ConverterService {
                         PDXObject o = pdResources.getXObject(name);
                         if (o instanceof PDImageXObject image) {
                             String filename = tmpDir + File.separator + "extracted-image-" + i;
-                            //ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
                             if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
                                 ImageIO.write(image.getImage(), "jpg", new File(filename + ".jpg"));
                             } else {
@@ -149,7 +148,7 @@ public class ConverterService {
                 // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
                 score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
 
-                Path tempDir = storageService.createTempDir();
+                Path tempDir = storageService.createTempDir(score);
                 stopWatch.start("downloadScorePart, " + score.getTitle());
                 Path downloadedScore = storageService.downloadScore(score, tempDir);
                 stopWatch.stop();
