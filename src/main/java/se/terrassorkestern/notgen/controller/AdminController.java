@@ -47,7 +47,7 @@ public class AdminController extends CommonController {
     }
 
     @GetMapping("/noteCreate")
-    public String create() throws IOException, InterruptedException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public String create() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         // Run with Spring batch as the job will take a long time
         jobLauncher.run(job, new JobParameters());
         return "redirect:/admin";
