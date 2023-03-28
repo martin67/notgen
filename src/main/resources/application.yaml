@@ -40,6 +40,11 @@ spring:
         account-name: ${AZURE_STORAGE_ACCOUNT_NAME}
         account-key: ${AZURE_STORAGE_ACCOUNT_KEY}
         endpoint: https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${AZURE_STORAGE_ACCOUNT_NAME}
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
 
 management:
   info:

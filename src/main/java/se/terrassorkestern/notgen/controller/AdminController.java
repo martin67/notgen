@@ -2,12 +2,18 @@ package se.terrassorkestern.notgen.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.imaging.ImageReadException;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.service.AdminService;
-import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.ImageDataExtractor;
 
 import java.io.IOException;
@@ -19,17 +25,20 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping("/admin")
 public class AdminController extends CommonController {
 
-    private final ConverterService converterService;
+
     private final ImageDataExtractor imageDataExtractor;
     private final ScoreRepository scoreRepository;
     private final AdminService adminService;
+    private final JobLauncher jobLauncher;
+    private final Job job;
 
-    public AdminController(ConverterService converterService, ImageDataExtractor imageDataExtractor,
-                           ScoreRepository scoreRepository, AdminService adminService) {
-        this.converterService = converterService;
+    public AdminController(ImageDataExtractor imageDataExtractor,
+                           ScoreRepository scoreRepository, AdminService adminService, JobLauncher jobLauncher, Job job) {
         this.imageDataExtractor = imageDataExtractor;
         this.scoreRepository = scoreRepository;
         this.adminService = adminService;
+        this.jobLauncher = jobLauncher;
+        this.job = job;
     }
 
     @GetMapping(value = {"", "/"})
@@ -38,8 +47,9 @@ public class AdminController extends CommonController {
     }
 
     @GetMapping("/noteCreate")
-    public String create() throws IOException, InterruptedException {
-        converterService.convert(scoreRepository.findAll());
+    public String create() throws IOException, InterruptedException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        // Run with Spring batch as the job will take a long time
+        jobLauncher.run(job, new JobParameters());
         return "redirect:/admin";
     }
 

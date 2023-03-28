@@ -15,6 +15,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -24,11 +25,15 @@ public class StorageService {
 
     private static final int BUFFER_SIZE = 4096;
     private final BackendStorage backendStorage;
+    private final String tempDir;
     private final boolean keepTempDir;
 
-    public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir, @Value("${notgen.storage.type}") String storage,
+    public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir,
+                          @Value("${notgen.storage.type}") String storage,
+                          @Value("${notgen.folders.temp:}") String tempDir,
                           AzureStorage azureStorage, LocalStorage localStorage) {
         this.keepTempDir = keepTempDir;
+        this.tempDir = tempDir;
 
         switch (storage) {
             case "azure" -> this.backendStorage = azureStorage;
@@ -39,7 +44,23 @@ public class StorageService {
     }
 
     public Path createTempDir() throws IOException {
-        Path t = Files.createTempDirectory("notgen");
+        Path t;
+        if (tempDir.isEmpty()) {
+            t = Files.createTempDirectory("notgen");
+        } else {
+            t = Files.createTempDirectory(Path.of(tempDir), "notgen");
+        }
+        log.debug("Creating temporary directory {}", t);
+        return t;
+    }
+
+    public Path createTempDir(Score score) throws IOException {
+        Path t;
+        if (tempDir.isEmpty()) {
+            t = Files.createTempDirectory("notgen");
+        } else {
+            t = Files.createDirectories(Path.of(tempDir).resolve(score.getTitle()).resolve(String.valueOf(Instant.now().getEpochSecond())));
+        }
         log.debug("Creating temporary directory {}", t);
         return t;
     }
@@ -85,8 +106,7 @@ public class StorageService {
         return backendStorage.getThumbnailOutputStream(score);
     }
 
-    public int extractZip(Path zipFile, Path dir) throws IOException {
-        int numberOfFiles = 0;
+    public void extractZip(Path zipFile, Path dir) throws IOException {
         try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile.toFile())), Charset.forName("CP437"))
         ) {
             ZipEntry zipEntry;
@@ -101,11 +121,9 @@ public class StorageService {
                         while ((read = zipInputStream.read(bytesIn)) != -1) {
                             bos.write(bytesIn, 0, read);
                         }
-                        numberOfFiles++;
                     }
                 }
             }
         }
-        return numberOfFiles;
     }
 }

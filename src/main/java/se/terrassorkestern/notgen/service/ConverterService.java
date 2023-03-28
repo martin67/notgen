@@ -7,6 +7,8 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.*;
@@ -29,7 +31,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Service
-public class ConverterService {
+public class ConverterService implements ItemProcessor<Score, Score> {
 
     private final ScoreRepository scoreRepository;
     private final StorageService storageService;
@@ -108,7 +110,6 @@ public class ConverterService {
                         PDXObject o = pdResources.getXObject(name);
                         if (o instanceof PDImageXObject image) {
                             String filename = tmpDir + File.separator + "extracted-image-" + i;
-                            //ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
                             if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
                                 ImageIO.write(image.getImage(), "jpg", new File(filename + ".jpg"));
                             } else {
@@ -138,34 +139,34 @@ public class ConverterService {
         return extractedFilesList;
     }
 
+    @Override
+    public Score process(@NonNull Score item) throws Exception {
+        convert(item);
+        return null;
+    }
+
     public void convert(List<Score> scores) throws IOException, InterruptedException {
-        log.debug("Starting main convert loop");
-        StopWatch stopWatch = new StopWatch("convert scores");
-
+        log.debug("Starting main convert loop for {} scores", scores.size());
         for (Score score : scores) {
-            if (score.getScanned()) {
-                log.info("Converting: {} ({})", score.getTitle(), score.getId());
-
-                // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
-                score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
-
-                Path tempDir = storageService.createTempDir();
-                stopWatch.start("downloadScorePart, " + score.getTitle());
-                Path downloadedScore = storageService.downloadScore(score, tempDir);
-                stopWatch.stop();
-
-                List<Path> extractedFilesList = split(tempDir, downloadedScore);
-
-                stopWatch.start("image process, " + score.getTitle());
-                imageProcess(tempDir, extractedFilesList, score);
-                stopWatch.stop();
-                stopWatch.start("pdf creation, " + score.getTitle());
-                createPdfs(tempDir, extractedFilesList, score);
-                stopWatch.stop();
-                storageService.deleteTempDir(tempDir);
-            }
+            convert(score);
         }
-        log.debug("Finishing main convert loop, time: {}", stopWatch.prettyPrint());
+        log.debug("Done converting");
+    }
+
+    private void convert(Score score) throws IOException, InterruptedException {
+        if (score.getScanned()) {
+            log.info("Converting: {} ({})", score.getTitle(), score.getId());
+
+            // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
+            score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
+
+            Path tempDir = storageService.createTempDir(score);
+            Path downloadedScore = storageService.downloadScore(score, tempDir);
+            List<Path> extractedFilesList = split(tempDir, downloadedScore);
+            imageProcess(tempDir, extractedFilesList, score);
+            createPdfs(tempDir, extractedFilesList, score);
+            storageService.deleteTempDir(tempDir);
+        }
     }
 
     public InputStream assemble(List<Score> scores, Setting setting, boolean sortByInstrument) throws

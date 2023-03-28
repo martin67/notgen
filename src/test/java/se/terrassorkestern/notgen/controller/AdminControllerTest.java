@@ -3,6 +3,8 @@ package se.terrassorkestern.notgen.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,7 +17,6 @@ import se.terrassorkestern.notgen.configuration.SecurityConfig;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.service.AdminService;
-import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.ImageDataExtractor;
 import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
 import se.terrassorkestern.notgen.user.CustomOidcUserService;
@@ -33,7 +34,9 @@ class AdminControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private ConverterService converterService;
+    private JobLauncher jobLauncher;
+    @MockBean
+    private Job job;
     @MockBean
     private AdminService adminService;
     @MockBean
