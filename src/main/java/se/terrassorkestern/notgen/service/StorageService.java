@@ -56,10 +56,10 @@ public class StorageService {
 
     public Path createTempDir(Score score) throws IOException {
         Path t;
-        if (tempDir != null) {
-            t = Files.createDirectories(Path.of(tempDir).resolve(score.getTitle()).resolve(String.valueOf(Instant.now().getEpochSecond())));
-        } else {
+        if (tempDir.isEmpty()) {
             t = Files.createTempDirectory("notgen");
+        } else {
+            t = Files.createDirectories(Path.of(tempDir).resolve(score.getTitle()).resolve(String.valueOf(Instant.now().getEpochSecond())));
         }
         log.debug("Creating temporary directory {}", t);
         return t;
@@ -106,8 +106,7 @@ public class StorageService {
         return backendStorage.getThumbnailOutputStream(score);
     }
 
-    public int extractZip(Path zipFile, Path dir) throws IOException {
-        int numberOfFiles = 0;
+    public void extractZip(Path zipFile, Path dir) throws IOException {
         try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile.toFile())), Charset.forName("CP437"))
         ) {
             ZipEntry zipEntry;
@@ -122,11 +121,9 @@ public class StorageService {
                         while ((read = zipInputStream.read(bytesIn)) != -1) {
                             bos.write(bytesIn, 0, read);
                         }
-                        numberOfFiles++;
                     }
                 }
             }
         }
-        return numberOfFiles;
     }
 }
