@@ -7,6 +7,7 @@ import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
 import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
 import se.terrassorkestern.notgen.service.converter.filters.GreyScaler;
+import se.terrassorkestern.notgen.service.converter.filters.Otsu;
 import se.terrassorkestern.notgen.service.converter.filters.Standard;
 
 import javax.imageio.ImageIO;
@@ -141,8 +142,8 @@ public class TryckarrOriginal implements ImageProcessor {
 
             // Setup conversion filters
             GreyScaler greyScaler = new Standard();
-            //Binarizer binarizer = new Otsu();
-            Binarizer binarizer = new Standard();
+            Binarizer binarizer = new Otsu();
+            //Binarizer binarizer = new Standard();
 
             //
             // Change to grey
