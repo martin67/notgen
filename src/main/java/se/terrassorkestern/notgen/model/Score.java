@@ -13,6 +13,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/*
+ Relations:
+
+   Score - Arrangement - ArrangementPart - Instrument
+              arranger       page
+              comment        length
+                             comment
+ */
+
 @Entity
 @Indexed
 @Getter
@@ -32,7 +41,7 @@ public class Score extends Auditable<String> {
     private String title;
     @FullTextField(analyzer = "swedish")
     private String subTitle;
-    @NotBlank(message = "Genre måste anges")
+    //@NotBlank(message = "Genre måste anges")
     @FullTextField(analyzer = "swedish")
     private String genre = "Foxtrot";
     @FullTextField(analyzer = "swedish")
@@ -55,6 +64,12 @@ public class Score extends Auditable<String> {
     private String text;
     @Lob
     private String presentation;
+
+    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Arrangement> arrangements = new ArrayList<>();
+
+    @OneToOne
+    private Arrangement defaultArrangement;
 
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScorePart> scoreParts = new ArrayList<>();
@@ -81,6 +96,11 @@ public class Score extends Auditable<String> {
             result.add(scorePart.getInstrument());
         }
         return result;
+    }
+
+    public void addArrangement(Arrangement arrangement) {
+        arrangement.setScore(this);
+        arrangements.add(arrangement);
     }
 
     public String getThumbnailPath() {
