@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.ScorePart;
+import se.terrassorkestern.notgen.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,6 +66,27 @@ public class LocalStorage implements BackendStorage {
     }
 
     @Override
+    public Path downloadArrangement(Arrangement arrangement, Path location) throws IOException {
+        String fileName = String.format("%d-%d", arrangement.getScore().getId(), arrangement.getId());
+        String[] files = inputDir.toFile().list((d, name) -> name.startsWith(fileName));
+        if (files == null || files.length == 0) {
+            log.error("No files found for pattern {}", fileName);
+            return null;
+        } else if (files.length > 1) {
+            log.warn("Multiple resources found for pattern {}, using the first", fileName);
+        }
+
+        return Files.copy(inputDir.resolve(files[0]), location.resolve(files[0]), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
+        String filename = getArrangementPartName(arrangement, instrument);
+        return Files.copy(outputDir.resolve(String.valueOf(arrangement.getScore().getId())).resolve(filename),
+                location.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
     public boolean isScoreGenerated(Score score) {
         boolean allFilesExist = true;
         for (ScorePart scorePart : score.getScoreParts()) {
@@ -87,6 +106,12 @@ public class LocalStorage implements BackendStorage {
     public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
         Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(scorePart.getScore().getId())));
         Files.copy(path, scoreOutput.resolve(getScorePartName(scorePart)), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException {
+        Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(arrangementPart.getArrangement().getScore().getId())));
+        Files.copy(path, scoreOutput.resolve(getArrangementPartName(arrangementPart)), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public void uploadCover(Score score, InputStream inputStream) throws IOException {

@@ -1,8 +1,6 @@
 package se.terrassorkestern.notgen.service.storage;
 
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.ScorePart;
+import se.terrassorkestern.notgen.model.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,11 +14,17 @@ public interface BackendStorage {
 
     Path downloadScorePart(Score score, Instrument instrument, Path location) throws IOException;
 
+    Path downloadArrangement(Arrangement arrangement, Path location) throws IOException;
+
+    Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException;
+
     boolean isScoreGenerated(Score score) throws IOException;
 
     void uploadScore(Score score, Path path) throws IOException;
 
     void uploadScorePart(ScorePart scorePart, Path path) throws IOException;
+
+    void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException;
 
     OutputStream getCoverOutputStream(Score score) throws IOException;
 
@@ -42,6 +46,16 @@ public interface BackendStorage {
 
     default String getScorePartName(ScorePart scorePart) {
         return String.format("%d-%d.pdf", scorePart.getScore().getId(), scorePart.getInstrument().getId());
+    }
+
+    default String getArrangementPartName(ArrangementPart arrangementPart) {
+        return String.format("%d-%d-%d.pdf", arrangementPart.getArrangement().getScore().getId(),
+                arrangementPart.getArrangement().getId(), arrangementPart.getInstrument().getId());
+    }
+
+    default String getArrangementPartName(Arrangement arrangement, Instrument instrument) {
+        return String.format("%d-%d-%d.pdf", arrangement.getScore().getId(),
+                arrangement.getId(), instrument.getId());
     }
 
     default String getCoverName(Score score) {

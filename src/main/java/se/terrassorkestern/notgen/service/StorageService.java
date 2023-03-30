@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.ScorePart;
+import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.service.storage.AzureStorage;
 import se.terrassorkestern.notgen.service.storage.BackendStorage;
 import se.terrassorkestern.notgen.service.storage.LocalStorage;
@@ -84,8 +82,16 @@ public class StorageService {
         return backendStorage.downloadScorePart(scorePart, location);
     }
 
-    public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
-        backendStorage.uploadScorePart(scorePart, path);
+    public Path downloadArrangement(Arrangement arrangement, Path location) throws IOException {
+        return backendStorage.downloadArrangement(arrangement, location);
+    }
+
+    public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
+        return backendStorage.downloadArrangementPart(arrangement, instrument, location);
+    }
+
+    public void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException {
+        backendStorage.uploadArrangementPart(arrangementPart, path);
     }
 
     public boolean isScoreGenerated(Score score) throws IOException {

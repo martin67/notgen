@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen.service.converter;
 
 import lombok.extern.slf4j.Slf4j;
+import se.terrassorkestern.notgen.model.Arrangement;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
 
@@ -14,13 +15,13 @@ import java.nio.file.Path;
 public class BlackAndWhite implements ImageProcessor {
 
     private final Path path;
-    private final Score score;
+    private final Arrangement arrangement;
     private final StorageService storageService;
     private final boolean firstPage;
 
-    public BlackAndWhite(Path path, Score score, StorageService storageService, boolean firstPage) {
+    public BlackAndWhite(Path path, Arrangement arrangement, StorageService storageService, boolean firstPage) {
         this.path = path;
-        this.score = score;
+        this.arrangement = arrangement;
         this.storageService = storageService;
         this.firstPage = firstPage;
     }
@@ -28,12 +29,14 @@ public class BlackAndWhite implements ImageProcessor {
     @Override
     public void run() {
         try {
+            // todo fix
+            Score score = arrangement.getScore();
             BufferedImage image = ImageIO.read(path.toFile());
 
             String basename = path.getFileName().toString();
             log.debug("Image processing {} ({}x{})", basename, image.getWidth(), image.getHeight());
 
-            if (firstPage && score.getCover()) {
+            if (firstPage && score.getCover() && arrangement.getScore().getDefaultArrangement() == arrangement) {
                 log.debug("Saving cover");
                 try (OutputStream outputStream = storageService.getCoverOutputStream(score)) {
                     ImageIO.write(image, "jpg", outputStream);

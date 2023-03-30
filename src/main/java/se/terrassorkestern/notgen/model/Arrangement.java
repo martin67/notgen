@@ -16,6 +16,7 @@ public class Arrangement {
     private int id;
 
     private String arranger;
+    private String name;
     @Lob
     private String comment;
 
@@ -29,5 +30,13 @@ public class Arrangement {
         arrangementPart.setArrangement(this);
         arrangementPart.setId(new ArrangementPartId(this.id, arrangementPart.getInstrument().getId()));
         arrangementParts.add(arrangementPart);
+    }
+
+    public List<Instrument> getInstruments() {
+        List<Instrument> result = new ArrayList<>();
+        for (ArrangementPart arrangementPart : arrangementParts) {
+            result.add(arrangementPart.getInstrument());
+        }
+        return result;
     }
 }

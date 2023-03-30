@@ -8,9 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.WritableResource;
 import org.springframework.stereotype.Component;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.ScorePart;
+import se.terrassorkestern.notgen.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,6 +75,16 @@ public class AzureStorage implements BackendStorage {
     }
 
     @Override
+    public Path downloadArrangement(Arrangement arrangement, Path location) throws IOException {
+        return null;
+    }
+
+    @Override
+    public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
+        return null;
+    }
+
+    @Override
     public boolean isScoreGenerated(Score score) throws IOException {
         String pattern = String.format("%d-*.pdf", score.getId());
         Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, pattern));
@@ -99,6 +107,11 @@ public class AzureStorage implements BackendStorage {
     public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
         String fileName = getScorePartName(scorePart);
         upload(fileName, path, scorePartsContainer);
+    }
+
+    @Override
+    public void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException {
+
     }
 
     private void upload(String fileName, Path path, String container) throws IOException {

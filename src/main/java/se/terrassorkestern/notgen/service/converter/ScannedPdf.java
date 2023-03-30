@@ -2,6 +2,7 @@ package se.terrassorkestern.notgen.service.converter;
 
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
+import se.terrassorkestern.notgen.model.Arrangement;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
 
@@ -15,15 +16,15 @@ import java.nio.file.Path;
 public class ScannedPdf implements ImageProcessor {
 
     private final Path path;
-    private final Score score;
+    private final Arrangement arrangement;
     private final StorageService storageService;
     private final boolean firstPage;
 
     private enum Rotation {Left, Right}
 
-    public ScannedPdf(Path path, Score score, StorageService storageService, boolean firstPage) {
+    public ScannedPdf(Path path, Arrangement arrangement, StorageService storageService, boolean firstPage) {
         this.path = path;
-        this.score = score;
+        this.arrangement = arrangement;
         this.storageService = storageService;
         this.firstPage = firstPage;
     }
@@ -31,6 +32,8 @@ public class ScannedPdf implements ImageProcessor {
     @Override
     public void run() {
         try {
+            // Todo fix
+            Score score = arrangement.getScore();
             BufferedImage image = ImageIO.read(path.toFile());
 
             String basename = path.getFileName().toString();
@@ -57,7 +60,7 @@ public class ScannedPdf implements ImageProcessor {
                 }
             }
 
-            if (firstPage && score.getCover()) {
+            if (firstPage && score.getCover() && arrangement.getScore().getDefaultArrangement() == arrangement) {
                 log.debug("Saving cover");
                 try (OutputStream outputStream = storageService.getCoverOutputStream(score)) {
                     ImageIO.write(image, "jpg", outputStream);
@@ -77,7 +80,7 @@ public class ScannedPdf implements ImageProcessor {
     }
 
     private BufferedImage rotate(Rotation rotation, BufferedImage image) {
-        log.warn("Rotating picture {} for score {}", rotation, score);
+        log.warn("Rotating picture {} for score {}", rotation, arrangement.getScore());
         BufferedImage rotated = new BufferedImage(image.getHeight(), image.getWidth(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = rotated.createGraphics();
         if (rotation == Rotation.Left) {

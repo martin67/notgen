@@ -31,6 +31,7 @@ public class ScoreUpdater {
                 log.info("Fixing arrangements for {} ({})", score.getTitle(), score.getId());
                 Arrangement arrangement = new Arrangement();
                 arrangement.setArranger(score.getArranger());
+                arrangement.setName("Original");
                 for (ScorePart scorePart : score.getScoreParts()) {
                     ArrangementPart arrangementPart = new ArrangementPart(scorePart);
                     arrangement.addArrangementPart(arrangementPart);
