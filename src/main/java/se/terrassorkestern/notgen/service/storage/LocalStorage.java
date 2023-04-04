@@ -39,44 +39,9 @@ public class LocalStorage implements BackendStorage {
     }
 
     @Override
-    public Path downloadScore(Score score, Path location) throws IOException {
-        String fileName = String.format("%d-1", score.getId());
-        String[] files = inputDir.toFile().list((d, name) -> name.startsWith(fileName));
-        if (files == null || files.length == 0) {
-            log.error("No files found for pattern {}", fileName);
-            return null;
-        } else if (files.length > 1) {
-            log.warn("Multiple resources found for pattern {}, using the first", fileName);
-        }
-
-        return Files.copy(inputDir.resolve(files[0]), location.resolve(files[0]), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    @Override
-    public Path downloadScorePart(ScorePart scorePart, Path location) throws IOException {
-        return Files.copy(outputDir.resolve(String.valueOf(scorePart.getScore().getId())).resolve(getScorePartName(scorePart)),
-                location.resolve(getScorePartName(scorePart)), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    @Override
-    public Path downloadScorePart(Score score, Instrument instrument, Path location) throws IOException {
-        String filename = getScorePartName(score, instrument);
-        return Files.copy(outputDir.resolve(String.valueOf(score.getId())).resolve(filename),
-                location.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    @Override
     public Path downloadArrangement(Arrangement arrangement, Path location) throws IOException {
-        String fileName = String.format("%d-%d", arrangement.getScore().getId(), arrangement.getId());
-        String[] files = inputDir.toFile().list((d, name) -> name.startsWith(fileName));
-        if (files == null || files.length == 0) {
-            log.error("No files found for pattern {}", fileName);
-            return null;
-        } else if (files.length > 1) {
-            log.warn("Multiple resources found for pattern {}, using the first", fileName);
-        }
-
-        return Files.copy(inputDir.resolve(files[0]), location.resolve(files[0]), StandardCopyOption.REPLACE_EXISTING);
+        String filename = arrangement.getFile().getFilename();
+        return Files.copy(inputDir.resolve(filename), location.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
@@ -98,14 +63,9 @@ public class LocalStorage implements BackendStorage {
     }
 
     @Override
-    public void uploadScore(Score score, Path path) {
-
-    }
-
-    @Override
-    public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
-        Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(scorePart.getScore().getId())));
-        Files.copy(path, scoreOutput.resolve(getScorePartName(scorePart)), StandardCopyOption.REPLACE_EXISTING);
+    public void uploadArrangement(Arrangement arrangement, Path path) throws IOException {
+        String extension = com.google.common.io.Files.getFileExtension(path.getFileName().toString());
+        Files.copy(path, inputDir.resolve(getArrangementName(arrangement, extension)), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
@@ -136,14 +96,23 @@ public class LocalStorage implements BackendStorage {
         return Files.newOutputStream(outputPath);
     }
 
+    // old file name: scoreid-1.xyz, new fileId.xyz
     @Override
-    public void deleteScore(Score score) {
-
-    }
-
-    @Override
-    public void deleteScoreParts(Score score) throws IOException {
-        FileSystemUtils.deleteRecursively(outputDir.resolve(String.valueOf(score.getId())));
+    public Path renameScore(Score score, String newName) throws IOException {
+        String fileName = String.format("%d-1", score.getId());
+        String[] files = inputDir.toFile().list((d, name) -> name.startsWith(fileName));
+        if (files == null || files.length == 0) {
+            log.error("No files found for pattern {}", fileName);
+            return null;
+        } else if (files.length > 1) {
+            log.warn("Multiple resources found for pattern {}, using the first", fileName);
+        }
+        //files[0]
+        String extension = com.google.common.io.Files.getFileExtension(files[0]);
+        Path newPath = inputDir.resolve(newName + "." + extension);
+        log.debug("Moving {} to {}", inputDir.resolve(files[0]), newPath);
+        //return newPath;
+        return Files.move(inputDir.resolve(files[0]), newPath);
     }
 
     @Override

@@ -19,7 +19,8 @@ public class Arrangement {
     private String name;
     @Lob
     private String comment;
-
+    @ManyToOne
+    private NgFile file;
     @ManyToOne
     private Score score;
 

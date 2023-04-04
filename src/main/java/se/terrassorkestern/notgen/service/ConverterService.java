@@ -285,18 +285,20 @@ public class ConverterService implements ItemProcessor<Score, Score> {
             for (Instrument instrument : sortedInstruments) {
                 log.info("Adding instrument: {} to pdf output", instrument.getName());
                 for (Score score : scores) {
-                    if (score.getInstruments().contains(instrument)) {
-                        pdfMergerUtility.addSource(storageService.downloadScorePart(score, instrument, tempDir).toFile());
+                    Arrangement arrangement = score.getDefaultArrangement();
+                    if (arrangement.getInstruments().contains(instrument)) {
+                        pdfMergerUtility.addSource(storageService.downloadArrangementPart(arrangement, instrument, tempDir).toFile());
                     }
                 }
             }
         } else {
             for (Score score : scores) {
                 log.info("Adding score: {} ({}) to pdf output", score.getTitle(), score.getId());
+                Arrangement arrangement = score.getDefaultArrangement();
                 for (Instrument instrument : sortedInstruments) {
-                    if (score.getInstruments().contains(instrument)) {
+                    if (arrangement.getInstruments().contains(instrument)) {
                         log.debug("Score: {}, instrument: {}", score.getTitle(), instrument.getName());
-                        pdfMergerUtility.addSource(storageService.downloadScorePart(score, instrument, tempDir).toFile());
+                        pdfMergerUtility.addSource(storageService.downloadArrangementPart(arrangement, instrument, tempDir).toFile());
                     }
                 }
             }

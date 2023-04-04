@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.stereotype.Service;
+import se.terrassorkestern.notgen.model.Arrangement;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
@@ -105,7 +106,8 @@ public class SongOcrService {
         // Full path to uploaded document
         Instrument song = instrumentRepository.getReferenceById(Integer.parseInt(songIds));
         Path tempDir = storageService.createTempDir();
-        Path scorePart = storageService.downloadScorePart(score, song, tempDir);
+        Arrangement arrangement = score.getDefaultArrangement();
+        Path scorePart = storageService.downloadArrangementPart(arrangement, song, tempDir);
 
         byte[] fileContent = Files.readAllBytes(scorePart);
 

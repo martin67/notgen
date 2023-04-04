@@ -5,11 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import se.terrassorkestern.notgen.model.Arrangement;
-import se.terrassorkestern.notgen.model.ArrangementPart;
-import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.ScorePart;
+import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.repository.NgFileRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
+import se.terrassorkestern.notgen.service.StorageService;
+
+import java.io.IOException;
 
 @Slf4j
 @Component
@@ -17,17 +18,21 @@ import se.terrassorkestern.notgen.repository.ScoreRepository;
 public class ScoreUpdater {
 
     private final ScoreRepository scoreRepository;
+    private final StorageService storageService;
+    private final NgFileRepository fileRepository;
 
-    public ScoreUpdater(ScoreRepository scoreRepository) {
+    public ScoreUpdater(ScoreRepository scoreRepository, StorageService storageService, NgFileRepository fileRepository) {
         this.scoreRepository = scoreRepository;
+        this.storageService = storageService;
+        this.fileRepository = fileRepository;
     }
 
     @EventListener
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void onApplicationEvent(ContextRefreshedEvent event) throws IOException {
         log.info("********* Score updater");
 
         for (Score score : scoreRepository.findAll()) {
-            if (score.getArrangements().isEmpty()) {
+            if (score.getArrangements().isEmpty() && score.getScanned()) {
                 log.info("Fixing arrangements for {} ({})", score.getTitle(), score.getId());
                 Arrangement arrangement = new Arrangement();
                 arrangement.setArranger(score.getArranger());
@@ -38,6 +43,16 @@ public class ScoreUpdater {
                 }
                 score.addArrangement(arrangement);
                 score.setDefaultArrangement(arrangement);
+
+                // Only add default arrangement
+                NgFile file = new NgFile();
+                // Save to get an updated id.
+                fileRepository.save(file);
+                String filename = storageService.renameScore(score, String.valueOf(file.getId())).getFileName().toString();
+                file.setFilename(filename);
+                file.setOriginalFilename(score.getFilename());
+                file.setType(NgFileType.Arrangement);
+                arrangement.setFile(file);
                 scoreRepository.save(score);
             }
         }

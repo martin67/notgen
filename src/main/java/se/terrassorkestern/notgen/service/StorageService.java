@@ -70,18 +70,6 @@ public class StorageService {
         }
     }
 
-    public Path downloadScore(Score score, Path location) throws IOException {
-        return backendStorage.downloadScore(score, location);
-    }
-
-    public Path downloadScorePart(Score score, Instrument instrument, Path location) throws IOException {
-        return backendStorage.downloadScorePart(score, instrument, location);
-    }
-
-    public Path downloadScorePart(ScorePart scorePart, Path location) throws IOException {
-        return backendStorage.downloadScorePart(scorePart, location);
-    }
-
     public Path downloadArrangement(Arrangement arrangement, Path location) throws IOException {
         return backendStorage.downloadArrangement(arrangement, location);
     }
@@ -90,12 +78,20 @@ public class StorageService {
         return backendStorage.downloadArrangementPart(arrangement, instrument, location);
     }
 
+    public void uploadArrangement(Arrangement arrangement, Path path) throws IOException {
+        backendStorage.uploadArrangement(arrangement, path);
+    }
+
     public void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException {
         backendStorage.uploadArrangementPart(arrangementPart, path);
     }
 
     public boolean isScoreGenerated(Score score) throws IOException {
         return backendStorage.isScoreGenerated(score);
+    }
+
+    public Path renameScore(Score score, String newName) throws IOException {
+        return backendStorage.renameScore(score, newName);
     }
 
     public Path replaceExtension(Path path, String newExtension) {

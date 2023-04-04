@@ -1,0 +1,916 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1680644880785-92
+      author: marhag (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: arrangementPK
+                  name: id
+                  type: int
+              - column:
+                  name: arranger
+                  type: varchar(255)
+              - column:
+                  name: comment
+                  type: varchar (max)
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: file_id
+                  type: int
+              - column:
+                  name: score_id
+                  type: int
+            tableName: arrangement
+  - changeSet:
+      id: 1680644880785-93
+      author: marhag (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: comment
+                  type: varchar(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: length
+                  type: int
+              - column:
+                  constraints:
+                    nullable: false
+                  name: page
+                  type: int
+              - column:
+                  constraints:
+                    nullable: false
+                  name: instrument_id
+                  type: int
+              - column:
+                  constraints:
+                    nullable: false
+                  name: arrangement_id
+                  type: int
+            tableName: arrangement_instrument
+  - changeSet:
+      id: 1680644880785-94
+      author: marhag (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: filePK
+                  name: id
+                  type: int
+              - column:
+                  name: comment
+                  type: varchar(255)
+              - column:
+                  name: filename
+                  type: varchar(255)
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: original_filename
+                  type: varchar(255)
+              - column:
+                  name: type
+                  type: smallint
+            tableName: file
+  - changeSet:
+      id: 1680644880785-95
+      author: marhag (generated)
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: default_arrangement_id
+                  type: int
+            tableName: score
+  - changeSet:
+      id: 1680644880785-96
+      author: marhag (generated)
+      changes:
+        - addPrimaryKey:
+            columnNames: arrangement_id, instrument_id
+            constraintName: arrangement_instrumentPK
+            tableName: arrangement_instrument
+  - changeSet:
+      id: 1680644880785-97
+      author: marhag (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: file_id
+            baseTableName: arrangement
+            constraintName: FK577mhmdn52iys37uevvseyoy5
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: file
+            validate: true
+  - changeSet:
+      id: 1680644880785-98
+      author: marhag (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: default_arrangement_id
+            baseTableName: score
+            constraintName: FKbob86ike5bmsgwaa3f32vh5iu
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: arrangement
+            validate: true
+  - changeSet:
+      id: 1680644880785-99
+      author: marhag (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: arrangement_id
+            baseTableName: arrangement_instrument
+            constraintName: FKmhympjpvx5qnni2mj8qkf6ixi
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: arrangement
+            validate: true
+  - changeSet:
+      id: 1680644880785-100
+      author: marhag (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: instrument_id
+            baseTableName: arrangement_instrument
+            constraintName: FKnud50sv1o9lti9xncr90ukf0l
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: instrument
+            validate: true
+  - changeSet:
+      id: 1680644880785-101
+      author: marhag (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: score_id
+            baseTableName: arrangement
+            constraintName: FKo0bly9bchmb4rkwv79y7crqwq
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: score
+            validate: true
+  - changeSet:
+      id: 1680644880785-102
+      author: marhag (generated)
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: imagedata
+            constraintName: FKgti2gx5prl00umu7y3imqp9lp
+  - changeSet:
+      id: 1680644880785-115
+      author: marhag (generated)
+      changes:
+        - dropColumn:
+            columnName: score_id
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-1
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: archive_location
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-2
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: archived
+            newDataType: boolean
+            tableName: score
+  - changeSet:
+      id: 1680644880785-3
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: arranger
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-4
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: author
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-5
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: band_id
+            newDataType: int
+            tableName: instrument
+  - changeSet:
+      id: 1680644880785-6
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: band_id
+            newDataType: int
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-7
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: band_id
+            newDataType: int
+            tableName: score
+  - changeSet:
+      id: 1680644880785-8
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: band_id
+            newDataType: int
+            tableName: setting
+  - changeSet:
+      id: 1680644880785-9
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: band_id
+            newDataType: int
+            tableName: user_band
+  - changeSet:
+      id: 1680644880785-10
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: bold
+            newDataType: boolean
+            tableName: score_playlist
+  - changeSet:
+      id: 1680644880785-11
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: color
+            newDataType: boolean
+            tableName: score
+  - changeSet:
+      id: 1680644880785-12
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: color_depth
+            newDataType: int
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-13
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: color_type
+            newDataType: varchar(255)
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-14
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: comment
+            newDataType: varchar(255)
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-15
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: comment
+            newDataType: clob
+            tableName: score
+  - changeSet:
+      id: 1680644880785-16
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: comment
+            newDataType: varchar(255)
+            tableName: score_instrument
+  - changeSet:
+      id: 1680644880785-17
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: comment
+            newDataType: varchar(255)
+            tableName: score_playlist
+  - changeSet:
+      id: 1680644880785-18
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: composer
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-19
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: cover
+            newDataType: boolean
+            tableName: score
+  - changeSet:
+      id: 1680644880785-20
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: created_by
+            newDataType: varchar(255)
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-21
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: created_by
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-22
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: created_date
+            newDataType: datetime
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-23
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: created_date
+            newDataType: datetime
+            tableName: score
+  - changeSet:
+      id: 1680644880785-24
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: date
+            newDataType: datetime
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-25
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: description
+            newDataType: varchar(255)
+            tableName: band
+  - changeSet:
+      id: 1680644880785-26
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: display_name
+            newDataType: varchar(255)
+            tableName: role
+  - changeSet:
+      id: 1680644880785-27
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: display_name
+            newDataType: varchar(255)
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-28
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: email
+            newDataType: varchar(255)
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-29
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: enabled
+            newDataType: boolean
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-30
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: file_size
+            newDataType: bigint
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-31
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: filename
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-32
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: format
+            newDataType: varchar(255)
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-33
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: full_name
+            newDataType: varchar(255)
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-34
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: genre
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-35
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: height
+            newDataType: int
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-36
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: height_dpi
+            newDataType: int
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-37
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: int
+            tableName: band
+  - changeSet:
+      id: 1680644880785-38
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: int
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-39
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: int
+            tableName: instrument
+  - changeSet:
+      id: 1680644880785-40
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: int
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-41
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: bigint
+            tableName: privilege
+  - changeSet:
+      id: 1680644880785-42
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: bigint
+            tableName: role
+  - changeSet:
+      id: 1680644880785-43
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: int
+            tableName: score
+  - changeSet:
+      id: 1680644880785-44
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: int
+            tableName: score_playlist
+  - changeSet:
+      id: 1680644880785-45
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: int
+            tableName: setting
+  - changeSet:
+      id: 1680644880785-46
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: id
+            newDataType: bigint
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-47
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: image_process
+            newDataType: boolean
+            tableName: score
+  - changeSet:
+      id: 1680644880785-48
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: image_url
+            newDataType: varchar(255)
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-49
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: instrument_id
+            newDataType: int
+            tableName: score_instrument
+  - changeSet:
+      id: 1680644880785-50
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: instrument_id
+            newDataType: int
+            tableName: setting_instrument
+  - changeSet:
+      id: 1680644880785-51
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: internal_comment
+            newDataType: clob
+            tableName: score
+  - changeSet:
+      id: 1680644880785-52
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: last_modified_by
+            newDataType: varchar(255)
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-53
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: last_modified_by
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-54
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: last_modified_date
+            newDataType: datetime
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-55
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: last_modified_date
+            newDataType: datetime
+            tableName: score
+  - changeSet:
+      id: 1680644880785-56
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: length
+            newDataType: int
+            tableName: score_instrument
+  - changeSet:
+      id: 1680644880785-57
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: name
+            newDataType: varchar(255)
+            tableName: band
+  - changeSet:
+      id: 1680644880785-58
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: name
+            newDataType: varchar(255)
+            tableName: instrument
+  - changeSet:
+      id: 1680644880785-59
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: name
+            newDataType: varchar(255)
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-60
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: name
+            newDataType: varchar(255)
+            tableName: privilege
+  - changeSet:
+      id: 1680644880785-61
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: name
+            newDataType: varchar(255)
+            tableName: role
+  - changeSet:
+      id: 1680644880785-62
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: name
+            newDataType: varchar(255)
+            tableName: setting
+  - changeSet:
+      id: 1680644880785-63
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: page
+            newDataType: int
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-64
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: page
+            newDataType: int
+            tableName: score_instrument
+  - changeSet:
+      id: 1680644880785-65
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: password
+            newDataType: varchar(255)
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-66
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: playlist_id
+            newDataType: int
+            tableName: score_playlist
+  - changeSet:
+      id: 1680644880785-67
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: presentation
+            newDataType: clob
+            tableName: score
+  - changeSet:
+      id: 1680644880785-68
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: privilege_id
+            newDataType: bigint
+            tableName: role_privilege
+  - changeSet:
+      id: 1680644880785-69
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: provider
+            newDataType: smallint
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-70
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: provider_id
+            newDataType: varchar(255)
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-71
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: publisher
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-72
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: role_id
+            newDataType: bigint
+            tableName: role_privilege
+  - changeSet:
+      id: 1680644880785-73
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: role_id
+            newDataType: bigint
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-74
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: scanned
+            newDataType: boolean
+            tableName: score
+  - changeSet:
+      id: 1680644880785-75
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: score_id
+            newDataType: int
+            tableName: score_instrument
+  - changeSet:
+      id: 1680644880785-76
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: score_type
+            newDataType: smallint
+            tableName: score
+  - changeSet:
+      id: 1680644880785-77
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: setting_id
+            newDataType: int
+            tableName: playlist
+  - changeSet:
+      id: 1680644880785-78
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: setting_id
+            newDataType: int
+            tableName: setting_instrument
+  - changeSet:
+      id: 1680644880785-79
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: short_name
+            newDataType: varchar(255)
+            tableName: instrument
+  - changeSet:
+      id: 1680644880785-80
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: sort_order
+            newDataType: int
+            tableName: instrument
+  - changeSet:
+      id: 1680644880785-81
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: sort_order
+            newDataType: int
+            tableName: score_playlist
+  - changeSet:
+      id: 1680644880785-82
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: sub_title
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-83
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: text
+            newDataType: clob
+            tableName: score
+  - changeSet:
+      id: 1680644880785-84
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: text
+            newDataType: varchar(255)
+            tableName: score_playlist
+  - changeSet:
+      id: 1680644880785-85
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: title
+            newDataType: varchar(255)
+            tableName: score
+  - changeSet:
+      id: 1680644880785-86
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: upperleft
+            newDataType: boolean
+            tableName: score
+  - changeSet:
+      id: 1680644880785-87
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: user_id
+            newDataType: bigint
+            tableName: user_band
+  - changeSet:
+      id: 1680644880785-88
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: username
+            newDataType: varchar(255)
+            tableName: user_
+  - changeSet:
+      id: 1680644880785-89
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: width
+            newDataType: int
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-90
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: width_dpi
+            newDataType: int
+            tableName: imagedata
+  - changeSet:
+      id: 1680644880785-91
+      author: marhag (generated)
+      changes:
+        - modifyDataType:
+            columnName: year_
+            newDataType: int
+            tableName: score

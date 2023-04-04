@@ -1,17 +1,14 @@
 package se.terrassorkestern.notgen.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import jakarta.persistence.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /*
  Relations:
@@ -73,10 +70,6 @@ public class Score extends Auditable<String> {
 
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScorePart> scoreParts = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "score_id")
-    private Set<Imagedata> imageData = new HashSet<>();
 
     private ScoreType scoreType;
     private Boolean scanned = true;

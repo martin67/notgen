@@ -8,21 +8,13 @@ import java.nio.file.Path;
 
 public interface BackendStorage {
 
-    Path downloadScore(Score score, Path location) throws IOException;
-
-    Path downloadScorePart(ScorePart scorePart, Path location) throws IOException;
-
-    Path downloadScorePart(Score score, Instrument instrument, Path location) throws IOException;
-
     Path downloadArrangement(Arrangement arrangement, Path location) throws IOException;
 
     Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException;
 
     boolean isScoreGenerated(Score score) throws IOException;
 
-    void uploadScore(Score score, Path path) throws IOException;
-
-    void uploadScorePart(ScorePart scorePart, Path path) throws IOException;
+    void uploadArrangement(Arrangement arrangement, Path path) throws IOException;
 
     void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException;
 
@@ -30,9 +22,7 @@ public interface BackendStorage {
 
     OutputStream getThumbnailOutputStream(Score score) throws IOException;
 
-    void deleteScore(Score score);
-
-    void deleteScoreParts(Score score) throws IOException;
+    Path renameScore(Score score, String newName) throws IOException;
 
     void cleanOutput() throws IOException;
 
@@ -46,6 +36,11 @@ public interface BackendStorage {
 
     default String getScorePartName(ScorePart scorePart) {
         return String.format("%d-%d.pdf", scorePart.getScore().getId(), scorePart.getInstrument().getId());
+    }
+
+    default String getArrangementName(Arrangement arrangement, String extension) {
+        return String.format("%d-%d.%s", arrangement.getScore().getId(),
+                arrangement.getId(), extension);
     }
 
     default String getArrangementPartName(ArrangementPart arrangementPart) {
