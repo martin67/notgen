@@ -3,6 +3,7 @@ package se.terrassorkestern.notgen.service.converter;
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StopWatch;
+import se.terrassorkestern.notgen.model.Arrangement;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
 import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
@@ -22,14 +23,14 @@ public class TryckarrOriginal implements ImageProcessor {
 
     private final Path path;
     private final Path tmpDir;
-    private final Score score;
+    private final Arrangement arrangement;
     private final StorageService storageService;
     private final boolean firstPage;
 
-    public TryckarrOriginal(Path path, Path tmpDir, Score score, StorageService storageService, boolean firstPage) {
+    public TryckarrOriginal(Path path, Path tmpDir, Arrangement arrangement, StorageService storageService, boolean firstPage) {
         this.path = path;
         this.tmpDir = tmpDir;
-        this.score = score;
+        this.arrangement = arrangement;
         this.storageService = storageService;
         this.firstPage = firstPage;
     }
@@ -37,6 +38,9 @@ public class TryckarrOriginal implements ImageProcessor {
     @Override
     public void run() {
         try {
+            // Todo fix
+            Score score = arrangement.getScore();
+
             StopWatch oneScoreWatch = new StopWatch("imageProcess " + score.getTitle());
             oneScoreWatch.start();
             StopWatch onePageWatch = new StopWatch(score.getTitle() + ", page ");
@@ -105,8 +109,9 @@ public class TryckarrOriginal implements ImageProcessor {
             //
             // Om det är ett omslag så skall det sparas en kopia separat här (innan det skalas om)
             // Spara också en thumbnail i storlek 180 bredd
+            // Gör bara detta för default arrangement
             //
-            if (firstPage && score.getCover()) {
+            if (firstPage && score.getCover() && arrangement.getScore().getDefaultArrangement() == arrangement) {
                 log.debug("Saving cover");
                 try (OutputStream outputStream = storageService.getCoverOutputStream(score)) {
                     ImageIO.write(image, "jpg", outputStream);

@@ -9,6 +9,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import se.terrassorkestern.notgen.model.ArrangementPart;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.ScorePart;
 import se.terrassorkestern.notgen.service.StorageService;
@@ -22,13 +23,13 @@ import java.util.List;
 @Slf4j
 public class PdfAssembler implements Runnable {
 
-    private final ScorePart scorePart;
+    private final ArrangementPart arrangementPart;
     private final Path tmpDir;
     private final StorageService storageService;
     private final List<Path> extractedFilesList;
 
-    public PdfAssembler(ScorePart scorePart, Path tmpDir, StorageService storageService, List<Path> extractedFilesList) {
-        this.scorePart = scorePart;
+    public PdfAssembler(ArrangementPart arrangementPart, Path tmpDir, StorageService storageService, List<Path> extractedFilesList) {
+        this.arrangementPart = arrangementPart;
         this.tmpDir = tmpDir;
         this.storageService = storageService;
         this.extractedFilesList = extractedFilesList;
@@ -36,24 +37,24 @@ public class PdfAssembler implements Runnable {
 
     @Override
     public void run() {
-        Score score = scorePart.getScore();
+        Score score = arrangementPart.getArrangement().getScore();
         Path path = Path.of(tmpDir.toString(), Files.getNameWithoutExtension(score.getFilename()).substring(7)
-                + " - " + scorePart.getInstrument().getName() + ".pdf");
-        log.debug("Creating separate score ({}) {}", scorePart.getLength(), path);
+                + " - " + arrangementPart.getInstrument().getName() + ".pdf");
+        log.debug("Creating separate score ({}) {}", arrangementPart.getLength(), path);
 
         try (PDDocument doc = new PDDocument()) {
             PDDocumentInformation pdd = doc.getDocumentInformation();
             pdd.setAuthor(score.getComposer());
             pdd.setTitle(score.getTitle());
             pdd.setSubject(score.getGenre());
-            String keywords = scorePart.getInstrument().getName();
+            String keywords = arrangementPart.getInstrument().getName();
             keywords += (score.getArranger() == null) ? "" : ", " + score.getArranger();
             keywords += (score.getYear() == null || score.getYear() == 0) ? "" : ", " + score.getYear();
             pdd.setKeywords(keywords);
             pdd.setCustomMetadataValue("Musik", score.getComposer());
             pdd.setCustomMetadataValue("Text", score.getAuthor());
             pdd.setCustomMetadataValue("Arrangemang", score.getArranger());
-            pdd.setCustomMetadataValue("Instrument", scorePart.getInstrument().getName());
+            pdd.setCustomMetadataValue("Instrument", arrangementPart.getInstrument().getName());
             if (score.getYear() != null && score.getYear() > 0) {
                 pdd.setCustomMetadataValue("År", score.getYear().toString());
             } else {
@@ -63,7 +64,7 @@ public class PdfAssembler implements Runnable {
             pdd.setCreator("Terrassorkesterns notgenerator 3.0");
             pdd.setModificationDate(Calendar.getInstance());
 
-            for (int i = scorePart.getPage(); i < (scorePart.getPage() + scorePart.getLength()); i++) {
+            for (int i = arrangementPart.getPage(); i < (arrangementPart.getPage() + arrangementPart.getLength()); i++) {
                 PDPage page = new PDPage(PDRectangle.A4);
                 doc.addPage(page);
                 // Logic: PDF will be extracted to jpg-files
@@ -91,7 +92,7 @@ public class PdfAssembler implements Runnable {
             }
             doc.save(path.toFile());
             log.debug("Saving: {}", path);
-            storageService.uploadScorePart(scorePart, path);
+            storageService.uploadArrangementPart(arrangementPart, path);
 
         } catch (IOException e) {
             log.error("Ooopsie", e);

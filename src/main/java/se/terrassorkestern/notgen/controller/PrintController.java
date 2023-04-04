@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
-import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
 import se.terrassorkestern.notgen.service.ConverterService;
@@ -79,6 +78,44 @@ public class PrintController extends CommonController {
         Instrument instrument = getInstrument(instrumentId);
 
         try (InputStream is = converterService.assemble(score, instrument)) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), instrument.getShortName()));
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(new InputStreamResource(is));
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        } catch (InterruptedException e) {
+            log.error("Interrupted", e);
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
+    }
+
+    @GetMapping(value = "/arrangement", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> printArrangement(@RequestParam(name = "score_id") int scoreId,
+                                                                @RequestParam(name = "arrangement_id", defaultValue = "-1") int arrangementId,
+                                                                @RequestParam(name = "instrument_id") int instrumentId) {
+        Score score = scoreRepository.findById(scoreId).orElseThrow();
+        Instrument instrument = getInstrument(instrumentId);
+        Arrangement arrangement = null;
+        if (arrangementId == -1) {
+            arrangement = score.getDefaultArrangement();
+        } else {
+            for (Arrangement arr : score.getArrangements()) {
+                if (arrangementId == arr.getId()) {
+                    arrangement = arr;
+                }
+            }
+        }
+        if (arrangement == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        try (InputStream is = converterService.assemble(arrangement, instrument)) {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), instrument.getShortName()));
             return ResponseEntity

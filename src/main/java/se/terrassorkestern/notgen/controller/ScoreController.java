@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
@@ -90,6 +91,14 @@ public class ScoreController extends CommonController {
         }
         model.addAttribute("score", score);
         model.addAttribute("allInstruments", getInstruments());
+        return "score/edit";
+    }
+
+    @PostMapping("/upload")
+    public String upload(@Valid @ModelAttribute Score score, @RequestPart("file") MultipartFile file, @RequestPart("arr_id") Integer id) {
+        log.info("upload: {}, score id: {}", file.getOriginalFilename(), score.getId());
+
+        //storageService.uploadArrangement();
         return "score/edit";
     }
 

@@ -1,17 +1,23 @@
 package se.terrassorkestern.notgen.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import jakarta.persistence.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+/*
+ Relations:
+
+   Score - Arrangement - ArrangementPart - Instrument
+              arranger       page
+              comment        length
+                             comment
+ */
 
 @Entity
 @Indexed
@@ -32,7 +38,7 @@ public class Score extends Auditable<String> {
     private String title;
     @FullTextField(analyzer = "swedish")
     private String subTitle;
-    @NotBlank(message = "Genre måste anges")
+    //@NotBlank(message = "Genre måste anges")
     @FullTextField(analyzer = "swedish")
     private String genre = "Foxtrot";
     @FullTextField(analyzer = "swedish")
@@ -57,11 +63,13 @@ public class Score extends Auditable<String> {
     private String presentation;
 
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ScorePart> scoreParts = new ArrayList<>();
+    private List<Arrangement> arrangements = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "score_id")
-    private Set<Imagedata> imageData = new HashSet<>();
+    @OneToOne
+    private Arrangement defaultArrangement;
+
+    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ScorePart> scoreParts = new ArrayList<>();
 
     private ScoreType scoreType;
     private Boolean scanned = true;
@@ -81,6 +89,11 @@ public class Score extends Auditable<String> {
             result.add(scorePart.getInstrument());
         }
         return result;
+    }
+
+    public void addArrangement(Arrangement arrangement) {
+        arrangement.setScore(this);
+        arrangements.add(arrangement);
     }
 
     public String getThumbnailPath() {

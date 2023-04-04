@@ -20,6 +20,7 @@ import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.SongOcrService;
+import se.terrassorkestern.notgen.service.StorageService;
 import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
 import se.terrassorkestern.notgen.user.CustomOidcUserService;
 
@@ -52,6 +53,8 @@ class ScoreControllerTest {
     private ConverterService converterService;
     @MockBean
     private SongOcrService songOcrService;
+    @MockBean
+    private StorageService storageService;
 
     @MockBean
     private ActiveBand activeBand;

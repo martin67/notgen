@@ -27,77 +27,113 @@
 
     <div class="row mb-3 border p-2">
         <div class="col">
-            <table class="table table-sm table-borderless">
-                <tbody>
-                <tr th:if="${score.title}" th:unless="${score.title.isEmpty()}">
-                    <td>Titel</td>
-                    <td th:text="${score.title}"/>
-                </tr>
-                <tr th:if="${score.subTitle}" th:unless="${score.subTitle.isEmpty()}">
-                    <td>Subtitel</td>
-                    <td th:text="${score.subTitle}"/>
-                </tr>
-                <tr th:if="${score.genre}" th:unless="${score.genre.isEmpty()}">
-                    <td>Genre</td>
-                    <td th:text="${score.genre}"/>
-                </tr>
-                <tr th:if="${score.year}">
-                    <td>År</td>
-                    <td th:text="${score.year}"/>
-                </tr>
-                <tr th:if="${score.composer}" th:unless="${score.composer.isEmpty()}">
-                    <td>Kompositör</td>
-                    <td th:text="${score.composer}"/>
-                </tr>
-                <tr th:if="${score.author}" th:unless="${score.author.isEmpty()}">
-                    <td>Författare</td>
-                    <td th:text="${score.author}"/>
-                </tr>
-                <tr th:if="${score.arranger}" th:unless="${score.arranger.isEmpty()}">
-                    <td>Arrangör</td>
-                    <td th:text="${score.arranger}"/>
-                </tr>
-                <tr th:if="${score.publisher}" th:unless="${score.publisher.isEmpty()}">
-                    <td>Förlag</td>
-                    <td th:text="${score.publisher}"/>
-                </tr>
-                <tr th:if="${score.comment}" th:unless="${score.comment.isEmpty()}">
-                    <td>Kommentar</td>
-                    <td th:text="${score.comment}"/>
-                </tr>
-                <tr th:if="${score.internalComment}" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')"
-                    th:unless="${score.internalComment.isEmpty()}">
-                    <td></td>
-                </tr>
-                <tr th:if="${score.internalComment}" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')"
-                    th:unless="${score.internalComment.isEmpty()}">
-                    <td class="text-danger">Intern kommentar</td>
-                    <td th:text="${score.internalComment}"/>
-                </tr>
-                </tbody>
-            </table>
+            <div class="row">
+                <div class="row" th:if="${score.title}" th:unless="${score.title.isEmpty()}">
+                    <div class="col">Titel</div>
+                    <div class="col" th:text="${score.title}"/>
+                </div>
+                <div class="row" th:if="${score.subTitle}" th:unless="${score.subTitle.isEmpty()}">
+                    <div class="col">Subtitel</div>
+                    <div class="col" th:text="${score.subTitle}"/>
+                </div>
+                <div class="row" th:if="${score.genre}" th:unless="${score.genre.isEmpty()}">
+                    <div class="col">Genre</div>
+                    <div class="col" th:text="${score.genre}"/>
+                </div>
+                <div class="row" th:if="${score.year}">
+                    <div class="col">År</div>
+                    <div class="col" th:text="${score.year}"/>
+                </div>
+                <div class="row" th:if="${score.composer}" th:unless="${score.composer.isEmpty()}">
+                    <div class="col">Kompositör</div>
+                    <div class="col" th:text="${score.composer}"/>
+                </div>
+                <div class="row" th:if="${score.author}" th:unless="${score.author.isEmpty()}">
+                    <div class="col">Författare</div>
+                    <div class="col" th:text="${score.author}"/>
+                </div>
+                <div class="row" th:if="${score.arranger}" th:unless="${score.arranger.isEmpty()}">
+                    <div class="col">Arrangör</div>
+                    <div class="col" th:text="${score.arranger}"/>
+                </div>
+                <div class="row" th:if="${score.publisher}" th:unless="${score.publisher.isEmpty()}">
+                    <div class="col">Förlag</div>
+                    <div class="col" th:text="${score.publisher}"/>
+                </div>
+                <div class="row" th:if="${score.comment}" th:unless="${score.comment.isEmpty()}">
+                    <div class="col">Kommentar</div>
+                    <div class="col" th:text="${score.comment}"/>
+                </div>
+                <div class="row" th:if="${score.internalComment}"
+                     sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')"
+                     th:unless="${score.internalComment.isEmpty()}">
+                </div>
+                <div class="row" th:if="${score.internalComment}"
+                     sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')"
+                     th:unless="${score.internalComment.isEmpty()}">
+                    <div class="col"> class="text-danger">Intern kommentar</div>
+                    <div class="col" th:text="${score.internalComment}"/>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="row mb-3 border pt-2 px-2" th:unless="${score.scoreParts.isEmpty()}">
-        <div class="col">
-            <h3>Sättning</h3>
+    <div class="row mb-3 border pt-2 px-2"
+         th:unless="${score.getArrangements().isEmpty()}">
+        <h3>Sättning</h3>
+        <div th:if="${score.getArrangements().size() == 1}">
             <table class="table table-sm table-borderless table-striped table-hover">
                 <tbody>
-                <tr th:each="scorePart : ${score.scoreParts}"
-                    th:data-link="@{/print/getscorepart(instrument_id=${scorePart.instrument.id},score_id=${score.id})}">
-                    <td th:text="${scorePart.instrument.name}"/>
-                    <td th:text="${scorePart.comment}"/>
+                <tr th:each="arrPart : ${score.getArrangements().get(0).getArrangementParts()}"
+                    th:data-link="@{/print/getscorepart(instrument_id=${arrPart.instrument.id},score_id=${score.id})}">
+                    <td th:text="${arrPart.instrument.name}"/>
+                    <td th:text="${arrPart.comment}"/>
                 </tr>
                 </tbody>
             </table>
         </div>
+
+        <div th:if="${score.getArrangements().size() > 1}">
+            <ul class="nav nav-tabs" id="arrTabs" role="tablist">
+                <li class="nav-item" role="presentation"
+                    th:each="arr, i : ${score.getArrangements()}">
+                    <button class="nav-link" th:classappend="${i.index == 0} ? 'active'"
+                            th:id="'tab-' + ${arr.getId()}" data-bs-toggle="tab"
+                            th:data-bs-target="'#pane-' + ${arr.getId()}"
+                            type="button" role="tab"
+                            th:aria-controls="'tab-pane-' + ${arr.getId()}"
+                            th:aria-selected="${i.index == 0} ? 'true' : 'false'"
+                            th:text="${arr.getName()}">
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="arrContent">
+                <div class="tab-pane" th:classappend="${i.index == 0} ? 'show active'"
+                     th:id="'pane-' + ${arr.getId()}" role="tabpanel"
+                     th:aria-labelledby="'tab-' + ${arr.getId()}"
+                     th:each="arr, i : ${score.getArrangements()}">
+                    <div class="alert alert-info" th:text="${arr.getComment()}"
+                         th:if="${arr.getComment()}"/>
+                    <table class="table table-sm table-borderless table-striped table-hover">
+                        <tbody>
+                        <tr th:each="arrPart : ${arr.getArrangementParts()}"
+                            th:data-link="@{/print/arrangement(score_id=${score.id},arrangement_id=${arr.getId()},instrument_id=${arrPart.instrument.id})}">
+                            <td th:text="${arrPart.instrument.name}"/>
+                            <td th:text="${arrPart.comment}"/>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="row mb-3 border p-2" th:if="${score.text}" th:unless="${score.text.isEmpty()}">
+    <div class="row mb-3 border p-2" th:if="${score.text}"
+         th:unless="${score.text.isEmpty()}">
         <div class="col">
             <h3>Text</h3>
-            <div class="height-auto overflow-auto" style="white-space:pre" th:text="${score.text}"/>
+            <div class="height-auto overflow-auto" style="white-space:pre"
+                 th:text="${score.text}"/>
         </div>
     </div>
 
@@ -105,38 +141,46 @@
         <h3>Detaljer</h3>
         <div class="col">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="scanned" th:checked="${score.scanned}"
+                <input class="form-check-input" type="checkbox" id="scanned"
+                       th:checked="${score.scanned}"
                        onclick="return false;">
                 <label class="form-check-label" for="scanned">Inscannad</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="imageProcess" th:checked="${score.imageProcess}"
+                <input class="form-check-input" type="checkbox" id="imageProcess"
+                       th:checked="${score.imageProcess}"
                        onclick="return false;">
                 <label class="form-check-label" for="imageProcess">Bildbehandlas</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="upperleft" th:checked="${score.upperleft}"
+                <input class="form-check-input" type="checkbox" id="upperleft"
+                       th:checked="${score.upperleft}"
                        onclick="return false;">
                 <label class="form-check-label" for="upperleft">Linjerad i hörn</label>
             </div>
-            Bildbehandling: <span th:text="${score.scoreType}?  ' [' + ${score.scoreType.getShortDescription()} + ']'"/>
+            Bildbehandling: <span
+                th:text="${score.scoreType}?  ' [' + ${score.scoreType.getShortDescription()} + ']'"/>
             <br>
         </div>
         <div class="col">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="cover" th:checked="${score.cover}"
+                <input class="form-check-input" type="checkbox" id="cover"
+                       th:checked="${score.cover}"
                        onclick="return false;">
                 <label class="form-check-label" for="cover">Omslag</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="color" th:checked="${score.color}"
+                <input class="form-check-input" type="checkbox" id="color"
+                       th:checked="${score.color}"
                        onclick="return false;">
                 <label class="form-check-label" for="color">Omslag i färg</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="archived" th:checked="${score.archived}"
+                <input class="form-check-input" type="checkbox" id="archived"
+                       th:checked="${score.archived}"
                        onclick="return false;">
-                <label class="form-check-label" for="archived">Original i arkivet</label>
+                <label class="form-check-label" for="archived">Original i
+                    arkivet</label>
                 <span th:text="${score.archived}?  ' [' + ${score.archiveLocation} + ']'"/>
             </div>
         </div>
@@ -149,8 +193,11 @@
         <div class="col-auto" sec:authorize="hasAuthority('PRINT_SCORE')">
             <div class="input-group">
                 <a class="btn btn-primary" id="print-button">Skriv ut</a>
-                <select class="form-select form-select-sm" id="setting" onchange="setPrintButton()">
-                    <option th:each="setting : ${settings}" th:value="${setting.id}" th:text="${setting.name}">bla
+                <select class="form-select form-select-sm" id="setting"
+                        onchange="setPrintButton()">
+                    <option th:each="setting : ${settings}" th:value="${setting.id}"
+                            th:text="${setting.name}">
+                        bla
                     </option>
                 </select>
             </div>

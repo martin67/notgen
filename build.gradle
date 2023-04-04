@@ -101,9 +101,9 @@ dependencies {
     liquibase {
         activities {
             main {
-                changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
-                defaultSchemaName "dbo"
-                referenceUrl "hibernate:spring:se.terrassorkestern.notgen.model?dialect=org.hibernate.dialect.SQLServerDialect&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
+                changelogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+                defaultSchemaName 'dbo'
+                referenceUrl 'hibernate:spring:se.terrassorkestern.notgen.model?dialect=org.hibernate.dialect.SQLServerDialect&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy'
                 url System.getenv("SPRING_DATASOURCE_URL")
                 username System.getenv("SPRING_DATASOURCE_USERNAME")
                 password System.getenv("SPRING_DATASOURCE_PASSWORD")

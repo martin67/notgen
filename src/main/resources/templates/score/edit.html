@@ -108,75 +108,172 @@
             <label for="comment">Kommentar</label>
         </div>
 
-        <div class="form-row">
+        <div class="form-row mb-3 border pt-2 px-2">
             <div class="form-group col">
-                <h3><label>Sättning</label></h3>
-                <table class="table table-bordered table-sm">
-                    <thead>
-                    <tr>
-                        <th scope="col" style="width:10%">Instrument</th>
-                        <th scope="col" style="width:10%">Placering</th>
-                        <th scope="col" style="width:10%">Antal</th>
-                        <th scope="col" style="width:55%">Kommentar</th>
-                        <th scope="col" style="width:15%">
-                            <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-primary btn-sm"
-                                    type="submit"
-                                    name="addRow">Lägg till
-                            </button>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="scorePart,rowStat : ${score.scoreParts}">
-                        <td class="align-middle">
-                            <select th:field="*{scoreParts[__${rowStat.index}__].instrument.id}">
-                                <option th:each="i2 : ${allInstruments}" th:value="${i2.id}" th:text="${i2.name}">
-                                    bla
-                                </option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="number" class="form-control form-control-sm"
-                                   th:field="*{scoreParts[__${rowStat.index}__].page}"
-                                   th:value="${scorePart.page}"/>
-                        </td>
-                        <td>
-                            <input type="number" class="form-control form-control-sm"
-                                   th:field="*{scoreParts[__${rowStat.index}__].length}"
-                                   th:value="${scorePart.length}"/>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm"
-                                   th:field="*{scoreParts[__${rowStat.index}__].comment}"
-                                   th:value="${scorePart.comment}"/>
-                        </td>
+                <h3>Arrangemang</h3>
 
-                        <td class="align-middle">
-                            <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-sm btn-danger"
-                                    type="submit"
-                                    name="deleteRow" th:value="${rowStat.index}">Ta bort
+                <div th:if="${score.getArrangements().size() == 1}">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                        <tr>
+                            <th scope="col" style="width:10%">Instrument</th>
+                            <th scope="col" style="width:10%">Placering</th>
+                            <th scope="col" style="width:10%">Antal</th>
+                            <th scope="col" style="width:55%">Kommentar</th>
+                            <th scope="col" style="width:15%">
+                                <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-primary btn-sm"
+                                        type="submit"
+                                        name="addRow">Lägg till
+                                </button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="scorePart,rowStat : ${score.scoreParts}">
+                            <td class="align-middle">
+                                <select th:field="*{scoreParts[__${rowStat.index}__].instrument.id}">
+                                    <option th:each="i2 : ${allInstruments}" th:value="${i2.id}" th:text="${i2.name}">
+                                        bla
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" class="form-control form-control-sm"
+                                       th:field="*{scoreParts[__${rowStat.index}__].page}"
+                                       th:value="${scorePart.page}"/>
+                            </td>
+                            <td>
+                                <input type="number" class="form-control form-control-sm"
+                                       th:field="*{scoreParts[__${rowStat.index}__].length}"
+                                       th:value="${scorePart.length}"/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm"
+                                       th:field="*{scoreParts[__${rowStat.index}__].comment}"
+                                       th:value="${scorePart.comment}"/>
+                            </td>
+
+                            <td class="align-middle">
+                                <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-sm btn-danger"
+                                        type="submit"
+                                        name="deleteRow" th:value="${rowStat.index}">Ta bort
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div th:if="${score.getArrangements().size() > 1}">
+                    <ul class="nav nav-tabs" id="arrTabs" role="tablist">
+                        <li class="nav-item" role="presentation"
+                            th:each="arr, i : ${score.getArrangements()}">
+                            <button class="nav-link" th:classappend="${i.index == 0} ? 'active'"
+                                    th:id="'tab-' + ${arr.getId()}" data-bs-toggle="tab"
+                                    th:data-bs-target="'#pane-' + ${arr.getId()}"
+                                    type="button" role="tab"
+                                    th:aria-controls="'tab-pane-' + ${arr.getId()}"
+                                    th:aria-selected="${i.index == 0} ? 'true' : 'false'"
+                                    th:text="${arr.getName()}">
                             </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="arrContent">
+                        <div class="tab-pane" th:classappend="${arrStat.index == 0} ? 'show active'"
+                             th:id="'pane-' + ${arr.getId()}" role="tabpanel"
+                             th:aria-labelledby="'tab-' + ${arr.getId()}"
+                             th:each="arr, arrStat : ${score.getArrangements()}">
+                            <div class="alert alert-info" th:text="${arr.getComment()}"
+                                 th:if="${arr.getComment()}"/>
+                            <div class="row">
+                                <div class="col"><b>Instrument</b></div>
+                                <div class="col"><b>Placering</b></div>
+                                <div class="col"><b>Antal</b></div>
+                                <div class="col"><b>Kommentar</b></div>
+                                <div class="col">
+                                    <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-primary btn-sm"
+                                            type="submit"
+                                            name="addRow">Lägg till
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="row mb-1" th:each="arrPart,rowStat : ${arr.getArrangementParts()}">
+                                <div class="col">
+                                    <select th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].instrument.id}">
+                                        <option th:each="i2 : ${allInstruments}" th:value="${i2.id}"
+                                                th:text="${i2.name}">
+                                            bla
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <input type="number" class="form-control form-control-sm"
+                                           th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].page}"
+                                           th:value="${arrPart.page}"/>
+                                </div>
+                                <div class="col">
+                                    <input type="number" class="form-control form-control-sm"
+                                           th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].length}"
+                                           th:value="${arrPart.length}"/>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control form-control-sm"
+                                           th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].comment}"
+                                           th:value="${arrPart.comment}"/>
+                                </div>
+
+                                <div class="col">
+                                    <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-sm btn-danger"
+                                            type="submit"
+                                            name="deleteRow" th:value="${rowStat.index}">Ta bort
+                                    </button>
+                                </div>
+                            </div>
+                            <hr>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-primary">Lägg till arr</button>
+                                <button type="button" class="btn btn-sm btn-primary">Ta bort arr</button>
+                                <button type="button" class="btn btn-sm btn-primary"
+                                        th:disabled="${score.getDefaultArrangement().getId() == arr.getId()}">Sätt som standard
+                                </button>
+                                <form
+                                        id="uploadForm"
+                                        method="post"
+                                        th:action="@{upload}"
+                                        enctype="multipart/form-data">
+                                    <input id="input-file" type="file" name="file" />
+                                    <input id="arr_id" type="hidden" th:value="${arr.getId()}"/>
+                                    <button class="btn btn-sm btn-outline-success float-right" type="submit">
+                                        Upload
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="form-row mb-1">
-            <label for="songtext" class="form-label">Sångtext</label>
-            <textarea class="form-control" rows="10" id="songtext" th:field="*{text}"
-                      th:value="${score.text}"></textarea>
-        </div>
-        <div class="form-row mb-3">
-            <button type="button" class="btn btn-primary" th:disabled="${doSongOcr}? ${!doSongOcr} : true"
-                    th:onclick="'doOCR(' + ${score.id} + ')'" id="ocr-button">
-                OCR
-            </button>
-            <button type="button" class="btn btn-primary d-none" id="ocr-button-loading" disabled>
-                <span class="spinner-border spinner-border-sm" role="status"></span>
-                Processing ...
-            </button>
+        <div class="form-row mb-3 border pt-2 px-2">
+            <div class="form-group col">
+                <h3>Sångtext</h3>
+                <div class="form-row mb-1">
+                    <textarea class="form-control" rows="10" id="songtext" th:field="*{text}"
+                              th:value="${score.text}"></textarea>
+                </div>
+
+                <div class="form-row mb-1">
+                    <button type="button" class="btn btn-primary" th:disabled="${doSongOcr}? ${!doSongOcr} : true"
+                            th:onclick="'doOCR(' + ${score.id} + ')'" id="ocr-button">
+                        OCR
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary d-none" id="ocr-button-loading" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        Processing ...
+                    </button>
+                </div>
+            </div>
         </div>
 
         <h3>Detaljer</h3>
@@ -230,7 +327,8 @@
                     <div class="form-group row">
                         <label for="archiveLocation" class="col-sm-6 col-form-label">Arkivplats</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="archiveLocation" th:field="*{archiveLocation}"
+                            <input type="text" class="form-control" id="archiveLocation"
+                                   th:field="*{archiveLocation}"
                                    th:value="${score.archiveLocation}"/>
                         </div>
                     </div>
