@@ -251,14 +251,6 @@ databaseChangeLog:
             newDataType: int
             tableName: setting
   - changeSet:
-      id: 1680644880785-9
-      author: marhag (generated)
-      changes:
-        - modifyDataType:
-            columnName: band_id
-            newDataType: int
-            tableName: user_band
-  - changeSet:
       id: 1680644880785-10
       author: marhag (generated)
       changes:
