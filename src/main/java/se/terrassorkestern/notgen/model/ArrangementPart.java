@@ -31,6 +31,12 @@ public class ArrangementPart {
     public ArrangementPart() {
     }
 
+    public ArrangementPart(Arrangement arrangement, Instrument instrument) {
+        this.arrangement = arrangement;
+        this.instrument = instrument;
+        this.id = new ArrangementPartId(arrangement.getId(), instrument.getId());
+    }
+
     public ArrangementPart(ScorePart scorePart) {
         this.instrument = scorePart.getInstrument();
         this.page = scorePart.getPage();

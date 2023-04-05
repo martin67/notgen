@@ -71,8 +71,3 @@ notgen:
   folders:
     # Static content such as thumbnails and folders are stored here
     static: /var/lib/notgen/static
-
-logging:
-  level:
-    se.terrassorkestern.notgen: DEBUG
-    org.hibernate.SQL: DEBUG

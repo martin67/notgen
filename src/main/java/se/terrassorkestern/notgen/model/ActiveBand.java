@@ -22,11 +22,8 @@ public class ActiveBand {
     }
 
     public Band getBand() {
-        log.info("getBand");
         if (band == null) {
-            log.info("start getBand");
             band = bandRepository.findById(1).orElseThrow();
-            log.info("stop getBand");
         }
         return band;
     }
