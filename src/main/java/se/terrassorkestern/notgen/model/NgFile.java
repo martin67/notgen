@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "file")
+@Table(name = "ngfile")
 public class NgFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
