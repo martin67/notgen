@@ -19,7 +19,6 @@ import se.terrassorkestern.notgen.service.ConverterService;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j

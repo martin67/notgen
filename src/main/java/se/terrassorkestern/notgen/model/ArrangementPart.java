@@ -37,13 +37,6 @@ public class ArrangementPart {
         this.id = new ArrangementPartId(arrangement.getId(), instrument.getId());
     }
 
-    public ArrangementPart(ScorePart scorePart) {
-        this.instrument = scorePart.getInstrument();
-        this.page = scorePart.getPage();
-        this.length = scorePart.getLength();
-        this.comment = scorePart.getComment();
-    }
-
     @Override
     public String toString() {
         return "ArrangementPart{"
