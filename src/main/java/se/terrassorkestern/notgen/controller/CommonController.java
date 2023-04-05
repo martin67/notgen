@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +13,7 @@ import se.terrassorkestern.notgen.repository.SettingRepository;
 
 import java.util.List;
 
+@Slf4j
 public class CommonController {
 
     @Autowired
@@ -115,11 +117,16 @@ public class CommonController {
     }
 
     List<Score> getScores() {
+        log.info("getScores start");
         List<Score> scores;
         if (isSuperAdmin()) {
+            log.info("getScores start findByOrderByTitle");
             scores = scoreRepository.findByOrderByTitle();
+            log.info("getScores stop findByOrderByTitle");
         } else {
+            log.info("getScores start findByBandOrderByTitleAsc");
             scores = scoreRepository.findByBandOrderByTitleAsc(activeBand.getBand());
+            log.info("getScores stop findByBandOrderByTitleAsc");
         }
         return scores;
     }
