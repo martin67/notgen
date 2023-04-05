@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
-import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.model.Arrangement;
+import se.terrassorkestern.notgen.model.ArrangementPart;
+import se.terrassorkestern.notgen.model.Instrument;
+import se.terrassorkestern.notgen.model.Score;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,13 +56,17 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public boolean isScoreGenerated(Score score) {
-        boolean allFilesExist = true;
-        for (ScorePart scorePart : score.getScoreParts()) {
-            if (!Files.exists(outputDir.resolve(String.valueOf(scorePart.getScore().getId())).resolve(getScorePartName(scorePart)))) {
-                allFilesExist = false;
+        // check that all arrangements are generated
+        boolean allGenerated = true;
+
+        for (Arrangement arrangement : score.getArrangements()) {
+            for (ArrangementPart arrangementPart : arrangement.getArrangementParts()) {
+                if (!Files.exists(outputDir.resolve(String.valueOf(score.getId())).resolve(getArrangementPartName(arrangementPart)))) {
+                    allGenerated = false;
+                }
             }
         }
-        return allFilesExist;
+        return allGenerated;
     }
 
     @Override

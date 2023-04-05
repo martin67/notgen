@@ -80,10 +80,18 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public boolean isScoreGenerated(Score score) throws IOException {
-        String pattern = String.format("%d-*.pdf", score.getId());
-        Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, pattern));
-        // Just check that there are equal number of files as there should be score parts.
-        return (resources.length == score.getScoreParts().size());
+        // check that all arrangements are generated
+        boolean allGenerated = true;
+
+        for (Arrangement arrangement : score.getArrangements()) {
+            String pattern = String.format("%d-%d-*.pdf", score.getId(), arrangement.getId());
+            Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, pattern));
+            // Just check that there are equal number of files as there should be score parts.
+            if (resources.length != arrangement.getArrangementParts().size()) {
+                allGenerated = false;
+            }
+        }
+        return allGenerated;
     }
 
     public void uploadScore(Score score, Path path) throws IOException {
