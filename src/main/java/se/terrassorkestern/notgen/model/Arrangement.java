@@ -19,7 +19,7 @@ public class Arrangement {
     private String name;
     @Lob
     private String comment;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private NgFile file;
     @ManyToOne
     private Score score;
