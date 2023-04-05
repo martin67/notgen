@@ -30,7 +30,8 @@ public class ScoreUpdater {
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) throws IOException {
         log.info("********* Score updater");
-
+        if (true)
+            return;
         for (Score score : scoreRepository.findAll()) {
             if (score.getArrangements().isEmpty() && score.getScanned()) {
                 log.info("Fixing arrangements for {} ({})", score.getTitle(), score.getId());
