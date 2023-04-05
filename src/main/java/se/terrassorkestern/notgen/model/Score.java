@@ -65,7 +65,7 @@ public class Score extends Auditable<String> {
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Arrangement> arrangements = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Arrangement defaultArrangement;
 
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
