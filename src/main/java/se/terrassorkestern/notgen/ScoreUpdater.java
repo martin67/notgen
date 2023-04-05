@@ -31,12 +31,7 @@ public class ScoreUpdater {
     public void onApplicationEvent(ContextRefreshedEvent event) throws IOException {
         log.info("********* Score updater");
 
-        int i = 0;
         for (Score score : scoreRepository.findAll()) {
-            i++;
-            if (i> 10) {
-                return;
-            }
             if (score.getArrangements().isEmpty() && score.getScanned()) {
                 log.info("Fixing arrangements for {} ({})", score.getTitle(), score.getId());
                 Arrangement arrangement = new Arrangement();
