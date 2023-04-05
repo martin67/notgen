@@ -19,6 +19,8 @@ import se.terrassorkestern.notgen.service.ConverterService;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -50,7 +52,10 @@ public class PrintController extends CommonController {
         } else {
             instrument = getInstrument(id);
         }
-        model.addAttribute("scores", scoreRepository.findByScorePartsInstrumentOrderByTitle(instrument));
+
+        List<Score> scores = scoreRepository.findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(instrument);
+
+        model.addAttribute("scores", scores);
         model.addAttribute("instruments", getInstruments());
         model.addAttribute("selectedInstrument", id);
         return "printInstrument";
@@ -65,7 +70,10 @@ public class PrintController extends CommonController {
         } else {
             setting = getSetting(id);
         }
-        model.addAttribute("scores", scoreRepository.findDistinctByScoreParts_InstrumentInOrderByTitleAsc(setting.getInstruments()));
+
+        List<Score> scores = scoreRepository.findByDefaultArrangement_ArrangementParts_InstrumentInOrderByTitleAsc(setting.getInstruments());
+
+        model.addAttribute("scores", scores);
         model.addAttribute("settings", getSettings());
         model.addAttribute("selectedSetting", id);
         return "printSetting";

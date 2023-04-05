@@ -28,13 +28,13 @@ public interface ScoreRepository extends SearchRepository<Score, Integer> {
 
     List<Score> findByOrderByTitle();
 
+    List<Score> findByDefaultArrangement_ArrangementParts_InstrumentInOrderByTitleAsc(Collection<Instrument> instruments);
+
+    List<Score> findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(Instrument instrument);
+
     List<Score> findByIdInOrderByTitle(List<Integer> id);
 
     List<Score> findByIdGreaterThan(int id);
-
-    List<Score> findByScorePartsInstrumentOrderByTitle(Instrument instrument);
-
-    List<Score> findDistinctByScoreParts_InstrumentInOrderByTitleAsc(Collection<Instrument> instruments);
 
     List<Score> findByScannedFalseOrderByTitle();
 
