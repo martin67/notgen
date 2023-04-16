@@ -69,9 +69,6 @@ public class Score extends Auditable<String> {
     @OneToOne(fetch = FetchType.LAZY)
     private Arrangement defaultArrangement;
 
-    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ScorePart> scoreParts = new ArrayList<>();
-
     @OneToMany(cascade = CascadeType.ALL)
     private List<NgFile> files = new ArrayList<>();
 
@@ -87,13 +84,13 @@ public class Score extends Auditable<String> {
 
     private String filename;
 
-    public List<Instrument> getInstruments() {
-        List<Instrument> result = new ArrayList<>();
-        for (ScorePart scorePart : scoreParts) {
-            result.add(scorePart.getInstrument());
-        }
-        return result;
-    }
+//    public List<Instrument> getInstruments() {
+//        List<Instrument> result = new ArrayList<>();
+//        for (ScorePart scorePart : scoreParts) {
+//            result.add(scorePart.getInstrument());
+//        }
+//        return result;
+//    }
 
     public void addArrangement(Arrangement arrangement) {
         arrangement.setScore(this);

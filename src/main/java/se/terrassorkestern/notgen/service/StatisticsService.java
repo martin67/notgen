@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import se.terrassorkestern.notgen.model.Arrangement;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.Statistics;
@@ -81,6 +82,7 @@ public class StatisticsService {
 
         try (CSVPrinter csvPrinter = new CSVPrinter(writer, format)) {
             for (Score score : scores) {
+                Arrangement arrangement = score.getDefaultArrangement();
                 List<String> values = new ArrayList<>();
                 values.add(score.getTitle());
                 values.add(score.getSubTitle());
@@ -92,7 +94,7 @@ public class StatisticsService {
                 values.add(score.getPublisher());
                 values.add(score.getComment());
                 for (Instrument instrument : allInstruments) {
-                    if (score.getInstruments().contains(instrument)) {
+                    if (arrangement.getInstruments().contains(instrument)) {
                         values.add("X");
                     } else {
                         values.add("");

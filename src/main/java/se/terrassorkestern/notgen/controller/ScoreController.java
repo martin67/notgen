@@ -3,6 +3,7 @@ package se.terrassorkestern.notgen.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ContentDisposition;
@@ -75,11 +76,12 @@ public class ScoreController extends CommonController {
     @GetMapping("/edit")
     public String edit(@RequestParam("id") Integer id, Model model) {
         Score score = getScore(id);
+        Arrangement arrangement = score.getDefaultArrangement();
         model.addAttribute("score", score);
         // Check if the score has a song instrument. Only one for now
         if (enableOcr) {
             int songId = Integer.parseInt(ocrSongIds);
-            if (score.getInstruments().stream().anyMatch(instrument -> instrument.getId() == songId)) {
+            if (arrangement.getInstruments().stream().anyMatch(instrument -> instrument.getId() == songId)) {
                 model.addAttribute("doSongOcr", "true");
             } else {
                 model.addAttribute("doSongOcr", "false");
@@ -92,9 +94,13 @@ public class ScoreController extends CommonController {
     @GetMapping("/create")
     public String create(Model model) {
         Score score = new Score();
+        Arrangement arrangement = new Arrangement();
+        score.getArrangements().add(arrangement);
+        score.setDefaultArrangement(arrangement);
+
         // Fyll på med standardinstrumenten så går det lite fortare att editera...
         for (Instrument instrument : getInstruments()) {
-            score.getScoreParts().add(new ScorePart(score, instrument));
+            arrangement.getArrangementParts().add(new ArrangementPart(arrangement, instrument));
         }
         model.addAttribute("score", score);
         model.addAttribute("allInstruments", getInstruments());
@@ -130,12 +136,12 @@ public class ScoreController extends CommonController {
     @PostMapping(value = "/save", params = {"deleteRow"})
     public String deleteRow(final Score score, Model model, final HttpServletRequest req) {
         try {
-            int scorePartId = Integer.parseInt(req.getParameter("deleteRow"));
-            if (scorePartId < score.getScoreParts().size()) {
-                score.getScoreParts().remove(scorePartId);
-            } else {
-                log.warn("Trying to remove non-existing score part {}", scorePartId);
-            }
+//            int scorePartId = Integer.parseInt(req.getParameter("deleteRow"));
+//            if (scorePartId < score.getScoreParts().size()) {
+//                score.getScoreParts().remove(scorePartId);
+//            } else {
+//                log.warn("Trying to remove non-existing score part {}", scorePartId);
+//            }
             //model.addAttribute("score", score);
             model.addAttribute("allInstruments", getInstruments());
         } catch (NumberFormatException ignore) {

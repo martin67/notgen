@@ -36,18 +36,6 @@ public interface BackendStorage {
 
     void cleanOutput() throws IOException;
 
-    default String getScoreName(Score score) {
-        return String.format("%d.pdf", score.getId());
-    }
-
-    default String getScorePartName(Score score, Instrument instrument) {
-        return String.format("%d-%d.pdf", score.getId(), instrument.getId());
-    }
-
-    default String getScorePartName(ScorePart scorePart) {
-        return String.format("%d-%d.pdf", scorePart.getScore().getId(), scorePart.getInstrument().getId());
-    }
-
     default String getArrangementName(Arrangement arrangement, String extension) {
         return String.format("%d-%d.%s", arrangement.getScore().getId(),
                 arrangement.getId(), extension);

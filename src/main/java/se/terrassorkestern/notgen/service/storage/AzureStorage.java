@@ -107,22 +107,6 @@ public class AzureStorage implements BackendStorage {
 
     }
 
-    public void uploadScore(Score score, Path path) throws IOException {
-        log.info("Uploading {}, file {}", score.getTitle(), path);
-        String fileName = String.format("%d-1.%s", score.getId(),
-                com.google.common.io.Files.getFileExtension(score.getFilename()));
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
-        try (OutputStream os = ((WritableResource) storageBlobResource).getOutputStream()) {
-            Files.copy(path, os);
-            log.debug("write data to container={}, fileName={}", scoreContainer, fileName);
-        }
-    }
-
-    public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
-        String fileName = getScorePartName(scorePart);
-        upload(fileName, path, scorePartsContainer);
-    }
-
     @Override
     public void uploadArrangement(Arrangement arrangement, Path path) throws IOException {
         log.info("Uploading score: {} ({}), arr: {} ({}), file: {}", arrangement.getScore().getTitle(),

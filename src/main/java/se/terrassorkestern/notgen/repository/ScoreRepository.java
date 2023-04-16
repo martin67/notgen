@@ -90,6 +90,6 @@ public interface ScoreRepository extends SearchRepository<Score, Integer> {
     List<TopListEntry> findTopPublishers(Pageable pageable);
 
     //@Query("SELECT SUM(sp.length) FROM ScorePart sp")
-    @Query("SELECT COALESCE(SUM(sp.length), 0) FROM ScorePart sp")
+    @Query("SELECT COALESCE(SUM(ap.length), 0) FROM ArrangementPart ap")
     long numberOfPages();
 }
