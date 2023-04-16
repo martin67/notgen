@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import se.terrassorkestern.notgen.exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +72,9 @@ public class Score extends Auditable<String> {
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScorePart> scoreParts = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<NgFile> files = new ArrayList<>();
+
     private ScoreType scoreType;
     private Boolean scanned = true;
     private Boolean cover = true;
@@ -96,12 +100,26 @@ public class Score extends Auditable<String> {
         arrangements.add(arrangement);
     }
 
+    public Arrangement getArrangement(String name) {
+        return arrangements.stream()
+                .filter(a -> a.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(String.format("Arrangement %s not found", name)));
+    }
+
     public String getThumbnailPath() {
         return (cover != null && cover) ? String.format("/%d-thumbnail.png", id) : "/images/thoreehrling.jpg";
     }
 
     public String getCoverPath() {
         return (cover != null && cover) ? String.format("/%d-cover.jpg", id) : "/images/thoreehrling.jpg";
+    }
+
+    public NgFile getFile(int fileId) {
+        return files.stream()
+                .filter(f -> f.getId() == fileId)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(String.format("File %d not found", fileId)));
     }
 
     @Override

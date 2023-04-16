@@ -24,6 +24,13 @@ public class Arrangement {
     @ManyToOne
     private Score score;
 
+    public Arrangement() {
+    }
+
+    public Arrangement(String name) {
+        this.name = name;
+    }
+
     @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArrangementPart> arrangementParts = new ArrayList<>();
 

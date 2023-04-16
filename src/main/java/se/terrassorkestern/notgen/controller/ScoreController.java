@@ -4,6 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -14,6 +18,7 @@ import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.SongOcrService;
+import se.terrassorkestern.notgen.service.StorageService;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,15 +38,17 @@ public class ScoreController extends CommonController {
     private final InstrumentRepository instrumentRepository;
     private final ConverterService converterService;
     private final SongOcrService songOcrService;
+    private final StorageService storageService;
 
     public ScoreController(ActiveBand activeBand, ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
                            ConverterService converterService,
-                           SongOcrService songOcrService) {
+                           SongOcrService songOcrService, StorageService storageService) {
         this.activeBand = activeBand;
         this.scoreRepository = scoreRepository;
         this.instrumentRepository = instrumentRepository;
         this.converterService = converterService;
         this.songOcrService = songOcrService;
+        this.storageService = storageService;
     }
 
     @GetMapping("/list")
@@ -94,36 +101,28 @@ public class ScoreController extends CommonController {
         return "score/edit";
     }
 
-    @PostMapping("/upload")
-    public String upload(@Valid @ModelAttribute Score score, @RequestPart("file") MultipartFile file, @RequestPart("arr_id") Integer id) {
-        log.info("upload: {}, score id: {}", file.getOriginalFilename(), score.getId());
-
-        //storageService.uploadArrangement();
-        return "score/edit";
-    }
-
-    @PostMapping("/save")
+    @PostMapping(value = "/save", params = {"save"})
     public String save(@Valid @ModelAttribute Score score, Errors errors, Model model) {
         if (errors.hasErrors()) {
             model.addAttribute("allInstruments", getInstruments());
             return "score/edit";
         }
         log.info("Sparar låt {} [{}]", score.getTitle(), score.getId());
-        // scorePart måste fixas till efter formuläret
-        for (ScorePart scorePart : score.getScoreParts()) {
-            Instrument instrument = scorePart.getInstrument();
-            scorePart.setId(new ScorePartId(score.getId(), instrument.getId()));
-            scorePart.setScore(score);
-            scorePart.setInstrument(instrumentRepository.findById(instrument.getId()).orElse(null));
+        for (Arrangement arrangement : score.getArrangements()) {
+            for (ArrangementPart arrangementPart : arrangement.getArrangementParts()) {
+                if (arrangementPart.getId() == null) {
+                    arrangementPart.setId(new ArrangementPartId(arrangement.getId(), arrangementPart.getInstrument().getId()));
+                    arrangementPart.setArrangement(arrangement);
+                }
+            }
         }
         scoreRepository.save(score);
         return "redirect:/score/list";
     }
 
     @PostMapping(value = "/save", params = {"addRow"})
-    public String addRow(final Score score, Model model) {
-        score.getScoreParts().add(new ScorePart());
-        model.addAttribute("score", score);
+    public String addRow(final Score score, Model model, @RequestParam("addRow") String arrName) {
+        score.getArrangement(arrName).getArrangementParts().add(new ArrangementPart());
         model.addAttribute("allInstruments", getInstruments());
         return "score/edit";
     }
@@ -137,10 +136,66 @@ public class ScoreController extends CommonController {
             } else {
                 log.warn("Trying to remove non-existing score part {}", scorePartId);
             }
-            model.addAttribute("score", score);
+            //model.addAttribute("score", score);
             model.addAttribute("allInstruments", getInstruments());
         } catch (NumberFormatException ignore) {
         }
+        return "score/edit";
+    }
+
+    @PostMapping(value = "/save", params = {"addArrangement"})
+    public String addArrangement(final Score score, Model model) {
+        score.addArrangement(new Arrangement("New arr"));
+//        model.addAttribute("score", score);
+        model.addAttribute("allInstruments", getInstruments());
+        return "score/edit";
+    }
+
+    @PostMapping(value = "/save", params = {"upload"})
+    public String upload(final Score score, @RequestPart("file") MultipartFile file,
+                         @RequestParam("file_type") NgFileType fileType,
+                         @RequestParam(name = "file_name", required = false) String fileName) {
+        log.info("upload: {}, score id: {}, type: {}, name: {}", file.getOriginalFilename(), score.getId(), fileType, fileName);
+        NgFile ngFile = storageService.uploadFile(file);
+        ngFile.setType(fileType);
+        if (fileName != null) {
+            ngFile.setName(fileName);
+        }
+        score.getFiles().add(ngFile);
+        return "score/edit";
+    }
+
+    @GetMapping("/downloadFile")
+    public ResponseEntity<InputStreamResource> downloadFile(final Score score, @RequestParam("file_id") int fileId) {
+        NgFile file = score.getFile(fileId);
+        log.info("download: {}, file id: {}", file.getOriginalFilename(), file.getId());
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentDisposition(
+                ContentDisposition
+                        .attachment()
+                        .filename(file.getOriginalFilename())
+                        .build()
+        );
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(new InputStreamResource(storageService.downloadFile(file)));
+    }
+
+    @GetMapping("/viewFile")
+    public ResponseEntity<InputStreamResource> viewFile(final Score score, @RequestParam("file_id") int fileId) {
+        NgFile file = score.getFile(fileId);
+        log.info("view: {}, file id: {}", file.getOriginalFilename(), file.getId());
+        return ResponseEntity.ok()
+                .contentType(file.getContentType())
+                .body(new InputStreamResource(storageService.downloadFile(file)));
+    }
+
+    @GetMapping("/deleteFile")
+    public String deleteFile(final Score score, @RequestParam("file_id") Integer fileId) {
+        NgFile file = score.getFile(fileId);
+        //Score score = getScore(scoreId);
+        score.getFiles().remove(file);
+        log.info("delete: {}, file id: {}", file.getOriginalFilename(), file.getId());
         return "score/edit";
     }
 

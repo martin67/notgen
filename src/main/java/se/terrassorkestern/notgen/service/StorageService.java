@@ -1,10 +1,15 @@
 package se.terrassorkestern.notgen.service;
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.web.multipart.MultipartFile;
+import se.terrassorkestern.notgen.exceptions.StorageException;
 import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.repository.NgFileRepository;
 import se.terrassorkestern.notgen.service.storage.AzureStorage;
 import se.terrassorkestern.notgen.service.storage.BackendStorage;
 import se.terrassorkestern.notgen.service.storage.LocalStorage;
@@ -14,6 +19,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -24,14 +32,17 @@ public class StorageService {
     private static final int BUFFER_SIZE = 4096;
     private final BackendStorage backendStorage;
     private final String tempDir;
+    private final NgFileRepository ngFileRepository;
     private final boolean keepTempDir;
 
     public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir,
                           @Value("${notgen.storage.type}") String storage,
                           @Value("${notgen.folders.temp:}") String tempDir,
+                          NgFileRepository ngFileRepository,
                           AzureStorage azureStorage, LocalStorage localStorage) {
         this.keepTempDir = keepTempDir;
         this.tempDir = tempDir;
+        this.ngFileRepository = ngFileRepository;
 
         switch (storage) {
             case "azure" -> this.backendStorage = azureStorage;
@@ -76,6 +87,16 @@ public class StorageService {
 
     public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
         return backendStorage.downloadArrangementPart(arrangement, instrument, location);
+    }
+
+    public NgFile uploadFile(MultipartFile file) throws StorageException {
+        NgFile ngFile = backendStorage.uploadFile(file);
+        ngFile.setOriginalFilename(file.getOriginalFilename());
+        return ngFile;
+    }
+
+    public InputStream downloadFile(NgFile file) throws StorageException {
+        return backendStorage.downloadFile(file);
     }
 
     public void uploadArrangement(Arrangement arrangement, Path path) throws IOException {
@@ -125,6 +146,27 @@ public class StorageService {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+    public void cleanupInput() throws IOException {
+        // List all files in input directory
+        Set<String> existingFiles = backendStorage.listInputDirectory();
+
+        // List all files that should be in the input directory
+        Set<String> ngFiles = new HashSet<>();
+        ngFileRepository.findAll().forEach(ngFile -> ngFiles.add(ngFile.getFilename()));
+
+        Set<String> diff = Sets.difference(existingFiles, ngFiles);
+
+        // Remove the excess. These are files that are removed or uploaded but not saved.
+        if (diff.size() > 0) {
+            log.info("Cleanup of input directory. Removing {} files", diff.size());
+            for (String file : diff) {
+                log.debug("Deleting {}", file);
+                backendStorage.deleteFile(file);
             }
         }
     }
