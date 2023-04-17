@@ -24,6 +24,7 @@ import se.terrassorkestern.notgen.user.UserPrincipal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -72,12 +73,12 @@ public class UserController extends CommonController {
     }
 
     @GetMapping("/edit")
-    public String edit(Model model, @RequestParam(value = "id", defaultValue = "-1") long id) {
+    public String edit(Model model, @RequestParam(value = "id", required = false) UUID id) {
 
         User user;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // If id == null, then it's the user who is editing his own profile
-        if (id == -1) {
+        if (id == null) {
             user = ((UserPrincipal) authentication.getPrincipal()).getUser();
         } else {
             // First check that the user has permission to edit user (i.e. is admin)
@@ -172,21 +173,21 @@ public class UserController extends CommonController {
     }
 
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") long id) {
+    public String delete(@RequestParam("id") UUID id) {
         User user = getUser(id);
         log.info("Tar bort användare {} [{}]", user.getUsername(), user.getId());
         userRepository.delete(user);
         return "redirect:/user/list";
     }
 
-    private User getUser(long id) {
+    private User getUser(UUID id) {
         User user;
         if (isSuperAdmin()) {
             user = userRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("User %s not found", id)));
         } else {
             user = userRepository.findByBandsContainingAndId(activeBand.getBand(), id)
-                    .orElseThrow(() -> new NotFoundException(String.format("User %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("User %s not found", id)));
         }
         return user;
     }

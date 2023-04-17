@@ -15,9 +15,7 @@ import java.util.UUID;
 public class Privilege {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private UUID uuid;
+    private UUID id;
 
     private String name;
     @ManyToMany(mappedBy = "privileges")
@@ -26,7 +24,7 @@ public class Privilege {
 
     public Privilege(String name) {
         this.name = name;
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 
 }

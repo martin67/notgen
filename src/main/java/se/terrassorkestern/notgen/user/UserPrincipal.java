@@ -10,6 +10,7 @@ import se.terrassorkestern.notgen.model.User;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 
 public class UserPrincipal implements OAuth2User, OidcUser, UserDetails {
     private Map<String, Object> attributes;
@@ -33,7 +34,7 @@ public class UserPrincipal implements OAuth2User, OidcUser, UserDetails {
         this.user = user;
     }
 
-    public long getId() {
+    public UUID getId() {
         return user.getId();
     }
 
