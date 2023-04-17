@@ -19,9 +19,7 @@ public class User {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private UUID uuid;
+    private UUID id;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -41,10 +39,9 @@ public class User {
 
     @ManyToOne
     private Role role;
-    private UUID role_uuid;
 
     public User() {
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 
     public boolean isRemoteUser() {

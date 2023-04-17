@@ -19,6 +19,7 @@ import se.terrassorkestern.notgen.user.UserPrincipal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
@@ -103,8 +104,8 @@ class UserControllerTest {
         given(bandRepository.findAll()).willReturn(List.of(band1));
         given(userRepository.findAll()).willReturn(allUsers);
         given(userRepository.findByBandsContaining(band1)).willReturn(allUsers);
-        given(userRepository.findByBandsContainingAndId(band1, 1L)).willReturn(Optional.of(normalUser));
-        given(userRepository.findByBandsContainingAndId(band1, 2L)).willReturn(Optional.of(adminUser));
+        given(userRepository.findByBandsContainingAndId(band1, normalUser.getId())).willReturn(Optional.of(normalUser));
+        given(userRepository.findByBandsContainingAndId(band1, adminUser.getId())).willReturn(Optional.of(adminUser));
         given(roleRepository.findByName("ROLE_ADMIN")).willReturn(adminRole);
         given(roleRepository.findByName("ROLE_USER")).willReturn(userRole);
     }
@@ -156,7 +157,7 @@ class UserControllerTest {
         void whenEditValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/user/edit").with(user(UserPrincipal.create(adminUser)))
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "1"))
+                            .param("id", normalUser.getId().toString()))
                     .andExpect(view().name("user/edit"))
                     .andExpect(model().attributeExists("user"))
                     .andExpect(model().attribute("user", hasProperty("username", equalTo("normal"))))
@@ -169,7 +170,7 @@ class UserControllerTest {
         void whenEditValidFakeAdmin_thenReturnOk() throws Exception {
             mvc.perform(get("/user/edit").with(user(UserPrincipal.create(normalUser)))
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "2"))
+                            .param("id", adminUser.getId().toString()))
                     .andExpect(view().name("redirect:/"))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/*"));
@@ -180,7 +181,7 @@ class UserControllerTest {
         void whenEditNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/user/edit").with(user(UserPrincipal.create(adminUser)))
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "0"))
+                            .param("id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
     }
@@ -237,7 +238,7 @@ class UserControllerTest {
         void whenDeleteValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/user/delete")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "1"))
+                            .param("id", normalUser.getId().toString()))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/user/list*"));
         }
@@ -248,7 +249,7 @@ class UserControllerTest {
         void whenDeleteNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/user/delete")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "0"))
+                            .param("id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
     }

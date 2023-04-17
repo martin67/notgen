@@ -6,12 +6,13 @@ import se.terrassorkestern.notgen.model.Role;
 import se.terrassorkestern.notgen.model.User;
 
 import java.util.Set;
+import java.util.UUID;
 
 
 @Data
 @PasswordMatches(message = "Lösenorden matchar inte")
 public class UserFormData {
-    private long id;
+    private UUID id;
     private String username;
     private String fullName;
     private String displayName;
