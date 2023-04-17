@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1681725524426-1
+      author: marhag (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: score_id
+                  type: int
+              - column:
+                  constraints:
+                    nullable: false
+                  name: files_id
+                  type: int
+            tableName: score_files
+  - changeSet:
+      id: 1681725524426-2
+      author: marhag (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: files_id
+            baseTableName: score_files
+            constraintName: FK14hqw4fsxmkrpb3iqdxw1h3rx
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: ngfile
+            validate: true
+  - changeSet:
+      id: 1681725524426-3
+      author: marhag (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: score_id
+            baseTableName: score_files
+            constraintName: FKfww84envtw140resj9hmdrcxg
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: score
+            validate: true
+  - changeSet:
+      id: 1681725524426-4
+      author: marhag (generated)
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: score_instrument
+            constraintName: FKiaj906o76kt4459cu5b9q9p5k
+  - changeSet:
+      id: 1681725524426-5
+      author: marhag (generated)
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: score_instrument
+            constraintName: FKlu1jmjwb3lftd8tf1eauclooc
+  - changeSet:
+      id: 1681725524426-18
+      author: marhag (generated)
+      changes:
+        - dropTable:
+            tableName: score_instrument

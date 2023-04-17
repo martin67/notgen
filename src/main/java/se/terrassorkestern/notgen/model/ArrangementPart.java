@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,11 +19,14 @@ public class ArrangementPart {
     @ManyToOne
     @MapsId("arrangementId")
     private Arrangement arrangement;
+    private UUID arrangement_uuid;
 
     @ManyToOne
     @MapsId("instrumentId")
     @OrderBy("sortOrder")
     private Instrument instrument;
+    private UUID instrument_uuid;
+
     private int page;
     private int length = 1;
     private String comment;

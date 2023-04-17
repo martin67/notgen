@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -16,8 +17,12 @@ public class Instrument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private UUID uuid;
+
     @ManyToOne
     private Band band;
+    private UUID band_uuid;
+
     @NotBlank(message = "Instrumentnamn måste anges")
     private String name;
     private String shortName;
@@ -26,4 +31,8 @@ public class Instrument {
 
     @ManyToMany(mappedBy = "instruments")
     private Set<Setting> settings = new HashSet<>();
+
+    public Instrument() {
+        this.uuid = UUID.randomUUID();
+    }
 }

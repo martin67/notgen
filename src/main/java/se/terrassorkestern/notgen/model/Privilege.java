@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 import java.util.Collection;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -16,6 +17,8 @@ public class Privilege {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private UUID uuid;
+
     private String name;
     @ManyToMany(mappedBy = "privileges")
     private Collection<Role> roles;
@@ -23,6 +26,7 @@ public class Privilege {
 
     public Privilege(String name) {
         this.name = name;
+        this.uuid = UUID.randomUUID();
     }
 
 }

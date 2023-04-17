@@ -21,6 +21,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private UUID uuid;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_band",
@@ -39,6 +41,11 @@ public class User {
 
     @ManyToOne
     private Role role;
+    private UUID role_uuid;
+
+    public User() {
+        this.uuid = UUID.randomUUID();
+    }
 
     public boolean isRemoteUser() {
         return (provider != AuthProvider.local);

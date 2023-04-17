@@ -16,11 +16,17 @@ public class NgFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private int id;
+    private UUID uuid;
+
     private String filename;
     private NgFileType type;
     private String name;
     private String originalFilename;
     private String comment;
+
+    public NgFile() {
+        this.uuid = UUID.randomUUID();
+    }
 
     public void setFilename(String extension) {
         filename = String.format("%s.%s", UUID.randomUUID(), extension);

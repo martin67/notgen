@@ -7,6 +7,7 @@ import lombok.Setter;
 import jakarta.persistence.*;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,6 +18,8 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private UUID uuid;
+
     private String name;
     private String displayName;
 
@@ -28,11 +31,13 @@ public class Role {
     public Role(String name) {
         this.name = name;
         this.displayName = "";
+        this.uuid = UUID.randomUUID();
     }
 
     public Role(String name, String displayName) {
         this.name = name;
         this.displayName = displayName;
+        this.uuid = UUID.randomUUID();
     }
 
 }

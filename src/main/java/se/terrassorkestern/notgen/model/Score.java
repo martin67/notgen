@@ -10,6 +10,7 @@ import se.terrassorkestern.notgen.exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /*
  Relations:
@@ -32,8 +33,10 @@ public class Score extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private UUID uuid;
     @ManyToOne
     private Band band;
+    private UUID band_uuid;
     @NotBlank(message = "Titel måste anges")
     @FullTextField(analyzer = "swedish")
     private String title;
@@ -68,6 +71,7 @@ public class Score extends Auditable<String> {
 
     @OneToOne(fetch = FetchType.LAZY)
     private Arrangement defaultArrangement;
+    private UUID defaultArrangement_uuid;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<NgFile> files = new ArrayList<>();
@@ -91,6 +95,10 @@ public class Score extends Auditable<String> {
 //        }
 //        return result;
 //    }
+
+    public Score() {
+        this.uuid = UUID.randomUUID();
+    }
 
     public void addArrangement(Arrangement arrangement) {
         arrangement.setScore(this);
