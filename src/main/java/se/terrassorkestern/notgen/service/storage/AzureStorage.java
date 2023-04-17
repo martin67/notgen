@@ -8,6 +8,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.WritableResource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+import se.terrassorkestern.notgen.exceptions.StorageException;
 import se.terrassorkestern.notgen.model.*;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -94,20 +97,15 @@ public class AzureStorage implements BackendStorage {
         return allGenerated;
     }
 
-    public void uploadScore(Score score, Path path) throws IOException {
-        log.info("Uploading {}, file {}", score.getTitle(), path);
-        String fileName = String.format("%d-1.%s", score.getId(),
-                com.google.common.io.Files.getFileExtension(score.getFilename()));
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
-        try (OutputStream os = ((WritableResource) storageBlobResource).getOutputStream()) {
-            Files.copy(path, os);
-            log.debug("write data to container={}, fileName={}", scoreContainer, fileName);
-        }
+    @Override
+    public NgFile uploadFile(MultipartFile file) throws StorageException {
+        log.error("Upload ({}) not implemented yet!", file.getOriginalFilename());
+        return null;
     }
 
-    public void uploadScorePart(ScorePart scorePart, Path path) throws IOException {
-        String fileName = getScorePartName(scorePart);
-        upload(fileName, path, scorePartsContainer);
+    @Override
+    public void deleteFile(String filename) throws StorageException {
+        log.error("Delete ({}) not implemented yet!", filename);
     }
 
     @Override
@@ -144,6 +142,12 @@ public class AzureStorage implements BackendStorage {
     }
 
     @Override
+    public InputStream downloadFile(NgFile file) throws StorageException {
+        log.error("Download ({}) not implemented yet!", file.getOriginalFilename());
+        return null;
+    }
+
+    @Override
     public OutputStream getCoverOutputStream(Score score) throws IOException {
         Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getCoverName(score)));
         return ((WritableResource) storageBlobResource).getOutputStream();
@@ -171,4 +175,8 @@ public class AzureStorage implements BackendStorage {
 
     }
 
+    @Override
+    public Set<String> listInputDirectory() throws IOException {
+        return Set.of();
+    }
 }

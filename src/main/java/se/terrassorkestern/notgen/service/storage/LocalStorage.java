@@ -4,17 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
-import se.terrassorkestern.notgen.model.Arrangement;
-import se.terrassorkestern.notgen.model.ArrangementPart;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Score;
+import org.springframework.web.multipart.MultipartFile;
+import se.terrassorkestern.notgen.exceptions.StorageException;
+import se.terrassorkestern.notgen.model.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Storage on local disk.
@@ -67,6 +67,54 @@ public class LocalStorage implements BackendStorage {
             }
         }
         return allGenerated;
+    }
+
+    @Override
+    public NgFile uploadFile(MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                throw new StorageException("Failed to store empty file.");
+            }
+            if (file.getOriginalFilename() == null) {
+                throw new StorageException("No file name set");
+            }
+
+            NgFile ngFile = new NgFile();
+
+            String extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
+            ngFile.setFilename(extension);
+
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, inputDir.resolve(ngFile.getFilename()), StandardCopyOption.REPLACE_EXISTING);
+            }
+            return ngFile;
+        } catch (IOException e) {
+            throw new StorageException("Failed to store file.", e);
+        }
+    }
+
+    @Override
+    public InputStream downloadFile(NgFile file) throws StorageException {
+        if (file == null || file.getFilename() == null) {
+            throw new StorageException("No file name set");
+        }
+        BufferedInputStream bis;
+        try {
+            bis = new BufferedInputStream(new FileInputStream(inputDir.resolve(file.getFilename()).
+                    toFile()));
+        } catch (FileNotFoundException e) {
+            throw new StorageException("Could not find file");
+        }
+        return bis;
+    }
+
+    @Override
+    public void deleteFile(String filename) throws StorageException {
+        try {
+            Files.delete(inputDir.resolve(filename));
+        } catch (IOException e) {
+            throw new StorageException("Could not delete file " + filename);
+        }
     }
 
     @Override
@@ -125,6 +173,17 @@ public class LocalStorage implements BackendStorage {
     @Override
     public void cleanOutput() throws IOException {
         FileSystemUtils.deleteRecursively(outputDir);
+    }
+
+    @Override
+    public Set<String> listInputDirectory() throws IOException {
+        try (Stream<Path> stream = Files.list(inputDir)) {
+            return stream
+                    .filter(file -> !Files.isDirectory(file))
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .collect(Collectors.toSet());
+        }
     }
 
 }

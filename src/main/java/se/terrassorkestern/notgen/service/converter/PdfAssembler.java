@@ -11,7 +11,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import se.terrassorkestern.notgen.model.ArrangementPart;
 import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.ScorePart;
 import se.terrassorkestern.notgen.service.StorageService;
 
 import java.awt.*;

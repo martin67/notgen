@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -21,8 +22,12 @@ public class Playlist extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private UUID uuid;
+
     @ManyToOne
     private Band band;
+    private UUID band_uuid;
+
     @NotBlank(message = "Låtlistan måste ha ett namn")
     private String name;
     private String comment;
@@ -30,11 +35,16 @@ public class Playlist extends Auditable<String> {
     private LocalDate date;
     @ManyToOne
     private Setting setting;
+    private UUID setting_uuid;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "playlist_id", nullable = false)
     @OrderBy("sortOrder")
     private List<PlaylistEntry> playlistEntries = new ArrayList<>();
+
+    public Playlist() {
+        this.uuid = UUID.randomUUID();
+    }
 
     public Playlist copy() {
         Playlist newPlaylist = new Playlist();

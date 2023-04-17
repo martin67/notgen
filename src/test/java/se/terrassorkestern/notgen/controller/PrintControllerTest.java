@@ -68,7 +68,7 @@ class PrintControllerTest {
 
         List<Score> allScores = List.of(foo, bar);
         given(activeBand.getBand()).willReturn(band);
-        given(scoreRepository.findByScorePartsInstrumentOrderByTitle(instrument)).willReturn(allScores);
+        given(scoreRepository.findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(instrument)).willReturn(allScores);
         given(instrumentRepository.findById(2)).willReturn(Optional.of(instrument));
         given(instrumentRepository.findByBandAndId(band, 2)).willReturn(Optional.of(instrument));
         given(instrumentRepository.findAll()).willReturn(List.of(instrument));

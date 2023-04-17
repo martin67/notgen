@@ -107,9 +107,9 @@ public class SongOcrService {
         Instrument song = instrumentRepository.getReferenceById(Integer.parseInt(songIds));
         Path tempDir = storageService.createTempDir();
         Arrangement arrangement = score.getDefaultArrangement();
-        Path scorePart = storageService.downloadArrangementPart(arrangement, song, tempDir);
+        Path path = storageService.downloadArrangementPart(arrangement, song, tempDir);
 
-        byte[] fileContent = Files.readAllBytes(scorePart);
+        byte[] fileContent = Files.readAllBytes(path);
 
         URL url = new URL(ocrURL);
 

@@ -32,7 +32,7 @@
 <div class="container">
     <h1>Redigera låt</h1>
 
-    <form role="form" th:action="@{/score/save}" th:object="${score}" th:method="post">
+    <form role="form" th:action="@{/score/save}" th:object="${score}" th:method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{id}" th:value="${score.id}"/>
 
         <div class="row">
@@ -108,11 +108,12 @@
             <label for="comment">Kommentar</label>
         </div>
 
-        <div class="form-row mb-3 border pt-2 px-2">
+        <!-- Arrangement -->
+        <div class="form-row mb-3 border pt-2 px-2" id="arrangement">
             <div class="form-group col">
                 <h3>Arrangemang</h3>
 
-                <div th:if="${score.getArrangements().size() == 1}">
+                <div th:if="${score.getArrangements().size() == -1}">
                     <table class="table table-bordered table-sm">
                         <thead>
                         <tr>
@@ -162,9 +163,15 @@
                         </tr>
                         </tbody>
                     </table>
+                    <hr>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-primary">Lägg till arr</button>
+                        <button type="button" class="btn btn-sm btn-primary">Ta bort arr</button>
+                    </div>
+
                 </div>
 
-                <div th:if="${score.getArrangements().size() > 1}">
+                <div th:if="${score.getArrangements().size() > 0}">
                     <ul class="nav nav-tabs" id="arrTabs" role="tablist">
                         <li class="nav-item" role="presentation"
                             th:each="arr, i : ${score.getArrangements()}">
@@ -185,20 +192,15 @@
                              th:each="arr, arrStat : ${score.getArrangements()}">
                             <div class="alert alert-info" th:text="${arr.getComment()}"
                                  th:if="${arr.getComment()}"/>
-                            <div class="row">
+                            <div class="row row-cols-5">
                                 <div class="col"><b>Instrument</b></div>
                                 <div class="col"><b>Placering</b></div>
                                 <div class="col"><b>Antal</b></div>
                                 <div class="col"><b>Kommentar</b></div>
-                                <div class="col">
-                                    <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-primary btn-sm"
-                                            type="submit"
-                                            name="addRow">Lägg till
-                                    </button>
-                                </div>
+                                <div class="col"></div>
                             </div>
 
-                            <div class="row mb-1" th:each="arrPart,rowStat : ${arr.getArrangementParts()}">
+                            <div class="row row-cols-5 mb-1" th:each="arrPart,rowStat : ${arr.getArrangementParts()}">
                                 <div class="col">
                                     <select th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].instrument.id}">
                                         <option th:each="i2 : ${allInstruments}" th:value="${i2.id}"
@@ -231,30 +233,46 @@
                                 </div>
                             </div>
                             <hr>
-                            <div>
-                                <button type="button" class="btn btn-sm btn-primary">Lägg till arr</button>
-                                <button type="button" class="btn btn-sm btn-primary">Ta bort arr</button>
-                                <button type="button" class="btn btn-sm btn-primary"
-                                        th:disabled="${score.getDefaultArrangement().getId() == arr.getId()}">Sätt som standard
-                                </button>
-                                <form
-                                        id="uploadForm"
-                                        method="post"
-                                        th:action="@{upload}"
-                                        enctype="multipart/form-data">
-                                    <input id="input-file" type="file" name="file" />
-                                    <input id="arr_id" type="hidden" th:value="${arr.getId()}"/>
-                                    <button class="btn btn-sm btn-outline-success float-right" type="submit">
-                                        Upload
+                            <div class="row">
+                                <div class="col">
+                                    <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-primary btn-sm"
+                                            type="submit" name="addRow" th:value="${arr.getName()}">Lägg till instrument
                                     </button>
-                                </form>
+                                    <div class="form-check">
+                                        <label class="form-check-label">Filkoppling
+                                            <select>
+                                                <option th:each="ngf : ${score.getFiles()}"
+                                                        th:value="${ngf.getId()}"
+                                                        th:text="${ngf.getName()}"/>
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-primary"
+                                            th:disabled="${score.getDefaultArrangement().getId() == arr.getId()}">Sätt
+                                        som
+                                        standard
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="row mb-2">
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary btn-sm" name="addArrangement">
+                            Lägg till arrangemang
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm">
+                            Ta bort arrangemang
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Song text -->
         <div class="form-row mb-3 border pt-2 px-2">
             <div class="form-group col">
                 <h3>Sångtext</h3>
@@ -263,8 +281,9 @@
                               th:value="${score.text}"></textarea>
                 </div>
 
-                <div class="form-row mb-1">
-                    <button type="button" class="btn btn-primary" th:disabled="${doSongOcr}? ${!doSongOcr} : true"
+                <div class="form-row mb-2">
+                    <button type="button" class="btn btn-sm btn-primary"
+                            th:disabled="${doSongOcr}? ${!doSongOcr} : true"
                             th:onclick="'doOCR(' + ${score.id} + ')'" id="ocr-button">
                         OCR
                     </button>
@@ -276,9 +295,122 @@
             </div>
         </div>
 
-        <h3>Detaljer</h3>
+        <!-- File management -->
+        <div class="form-row mb-3 border pt-2 px-2">
+            <div class="form-group col">
+                <h3>Filhantering</h3>
+                <div class="row mb-1" th:each="file : ${score.getFiles()}">
+                    <div class="col" th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"/>
+                    <div class="col" th:text="${file.getType()}"/>
+                    <div class="col">
+                        <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
+                            <i class="bi-eye"></i></a>
+                        <a th:href="@{downloadFile(score_id=${score.id},file_id=${file.getId()})}">
+                            <i class="bi-cloud-arrow-down"></i></a>
+                        <a th:href="hej"><i class="bi-pencil-square"></i></a>
+                        <a th:href="@{deleteFile(file_id=${file.getId()})}"><i class="bi-trash"></i></a>
+                    </div>
+                </div>
+                <hr>
+                <!-- Button trigger modal -->
+                <div class="row mb-2">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#uploadFile">
+                            Lägg till fil
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal upload file -->
+        <div class="modal fade" id="uploadFile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="uploadFileLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="uploadFileLabel">Ladda upp fil</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-2">
+                            <div class="col">
+                                <input id="input-file" type="file" name="file"/>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-2">
+                                <label>Typ</label>
+                            </div>
+                            <div class="col">
+                                <select th:name="file_type">
+                                    <option th:each="ft : ${T(se.terrassorkestern.notgen.model.NgFileType).values()}"
+                                            th:value="${ft}"
+                                            th:text="${ft}"/>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2">
+                                <label for="file_name">Namn</label>
+                            </div>
+                            <div class="col">
+                                <input id="file_name" name="file_name" type="text"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                        <button type="submit" class="btn btn-primary" name="upload">Ladda upp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal edit file -->
+        <div class="modal fade" id="editFile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="editFileLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="editFileLabel">Ladda upp fil</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-2">
+                            <div class="col-2">
+                                <label>Typ</label>
+                            </div>
+                            <div class="col">
+                                <select th:name="file_type">
+                                    <option th:each="ft : ${T(se.terrassorkestern.notgen.model.NgFileType).values()}"
+                                            th:value="${ft}"
+                                            th:text="${ft}"/>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2">
+                                <label for="file_name">Namn</label>
+                            </div>
+                            <div class="col">
+                                <input id="file_name" name="file_name" type="text"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                        <button type="submit" class="btn btn-primary" name="upload">Ladda upp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details -->
         <div class="form-row border mb-3 p-2">
             <div class="form-group row">
+                <h3>Detaljer</h3>
                 <div class="col">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="scanned"
@@ -343,6 +475,7 @@
             </div>
         </div>
 
+        <!-- Buttons -->
         <div class="form-group row mb-3">
             <div class="col-sm-10">
                 <a class="btn btn-secondary" th:href="@{view(id=${score.id})}">Avbryt</a>
@@ -352,6 +485,7 @@
                         data-toggle="modal" data-target="#deleteModal">Ta bort
                 </button>
                 <input sec:authorize="hasAuthority('EDIT_SONG')" type="submit" class="btn btn-primary"
+                       name="save"
                        value="Spara"/>
             </div>
         </div>

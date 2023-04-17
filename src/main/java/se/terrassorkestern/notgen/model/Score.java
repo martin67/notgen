@@ -6,9 +6,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import se.terrassorkestern.notgen.exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /*
  Relations:
@@ -31,8 +33,10 @@ public class Score extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private UUID uuid;
     @ManyToOne
     private Band band;
+    private UUID band_uuid;
     @NotBlank(message = "Titel måste anges")
     @FullTextField(analyzer = "swedish")
     private String title;
@@ -67,9 +71,10 @@ public class Score extends Auditable<String> {
 
     @OneToOne(fetch = FetchType.LAZY)
     private Arrangement defaultArrangement;
+    private UUID defaultArrangement_uuid;
 
-    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ScorePart> scoreParts = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<NgFile> files = new ArrayList<>();
 
     private ScoreType scoreType;
     private Boolean scanned = true;
@@ -83,17 +88,28 @@ public class Score extends Auditable<String> {
 
     private String filename;
 
-    public List<Instrument> getInstruments() {
-        List<Instrument> result = new ArrayList<>();
-        for (ScorePart scorePart : scoreParts) {
-            result.add(scorePart.getInstrument());
-        }
-        return result;
+//    public List<Instrument> getInstruments() {
+//        List<Instrument> result = new ArrayList<>();
+//        for (ScorePart scorePart : scoreParts) {
+//            result.add(scorePart.getInstrument());
+//        }
+//        return result;
+//    }
+
+    public Score() {
+        this.uuid = UUID.randomUUID();
     }
 
     public void addArrangement(Arrangement arrangement) {
         arrangement.setScore(this);
         arrangements.add(arrangement);
+    }
+
+    public Arrangement getArrangement(String name) {
+        return arrangements.stream()
+                .filter(a -> a.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(String.format("Arrangement %s not found", name)));
     }
 
     public String getThumbnailPath() {
@@ -102,6 +118,13 @@ public class Score extends Auditable<String> {
 
     public String getCoverPath() {
         return (cover != null && cover) ? String.format("/%d-cover.jpg", id) : "/images/thoreehrling.jpg";
+    }
+
+    public NgFile getFile(int fileId) {
+        return files.stream()
+                .filter(f -> f.getId() == fileId)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(String.format("File %d not found", fileId)));
     }
 
     @Override

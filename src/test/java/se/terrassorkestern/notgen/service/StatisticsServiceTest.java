@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen.service;
 
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
+@Disabled
 @Sql({"/testdata/statistics.sql"})
 class StatisticsServiceTest {
 

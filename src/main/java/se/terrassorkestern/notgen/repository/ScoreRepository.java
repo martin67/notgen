@@ -28,13 +28,13 @@ public interface ScoreRepository extends SearchRepository<Score, Integer> {
 
     List<Score> findByOrderByTitle();
 
+    List<Score> findByDefaultArrangement_ArrangementParts_InstrumentInOrderByTitleAsc(Collection<Instrument> instruments);
+
+    List<Score> findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(Instrument instrument);
+
     List<Score> findByIdInOrderByTitle(List<Integer> id);
 
     List<Score> findByIdGreaterThan(int id);
-
-    List<Score> findByScorePartsInstrumentOrderByTitle(Instrument instrument);
-
-    List<Score> findDistinctByScoreParts_InstrumentInOrderByTitleAsc(Collection<Instrument> instruments);
 
     List<Score> findByScannedFalseOrderByTitle();
 
@@ -90,6 +90,6 @@ public interface ScoreRepository extends SearchRepository<Score, Integer> {
     List<TopListEntry> findTopPublishers(Pageable pageable);
 
     //@Query("SELECT SUM(sp.length) FROM ScorePart sp")
-    @Query("SELECT COALESCE(SUM(sp.length), 0) FROM ScorePart sp")
+    @Query("SELECT COALESCE(SUM(ap.length), 0) FROM ArrangementPart ap")
     long numberOfPages();
 }

@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
 import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.model.Arrangement;
 import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.*;
@@ -148,6 +149,7 @@ class ScoreControllerTest {
             Score score = new Score();
             score.setTitle("My title");
             mvc.perform(post("/score/save").with(csrf())
+                            .param("save", "dummy")
                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                             .sessionAttr("score", score))
                     .andExpect(status().isFound())
@@ -160,7 +162,9 @@ class ScoreControllerTest {
         void whenSaveInvalidInput_thenReturnReload() throws Exception {
             Score score = new Score();
             mvc.perform(post("/score/save").with(csrf())
+                            .param("save", "dummy")
                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .requestAttr("score", score)
                             .sessionAttr("score", score))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -171,9 +175,14 @@ class ScoreControllerTest {
         @DisplayName("Add row")
         @WithMockUser(authorities = "EDIT_SONG")
         void whenSaveAddRow_thenReturnOk() throws Exception {
+            Score score = new Score();
+            Arrangement arr = new Arrangement("1");
+            score.getArrangements().add(arr);
+            score.setDefaultArrangement(arr);
             mvc.perform(post("/score/save").with(csrf())
                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                            .param("addRow", "dummy"))
+                            .sessionAttr("score", score)
+                            .param("addRow", "1"))
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -273,7 +282,7 @@ class ScoreControllerTest {
             mvc.perform(get("/score/create")).andExpect(status().isOk());
             mvc.perform(get("/score/edit?id=1")).andExpect(status().isOk());
             mvc.perform(get("/score/delete?id=1")).andExpect(redirectedUrl("/score/list"));
-            mvc.perform(post("/score/save").sessionAttr("score", new Score()).with(csrf())).andExpect(status().isOk());
+            mvc.perform(post("/score/save").sessionAttr("score", new Score()).with(csrf()).param("save", "dummy")).andExpect(status().isOk());
             mvc.perform(get("/score/nonexistent")).andExpect(status().isNotFound());
         }
 

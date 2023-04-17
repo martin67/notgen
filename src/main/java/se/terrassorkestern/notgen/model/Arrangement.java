@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -14,6 +15,7 @@ public class Arrangement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private UUID uuid;
 
     private String arranger;
     private String name;
@@ -21,8 +23,19 @@ public class Arrangement {
     private String comment;
     @ManyToOne(fetch = FetchType.LAZY)
     private NgFile file;
+    private UUID file_uuid;
+
     @ManyToOne
     private Score score;
+    private UUID score_uuid;
+
+    public Arrangement() {
+        this.uuid = UUID.randomUUID();
+    }
+
+    public Arrangement(String name) {
+        this.name = name;
+    }
 
     @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArrangementPart> arrangementParts = new ArrayList<>();

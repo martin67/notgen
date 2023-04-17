@@ -18,7 +18,6 @@ import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Playlist;
 import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.service.ConverterService;
-import se.terrassorkestern.notgen.service.PlaylistPackService;
 import se.terrassorkestern.notgen.service.PlaylistPdfService;
 import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
 import se.terrassorkestern.notgen.user.CustomOidcUserService;
@@ -53,8 +52,6 @@ class PlaylistControllerTest {
     @MockBean
     private PlaylistPdfService playlistPdfService;
     @MockBean
-    private PlaylistPackService playlistPackService;
-    @MockBean
     private ConverterService converterService;
 
     @MockBean
@@ -85,9 +82,6 @@ class PlaylistControllerTest {
         given(playlistRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(foo));
         given(instrumentRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(sax));
         given(playlistPdfService.create(foo)).willReturn(new ByteArrayInputStream(new byte[0]));
-
-        String sinkName = System.getProperty("os.name").toLowerCase().contains("windows") ? "NUL" : "/dev/null";
-        given(playlistPackService.createPack(foo, sax, "playlist.pdf")).willReturn(sinkName);
     }
 
     @Test
