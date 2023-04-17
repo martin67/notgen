@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /*
  *
@@ -46,7 +47,7 @@ public class SongOcrService {
     }
 
     public String process(Score score) throws Exception {
-		/*
+        /*
         	Sample project for OCRWebService.com (REST API).
         	Extract text from scanned images and convert into editable formats.
         	Please create new account with ocrwebservice.com via http://www.ocrwebservice.com/account/signup and get license code
@@ -56,7 +57,7 @@ public class SongOcrService {
             return "OCR disabled";
         }
 
-	     /*
+         /*
 
 	       You should specify OCR settings. See full description http://www.ocrwebservice.com/service/restguide
 
@@ -104,7 +105,7 @@ public class SongOcrService {
         String ocrURL = "https://www.ocrwebservice.com/restservices/processDocument?gettext=true&language=swedish&newline=1";
 
         // Full path to uploaded document
-        Instrument song = instrumentRepository.getReferenceById(Integer.parseInt(songIds));
+        Instrument song = instrumentRepository.getReferenceById(UUID.fromString(songIds));
         Path tempDir = storageService.createTempDir();
         Arrangement arrangement = score.getDefaultArrangement();
         Path path = storageService.downloadArrangementPart(arrangement, song, tempDir);

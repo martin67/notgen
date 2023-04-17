@@ -61,7 +61,7 @@ management:
 notgen:
   ocr:
     enable: true
-    songids: 11
+    songids: BF0D7BFF-8683-7B40-868E-155140E595F1
     username: ${OCR_USERNAME}
     license: ${OCR_LICENSE}
   storage:

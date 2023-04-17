@@ -13,9 +13,7 @@ import java.util.UUID;
 @Setter
 public class Arrangement {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private UUID uuid;
+    private UUID id;
 
     private String arranger;
     private String name;
@@ -30,7 +28,7 @@ public class Arrangement {
     private UUID score_uuid;
 
     public Arrangement() {
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 
     public Arrangement(String name) {

@@ -58,19 +58,20 @@ class PrintControllerTest {
     @MockBean
     private CustomOidcUserService customOidcUserService;
 
+private Instrument instrument;
 
     @BeforeEach
     void initTest() {
         Band band = new Band();
         Score foo = new Score();
         Score bar = new Score();
-        Instrument instrument = new Instrument();
+        instrument = new Instrument();
 
         List<Score> allScores = List.of(foo, bar);
         given(activeBand.getBand()).willReturn(band);
         given(scoreRepository.findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(instrument)).willReturn(allScores);
-        given(instrumentRepository.findById(2)).willReturn(Optional.of(instrument));
-        given(instrumentRepository.findByBandAndId(band, 2)).willReturn(Optional.of(instrument));
+        given(instrumentRepository.findById(instrument.getId())).willReturn(Optional.of(instrument));
+        given(instrumentRepository.findByBandAndId(band, instrument.getId())).willReturn(Optional.of(instrument));
         given(instrumentRepository.findAll()).willReturn(List.of(instrument));
     }
 
@@ -78,7 +79,7 @@ class PrintControllerTest {
     @DisplayName("Print instrument")
     @WithMockUser(authorities = "PRINT_SCORE")
     void whenPrintInstrument_thenReturnOk() throws Exception {
-        mvc.perform(get("/print/instrument").param("id", "2")
+        mvc.perform(get("/print/instrument").param("id", instrument.getId().toString())
                         .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("printInstrument"))
                 .andExpect(model().attributeExists("scores"))

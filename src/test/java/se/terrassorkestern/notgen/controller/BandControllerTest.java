@@ -71,7 +71,7 @@ class BandControllerTest {
     @DisplayName("Edit")
     @WithMockUser(authorities = "EDIT_BAND")
     void edit() throws Exception {
-        mvc.perform(get("/band/edit").param("id", String.valueOf(band.getId())))
+        mvc.perform(get("/band/edit").param("id", band.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("band/edit"))
                 .andExpect(model().attributeExists("band"));
@@ -91,7 +91,7 @@ class BandControllerTest {
     @DisplayName("Delete")
     @WithMockUser(authorities = "EDIT_BAND")
     void delete() throws Exception {
-        mvc.perform(get("/band/delete").param("id", String.valueOf(band.getId())))
+        mvc.perform(get("/band/delete").param("id", band.getId().toString()))
                 .andExpect(redirectedUrlPattern("/band/list*"));
     }
 

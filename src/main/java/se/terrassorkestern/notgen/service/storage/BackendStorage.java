@@ -42,13 +42,14 @@ public interface BackendStorage {
     }
 
     default String getArrangementPartName(ArrangementPart arrangementPart) {
-        return String.format("%d-%d-%d.pdf", arrangementPart.getArrangement().getScore().getId(),
-                arrangementPart.getArrangement().getId(), arrangementPart.getInstrument().getId());
+        return String.format("%s-%s.pdf", arrangementPart.getArrangement().getId(), arrangementPart.getInstrument().getId());
     }
 
     default String getArrangementPartName(Arrangement arrangement, Instrument instrument) {
-        return String.format("%d-%d-%d.pdf", arrangement.getScore().getId(),
-                arrangement.getId(), instrument.getId());
+        ArrangementPart arrangementPart = arrangement.getArrangementParts().stream()
+                .filter(ap -> ap.getInstrument() == instrument)
+                .findFirst().orElseThrow();
+        return getArrangementPartName(arrangementPart);
     }
 
     default String getCoverName(Score score) {

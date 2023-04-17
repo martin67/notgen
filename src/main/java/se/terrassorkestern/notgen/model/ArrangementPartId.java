@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 // See doc at https://vladmihalcea.com/the-best-way-to-map-a-many-to-many-association-with-extra-columns-when-using-jpa-and-hibernate/
 @Getter
@@ -13,13 +14,13 @@ import java.util.Objects;
 @Embeddable
 public class ArrangementPartId implements Serializable {
 
-    private int arrangementId;
-    private int instrumentId;
+    private UUID arrangementId;
+    private UUID instrumentId;
 
     public ArrangementPartId() {
     }
 
-    public ArrangementPartId(int arrangementId, int instrumentId) {
+    public ArrangementPartId(UUID arrangementId, UUID instrumentId) {
         this.arrangementId = arrangementId;
         this.instrumentId = instrumentId;
     }

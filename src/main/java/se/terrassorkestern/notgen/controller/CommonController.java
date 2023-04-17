@@ -39,14 +39,14 @@ public class CommonController {
         return auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_SUPERADMIN"));
     }
 
-    Instrument getInstrument(int id) {
+    Instrument getInstrument(UUID id) {
         Instrument instrument;
         if (isSuperAdmin()) {
             instrument = instrumentRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("Instrument %s not found", id)));
         } else {
             instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Instrument %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("Instrument %s not found", id)));
         }
         return instrument;
     }
@@ -65,10 +65,10 @@ public class CommonController {
         Setting setting;
         if (isSuperAdmin()) {
             setting = settingRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Setting %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("Setting %s not found", id)));
         } else {
             setting = settingRepository.findByIdAndBand(id, activeBand.getBand())
-                    .orElseThrow(() -> new NotFoundException(String.format("Setting %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("Setting %s not found", id)));
         }
         return setting;
     }

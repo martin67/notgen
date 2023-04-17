@@ -45,15 +45,15 @@ public class ScoreUpdater {
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("********* Score updater");
-        for (Score score : scoreRepository.findAll()) {
-            for (Arrangement arrangement : score.getArrangements()) {
-                if (score.getFiles().isEmpty()) {
-                    score.getFiles().add(arrangement.getFile());
-                    log.info("Adding file to score {} ({})", score.getTitle(), score.getId());
-                }
-            }
-            scoreRepository.save(score);
-        }
+//        for (Score score : scoreRepository.findAll()) {
+//            for (Arrangement arrangement : score.getArrangements()) {
+//                if (score.getFiles().isEmpty()) {
+//                    score.getFiles().add(arrangement.getFile());
+//                    log.info("Adding file to score {} ({})", score.getTitle(), score.getId());
+//                }
+//            }
+//            scoreRepository.save(score);
+//        }
 
 
 //        for (Band band : bandRepository.findAll()) {

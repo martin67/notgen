@@ -14,7 +14,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import se.terrassorkestern.notgen.model.*;
-import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.SongOcrService;
@@ -22,6 +21,7 @@ import se.terrassorkestern.notgen.service.StorageService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -77,8 +77,8 @@ public class ScoreController extends CommonController {
         model.addAttribute("score", score);
         // Check if the score has a song instrument. Only one for now
         if (enableOcr) {
-            int songId = Integer.parseInt(ocrSongIds);
-            if (arrangement.getInstruments().stream().anyMatch(instrument -> instrument.getId() == songId)) {
+            UUID songId = UUID.fromString(ocrSongIds);
+            if (arrangement.getInstruments().stream().anyMatch(instrument -> instrument.getId().equals(songId))) {
                 model.addAttribute("doSongOcr", "true");
             } else {
                 model.addAttribute("doSongOcr", "false");

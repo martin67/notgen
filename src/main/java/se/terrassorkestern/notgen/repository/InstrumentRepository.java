@@ -7,9 +7,10 @@ import se.terrassorkestern.notgen.model.Instrument;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface InstrumentRepository extends JpaRepository<Instrument, Integer> {
+public interface InstrumentRepository extends JpaRepository<Instrument, UUID> {
 
     List<Instrument> findByBandOrderBySortOrder(Band band);
 
@@ -21,6 +22,6 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Integer>
 
     Optional<Instrument> findFirstByBand(Band band);
 
-    Optional<Instrument> findByBandAndId(Band band, int id);
+    Optional<Instrument> findByBandAndId(Band band, UUID id);
 
 }

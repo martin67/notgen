@@ -65,10 +65,11 @@ class PlaylistControllerTest {
     @MockBean
     private CustomOidcUserService customOidcUserService;
 
+    private Band band1;
 
     @BeforeEach
     void initTest() throws IOException {
-        Band band1 = new Band();
+        band1 = new Band();
         Playlist foo = new Playlist();
         foo.setBand(band1);
         Playlist bar = new Playlist();
@@ -80,7 +81,7 @@ class PlaylistControllerTest {
         given(activeBand.getBand()).willReturn(band1);
         given(playlistRepository.findByBandOrderByDateDesc(band1)).willReturn(allPlaylists);
         given(playlistRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(foo));
-        given(instrumentRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(sax));
+        given(instrumentRepository.findByBandAndId(band1, sax.getId())).willReturn(Optional.of(sax));
         given(playlistPdfService.create(foo)).willReturn(new ByteArrayInputStream(new byte[0]));
     }
 
