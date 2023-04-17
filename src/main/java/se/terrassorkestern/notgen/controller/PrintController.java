@@ -44,9 +44,9 @@ public class PrintController extends CommonController {
     }
 
     @GetMapping("/instrument")
-    public String selectInstrument(@RequestParam(name = "id", required = false, defaultValue = "-1") int id, Model model) {
+    public String selectInstrument(@RequestParam(name = "id", required = false) UUID id, Model model) {
         Instrument instrument;
-        if (id == -1) {
+        if (id == null) {
             instrument = instrumentRepository.findFirstByBand(activeBand.getBand()).orElseThrow();
             id = instrument.getId();
         } else {
@@ -80,7 +80,7 @@ public class PrintController extends CommonController {
     }
 
     @GetMapping(value = "/getscorepart", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> printScorePart(@RequestParam(name = "instrument_id") Integer instrumentId,
+    public ResponseEntity<InputStreamResource> printScorePart(@RequestParam(name = "instrument_id") UUID instrumentId,
                                                               @RequestParam(name = "score_id") Integer scoreId) {
         Score score = scoreRepository.findById(scoreId).orElseThrow();
         Instrument instrument = getInstrument(instrumentId);
@@ -105,12 +105,12 @@ public class PrintController extends CommonController {
 
     @GetMapping(value = "/arrangement", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printArrangement(@RequestParam(name = "score_id") int scoreId,
-                                                                @RequestParam(name = "arrangement_id", defaultValue = "-1") int arrangementId,
-                                                                @RequestParam(name = "instrument_id") int instrumentId) {
+                                                                @RequestParam(name = "arrangement_id") UUID arrangementId,
+                                                                @RequestParam(name = "instrument_id") UUID instrumentId) {
         Score score = scoreRepository.findById(scoreId).orElseThrow();
         Instrument instrument = getInstrument(instrumentId);
         Arrangement arrangement = null;
-        if (arrangementId == -1) {
+        if (arrangementId == null) {
             arrangement = score.getDefaultArrangement();
         } else {
             for (Arrangement arr : score.getArrangements()) {
@@ -169,7 +169,7 @@ public class PrintController extends CommonController {
 
     @GetMapping(value = "/playlist", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printPlaylist(@RequestParam(name = "playlist_id") Integer playlistId,
-                                                             @RequestParam(name = "instrument_id") Integer instrumentId) {
+                                                             @RequestParam(name = "instrument_id") UUID instrumentId) {
 
         Playlist playlist = getPlaylist(playlistId);
         Instrument instrument = getInstrument(instrumentId);

@@ -11,6 +11,7 @@ import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -32,13 +33,13 @@ public class InstrumentController extends CommonController {
     }
 
     @GetMapping("/view")
-    public String view(@RequestParam("id") Integer id, Model model) {
+    public String view(@RequestParam("id") UUID id, Model model) {
         model.addAttribute("instrument", getInstrument(id));
         return "instrument/view";
     }
 
     @GetMapping("/edit")
-    public String edit(@RequestParam("id") Integer id, Model model) {
+    public String edit(@RequestParam("id") UUID id, Model model) {
         model.addAttribute("instrument", getInstrument(id));
         return "instrument/edit";
     }
@@ -56,7 +57,7 @@ public class InstrumentController extends CommonController {
     }
 
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") Integer id) {
+    public String delete(@RequestParam("id") UUID id) {
         Instrument instrument = getInstrument(id);
         log.info("Tar bort instrument {} [{}]", instrument.getName(), instrument.getId());
         instrumentRepository.delete(instrument);

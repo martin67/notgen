@@ -23,6 +23,7 @@ import se.terrassorkestern.notgen.user.CustomOidcUserService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
@@ -58,31 +59,37 @@ class InstrumentControllerTest {
     @MockBean
     private CustomOidcUserService customOidcUserService;
 
+    private Band band1;
+    private Band band2;
+    private Instrument sax;
+    private Instrument trumpet;
+    private Instrument flute;
+
 
     @BeforeEach
     void initTest() {
-        Band band1 = new Band();
-        Band band2 = new Band();
+        band1 = new Band();
+        band2 = new Band();
 
-        Instrument sax = new Instrument();
+        sax = new Instrument();
         sax.setName("saxofon");
         sax.setSortOrder(10);
         sax.setBand(band1);
 
-        Instrument trumpet = new Instrument();
+        trumpet = new Instrument();
         trumpet.setName("trumpet");
         trumpet.setSortOrder(20);
         trumpet.setBand(band1);
 
-        Instrument flute = new Instrument();
-        trumpet.setName("flöjt");
-        trumpet.setSortOrder(10);
-        trumpet.setBand(band2);
+        flute = new Instrument();
+        flute.setName("flöjt");
+        flute.setSortOrder(10);
+        flute.setBand(band2);
 
         given(activeBand.getBand()).willReturn(band1);
         given(instrumentRepository.findByBandOrderBySortOrder(band1)).willReturn(List.of(sax, trumpet));
-        given(instrumentRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(sax));
-        given(instrumentRepository.findByBandAndId(band2, 3)).willReturn(Optional.of(flute));
+        given(instrumentRepository.findByBandAndId(band1, sax.getId())).willReturn(Optional.of(sax));
+        given(instrumentRepository.findByBandAndId(band2, flute.getId())).willReturn(Optional.of(flute));
     }
 
     @Nested
@@ -124,7 +131,7 @@ class InstrumentControllerTest {
         void whenEditValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/instrument/edit")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "1"))
+                            .param("id", sax.getId().toString()))
                     .andExpect(view().name("instrument/edit"))
                     .andExpect(model().attributeExists("instrument"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -137,7 +144,7 @@ class InstrumentControllerTest {
         void whenEditNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/instrument/edit")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "0"))
+                            .param("id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
     }
@@ -190,7 +197,7 @@ class InstrumentControllerTest {
         void whenDeleteValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/instrument/delete")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "1"))
+                            .param("id", sax.getId().toString()))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/instrument/list*"));
         }
@@ -201,7 +208,7 @@ class InstrumentControllerTest {
         void whenDeleteNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/instrument/delete")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "0"))
+                            .param("id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
     }

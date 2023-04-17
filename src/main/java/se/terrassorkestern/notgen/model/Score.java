@@ -71,7 +71,6 @@ public class Score extends Auditable<String> {
 
     @OneToOne(fetch = FetchType.LAZY)
     private Arrangement defaultArrangement;
-    private UUID defaultArrangement_uuid;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<NgFile> files = new ArrayList<>();

@@ -26,6 +26,7 @@ import se.terrassorkestern.notgen.service.PlaylistPdfService;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -135,9 +136,9 @@ public class PlaylistController extends CommonController {
     @PostMapping(value = "/save", params = {"createPack"})
     public ResponseEntity<InputStreamResource> createPack(final Playlist playlist,
                                                           final HttpServletRequest req) {
-        int id;
+        UUID id;
         try {
-            id = Integer.parseInt(req.getParameter("selectedInstrument"));
+            id = UUID.fromString(req.getParameter("selectedInstrument"));
         } catch (NumberFormatException e) {
             throw new NotFoundException("Instrument not found");
         }

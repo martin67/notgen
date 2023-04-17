@@ -15,9 +15,7 @@ import java.util.UUID;
 @Entity
 public class Instrument {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private UUID uuid;
+    private UUID id;
 
     @ManyToOne
     private Band band;
@@ -32,6 +30,6 @@ public class Instrument {
     private Set<Setting> settings = new HashSet<>();
 
     public Instrument() {
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 }
