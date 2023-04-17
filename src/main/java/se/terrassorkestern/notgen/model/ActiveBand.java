@@ -23,7 +23,7 @@ public class ActiveBand {
 
     public Band getBand() {
         if (band == null) {
-            band = bandRepository.findById(1).orElseThrow();
+            band = bandRepository.findByName("Terrassorkestern").orElseThrow();
         }
         return band;
     }

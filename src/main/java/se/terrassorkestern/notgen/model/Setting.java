@@ -13,13 +13,10 @@ import java.util.UUID;
 @Entity
 public class Setting {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private UUID uuid;
+    private UUID id;
 
     @ManyToOne
     private Band band;
-    private UUID band_uuid;
 
     private String name;
     @ManyToMany
@@ -30,6 +27,6 @@ public class Setting {
     private Set<Instrument> instruments = new HashSet<>();
 
     public Setting() {
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 }

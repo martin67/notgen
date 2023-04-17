@@ -10,6 +10,8 @@ import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Setting;
 import se.terrassorkestern.notgen.repository.SettingRepository;
 
+import java.util.UUID;
+
 @Slf4j
 @Controller
 @RequestMapping("/setting")
@@ -30,7 +32,7 @@ public class SettingController extends CommonController {
     }
 
     @GetMapping("/edit")
-    public String settingEdit(@RequestParam("id") Integer id, Model model) {
+    public String settingEdit(@RequestParam("id") UUID id, Model model) {
         model.addAttribute("setting", getSetting(id));
         model.addAttribute("allSettings", getSettings());
         return "settingEdit";
@@ -44,7 +46,7 @@ public class SettingController extends CommonController {
     }
 
     @GetMapping("/delete")
-    public String settingDelete(@RequestParam("id") Integer id) {
+    public String settingDelete(@RequestParam("id") UUID id) {
         Setting setting = getSetting(id);
         log.info("Tar bort sättning {} [{}]", setting.getName(), setting.getId());
         settingRepository.delete(setting);

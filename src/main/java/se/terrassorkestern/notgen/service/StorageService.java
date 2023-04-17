@@ -162,6 +162,11 @@ public class StorageService {
         Set<String> diff = Sets.difference(existingFiles, ngFiles);
 
         // Remove the excess. These are files that are removed or uploaded but not saved.
+        if (diff.size() > 100) {
+            log.warn("Not deleting 100+ files!");
+            return;
+        }
+
         if (!diff.isEmpty()) {
             log.info("Cleanup of input directory. Removing {} files", diff.size());
             for (String file : diff) {
