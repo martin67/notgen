@@ -3,7 +3,6 @@ package se.terrassorkestern.notgen.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ContentDisposition;
@@ -36,17 +35,15 @@ public class ScoreController extends CommonController {
 
     private final ActiveBand activeBand;
     private final ScoreRepository scoreRepository;
-    private final InstrumentRepository instrumentRepository;
     private final ConverterService converterService;
     private final SongOcrService songOcrService;
     private final StorageService storageService;
 
-    public ScoreController(ActiveBand activeBand, ScoreRepository scoreRepository, InstrumentRepository instrumentRepository,
+    public ScoreController(ActiveBand activeBand, ScoreRepository scoreRepository,
                            ConverterService converterService,
                            SongOcrService songOcrService, StorageService storageService) {
         this.activeBand = activeBand;
         this.scoreRepository = scoreRepository;
-        this.instrumentRepository = instrumentRepository;
         this.converterService = converterService;
         this.songOcrService = songOcrService;
         this.storageService = storageService;

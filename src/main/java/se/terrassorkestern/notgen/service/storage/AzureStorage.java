@@ -99,12 +99,13 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public NgFile uploadFile(MultipartFile file) throws StorageException {
+        log.error("Upload ({}) not implemented yet!", file.getOriginalFilename());
         return null;
     }
 
     @Override
     public void deleteFile(String filename) throws StorageException {
-
+        log.error("Delete ({}) not implemented yet!", filename);
     }
 
     @Override
@@ -142,6 +143,7 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public InputStream downloadFile(NgFile file) throws StorageException {
+        log.error("Download ({}) not implemented yet!", file.getOriginalFilename());
         return null;
     }
 
@@ -175,6 +177,6 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public Set<String> listInputDirectory() throws IOException {
-        return null;
+        return Set.of();
     }
 }
