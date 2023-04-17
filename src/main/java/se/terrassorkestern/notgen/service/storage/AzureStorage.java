@@ -21,6 +21,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -177,6 +179,7 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public Set<String> listInputDirectory() throws IOException {
-        return Set.of();
+        Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, "*"));
+        return Stream.of(resources).map(Resource::getFilename).collect(Collectors.toSet());
     }
 }
