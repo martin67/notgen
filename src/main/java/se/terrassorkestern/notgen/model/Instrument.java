@@ -21,7 +21,6 @@ public class Instrument {
 
     @ManyToOne
     private Band band;
-    private UUID band_uuid;
 
     @NotBlank(message = "Instrumentnamn måste anges")
     private String name;

@@ -10,6 +10,8 @@ import se.terrassorkestern.notgen.exceptions.NotFoundException;
 import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.repository.BandRepository;
 
+import java.util.UUID;
+
 
 @Slf4j
 @Controller
@@ -29,9 +31,9 @@ public class BandController {
     }
 
     @GetMapping("/edit")
-    public String edit(@RequestParam("id") Integer id, Model model) {
+    public String edit(@RequestParam("id") UUID id, Model model) {
         Band band = bandRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Band %d not found", id)));
+                .orElseThrow(() -> new NotFoundException(String.format("Band %s not found", id)));
         model.addAttribute("band", band);
         return "band/edit";
     }
@@ -43,9 +45,9 @@ public class BandController {
     }
 
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") Integer id) {
+    public String delete(@RequestParam("id") UUID id) {
         Band band = bandRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Band %d not found", id)));
+                .orElseThrow(() -> new NotFoundException(String.format("Band %s not found", id)));
         log.info("Tar bort band {} [{}]", band.getName(), band.getId());
         bandRepository.delete(band);
         return "redirect:/band/list";

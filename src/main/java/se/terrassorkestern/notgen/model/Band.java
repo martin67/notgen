@@ -12,15 +12,11 @@ import java.util.UUID;
 @Entity
 public class Band {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private int id;
-    private UUID uuid;
-
+    private UUID id;
     private String name;
     private String description;
 
     public Band() {
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 }

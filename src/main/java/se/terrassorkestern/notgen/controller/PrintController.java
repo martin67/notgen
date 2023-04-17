@@ -20,6 +20,7 @@ import se.terrassorkestern.notgen.service.ConverterService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -61,9 +62,9 @@ public class PrintController extends CommonController {
     }
 
     @GetMapping("/setting")
-    public String selectSetting(@RequestParam(name = "id", required = false, defaultValue = "-1") int id, Model model) {
+    public String selectSetting(@RequestParam(name = "id", required = false) UUID id, Model model) {
         Setting setting;
-        if (id == -1) {
+        if (id == null) {
             setting = settingRepository.findFirstByBand(activeBand.getBand());
             id = setting.getId();
         } else {
@@ -141,7 +142,7 @@ public class PrintController extends CommonController {
     }
 
     @GetMapping(value = "/getscore", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> printScore(@RequestParam(name = "setting_id") Integer settingId,
+    public ResponseEntity<InputStreamResource> printScore(@RequestParam(name = "setting_id") UUID settingId,
                                                           @RequestParam(name = "score_id") Integer scoreId) {
 
         Score score = scoreRepository.findById(scoreId).orElseThrow();

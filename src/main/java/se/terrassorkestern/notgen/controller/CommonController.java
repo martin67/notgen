@@ -12,6 +12,7 @@ import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 public class CommonController {
@@ -60,7 +61,7 @@ public class CommonController {
         return instruments;
     }
 
-    Setting getSetting(int id) {
+    Setting getSetting(UUID id) {
         Setting setting;
         if (isSuperAdmin()) {
             setting = settingRepository.findById(id)

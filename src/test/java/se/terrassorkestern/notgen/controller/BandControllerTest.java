@@ -49,12 +49,12 @@ class BandControllerTest {
     @MockBean
     private CustomOidcUserService customOidcUserService;
 
+    private Band band;
 
     @BeforeEach
     void init() {
-        Band band = new Band();
-        band.setId(1);
-        given(bandRepository.findById(1)).willReturn(Optional.of(band));
+        band = new Band();
+        given(bandRepository.findById(band.getId())).willReturn(Optional.of(band));
     }
 
     @Test
@@ -71,7 +71,7 @@ class BandControllerTest {
     @DisplayName("Edit")
     @WithMockUser(authorities = "EDIT_BAND")
     void edit() throws Exception {
-        mvc.perform(get("/band/edit").param("id", "1"))
+        mvc.perform(get("/band/edit").param("id", String.valueOf(band.getId())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("band/edit"))
                 .andExpect(model().attributeExists("band"));
@@ -91,7 +91,7 @@ class BandControllerTest {
     @DisplayName("Delete")
     @WithMockUser(authorities = "EDIT_BAND")
     void delete() throws Exception {
-        mvc.perform(get("/band/delete").param("id", "1"))
+        mvc.perform(get("/band/delete").param("id", String.valueOf(band.getId())))
                 .andExpect(redirectedUrlPattern("/band/list*"));
     }
 

@@ -36,7 +36,7 @@ public class Score extends Auditable<String> {
     private UUID uuid;
     @ManyToOne
     private Band band;
-    private UUID band_uuid;
+
     @NotBlank(message = "Titel måste anges")
     @FullTextField(analyzer = "swedish")
     private String title;
