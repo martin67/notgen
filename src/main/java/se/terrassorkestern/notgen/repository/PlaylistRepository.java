@@ -7,9 +7,10 @@ import se.terrassorkestern.notgen.model.Playlist;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface PlaylistRepository extends JpaRepository<Playlist, Integer> {
+public interface PlaylistRepository extends JpaRepository<Playlist, UUID> {
 
     List<Playlist> findByName(String text);
 
@@ -17,5 +18,5 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Integer> {
 
     List<Playlist> findByBandOrderByDateDesc(Band band);
 
-    Optional<Playlist> findByBandAndId(Band band, int id);
+    Optional<Playlist> findByBandAndId(Band band, UUID id);
 }

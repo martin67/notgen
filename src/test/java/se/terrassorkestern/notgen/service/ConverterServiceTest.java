@@ -73,13 +73,13 @@ class ConverterServiceTest {
         converterService.convert(scores);
     }
 
-    @Disabled
-    @Test
-    @WithMockUser
-    void convertExampleScores() throws IOException, InterruptedException {
-        List<Score> scores = scoreRepository.findAllById(Arrays.asList(exampleScores));
-        converterService.convert(scores);
-    }
+//    @Disabled
+//    @Test
+//    @WithMockUser
+//    void convertExampleScores() throws IOException, InterruptedException {
+//        List<Score> scores = scoreRepository.findAllById(Arrays.asList(exampleScores));
+//        converterService.convert(scores);
+//    }
 
     @Test
     @WithMockUser

@@ -13,10 +13,7 @@ import java.util.UUID;
 @Table(name = "ngfile")
 public class NgFile {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private int id;
-    private UUID uuid;
+    private UUID id;
 
     private String filename;
     private NgFileType type;
@@ -25,11 +22,11 @@ public class NgFile {
     private String comment;
 
     public NgFile() {
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 
     public void setFilename(String extension) {
-        filename = String.format("%s.%s", UUID.randomUUID(), extension);
+        filename = String.format("%s.%s", id, extension);
     }
 
     public MediaType getContentType() {

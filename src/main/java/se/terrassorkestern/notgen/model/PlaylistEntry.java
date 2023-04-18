@@ -14,9 +14,7 @@ import java.util.UUID;
 @Table(name = "score_playlist")
 public class PlaylistEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private UUID uuid;
+    private UUID id;
 
     private Integer sortOrder;
     private String text;
@@ -24,6 +22,6 @@ public class PlaylistEntry {
     private String comment;
 
     public PlaylistEntry() {
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 }
