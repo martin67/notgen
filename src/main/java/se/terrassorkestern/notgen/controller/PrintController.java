@@ -81,7 +81,7 @@ public class PrintController extends CommonController {
 
     @GetMapping(value = "/getscorepart", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printScorePart(@RequestParam(name = "instrument_id") UUID instrumentId,
-                                                              @RequestParam(name = "score_id") Integer scoreId) {
+                                                              @RequestParam(name = "score_id") UUID scoreId) {
         Score score = scoreRepository.findById(scoreId).orElseThrow();
         Instrument instrument = getInstrument(instrumentId);
 
@@ -104,7 +104,7 @@ public class PrintController extends CommonController {
     }
 
     @GetMapping(value = "/arrangement", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> printArrangement(@RequestParam(name = "score_id") int scoreId,
+    public ResponseEntity<InputStreamResource> printArrangement(@RequestParam(name = "score_id") UUID scoreId,
                                                                 @RequestParam(name = "arrangement_id") UUID arrangementId,
                                                                 @RequestParam(name = "instrument_id") UUID instrumentId) {
         Score score = scoreRepository.findById(scoreId).orElseThrow();
@@ -143,7 +143,7 @@ public class PrintController extends CommonController {
 
     @GetMapping(value = "/getscore", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printScore(@RequestParam(name = "setting_id") UUID settingId,
-                                                          @RequestParam(name = "score_id") Integer scoreId) {
+                                                          @RequestParam(name = "score_id") UUID scoreId) {
 
         Score score = scoreRepository.findById(scoreId).orElseThrow();
         Setting setting = getSetting(settingId);
@@ -168,7 +168,7 @@ public class PrintController extends CommonController {
     }
 
     @GetMapping(value = "/playlist", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> printPlaylist(@RequestParam(name = "playlist_id") Integer playlistId,
+    public ResponseEntity<InputStreamResource> printPlaylist(@RequestParam(name = "playlist_id") UUID playlistId,
                                                              @RequestParam(name = "instrument_id") UUID instrumentId) {
 
         Playlist playlist = getPlaylist(playlistId);

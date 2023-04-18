@@ -58,14 +58,14 @@ public class PlaylistController extends CommonController {
     }
 
     @GetMapping("/view")
-    public String view(@RequestParam("id") Integer id, Model model) {
+    public String view(@RequestParam("id") UUID id, Model model) {
         model.addAttribute("playlist", getPlaylist(id));
         model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
         return "playlist/view";
     }
 
     @GetMapping("/edit")
-    public String playlistEdit(@RequestParam("id") Integer id, Model model) {
+    public String playlistEdit(@RequestParam("id") UUID id, Model model) {
         model.addAttribute("playlist", getPlaylist(id));
         model.addAttribute("settings", settingRepository.findByBand(activeBand.getBand()));
         model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
@@ -83,7 +83,7 @@ public class PlaylistController extends CommonController {
     }
 
     @GetMapping("/delete")
-    public String playlistDelete(@RequestParam("id") Integer id) {
+    public String playlistDelete(@RequestParam("id") UUID id) {
         Playlist playlist = getPlaylist(id);
         log.info("Tar bort låtlista {} [{}]", playlist.getName(), playlist.getId());
         playlistRepository.delete(playlist);
@@ -91,7 +91,7 @@ public class PlaylistController extends CommonController {
     }
 
     @GetMapping("/copy")
-    public String playlistCopy(@RequestParam("id") Integer id) {
+    public String playlistCopy(@RequestParam("id") UUID id) {
         Playlist playlist = getPlaylist(id);
         log.info("Kopierar låtlista {} [{}]", playlist.getName(), playlist.getId());
         Playlist newPlaylist = playlist.copy();
@@ -145,7 +145,7 @@ public class PlaylistController extends CommonController {
 
         log.debug("Startar createPack för instrument id " + id);
 
-        Instrument instrument = instrumentRepository.findByBandAndId(activeBand.getBand(),  id).orElseThrow();
+        Instrument instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id).orElseThrow();
         try (InputStream is = converterService.assemble(playlist, instrument)) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=playlist.pdf");
@@ -166,7 +166,7 @@ public class PlaylistController extends CommonController {
     }
 
     @GetMapping(value = "/createPdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> playlistCreatePdf(@RequestParam("id") Integer id) {
+    public ResponseEntity<InputStreamResource> playlistCreatePdf(@RequestParam("id") UUID id) {
         Playlist playlist = getPlaylist(id);
         ByteArrayInputStream bis;
         try {

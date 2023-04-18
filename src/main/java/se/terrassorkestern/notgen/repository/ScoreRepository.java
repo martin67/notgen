@@ -11,16 +11,14 @@ import se.terrassorkestern.notgen.model.TopListEntry;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface ScoreRepository extends SearchRepository<Score, Integer> {
+public interface ScoreRepository extends SearchRepository<Score, UUID> {
 
-    Optional<Score> findByBandAndId(Band band, int id);
+    Optional<Score> findByBandAndId(Band band, UUID id);
 
     List<Score> findByBandOrderByTitleAsc(Band band);
-
-    @Query("SELECT s FROM Score s WHERE s.band.id = ?1 ORDER BY s.title")
-    List<Score> findByBandIdOrderByTitleAsc(int bandId);
 
     List<Score> findByTitle(String text);
 
@@ -31,10 +29,6 @@ public interface ScoreRepository extends SearchRepository<Score, Integer> {
     List<Score> findByDefaultArrangement_ArrangementParts_InstrumentInOrderByTitleAsc(Collection<Instrument> instruments);
 
     List<Score> findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(Instrument instrument);
-
-    List<Score> findByIdInOrderByTitle(List<Integer> id);
-
-    List<Score> findByIdGreaterThan(int id);
 
     List<Score> findByScannedFalseOrderByTitle();
 

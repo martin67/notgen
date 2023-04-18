@@ -1,14 +1,12 @@
 package se.terrassorkestern.notgen.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import jakarta.persistence.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +19,7 @@ import java.util.UUID;
 public class Playlist extends Auditable<String> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private UUID uuid;
+    private UUID id;
 
     @ManyToOne
     private Band band;
@@ -42,7 +38,7 @@ public class Playlist extends Auditable<String> {
     private List<PlaylistEntry> playlistEntries = new ArrayList<>();
 
     public Playlist() {
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 
     public Playlist copy() {

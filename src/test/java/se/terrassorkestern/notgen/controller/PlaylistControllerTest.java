@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
@@ -66,21 +67,24 @@ class PlaylistControllerTest {
     private CustomOidcUserService customOidcUserService;
 
     private Band band1;
+    private Playlist foo;
+    private Playlist bar;
+    private Instrument sax;
 
     @BeforeEach
     void initTest() throws IOException {
         band1 = new Band();
-        Playlist foo = new Playlist();
+        foo = new Playlist();
         foo.setBand(band1);
-        Playlist bar = new Playlist();
+        bar = new Playlist();
         bar.setBand(band1);
-        Instrument sax = new Instrument();
+        sax = new Instrument();
         sax.setBand(band1);
         List<Playlist> allPlaylists = List.of(foo, bar);
 
         given(activeBand.getBand()).willReturn(band1);
         given(playlistRepository.findByBandOrderByDateDesc(band1)).willReturn(allPlaylists);
-        given(playlistRepository.findByBandAndId(band1, 1)).willReturn(Optional.of(foo));
+        given(playlistRepository.findByBandAndId(band1, foo.getId())).willReturn(Optional.of(foo));
         given(instrumentRepository.findByBandAndId(band1, sax.getId())).willReturn(Optional.of(sax));
         given(playlistPdfService.create(foo)).willReturn(new ByteArrayInputStream(new byte[0]));
     }
@@ -119,7 +123,7 @@ class PlaylistControllerTest {
     void whenCreatePdf_thenReturnPdf() throws Exception {
         mvc.perform(get("/playlist/createPdf")
                         .contentType(MediaType.TEXT_HTML)
-                        .param("id", "1"))
+                        .param("id", foo.getId().toString()))
                 .andExpect(content().contentType(MediaType.APPLICATION_PDF))
                 .andExpect(status().isOk());
     }
@@ -134,7 +138,7 @@ class PlaylistControllerTest {
         void whenEditValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/playlist/edit")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "1"))
+                            .param("id", foo.getId().toString()))
                     .andExpect(view().name("playlist/edit"))
                     .andExpect(model().attributeExists("playlist"))
                     .andExpect(model().attributeExists("instruments"))
@@ -149,7 +153,7 @@ class PlaylistControllerTest {
         void whenEditNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/playlist/edit")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "0"))
+                            .param("id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
     }
@@ -175,7 +179,7 @@ class PlaylistControllerTest {
         void whenSaveInvalidInput_thenReturnReload() throws Exception {
             mvc.perform(post("/playlist/save").with(csrf())
                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                            .param("id", "1"))
+                            .param("id", foo.getId().toString()))
                     .andExpect(model().attributeExists("playlist"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                     .andExpect(status().isOk());
@@ -215,7 +219,7 @@ class PlaylistControllerTest {
             mvc.perform(post("/playlist/save").with(csrf())
                             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                             .param("createPack", "true")
-                            .param("selectedInstrument", "1"))
+                            .param("selectedInstrument", sax.getId().toString()))
                     .andExpect(content().contentType(MediaType.APPLICATION_PDF))
                     .andExpect(status().isOk());
         }
@@ -240,7 +244,7 @@ class PlaylistControllerTest {
         void whenDeleteValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/playlist/delete")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "1"))
+                            .param("id", foo.getId().toString()))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/playlist/list*"));
         }
@@ -251,7 +255,7 @@ class PlaylistControllerTest {
         void whenDeleteNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/playlist/delete")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "0"))
+                            .param("id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
     }
@@ -266,7 +270,7 @@ class PlaylistControllerTest {
         void whenDeleteValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/playlist/copy")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "1"))
+                            .param("id", foo.getId().toString()))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/playlist/list*"));
         }
@@ -277,7 +281,7 @@ class PlaylistControllerTest {
         void whenDeleteNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/playlist/copy")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "0"))
+                            .param("id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
     }
@@ -291,10 +295,10 @@ class PlaylistControllerTest {
         @WithAnonymousUser
         void whenAccessProtectedContentAsAnonymousUser_redirectToLogin() throws Exception {
             mvc.perform(get("/playlist/list")).andExpect(status().isOk());
-            mvc.perform(get("/playlist/view?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/playlist/view").param("id", foo.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/playlist/create")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(get("/playlist/edit?id=1")).andExpect(status().isFound())
+            mvc.perform(get("/playlist/edit").param("id", foo.getId().toString())).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(get("/playlist/delete")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
@@ -309,10 +313,10 @@ class PlaylistControllerTest {
         @WithMockUser
         void whenAccessProtectedContentAsNormalUser_returnForbidden() throws Exception {
             mvc.perform(get("/playlist/list")).andExpect(status().isOk());
-            mvc.perform(get("/playlist/view?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/playlist/view").param("id", foo.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/playlist/create")).andExpect(status().isForbidden());
-            mvc.perform(get("/playlist/edit?id=1")).andExpect(status().isForbidden());
-            mvc.perform(get("/playlist/delete?id=1")).andExpect(status().isForbidden());
+            mvc.perform(get("/playlist/edit").param("id", foo.getId().toString())).andExpect(status().isForbidden());
+            mvc.perform(get("/playlist/delete").param("id", foo.getId().toString())).andExpect(status().isForbidden());
             mvc.perform(post("/playlist/save")).andExpect(status().isForbidden());
             mvc.perform(get("/playlist/copy")).andExpect(status().isForbidden());
             mvc.perform(get("/playlist/nonexistent")).andExpect(status().isForbidden());
@@ -323,7 +327,7 @@ class PlaylistControllerTest {
         @WithMockUser(authorities = "EDIT_PLAYLIST")
         void whenAccessProtectedContentAsAdminUser_returnForbiddenOk() throws Exception {
             mvc.perform(get("/playlist/list")).andExpect(status().isOk());
-            mvc.perform(get("/playlist/view?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/playlist/view").param("id", foo.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/playlist/create")).andExpect(status().isOk());
             mvc.perform(get("/playlist/nonexistent")).andExpect(status().isNotFound());
         }

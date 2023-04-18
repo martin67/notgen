@@ -83,14 +83,14 @@ public class CommonController {
         return settings;
     }
 
-    Playlist getPlaylist(int id) {
+    Playlist getPlaylist(UUID id) {
         Playlist playlist;
         if (isSuperAdmin()) {
             playlist = playlistRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("Playlist %s not found", id)));
         } else {
             playlist = playlistRepository.findByBandAndId(activeBand.getBand(), id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Playlist %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("Playlist %s not found", id)));
         }
         return playlist;
     }
@@ -105,14 +105,14 @@ public class CommonController {
         return playlists;
     }
 
-    Score getScore(int id) {
+    Score getScore(UUID id) {
         Score score;
         if (isSuperAdmin()) {
             score = scoreRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("Score %s not found", id)));
         } else {
             score = scoreRepository.findByBandAndId(activeBand.getBand(), id)
-                    .orElseThrow(() -> new NotFoundException(String.format("Score %d not found", id)));
+                    .orElseThrow(() -> new NotFoundException(String.format("Score %s not found", id)));
         }
         return score;
     }

@@ -27,6 +27,7 @@ import se.terrassorkestern.notgen.user.CustomOidcUserService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
@@ -68,19 +69,21 @@ class ScoreControllerTest {
     @MockBean
     private CustomOidcUserService customOidcUserService;
 
+    private Score foo;
+    private Score bar;
 
     @BeforeEach
     void initTest() {
         Band band = new Band();
-        Score foo = new Score();
-        Score bar = new Score();
+        foo = new Score();
+        bar = new Score();
 
         List<Score> allScores = List.of(foo, bar);
         given(activeBand.getBand()).willReturn(band);
         given(scoreRepository.findByOrderByTitle()).willReturn(allScores);
         given(scoreRepository.findByBandOrderByTitleAsc(band)).willReturn(allScores);
-        given(scoreRepository.findById(1)).willReturn(Optional.of(foo));
-        given(scoreRepository.findByBandAndId(band, 1)).willReturn(Optional.of(foo));
+        given(scoreRepository.findById(foo.getId())).willReturn(Optional.of(foo));
+        given(scoreRepository.findByBandAndId(band, foo.getId())).willReturn(Optional.of(foo));
     }
 
     @Test
@@ -119,7 +122,7 @@ class ScoreControllerTest {
         void whenEditValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/score/edit")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "1"))
+                            .param("id", foo.getId().toString()))
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(model().attributeExists("allInstruments"))
@@ -133,7 +136,7 @@ class ScoreControllerTest {
         void whenEditNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/score/edit")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "0"))
+                            .param("id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
     }
@@ -222,7 +225,7 @@ class ScoreControllerTest {
         void whenDeleteValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/score/delete")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "1"))
+                            .param("id", foo.getId().toString()))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/score/list*"));
         }
@@ -233,7 +236,7 @@ class ScoreControllerTest {
         void whenDeleteNonValidInput_thenReturnNotFound() throws Exception {
             mvc.perform(get("/score/delete")
                             .contentType(MediaType.TEXT_HTML)
-                            .param("id", "0"))
+                            .param("id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
     }
@@ -247,12 +250,12 @@ class ScoreControllerTest {
         @WithAnonymousUser
         void whenAccessProtectedContentAsAnonymousUser_redirectToLogin() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/view?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/score/view").param("id", foo.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(get("/score/edit?id=1")).andExpect(status().isFound())
+            mvc.perform(get("/score/edit").param("id", foo.getId().toString())).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(get("/score/delete?id=1")).andExpect(status().isFound())
+            mvc.perform(get("/score/delete").param("id", foo.getId().toString())).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(post("/score/save").with(csrf())).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
@@ -265,10 +268,10 @@ class ScoreControllerTest {
         @WithMockUser
         void whenAccessProtectedContentAsNormalUser_returnForbidden() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/view?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/score/view").param("id", foo.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isForbidden());
-            mvc.perform(get("/score/edit?id=1")).andExpect(status().isForbidden());
-            mvc.perform(get("/score/delete?id=1")).andExpect(status().isForbidden());
+            mvc.perform(get("/score/edit").param("id", foo.getId().toString())).andExpect(status().isForbidden());
+            mvc.perform(get("/score/delete").param("id", foo.getId().toString())).andExpect(status().isForbidden());
             mvc.perform(post("/score/save").with(csrf())).andExpect(status().isForbidden());
             mvc.perform(get("/score/nonexistent")).andExpect(status().isForbidden());
         }
@@ -278,10 +281,10 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenAccessProtectedContentAsAdminUser_returnForbiddenOk() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/view?id=1")).andExpect(status().isOk());
+            mvc.perform(get("/score/view").param("id", foo.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isOk());
-            mvc.perform(get("/score/edit?id=1")).andExpect(status().isOk());
-            mvc.perform(get("/score/delete?id=1")).andExpect(redirectedUrl("/score/list"));
+            mvc.perform(get("/score/edit").param("id", foo.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/delete").param("id", foo.getId().toString())).andExpect(redirectedUrl("/score/list"));
             mvc.perform(post("/score/save").sessionAttr("score", new Score()).with(csrf()).param("save", "dummy")).andExpect(status().isOk());
             mvc.perform(get("/score/nonexistent")).andExpect(status().isNotFound());
         }

@@ -21,11 +21,9 @@ public class Arrangement {
     private String comment;
     @ManyToOne(fetch = FetchType.LAZY)
     private NgFile file;
-    private UUID file_uuid;
 
     @ManyToOne
     private Score score;
-    private UUID score_uuid;
 
     public Arrangement() {
         this.id = UUID.randomUUID();

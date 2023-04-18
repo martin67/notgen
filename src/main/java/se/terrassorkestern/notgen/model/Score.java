@@ -31,9 +31,7 @@ import java.util.UUID;
 })
 public class Score extends Auditable<String> {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private UUID uuid;
+    private UUID id;
     @ManyToOne
     private Band band;
 
@@ -96,7 +94,7 @@ public class Score extends Auditable<String> {
 //    }
 
     public Score() {
-        this.uuid = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 
     public void addArrangement(Arrangement arrangement) {
@@ -112,18 +110,18 @@ public class Score extends Auditable<String> {
     }
 
     public String getThumbnailPath() {
-        return (cover != null && cover) ? String.format("/%d-thumbnail.png", id) : "/images/thoreehrling.jpg";
+        return (cover != null && cover) ? String.format("/%s-thumbnail.png", id) : "/images/thoreehrling.jpg";
     }
 
     public String getCoverPath() {
-        return (cover != null && cover) ? String.format("/%d-cover.jpg", id) : "/images/thoreehrling.jpg";
+        return (cover != null && cover) ? String.format("/%s-cover.jpg", id) : "/images/thoreehrling.jpg";
     }
 
-    public NgFile getFile(int fileId) {
+    public NgFile getFile(UUID fileId) {
         return files.stream()
                 .filter(f -> f.getId() == fileId)
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException(String.format("File %d not found", fileId)));
+                .orElseThrow(() -> new NotFoundException(String.format("File %s not found", fileId)));
     }
 
     @Override

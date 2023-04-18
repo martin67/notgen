@@ -56,7 +56,7 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") Integer id) {
+    public String delete(@RequestParam("id") UUID id) {
         Score score = getScore(id);
         log.info("Tar bort låt {} [{}]", score.getTitle(), score.getId());
         scoreRepository.delete(score);
@@ -64,14 +64,14 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/view")
-    public String view(@RequestParam("id") Integer id, Model model) {
+    public String view(@RequestParam("id") UUID id, Model model) {
         model.addAttribute("score", getScore(id));
         model.addAttribute("settings", getSettings());
         return "score/view";
     }
 
     @GetMapping("/edit")
-    public String edit(@RequestParam("id") Integer id, Model model) {
+    public String edit(@RequestParam("id") UUID id, Model model) {
         Score score = getScore(id);
         Arrangement arrangement = score.getDefaultArrangement();
         model.addAttribute("score", score);
@@ -169,7 +169,7 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/downloadFile")
-    public ResponseEntity<InputStreamResource> downloadFile(final Score score, @RequestParam("file_id") int fileId) {
+    public ResponseEntity<InputStreamResource> downloadFile(final Score score, @RequestParam("file_id") UUID fileId) {
         NgFile file = score.getFile(fileId);
         log.info("download: {}, file id: {}", file.getOriginalFilename(), file.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -185,7 +185,7 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/viewFile")
-    public ResponseEntity<InputStreamResource> viewFile(final Score score, @RequestParam("file_id") int fileId) {
+    public ResponseEntity<InputStreamResource> viewFile(final Score score, @RequestParam("file_id") UUID fileId) {
         NgFile file = score.getFile(fileId);
         log.info("view: {}, file id: {}", file.getOriginalFilename(), file.getId());
         return ResponseEntity.ok()
@@ -194,7 +194,7 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/deleteFile")
-    public String deleteFile(final Score score, @RequestParam("file_id") Integer fileId) {
+    public String deleteFile(final Score score, @RequestParam("file_id") UUID fileId) {
         NgFile file = score.getFile(fileId);
         //Score score = getScore(scoreId);
         score.getFiles().remove(file);
@@ -203,14 +203,14 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/convert")
-    public String convert(@RequestParam("id") int id) throws IOException, InterruptedException {
+    public String convert(@RequestParam("id") UUID id) throws IOException, InterruptedException {
         converterService.convert(List.of(getScore(id)));
         return "redirect:/score/list";
     }
 
     @GetMapping("/edit/ocr")
     public @ResponseBody
-    String ocr(@RequestParam("id") int id) throws Exception {
+    String ocr(@RequestParam("id") UUID id) throws Exception {
         return songOcrService.process(getScore(id));
     }
 

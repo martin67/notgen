@@ -39,13 +39,13 @@ class ImagedataExtractorTest {
         imageDataExtractor.extract(scores);
     }
 
-    @Disabled
-    @Test
-    @WithMockUser
-    void problemsScores() throws IOException, ImageReadException {
-        List<Integer> scoreIds = Arrays.asList(277, 278);
-        List<Score> scores = scoreRepository.findAllById(scoreIds);
-        imageDataExtractor.extract(scores);
-    }
+//    @Disabled
+//    @Test
+//    @WithMockUser
+//    void problemsScores() throws IOException, ImageReadException {
+//        List<Integer> scoreIds = Arrays.asList(277, 278);
+//        List<Score> scores = scoreRepository.findAllById(scoreIds);
+//        imageDataExtractor.extract(scores);
+//    }
 
 }
