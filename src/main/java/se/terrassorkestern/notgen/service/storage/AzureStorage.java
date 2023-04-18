@@ -12,9 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import se.terrassorkestern.notgen.exceptions.StorageException;
 import se.terrassorkestern.notgen.model.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,19 +61,15 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public Path downloadArrangement(Arrangement arrangement, Path location) throws IOException {
-        // Arrangement filename is based on the ngFile (ngFileId.extension, i.e. 23.zip)
-        // located in the input container
         String fileName = arrangement.getFile().getFilename();
         Path destination = location.resolve(fileName);
-        Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, fileName));
+        Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
         Files.copy(resource.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return destination;
     }
 
     @Override
     public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
-        // ArrangementPart filename is based on arrangementId-InstrumentId.pdf
-        // located in the scoreparts container
         String fileName = getArrangementPartName(arrangement, instrument);
         Path destination = location.resolve(fileName);
         Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, fileName));
@@ -89,7 +83,7 @@ public class AzureStorage implements BackendStorage {
         boolean allGenerated = true;
 
         for (Arrangement arrangement : score.getArrangements()) {
-            String pattern = String.format("%d-%d-*.pdf", score.getId(), arrangement.getId());
+            String pattern = String.format("%s-*.pdf", arrangement.getId());
             Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, pattern));
             // Just check that there are equal number of files as there should be score parts.
             if (resources.length != arrangement.getArrangementParts().size()) {
@@ -111,20 +105,20 @@ public class AzureStorage implements BackendStorage {
     }
 
     @Override
-    public void uploadArrangement(Arrangement arrangement, Path path) throws IOException {
-        log.info("Uploading score: {} ({}), arr: {} ({}), file: {}", arrangement.getScore().getTitle(),
-                arrangement.getScore().getId(), arrangement.getName(), arrangement.getId(), path);
-        String fileName = arrangement.getFile().getFilename();
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
+    public void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException {
+        log.info("Uploading arrangement part, score {} ({}), arr: {} ({}), instrument: {} ({})",
+                arrangementPart.getArrangement().getScore().getTitle(),
+                arrangementPart.getArrangement().getScore().getId(),
+                arrangementPart.getArrangement().getName(),
+                arrangementPart.getArrangement().getId(),
+                arrangementPart.getInstrument().getName(),
+                arrangementPart.getInstrument().getId());
+        String fileName = getArrangementPartName(arrangementPart);
+        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, fileName));
         try (OutputStream os = ((WritableResource) storageBlobResource).getOutputStream()) {
             Files.copy(path, os);
-            log.debug("write data to container={}, fileName={}", scoreContainer, fileName);
+            log.debug("write data to container={}, fileName={}", scorePartsContainer, fileName);
         }
-    }
-
-    @Override
-    public void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException {
-
     }
 
     private void upload(String fileName, Path path, String container) throws IOException {
@@ -145,8 +139,18 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public InputStream downloadFile(NgFile file) throws StorageException {
-        log.error("Download ({}) not implemented yet!", file.getOriginalFilename());
-        return null;
+        if (file == null || file.getFilename() == null) {
+            throw new StorageException("No file name set");
+        }
+        BufferedInputStream bis;
+        try {
+            String fileName = file.getFilename();
+            Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
+            bis = new BufferedInputStream(resource.getInputStream());
+        } catch (IOException e) {
+            throw new StorageException("Could not open file");
+        }
+        return bis;
     }
 
     @Override
