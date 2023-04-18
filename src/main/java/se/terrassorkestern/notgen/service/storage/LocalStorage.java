@@ -118,25 +118,9 @@ public class LocalStorage implements BackendStorage {
     }
 
     @Override
-    public void uploadArrangement(Arrangement arrangement, Path path) throws IOException {
-        String extension = com.google.common.io.Files.getFileExtension(path.getFileName().toString());
-        Files.copy(path, inputDir.resolve(getArrangementName(arrangement, extension)), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    @Override
     public void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException {
         Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(arrangementPart.getArrangement().getScore().getId())));
         Files.copy(path, scoreOutput.resolve(getArrangementPartName(arrangementPart)), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    public void uploadCover(Score score, InputStream inputStream) throws IOException {
-        Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(score.getId())));
-        Files.copy(inputStream, scoreOutput.resolve(getCoverName(score)), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    public void uploadThumbnail(Score score, Path path) throws IOException {
-        Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(score.getId())));
-        Files.copy(path, scoreOutput.resolve(getThumbnailName(score)), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
@@ -154,7 +138,7 @@ public class LocalStorage implements BackendStorage {
     // old file name: scoreid-1.xyz, new fileId.xyz
     @Override
     public Path renameScore(Score score, String newName) throws IOException {
-        String fileName = String.format("%d-1", score.getId());
+        String fileName = String.format("%s", score.getId());
         String[] files = inputDir.toFile().list((d, name) -> name.startsWith(fileName));
         if (files == null || files.length == 0) {
             log.error("No files found for pattern {}", fileName);

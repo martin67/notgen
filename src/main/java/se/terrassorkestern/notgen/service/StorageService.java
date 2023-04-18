@@ -99,10 +99,6 @@ public class StorageService {
         return backendStorage.downloadFile(file);
     }
 
-    public void uploadArrangement(Arrangement arrangement, Path path) throws IOException {
-        backendStorage.uploadArrangement(arrangement, path);
-    }
-
     public void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException {
         backendStorage.uploadArrangementPart(arrangementPart, path);
     }

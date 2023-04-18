@@ -18,8 +18,6 @@ public interface BackendStorage {
 
     boolean isScoreGenerated(Score score) throws IOException;
 
-    void uploadArrangement(Arrangement arrangement, Path path) throws IOException;
-
     NgFile uploadFile(MultipartFile file) throws StorageException;
 
     InputStream downloadFile(NgFile file) throws StorageException;
@@ -37,8 +35,7 @@ public interface BackendStorage {
     void cleanOutput() throws IOException;
 
     default String getArrangementName(Arrangement arrangement, String extension) {
-        return String.format("%d-%d.%s", arrangement.getScore().getId(),
-                arrangement.getId(), extension);
+        return String.format("%s.%s", arrangement.getId(), extension);
     }
 
     default String getArrangementPartName(ArrangementPart arrangementPart) {
@@ -53,11 +50,11 @@ public interface BackendStorage {
     }
 
     default String getCoverName(Score score) {
-        return String.format("%d-cover.jpg", score.getId());
+        return String.format("%s-cover.jpg", score.getId());
     }
 
     default String getThumbnailName(Score score) {
-        return String.format("%d-thumbnail.png", score.getId());
+        return String.format("%s-thumbnail.png", score.getId());
     }
 
     Set<String> listInputDirectory() throws IOException;
