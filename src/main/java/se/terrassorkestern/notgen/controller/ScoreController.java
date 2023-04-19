@@ -92,12 +92,12 @@ public class ScoreController extends CommonController {
     public String create(Model model) {
         Score score = new Score();
         Arrangement arrangement = new Arrangement();
-        score.getArrangements().add(arrangement);
+        score.addArrangement(arrangement);
         score.setDefaultArrangement(arrangement);
 
         // Fyll på med standardinstrumenten så går det lite fortare att editera...
         for (Instrument instrument : getInstruments()) {
-            arrangement.getArrangementParts().add(new ArrangementPart(arrangement, instrument));
+            arrangement.addArrangementPart(new ArrangementPart(arrangement, instrument));
         }
         model.addAttribute("score", score);
         model.addAttribute("allInstruments", getInstruments());

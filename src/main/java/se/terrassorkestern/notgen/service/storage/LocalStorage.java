@@ -71,22 +71,18 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public NgFile uploadFile(MultipartFile file) {
-        try {
-            if (file.isEmpty()) {
-                throw new StorageException("Failed to store empty file.");
-            }
-            if (file.getOriginalFilename() == null) {
-                throw new StorageException("No file name set");
-            }
+        if (file.isEmpty()) {
+            throw new StorageException("Failed to store empty file.");
+        }
+        if (file.getOriginalFilename() == null) {
+            throw new StorageException("No file name set");
+        }
 
+        try (InputStream inputStream = file.getInputStream()) {
             NgFile ngFile = new NgFile();
-
             String extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
             ngFile.setFilename(extension);
-
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, inputDir.resolve(ngFile.getFilename()), StandardCopyOption.REPLACE_EXISTING);
-            }
+            Files.copy(inputStream, inputDir.resolve(ngFile.getFilename()), StandardCopyOption.REPLACE_EXISTING);
             return ngFile;
         } catch (IOException e) {
             throw new StorageException("Failed to store file.", e);
@@ -98,14 +94,12 @@ public class LocalStorage implements BackendStorage {
         if (file == null || file.getFilename() == null) {
             throw new StorageException("No file name set");
         }
-        BufferedInputStream bis;
-        try {
-            bis = new BufferedInputStream(new FileInputStream(inputDir.resolve(file.getFilename()).
-                    toFile()));
-        } catch (FileNotFoundException e) {
-            throw new StorageException("Could not find file");
+        //BufferedInputStream bis;
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputDir.resolve(file.getFilename()).toFile()))) {
+            return bis;
+        } catch (IOException e) {
+            throw new StorageException("Could not download file");
         }
-        return bis;
     }
 
     @Override
@@ -115,6 +109,12 @@ public class LocalStorage implements BackendStorage {
         } catch (IOException e) {
             throw new StorageException("Could not delete file " + filename);
         }
+    }
+
+    @Override
+    public void renameFile(NgFile file, String newName) throws IOException {
+        Files.move(inputDir.resolve(file.getFilename()), inputDir.resolve(newName));
+        file.setFullFilename(newName);
     }
 
     @Override
@@ -135,24 +135,6 @@ public class LocalStorage implements BackendStorage {
         return Files.newOutputStream(outputPath);
     }
 
-    // old file name: scoreid-1.xyz, new fileId.xyz
-    @Override
-    public Path renameScore(Score score, String newName) throws IOException {
-        String fileName = String.format("%s", score.getId());
-        String[] files = inputDir.toFile().list((d, name) -> name.startsWith(fileName));
-        if (files == null || files.length == 0) {
-            log.error("No files found for pattern {}", fileName);
-            return null;
-        } else if (files.length > 1) {
-            log.warn("Multiple resources found for pattern {}, using the first", fileName);
-        }
-        //files[0]
-        String extension = com.google.common.io.Files.getFileExtension(files[0]);
-        Path newPath = inputDir.resolve(newName + "." + extension);
-        log.debug("Moving {} to {}", inputDir.resolve(files[0]), newPath);
-        //return newPath;
-        return Files.move(inputDir.resolve(files[0]), newPath);
-    }
 
     @Override
     public void cleanOutput() throws IOException {

@@ -107,10 +107,6 @@ public class StorageService {
         return backendStorage.isScoreGenerated(score);
     }
 
-    public Path renameScore(Score score, String newName) throws IOException {
-        return backendStorage.renameScore(score, newName);
-    }
-
     public Path replaceExtension(Path path, String newExtension) {
         Path parent = path.getParent();
         String fileName = path.getFileName().toString();

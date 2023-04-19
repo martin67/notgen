@@ -22,6 +22,8 @@ public interface BackendStorage {
 
     InputStream downloadFile(NgFile file) throws StorageException;
 
+    void renameFile(NgFile file, String newName) throws IOException;
+
     void deleteFile(String filename) throws StorageException;
 
     void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException;
@@ -29,8 +31,6 @@ public interface BackendStorage {
     OutputStream getCoverOutputStream(Score score) throws IOException;
 
     OutputStream getThumbnailOutputStream(Score score) throws IOException;
-
-    Path renameScore(Score score, String newName) throws IOException;
 
     void cleanOutput() throws IOException;
 
