@@ -12,12 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 import se.terrassorkestern.notgen.exceptions.StorageException;
 import se.terrassorkestern.notgen.model.*;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,21 +43,6 @@ public class AzureStorage implements BackendStorage {
     ) {
         this.resourceLoader = resourceLoader;
         this.azureStorageBlobProtocolResolver = patternResolver;
-    }
-
-    public Path downloadScore(Score score, Path location) throws IOException {
-        // Todo the second digit should be the arrangement (in the case of multiple arrangements of the same score)
-        String fileName = String.format("%d-%d.*", score.getId(), 1);
-        Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
-        if (resources.length == 0) {
-            log.error("No resource found for pattern {}", fileName);
-            return null;
-        } else if (resources.length > 1) {
-            log.warn("Multiple resources found for pattern {}, using the first", fileName);
-        }
-        Path destination = location.resolve(Objects.requireNonNull(resources[0].getFilename()));
-        Files.copy(resources[0].getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-        return destination;
     }
 
     @Override
@@ -95,13 +81,32 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public NgFile uploadFile(MultipartFile file) throws StorageException {
-        log.error("Upload ({}) not implemented yet!", file.getOriginalFilename());
-        return null;
+        if (file.isEmpty()) {
+            throw new StorageException("Failed to store empty file.");
+        }
+        if (file.getOriginalFilename() == null) {
+            throw new StorageException("No file name set");
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            NgFile ngFile = new NgFile();
+            String extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
+            ngFile.setFilename(extension);
+            upload(ngFile.getFilename(), inputStream, scoreContainer);
+            return ngFile;
+        } catch (IOException e) {
+            throw new StorageException("Failed to store file.", e);
+        }
     }
 
     @Override
     public void deleteFile(String filename) throws StorageException {
         log.error("Delete ({}) not implemented yet!", filename);
+    }
+
+    @Override
+    public void renameFile(NgFile file, String newName) throws IOException {
+        upload(newName, downloadFile(file), scoreContainer);
     }
 
     @Override
@@ -163,17 +168,6 @@ public class AzureStorage implements BackendStorage {
     public OutputStream getThumbnailOutputStream(Score score) throws IOException {
         Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getThumbnailName(score)));
         return ((WritableResource) storageBlobResource).getOutputStream();
-    }
-
-    // temporary
-    @Override
-    public Path renameScore(Score score, String newName) throws IOException {
-        Path tempDir = Files.createTempDirectory("ng");
-        Path downloadedScore = downloadScore(score, tempDir);
-        String extension = com.google.common.io.Files.getFileExtension(downloadedScore.toString());
-        String newFilename = newName + "." + extension;
-        upload(newFilename, downloadedScore, scoreContainer);
-        return Paths.get(newFilename);
     }
 
     @Override

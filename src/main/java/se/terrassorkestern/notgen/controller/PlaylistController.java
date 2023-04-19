@@ -69,7 +69,7 @@ public class PlaylistController extends CommonController {
         model.addAttribute("playlist", getPlaylist(id));
         model.addAttribute("settings", settingRepository.findByBand(activeBand.getBand()));
         model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
-        Integer selectedInstrument = 0;
+        int selectedInstrument = 0;
         model.addAttribute("selectedInstrument", selectedInstrument);
         return "playlist/edit";
     }
@@ -143,7 +143,7 @@ public class PlaylistController extends CommonController {
             throw new NotFoundException("Instrument not found");
         }
 
-        log.debug("Startar createPack för instrument id " + id);
+        log.debug("Startar createPack för instrument id {} ", id);
 
         Instrument instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id).orElseThrow();
         try (InputStream is = converterService.assemble(playlist, instrument)) {

@@ -8,7 +8,7 @@
 <body>
 <div th:replace="~{fragments/general :: header}"></div>
 
-<!-- Modal -->
+<!-- Modal confirm score delete -->
 <div class="modal" id="deleteModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -29,83 +29,88 @@
     </div>
 </div>
 
+<-- Modal edit file properties -->
+
 <div class="container">
     <h1>Redigera låt</h1>
 
     <form role="form" th:action="@{/score/save}" th:object="${score}" th:method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{id}" th:value="${score.id}"/>
 
-        <div class="row">
-            <div class="col-md-9">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="title" th:field="*{title}"
-                           th:value="${score.title}"/>
-                    <span class="text-danger" th:if="${#fields.hasErrors('title')}"
-                          th:errors="*{title}">Error</span>
-                    <label for="title">Titel</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="subTitle" th:field="*{subTitle}"
-                           th:value="${score.subTitle}"/>
-                    <label for="subTitle">Subtitel</label>
-                </div>
-                <div class="row g-2">
-                    <div class="col-md" id="prefetch-genres">
-                        <div>
-                            <label for="genre">Genre</label>
-                            <input type="text" class="form-control typeahead" id="genre" autocomplete="off"
-                                   th:field="*{genre}"
-                                   th:value="${score.genre}"/>
-                            <span class="text-danger" th:if="${#fields.hasErrors('genre')}"
-                                  th:errors="*{genre}">Error</span>
+        <!-- General info -->
+        <div class="form-row mb-3 border pt-2 px-2">
+            <div class="form-row">
+                <div class="col-md-9">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="title" th:field="*{title}"
+                               th:value="${score.title}"/>
+                        <span class="text-danger" th:if="${#fields.hasErrors('title')}"
+                              th:errors="*{title}">Error</span>
+                        <label for="title">Titel</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="subTitle" th:field="*{subTitle}"
+                               th:value="${score.subTitle}"/>
+                        <label for="subTitle">Subtitel</label>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md" id="prefetch-genres">
+                            <div>
+                                <label for="genre">Genre</label>
+                                <input type="text" class="form-control typeahead" id="genre" autocomplete="off"
+                                       th:field="*{genre}"
+                                       th:value="${score.genre}"/>
+                                <span class="text-danger" th:if="${#fields.hasErrors('genre')}"
+                                      th:errors="*{genre}">Error</span>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="year" th:field="*{year}"
+                                       th:value="${score.year}"/>
+                                <label for="year">År</label>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md">
-                        <div class="form-floating">
-                            <input type="number" class="form-control" id="year" th:field="*{year}"
-                                   th:value="${score.year}"/>
-                            <label for="year">År</label>
-                        </div>
-                    </div>
+
                 </div>
-
+                <div class="col-md-3" align="center">
+                    <figure class="figure">
+                        <img class="figure-img img-fluid rounded" th:src="@{${score.getThumbnailPath()}}"/>
+                    </figure>
+                </div>
             </div>
-            <div class="col-md-3" align="center">
-                <figure class="figure">
-                    <img class="figure-img img-fluid rounded" th:src="@{${score.getThumbnailPath()}}"/>
-                </figure>
+
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control typeahead" id="composer" autocomplete="off"
+                       th:field="*{composer}"
+                       th:value="${score.composer}"/>
+                <label for="composer">Kompositör</label>
             </div>
-        </div>
+            <div class="mb-3" id="prefetch-authors">
+                <label for="author">Författare</label>
+                <input type="text" class="form-control typeahead" id="author" autocomplete="off"
+                       th:field="*{author}"
+                       th:value="${score.author}"/>
+            </div>
 
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control typeahead" id="composer" autocomplete="off"
-                   th:field="*{composer}"
-                   th:value="${score.composer}"/>
-            <label for="composer">Kompositör</label>
-        </div>
-        <div class="mb-3" id="prefetch-authors">
-            <label for="author">Författare</label>
-            <input type="text" class="form-control typeahead" id="author" autocomplete="off"
-                   th:field="*{author}"
-                   th:value="${score.author}"/>
-        </div>
-
-        <div class="mb-3" id="prefetch-arrangers">
-            <label for="arranger">Arrangör</label>
-            <input type="text" class="form-control typeahead" id="arranger" autocomplete="off"
-                   th:field="*{arranger}"
-                   th:value="${score.arranger}" placeholder="arr"/>
-        </div>
-        <div class="mb-3" id="prefetch-publishers">
-            <label for="publisher">Förlag</label>
-            <input type="text" class="form-control typeahead" id="publisher" autocomplete="off"
-                   th:field="*{publisher}"
-                   th:value="${score.publisher}"/>
-        </div>
-        <div class="form-floating mb-3">
+            <div class="mb-3" id="prefetch-arrangers">
+                <label for="arranger">Arrangör</label>
+                <input type="text" class="form-control typeahead" id="arranger" autocomplete="off"
+                       th:field="*{arranger}"
+                       th:value="${score.arranger}" placeholder="arr"/>
+            </div>
+            <div class="mb-3" id="prefetch-publishers">
+                <label for="publisher">Förlag</label>
+                <input type="text" class="form-control typeahead" id="publisher" autocomplete="off"
+                       th:field="*{publisher}"
+                       th:value="${score.publisher}"/>
+            </div>
+            <div class="form-floating mb-3">
                 <textarea class="form-control" rows="4" id="comment" th:field="*{comment}"
                           th:value="${score.comment}"></textarea>
-            <label for="comment">Kommentar</label>
+                <label for="comment">Kommentar</label>
+            </div>
         </div>
 
         <!-- Arrangement -->
@@ -230,6 +235,9 @@
                                             type="submit"
                                             name="deleteRow" th:value="${rowStat.index}">Ta bort
                                     </button>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#uploadFile"><span class="bi-pencil-square"/>
+                                    </button>
                                 </div>
                             </div>
                             <hr>
@@ -248,9 +256,8 @@
                                         </label>
                                     </div>
                                     <button type="button" class="btn btn-sm btn-primary"
-                                            th:disabled="${score.getDefaultArrangement().getId() == arr.getId()}">Sätt
-                                        som
-                                        standard
+                                            th:disabled="${score.getDefaultArrangement().getId() == arr.getId()}">
+                                        Sätt som standard
                                     </button>
                                 </div>
                             </div>
@@ -308,7 +315,9 @@
                             <i class="bi-eye"></i></a>
                         <a th:href="@{downloadFile(score_id=${score.id},file_id=${file.getId()})}">
                             <i class="bi-cloud-arrow-down"></i></a>
-                        <a th:href="hej"><i class="bi-pencil-square"></i></a>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#uploadFile"><span class="bi-pencil-square"/>
+                        </button>
                         <a th:href="@{deleteFile(file_id=${file.getId()})}"><i class="bi-trash"></i></a>
                     </div>
                 </div>
@@ -354,10 +363,10 @@
                         </div>
                         <div class="row">
                             <div class="col-2">
-                                <label for="file_name">Namn</label>
+                                <label for="fileupload_name">Namn</label>
                             </div>
                             <div class="col">
-                                <input id="file_name" name="file_name" type="text"/>
+                                <input id="fileupload_name" name="file_name" type="text"/>
                             </div>
                         </div>
                     </div>
@@ -393,10 +402,10 @@
                         </div>
                         <div class="row">
                             <div class="col-2">
-                                <label for="file_name">Namn</label>
+                                <label for="fileupload_name">Namn</label>
                             </div>
                             <div class="col">
-                                <input id="file_name" name="file_name" type="text"/>
+                                <input id="fileview_name" name="file_name" type="text"/>
                             </div>
                         </div>
                     </div>
