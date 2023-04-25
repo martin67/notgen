@@ -33,6 +33,10 @@ public class NgFile {
         this.filename = filename;
     }
 
+    public String getDisplayName() {
+        return (name != null && !name.isEmpty()) ? name : originalFilename;
+    }
+
     public MediaType getContentType() {
         String extension = com.google.common.io.Files.getFileExtension(filename);
         return switch (extension) {

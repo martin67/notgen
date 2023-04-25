@@ -14,23 +14,20 @@ import java.util.UUID;
 public class Arrangement {
     @Id
     private UUID id;
-
     private String arranger;
     private String name;
     @Lob
     private String comment;
     @ManyToOne(fetch = FetchType.LAZY)
     private NgFile file;
-
     @ManyToOne
     private Score score;
+    private ScoreType scoreType;
+
 
     public Arrangement() {
         this.id = UUID.randomUUID();
-    }
-
-    public Arrangement(String name) {
-        this.name = name;
+        this.name = "New arr";
     }
 
     @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -38,7 +35,6 @@ public class Arrangement {
 
     public void addArrangementPart(ArrangementPart arrangementPart) {
         arrangementPart.setArrangement(this);
-        arrangementPart.setId(new ArrangementPartId(this.id, arrangementPart.getInstrument().getId()));
         arrangementParts.add(arrangementPart);
     }
 

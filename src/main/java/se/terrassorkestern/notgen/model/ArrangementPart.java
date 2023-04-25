@@ -15,11 +15,11 @@ public class ArrangementPart {
     @EmbeddedId
     private ArrangementPartId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("arrangementId")
     private Arrangement arrangement;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("instrumentId")
     @OrderBy("sortOrder")
     private Instrument instrument;
@@ -30,6 +30,7 @@ public class ArrangementPart {
 
 
     public ArrangementPart() {
+        this.id = new ArrangementPartId();
     }
 
     public ArrangementPart(Arrangement arrangement, Instrument instrument) {

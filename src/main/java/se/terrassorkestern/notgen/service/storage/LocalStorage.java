@@ -94,12 +94,13 @@ public class LocalStorage implements BackendStorage {
         if (file == null || file.getFilename() == null) {
             throw new StorageException("No file name set");
         }
-        //BufferedInputStream bis;
-        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputDir.resolve(file.getFilename()).toFile()))) {
-            return bis;
-        } catch (IOException e) {
+        BufferedInputStream bis;
+        try {
+            bis = new BufferedInputStream(new FileInputStream(inputDir.resolve(file.getFilename()).toFile()));
+        } catch (FileNotFoundException ex) {
             throw new StorageException("Could not download file");
         }
+        return bis;
     }
 
     @Override
@@ -134,7 +135,6 @@ public class LocalStorage implements BackendStorage {
         Path outputPath = staticDir.resolve(getThumbnailName(score));
         return Files.newOutputStream(outputPath);
     }
-
 
     @Override
     public void cleanOutput() throws IOException {
