@@ -64,13 +64,13 @@ public class Score extends Auditable<String> {
     @Lob
     private String presentation;
 
-    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Arrangement> arrangements = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Arrangement defaultArrangement;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<NgFile> files = new ArrayList<>();
 
     private ScoreType scoreType;
@@ -102,11 +102,18 @@ public class Score extends Auditable<String> {
         arrangements.add(arrangement);
     }
 
-    public Arrangement getArrangement(String name) {
+    public Arrangement getArrangement(UUID id) {
         return arrangements.stream()
-                .filter(a -> a.getName().equals(name))
+                .filter(a -> a.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException(String.format("Arrangement %s not found", name)));
+                .orElseThrow(() -> new NotFoundException(String.format("Arrangement %s not found", id)));
+    }
+
+    public Arrangement getArrangement(String id) {
+        return arrangements.stream()
+                .filter(a -> a.getId().toString().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(String.format("Arrangement %s not found", id)));
     }
 
     public String getThumbnailPath() {
@@ -119,16 +126,13 @@ public class Score extends Auditable<String> {
 
     public NgFile getFile(UUID fileId) {
         return files.stream()
-                .filter(f -> f.getId() == fileId)
+                .filter(f -> f.getId().equals(fileId))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(String.format("File %s not found", fileId)));
     }
 
     @Override
     public String toString() {
-        return "Score{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                '}';
+        return title + " (" + id +")";
     }
 }

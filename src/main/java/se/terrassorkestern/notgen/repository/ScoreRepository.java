@@ -35,24 +35,38 @@ public interface ScoreRepository extends SearchRepository<Score, UUID> {
     @Query("SELECT s.title FROM Score s ORDER BY s.title")
     List<String> getAllTitles();
 
+    @Query("SELECT DISTINCT s.title FROM Score s WHERE s.band = ?1 ORDER BY s.title")
+    List<String> getAllTitlesByBand(Band band);
+
     @Query("SELECT DISTINCT s.genre FROM Score s ORDER BY s.genre")
     List<String> getAllGenres();
+
+    @Query("SELECT DISTINCT s.genre FROM Score s WHERE s.band = ?1 ORDER BY s.genre")
+    List<String> getAllGenresByBand(Band band);
 
     @Query("SELECT DISTINCT s.composer FROM Score s ORDER BY s.composer")
     List<String> getAllComposers();
 
+    @Query("SELECT DISTINCT s.composer FROM Score s WHERE s.band = ?1 ORDER BY s.composer")
+    List<String> getAllComposersByBand(Band band);
+
     @Query("SELECT DISTINCT s.author FROM Score s ORDER BY s.author")
     List<String> getAllAuthors();
+
+    @Query("SELECT DISTINCT s.author FROM Score s WHERE s.band = ?1 ORDER BY s.author")
+    List<String> getAllAuthorsByBand(Band band);
 
     @Query("SELECT DISTINCT s.arranger FROM Score s ORDER BY s.arranger")
     List<String> getAllArrangers();
 
+    @Query("SELECT DISTINCT s.arranger FROM Score s WHERE s.band = ?1 ORDER BY s.arranger")
+    List<String> getAllArrangersByBand(Band band);
+
     @Query("SELECT DISTINCT s.publisher FROM Score s ORDER BY s.publisher")
     List<String> getAllPublishers();
 
-   @Query("SELECT DISTINCT s.publisher FROM Score s WHERE s.band = ?1 ORDER BY s.publisher")
+    @Query("SELECT DISTINCT s.publisher FROM Score s WHERE s.band = ?1 ORDER BY s.publisher")
     List<String> getAllPublishersByBand(Band band);
-
 
 
     // Statistics

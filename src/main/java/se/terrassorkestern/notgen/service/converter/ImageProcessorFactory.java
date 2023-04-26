@@ -2,7 +2,6 @@ package se.terrassorkestern.notgen.service.converter;
 
 import lombok.extern.slf4j.Slf4j;
 import se.terrassorkestern.notgen.model.Arrangement;
-import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
 
 import java.nio.file.Path;
@@ -15,22 +14,15 @@ public class ImageProcessorFactory {
     }
 
     public static ImageProcessor create(Path path, Path tmpDir, Arrangement arrangement, StorageService storageService, boolean firstPage) {
-        // Todo fix
-        Score score = arrangement.getScore();
-        if (score.getScoreType() == null) {
-            log.warn("scoreType not set for score {}", score);
-            if (score.getFilename().endsWith(".zip")) {
-                return new TryckarrOriginal(path, tmpDir, arrangement, storageService, firstPage);
-            } else if (score.getFilename().endsWith(".pdf")) {
-                return new ScannedPdf(path, arrangement, storageService, firstPage);
-            } else {
-                return null;
-            }
+        if (arrangement.getScoreType() == null) {
+            log.warn("scoreType not set for score {}, arr {}", arrangement.getScore(), arrangement);
+            return null;
         } else {
-            return switch (score.getScoreType()) {
+            return switch (arrangement.getScoreType()) {
                 case NotScanned -> null;
                 case PDF, PDF_L, PDF_R -> new ScannedPdf(path, arrangement, storageService, firstPage);
                 case BW -> new BlackAndWhite(path, arrangement, storageService, firstPage);
+                case Color -> new ColorArr(path, tmpDir, arrangement, storageService, firstPage);
                 case ScannedTryckArr -> new TryckarrOriginal(path, tmpDir, arrangement, storageService, firstPage);
             };
         }

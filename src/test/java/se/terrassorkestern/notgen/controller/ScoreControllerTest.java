@@ -14,10 +14,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
-import se.terrassorkestern.notgen.model.ActiveBand;
-import se.terrassorkestern.notgen.model.Arrangement;
-import se.terrassorkestern.notgen.model.Band;
-import se.terrassorkestern.notgen.model.Score;
+import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.SongOcrService;
@@ -77,6 +74,12 @@ class ScoreControllerTest {
         Band band = new Band();
         foo = new Score();
         bar = new Score();
+        foo.setTitle("Foo score");
+        bar.setTitle("Bar score");
+        Arrangement arr = new Arrangement();
+        arr.addArrangementPart(new ArrangementPart(arr, new Instrument()));
+        foo.getArrangements().add(arr);
+        foo.setDefaultArrangement(arr);
 
         List<Score> allScores = List.of(foo, bar);
         given(activeBand.getBand()).willReturn(band);
@@ -107,7 +110,7 @@ class ScoreControllerTest {
                         .contentType(MediaType.TEXT_HTML))
                 .andExpect(view().name("score/edit"))
                 .andExpect(model().attributeExists("score"))
-                .andExpect(model().attributeExists("allInstruments"))
+                .andExpect(model().attributeExists("instruments"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(status().isOk());
     }
@@ -125,7 +128,7 @@ class ScoreControllerTest {
                             .param("id", foo.getId().toString()))
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"))
-                    .andExpect(model().attributeExists("allInstruments"))
+                    .andExpect(model().attributeExists("instruments"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                     .andExpect(status().isOk());
         }
@@ -149,12 +152,10 @@ class ScoreControllerTest {
         @DisplayName("Valid input")
         @WithMockUser(authorities = "EDIT_SONG")
         void whenSaveValidInput_thenReturnRedirect() throws Exception {
-            Score score = new Score();
-            score.setTitle("My title");
-            mvc.perform(post("/score/save").with(csrf())
+            mvc.perform(post("/score/submit").with(csrf())
+                            .sessionAttr("score", foo)
                             .param("save", "dummy")
-                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                            .sessionAttr("score", score))
+                            .param("defaultArrangementIndex", "0"))
                     .andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("/score/list*"));
         }
@@ -163,29 +164,20 @@ class ScoreControllerTest {
         @DisplayName("Invalid input")
         @WithMockUser(authorities = "EDIT_SONG")
         void whenSaveInvalidInput_thenReturnReload() throws Exception {
-            Score score = new Score();
-            mvc.perform(post("/score/save").with(csrf())
+            mvc.perform(post("/score/submit").with(csrf())
+                            .sessionAttr("score", new Score())
                             .param("save", "dummy")
-                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                            .requestAttr("score", score)
-                            .sessionAttr("score", score))
-                    .andExpect(model().attributeExists("score"))
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                    .andExpect(status().isOk());
+                            .param("defaultArrangementIndex", "0"))
+                    .andExpect(status().is4xxClientError());
         }
 
         @Test
-        @DisplayName("Add row")
+        @DisplayName("Add arrangement")
         @WithMockUser(authorities = "EDIT_SONG")
-        void whenSaveAddRow_thenReturnOk() throws Exception {
-            Score score = new Score();
-            Arrangement arr = new Arrangement("1");
-            score.getArrangements().add(arr);
-            score.setDefaultArrangement(arr);
-            mvc.perform(post("/score/save").with(csrf())
-                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                            .sessionAttr("score", score)
-                            .param("addRow", "1"))
+        void whenAddArrangement_thenReturnOk() throws Exception {
+            mvc.perform(post("/score/submit").with(csrf())
+                            .sessionAttr("score", foo)
+                            .param("addArrangement", "dummy"))
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -193,12 +185,38 @@ class ScoreControllerTest {
         }
 
         @Test
-        @DisplayName("Delete row")
+        @DisplayName("Delete arrangement")
+        @WithMockUser(authorities = "EDIT_SONG")
+        void whenDeleteArrangement_thenReturnOk() throws Exception {
+            mvc.perform(post("/score/submit").with(csrf())
+                            .sessionAttr("score", foo)
+                            .param("deleteArrangement", foo.getDefaultArrangement().getId().toString()))
+                    .andExpect(view().name("score/edit"))
+                    .andExpect(model().attributeExists("score"))
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("Add arrangement part")
+        @WithMockUser(authorities = "EDIT_SONG")
+        void whenSaveAddRow_thenReturnOk() throws Exception {
+            mvc.perform(post("/score/submit").with(csrf())
+                            .sessionAttr("score", foo)
+                            .param("addArrangementPart", foo.getDefaultArrangement().getId().toString()))
+                    .andExpect(view().name("score/edit"))
+                    .andExpect(model().attributeExists("score"))
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("Delete arrangement part")
         @WithMockUser(authorities = "EDIT_SONG")
         void whenSaveDeleteRow_thenReturnOk() throws Exception {
-            mvc.perform(post("/score/save").with(csrf())
-                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                            .param("deleteRow", "0"))
+            mvc.perform(post("/score/submit").with(csrf())
+                            .sessionAttr("score", foo)
+                            .param("deleteArrangementPart", foo.getDefaultArrangement().getId().toString() + "-0"))
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -209,8 +227,7 @@ class ScoreControllerTest {
         @DisplayName("No CSRF")
         @WithMockUser(authorities = "EDIT_SONG")
         void whenSaveWithoutCsrf_thenReturnForbidden() throws Exception {
-            mvc.perform(post("/score/save")
-                            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+            mvc.perform(post("/score/save"))
                     .andExpect(status().isForbidden());
         }
     }
@@ -285,10 +302,13 @@ class ScoreControllerTest {
             mvc.perform(get("/score/create")).andExpect(status().isOk());
             mvc.perform(get("/score/edit").param("id", foo.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/delete").param("id", foo.getId().toString())).andExpect(redirectedUrl("/score/list"));
-            mvc.perform(post("/score/save").sessionAttr("score", new Score()).with(csrf()).param("save", "dummy")).andExpect(status().isOk());
+            mvc.perform(post("/score/submit")
+                            .sessionAttr("score", foo)
+                            .with(csrf())
+                            .param("defaultArrangementIndex", "0")
+                            .param("save", "dummy"))
+                    .andExpect(redirectedUrl("/score/list"));
             mvc.perform(get("/score/nonexistent")).andExpect(status().isNotFound());
         }
-
     }
-
 }

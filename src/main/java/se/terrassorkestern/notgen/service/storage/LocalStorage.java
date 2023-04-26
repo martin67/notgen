@@ -49,24 +49,21 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
-        String filename = getArrangementPartName(arrangement, instrument);
-        return Files.copy(outputDir.resolve(String.valueOf(arrangement.getScore().getId())).resolve(filename),
-                location.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+        Path source = getArrangementPartPath(arrangement, instrument);
+        Path destination = location.resolve(instrument.getId() + ".pdf");
+        return Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
-    public boolean isScoreGenerated(Score score) {
-        // check that all arrangements are generated
-        boolean allGenerated = true;
+    public boolean isArrangementGenerated(Arrangement arrangement) {
+        boolean allPartsGenerated = true;
 
-        for (Arrangement arrangement : score.getArrangements()) {
-            for (ArrangementPart arrangementPart : arrangement.getArrangementParts()) {
-                if (!Files.exists(outputDir.resolve(String.valueOf(score.getId())).resolve(getArrangementPartName(arrangementPart)))) {
-                    allGenerated = false;
-                }
+        for (ArrangementPart arrangementPart : arrangement.getArrangementParts()) {
+            if (!Files.exists(getArrangementPartPath(arrangementPart))) {
+                allPartsGenerated = false;
             }
         }
-        return allGenerated;
+        return allPartsGenerated;
     }
 
     @Override
@@ -94,12 +91,13 @@ public class LocalStorage implements BackendStorage {
         if (file == null || file.getFilename() == null) {
             throw new StorageException("No file name set");
         }
-        //BufferedInputStream bis;
-        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputDir.resolve(file.getFilename()).toFile()))) {
-            return bis;
-        } catch (IOException e) {
+        BufferedInputStream bis;
+        try {
+            bis = new BufferedInputStream(new FileInputStream(inputDir.resolve(file.getFilename()).toFile()));
+        } catch (FileNotFoundException ex) {
             throw new StorageException("Could not download file");
         }
+        return bis;
     }
 
     @Override
@@ -118,9 +116,12 @@ public class LocalStorage implements BackendStorage {
     }
 
     @Override
-    public void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException {
-        Path scoreOutput = Files.createDirectories(outputDir.resolve(String.valueOf(arrangementPart.getArrangement().getScore().getId())));
-        Files.copy(path, scoreOutput.resolve(getArrangementPartName(arrangementPart)), StandardCopyOption.REPLACE_EXISTING);
+    public void uploadArrangementPart(ArrangementPart arrangementPart, Path source) throws IOException {
+        // ArrangementParts are stored in the hierarchy  score / arrangement / arrangementPart
+        // The arrangement part filename is the instrument UUID value
+        Path destination = getArrangementPartPath(arrangementPart);
+        Files.createDirectories(destination.getParent());
+        Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
@@ -134,7 +135,6 @@ public class LocalStorage implements BackendStorage {
         Path outputPath = staticDir.resolve(getThumbnailName(score));
         return Files.newOutputStream(outputPath);
     }
-
 
     @Override
     public void cleanOutput() throws IOException {
@@ -152,4 +152,14 @@ public class LocalStorage implements BackendStorage {
         }
     }
 
+    private Path getArrangementPartPath(ArrangementPart arrangementPart) {
+        return getArrangementPartPath(arrangementPart.getArrangement(), arrangementPart.getInstrument());
+    }
+
+    private Path getArrangementPartPath(Arrangement arrangement, Instrument instrument) {
+        return outputDir
+                .resolve(arrangement.getScore().getId().toString())
+                .resolve(arrangement.getId().toString())
+                .resolve(instrument.getId().toString() + ".pdf");
+    }
 }

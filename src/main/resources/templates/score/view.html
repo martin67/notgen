@@ -25,6 +25,7 @@
                                                      th:alt="${score.title}"/></a>
     </figure>
 
+    <!-- General info -->
     <div class="row mb-3 border p-2">
         <div class="col">
             <div class="row">
@@ -78,6 +79,7 @@
         </div>
     </div>
 
+    <!-- Arrangement -->
     <div class="row mb-3 border pt-2 px-2"
          th:unless="${score.getArrangements().isEmpty()}">
         <h3>Sättning</h3>
@@ -85,7 +87,7 @@
             <table class="table table-sm table-borderless table-striped table-hover">
                 <tbody>
                 <tr th:each="arrPart : ${score.getArrangements().get(0).getArrangementParts()}"
-                    th:data-link="@{/print/getscorepart(instrument_id=${arrPart.instrument.id},score_id=${score.id})}">
+                    th:data-link="@{/print/arrangement(score_id=${score.id},arrangement_id=${score.defaultArrangement.id},instrument_id=${arrPart.instrument.id})}">
                     <td th:text="${arrPart.instrument.name}"/>
                     <td th:text="${arrPart.comment}"/>
                 </tr>
@@ -128,6 +130,7 @@
         </div>
     </div>
 
+    <!-- Song text -->
     <div class="row mb-3 border p-2" th:if="${score.text}"
          th:unless="${score.text.isEmpty()}">
         <div class="col">
@@ -137,6 +140,25 @@
         </div>
     </div>
 
+    <!-- Files -->
+    <div class="row mb-3 border p-2" sec:authorize="hasAuthority('EDIT_SONG')"
+         th:if="${score.files}" th:unless="${score.files.isEmpty()}">
+        <div class="col">
+            <h3>Filer</h3>
+            <div class="row mb-1" th:each="file : ${score.getFiles()}">
+                <div class="col" th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"/>
+                <div class="col" th:text="${file.getType()}"/>
+                <div class="col">
+                    <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
+                        <i class="bi-eye"></i></a>
+                    <a th:href="@{downloadFile(score_id=${score.id},file_id=${file.getId()})}">
+                        <i class="bi-cloud-arrow-down"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details -->
     <div class="row mb-3 border p-2" sec:authorize="hasAuthority('EDIT_SONG')">
         <h3>Detaljer</h3>
         <div class="col">
@@ -158,9 +180,6 @@
                        onclick="return false;">
                 <label class="form-check-label" for="upperleft">Linjerad i hörn</label>
             </div>
-            Bildbehandling: <span
-                th:text="${score.scoreType}?  ' [' + ${score.scoreType.getShortDescription()} + ']'"/>
-            <br>
         </div>
         <div class="col">
             <div class="form-check">
@@ -186,6 +205,7 @@
         </div>
     </div>
 
+    <!-- Buttons -->
     <div class="row mb-3">
         <div class="col-auto mb-2">
             <a class="btn btn-secondary" onclick="history.back()">Tillbaka</a>

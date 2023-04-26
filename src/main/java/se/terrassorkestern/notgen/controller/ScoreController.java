@@ -1,6 +1,5 @@
 package se.terrassorkestern.notgen.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +7,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -26,7 +26,7 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping("/score")
-@SessionAttributes("score")
+@SessionAttributes({"score", "instruments"})
 public class ScoreController extends CommonController {
     @Value("${notgen.ocr.enable:false}")
     private boolean enableOcr;
@@ -65,7 +65,9 @@ public class ScoreController extends CommonController {
 
     @GetMapping("/view")
     public String view(@RequestParam("id") UUID id, Model model) {
-        model.addAttribute("score", getScore(id));
+        Score score = getScore(id);
+        model.addAttribute("score", score);
+        model.addAttribute("instruments", getInstruments());
         model.addAttribute("settings", getSettings());
         return "score/view";
     }
@@ -74,7 +76,6 @@ public class ScoreController extends CommonController {
     public String edit(@RequestParam("id") UUID id, Model model) {
         Score score = getScore(id);
         Arrangement arrangement = score.getDefaultArrangement();
-        model.addAttribute("score", score);
         // Check if the score has a song instrument. Only one for now
         if (enableOcr) {
             UUID songId = UUID.fromString(ocrSongIds);
@@ -84,7 +85,8 @@ public class ScoreController extends CommonController {
                 model.addAttribute("doSongOcr", "false");
             }
         }
-        model.addAttribute("allInstruments", getInstruments());
+        model.addAttribute("score", score);
+        model.addAttribute("instruments", getInstruments());
         return "score/edit";
     }
 
@@ -100,62 +102,60 @@ public class ScoreController extends CommonController {
             arrangement.addArrangementPart(new ArrangementPart(arrangement, instrument));
         }
         model.addAttribute("score", score);
-        model.addAttribute("allInstruments", getInstruments());
+        model.addAttribute("instruments", getInstruments());
         return "score/edit";
     }
 
-    @PostMapping(value = "/save", params = {"save"})
-    public String save(@Valid @ModelAttribute Score score, Errors errors, Model model) {
+    @PostMapping(value = "/submit", params = {"save"})
+    public String save(@Valid @ModelAttribute Score score,
+                       @RequestParam("defaultArrangementIndex") int defaultArrangementIndex,
+                       Errors errors) {
         if (errors.hasErrors()) {
-            model.addAttribute("allInstruments", getInstruments());
             return "score/edit";
         }
         log.info("Sparar låt {} [{}]", score.getTitle(), score.getId());
-        for (Arrangement arrangement : score.getArrangements()) {
-            for (ArrangementPart arrangementPart : arrangement.getArrangementParts()) {
-                if (arrangementPart.getId() == null) {
-                    arrangementPart.setId(new ArrangementPartId(arrangement.getId(), arrangementPart.getInstrument().getId()));
-                    arrangementPart.setArrangement(arrangement);
-                }
-            }
+        if (!score.getArrangements().isEmpty()) {
+            score.setDefaultArrangement(score.getArrangements().get(defaultArrangementIndex));
         }
         scoreRepository.save(score);
         return "redirect:/score/list";
     }
 
-    @PostMapping(value = "/save", params = {"addRow"})
-    public String addRow(final Score score, Model model, @RequestParam("addRow") String arrName) {
-        score.getArrangement(arrName).getArrangementParts().add(new ArrangementPart());
-        model.addAttribute("allInstruments", getInstruments());
+    @PostMapping(value = "/submit", params = {"addArrangement"})
+    public String addArrangement(@ModelAttribute("score") Score score) {
+        Arrangement arrangement = new Arrangement();
+        score.addArrangement(arrangement);
         return "score/edit";
     }
 
-    @PostMapping(value = "/save", params = {"deleteRow"})
-    public String deleteRow(final Score score, Model model, final HttpServletRequest req) {
-        try {
-//            int scorePartId = Integer.parseInt(req.getParameter("deleteRow"));
-//            if (scorePartId < score.getScoreParts().size()) {
-//                score.getScoreParts().remove(scorePartId);
-//            } else {
-//                log.warn("Trying to remove non-existing score part {}", scorePartId);
-//            }
-            //model.addAttribute("score", score);
-            model.addAttribute("allInstruments", getInstruments());
-        } catch (NumberFormatException ignore) {
-        }
+    @PostMapping(value = "/submit", params = {"deleteArrangement"})
+    public String deleteArrangement(@ModelAttribute("score") Score score,
+                                    @RequestParam("deleteArrangement") String arrangementId) {
+        Arrangement arrangement = score.getArrangement(arrangementId);
+        score.getArrangements().remove(arrangement);
         return "score/edit";
     }
 
-    @PostMapping(value = "/save", params = {"addArrangement"})
-    public String addArrangement(final Score score, Model model) {
-        score.addArrangement(new Arrangement("New arr"));
-//        model.addAttribute("score", score);
-        model.addAttribute("allInstruments", getInstruments());
+    @PostMapping(value = "/submit", params = {"addArrangementPart"})
+    public String addArrangementPart(@ModelAttribute("score") Score score,
+                                     @RequestParam("addArrangementPart") String arrangementId) {
+        Arrangement arrangement = score.getArrangement(arrangementId);
+        arrangement.addArrangementPart(new ArrangementPart());
         return "score/edit";
     }
 
-    @PostMapping(value = "/save", params = {"upload"})
-    public String upload(final Score score, @RequestPart("file") MultipartFile file,
+    @PostMapping(value = "/submit", params = {"deleteArrangementPart"})
+    public String deleteArrangementPart(@ModelAttribute("score") Score score,
+                                        @RequestParam("deleteArrangementPart") String arrangementPart) {
+        Arrangement arrangement = score.getArrangement(arrangementPart.substring(0, 36));
+        int rowIndex = Integer.parseInt(arrangementPart.substring(37));
+        arrangement.getArrangementParts().remove(rowIndex);
+        return "score/edit";
+    }
+
+    @PostMapping(value = "/submit", params = {"upload"})
+    public String upload(@ModelAttribute("score") Score score,
+                         @RequestPart("file") MultipartFile file,
                          @RequestParam("file_type") NgFileType fileType,
                          @RequestParam(name = "file_name", required = false) String fileName) {
         log.info("upload: {}, score id: {}, type: {}, name: {}", file.getOriginalFilename(), score.getId(), fileType, fileName);
@@ -169,7 +169,8 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/downloadFile")
-    public ResponseEntity<InputStreamResource> downloadFile(final Score score, @RequestParam("file_id") UUID fileId) {
+    public ResponseEntity<InputStreamResource> downloadFile(@ModelAttribute("score") Score score,
+                                                            @RequestParam("file_id") UUID fileId) {
         NgFile file = score.getFile(fileId);
         log.info("download: {}, file id: {}", file.getOriginalFilename(), file.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -184,8 +185,10 @@ public class ScoreController extends CommonController {
                 .body(new InputStreamResource(storageService.downloadFile(file)));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_SUPERADMIN')")
     @GetMapping("/viewFile")
-    public ResponseEntity<InputStreamResource> viewFile(final Score score, @RequestParam("file_id") UUID fileId) {
+    public ResponseEntity<InputStreamResource> viewFile(@ModelAttribute("score") Score score,
+                                                        @RequestParam("file_id") UUID fileId) {
         NgFile file = score.getFile(fileId);
         log.info("view: {}, file id: {}", file.getOriginalFilename(), file.getId());
         return ResponseEntity.ok()
@@ -193,12 +196,14 @@ public class ScoreController extends CommonController {
                 .body(new InputStreamResource(storageService.downloadFile(file)));
     }
 
+    @PreAuthorize("hasAuthority('EDIT_SONG')")
     @GetMapping("/deleteFile")
-    public String deleteFile(final Score score, @RequestParam("file_id") UUID fileId) {
+    public String deleteFile(@ModelAttribute("score") Score score,
+                             @RequestParam("file_id") UUID fileId, Model model) {
         NgFile file = score.getFile(fileId);
-        //Score score = getScore(scoreId);
         score.getFiles().remove(file);
         log.info("delete: {}, file id: {}", file.getOriginalFilename(), file.getId());
+        model.addAttribute("allInstruments", getInstruments());
         return "score/edit";
     }
 
@@ -214,44 +219,40 @@ public class ScoreController extends CommonController {
         return songOcrService.process(getScore(id));
     }
 
-    @GetMapping(value = "/scores.json")
+    @GetMapping(value = "/edit/scores.json")
     public @ResponseBody
     List<String> getTitleSuggestions() {
-        return scoreRepository.getAllTitles();
+        return isSuperAdmin() ? scoreRepository.getAllTitles() : scoreRepository.getAllTitlesByBand(activeBand.getBand());
     }
 
-    @GetMapping(value = "/genres.json")
+    @GetMapping(value = "/edit/genres.json")
     public @ResponseBody
     List<String> getGenreSuggestions() {
-        return scoreRepository.getAllGenres();
+        return isSuperAdmin() ? scoreRepository.getAllGenres() : scoreRepository.getAllGenresByBand(activeBand.getBand());
     }
 
-    @GetMapping(value = "/composers.json")
+    @GetMapping(value = "/edit/composers.json")
     public @ResponseBody
     List<String> getComposerSuggestions() {
-        return scoreRepository.getAllComposers();
+        return isSuperAdmin() ? scoreRepository.getAllComposers() : scoreRepository.getAllComposersByBand(activeBand.getBand());
     }
 
-    @GetMapping(value = "/authors.json")
+    @GetMapping(value = "/edit/authors.json")
     public @ResponseBody
     List<String> getAuthorSuggestions() {
-        return scoreRepository.getAllAuthors();
+        return isSuperAdmin() ? scoreRepository.getAllAuthors() : scoreRepository.getAllAuthorsByBand(activeBand.getBand());
     }
 
-    @GetMapping(value = "/arrangers.json")
+    @GetMapping(value = "/edit/arrangers.json")
     public @ResponseBody
     List<String> getArrangerSuggestions() {
-        return scoreRepository.getAllArrangers();
+        return isSuperAdmin() ? scoreRepository.getAllArrangers() : scoreRepository.getAllArrangersByBand(activeBand.getBand());
     }
 
-    @GetMapping(value = "/publishers.json")
+    @GetMapping(value = "/edit/publishers.json")
     public @ResponseBody
     List<String> getPublisherSuggestions() {
-        if (isSuperAdmin()) {
-            return scoreRepository.getAllPublishers();
-        } else {
-            return scoreRepository.getAllPublishersByBand(activeBand.getBand());
-        }
+        return isSuperAdmin() ? scoreRepository.getAllPublishers() : scoreRepository.getAllPublishersByBand(activeBand.getBand());
     }
 
 }

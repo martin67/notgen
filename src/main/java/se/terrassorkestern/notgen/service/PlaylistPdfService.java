@@ -116,7 +116,7 @@ public class PlaylistPdfService {
      * @param font          The font used to write the text.
      * @param fontSize      The font size used to write the text.
      * @param lineHeight    The line height of the font (typically 1.2 * fontSize or 1.5 * fontSize).
-     * @throws IOException
+     * @throws IOException File error
      */
     private float drawMultiLineText(String text, int x, int y, int allowedWidth, PDPage page, PDPageContentStream contentStream, PDFont font, int fontSize, int lineHeight) throws IOException {
 
