@@ -87,7 +87,7 @@
             <table class="table table-sm table-borderless table-striped table-hover">
                 <tbody>
                 <tr th:each="arrPart : ${score.getArrangements().get(0).getArrangementParts()}"
-                    th:data-link="@{/print/getscorepart(instrument_id=${arrPart.instrument.id},score_id=${score.id})}">
+                    th:data-link="@{/print/arrangement(score_id=${score.id},arrangement_id=${score.defaultArrangement.id},instrument_id=${arrPart.instrument.id})}">
                     <td th:text="${arrPart.instrument.name}"/>
                     <td th:text="${arrPart.comment}"/>
                 </tr>

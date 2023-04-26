@@ -32,4 +32,9 @@ public class Instrument {
     public Instrument() {
         this.id = UUID.randomUUID();
     }
+
+    @Override
+    public String toString() {
+        return name + " (" + id +")";
+    }
 }

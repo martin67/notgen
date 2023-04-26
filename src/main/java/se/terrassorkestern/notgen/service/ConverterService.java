@@ -41,6 +41,54 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         this.storageService = storageService;
     }
 
+    @Override
+    public Score process(@NonNull Score item) throws Exception {
+        convert(item);
+        return null;
+    }
+
+    public void convert(List<Score> scores) throws IOException, InterruptedException {
+        log.debug("Starting main convert loop for {} scores", scores.size());
+        for (Score score : scores) {
+            convert(score);
+        }
+        log.debug("Done converting");
+    }
+
+    private void convert(Score score) throws IOException, InterruptedException {
+        if (score.getScanned()) {
+            for (Arrangement arrangement : score.getArrangements()) {
+                if (arrangement.getArrangementParts().isEmpty()) {
+                    log.warn("No parts for score {}, arr {}", score, arrangement);
+                } else if (arrangement.getFile() == null) {
+                    log.warn("No file for score {}, arr {}", score, arrangement);
+                } else {
+                    log.info("Converting: {}, arr: {}", score, arrangement);
+
+                    // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
+                    //score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
+
+                    Path tempDir = storageService.createTempDir(score);
+                    Path downloadedArrangement = storageService.downloadArrangement(arrangement, tempDir);
+                    List<Path> extractedFilesList = split(tempDir, downloadedArrangement);
+                    imageProcess(tempDir, extractedFilesList, arrangement);
+                    createPdfs(tempDir, extractedFilesList, arrangement);
+                    storageService.deleteTempDir(tempDir);
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates images in png format from the files in extractedFileList. The generated images will be BW and in A4
+     * format. The image processing is handled by different converter classes, depending on the format of the indata.
+     * The work is processed in multiple threads.
+     *
+     * @param tmpDir             Temporary directory for working files.
+     * @param extractedFilesList All files that was unzipped/unpacked from the original pdf or zip file
+     * @param arrangement        Arrangement that should be converted.
+     * @throws InterruptedException Exception if interrupted.
+     */
     private void imageProcess(Path tmpDir, List<Path> extractedFilesList, Arrangement arrangement) throws InterruptedException {
         // TODO temporary fix
         Score score = arrangement.getScore();
@@ -71,6 +119,14 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         log.debug("Finished with image processing");
     }
 
+    /**
+     * Creates PDF:s from processed image files
+     *
+     * @param tmpDir             Directory where the image files are located
+     * @param extractedFilesList List of original images
+     * @param arrangement        Arrangement to use
+     * @throws InterruptedException Exception if interrupted
+     */
     private void createPdfs(Path tmpDir, List<Path> extractedFilesList, Arrangement arrangement) throws InterruptedException {
         if (!Files.exists(tmpDir) || extractedFilesList.isEmpty()) {
             return;
@@ -88,7 +144,6 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
             log.error("problem terminating pdf creation");
         }
-
     }
 
     public List<Path> split(Path tmpDir, Path downloadedScore) throws IOException {
@@ -140,43 +195,6 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         return extractedFilesList;
     }
 
-    @Override
-    public Score process(@NonNull Score item) throws Exception {
-        convert(item);
-        return null;
-    }
-
-    public void convert(List<Score> scores) throws IOException, InterruptedException {
-        log.debug("Starting main convert loop for {} scores", scores.size());
-        for (Score score : scores) {
-            convert(score);
-        }
-        log.debug("Done converting");
-    }
-
-    private void convert(Score score) throws IOException, InterruptedException {
-        if (score.getScanned()) {
-            for (Arrangement arrangement : score.getArrangements()) {
-                if (arrangement.getArrangementParts().isEmpty()) {
-                    log.warn("No parts for score {} ({}), arr {} ({})", score.getTitle(), score.getId(),
-                            arrangement.getName(), arrangement.getId());
-                } else {
-                    log.info("Converting: {} ({}), arr: {} ({})", score.getTitle(), score.getId(),
-                            arrangement.getName(), arrangement.getId());
-
-                    // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
-                    //score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
-
-                    Path tempDir = storageService.createTempDir(score);
-                    Path downloadedArrangement = storageService.downloadArrangement(arrangement, tempDir);
-                    List<Path> extractedFilesList = split(tempDir, downloadedArrangement);
-                    imageProcess(tempDir, extractedFilesList, arrangement);
-                    createPdfs(tempDir, extractedFilesList, arrangement);
-                    storageService.deleteTempDir(tempDir);
-                }
-            }
-        }
-    }
 
     public InputStream assemble(List<Score> scores, Setting setting, boolean sortByInstrument) throws
             IOException, InterruptedException {
@@ -201,17 +219,17 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         pdfMergerUtility.setDestinationStream(byteArrayOutputStream);
 
-        if (!storageService.isScoreGenerated(arrangement.getScore())) {
+        if (!storageService.isArrangementGenerated(arrangement)) {
             convert(List.of(arrangement.getScore()));
         }
 
         // temp directory for all downloads and assembly
         Path tempDir = storageService.createTempDir();
 
-        log.info("Adding score: {} ({}) to pdf output", arrangement.getScore().getTitle(), arrangement.getScore().getId());
+        log.info("Adding score: {} to pdf output", arrangement.getScore());
         for (Instrument instrument : instruments) {
             if (arrangement.getInstruments().contains(instrument)) {
-                log.debug("Score: {}, arr: {}, instrument: {}", arrangement.getScore().getTitle(), arrangement.getName(), instrument.getName());
+                log.debug("Score: {}, arr: {}, instrument: {}", arrangement.getScore(), arrangement, instrument);
                 pdfMergerUtility.addSource(storageService.downloadArrangementPart(arrangement, instrument, tempDir).toFile());
             }
         }
@@ -268,7 +286,8 @@ public class ConverterService implements ItemProcessor<Score, Score> {
 
         stopWatch.stop();
         stopWatch.start("convert");
-        // Check so that all pdfs have been generated before assembling
+        // Check so that all pdfs have been generated before assembling. Even though we are checking that all
+        // arrangements are generated, we're only using the default arrangement further on.
         for (Score score : scores) {
             if (!storageService.isScoreGenerated(score)) {
                 convert(List.of(score));
@@ -283,7 +302,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         // Create PDF
         if (sortByInstrument) {
             for (Instrument instrument : sortedInstruments) {
-                log.info("Adding instrument: {} to pdf output", instrument.getName());
+                log.info("Adding instrument: {} to pdf output", instrument);
                 for (Score score : scores) {
                     Arrangement arrangement = score.getDefaultArrangement();
                     if (arrangement.getInstruments().contains(instrument)) {
@@ -293,17 +312,17 @@ public class ConverterService implements ItemProcessor<Score, Score> {
             }
         } else {
             for (Score score : scores) {
-                log.info("Adding score: {} ({}) to pdf output", score.getTitle(), score.getId());
+                log.info("Adding score: {} to pdf output", score);
                 Arrangement arrangement = score.getDefaultArrangement();
                 if (arrangement != null) {
                     for (Instrument instrument : sortedInstruments) {
                         if (arrangement.getInstruments().contains(instrument)) {
-                            log.debug("Score: {}, instrument: {}", score.getTitle(), instrument.getName());
+                            log.debug("Score: {}, instrument: {}", score, instrument);
                             pdfMergerUtility.addSource(storageService.downloadArrangementPart(arrangement, instrument, tempDir).toFile());
                         }
                     }
                 } else {
-                    log.warn("No default arrangement for score {} ({})", score.getTitle(), score.getId());
+                    log.warn("No default arrangement for score {}", score);
                 }
             }
         }

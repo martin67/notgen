@@ -109,15 +109,11 @@ public class PrintController extends CommonController {
                                                                 @RequestParam(name = "instrument_id") UUID instrumentId) {
         Score score = scoreRepository.findById(scoreId).orElseThrow();
         Instrument instrument = getInstrument(instrumentId);
-        Arrangement arrangement = null;
+        Arrangement arrangement;
         if (arrangementId == null) {
             arrangement = score.getDefaultArrangement();
         } else {
-            for (Arrangement arr : score.getArrangements()) {
-                if (arrangementId == arr.getId()) {
-                    arrangement = arr;
-                }
-            }
+            arrangement = score.getArrangement(arrangementId);
         }
         if (arrangement == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -131,7 +127,6 @@ public class PrintController extends CommonController {
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(new InputStreamResource(is));
-
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         } catch (InterruptedException e) {

@@ -64,10 +64,10 @@ public class Score extends Auditable<String> {
     @Lob
     private String presentation;
 
-    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Arrangement> arrangements = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Arrangement defaultArrangement;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -102,6 +102,13 @@ public class Score extends Auditable<String> {
         arrangements.add(arrangement);
     }
 
+    public Arrangement getArrangement(UUID id) {
+        return arrangements.stream()
+                .filter(a -> a.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(String.format("Arrangement %s not found", id)));
+    }
+
     public Arrangement getArrangement(String id) {
         return arrangements.stream()
                 .filter(a -> a.getId().toString().equals(id))
@@ -126,9 +133,6 @@ public class Score extends Auditable<String> {
 
     @Override
     public String toString() {
-        return "Score{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                '}';
+        return title + " (" + id +")";
     }
 }

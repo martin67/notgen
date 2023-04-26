@@ -16,7 +16,7 @@ public interface BackendStorage {
 
     Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException;
 
-    boolean isScoreGenerated(Score score) throws IOException;
+    boolean isArrangementGenerated(Arrangement arrangement) throws IOException;
 
     NgFile uploadFile(MultipartFile file) throws StorageException;
 
@@ -33,21 +33,6 @@ public interface BackendStorage {
     OutputStream getThumbnailOutputStream(Score score) throws IOException;
 
     void cleanOutput() throws IOException;
-
-    default String getArrangementName(Arrangement arrangement, String extension) {
-        return String.format("%s.%s", arrangement.getId(), extension);
-    }
-
-    default String getArrangementPartName(ArrangementPart arrangementPart) {
-        return String.format("%s-%s.pdf", arrangementPart.getArrangement().getId(), arrangementPart.getInstrument().getId());
-    }
-
-    default String getArrangementPartName(Arrangement arrangement, Instrument instrument) {
-        ArrangementPart arrangementPart = arrangement.getArrangementParts().stream()
-                .filter(ap -> ap.getInstrument() == instrument)
-                .findFirst().orElseThrow();
-        return getArrangementPartName(arrangementPart);
-    }
 
     default String getCoverName(Score score) {
         return String.format("%s-cover.jpg", score.getId());

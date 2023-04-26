@@ -19,7 +19,7 @@ public class ArrangementPart {
     @MapsId("arrangementId")
     private Arrangement arrangement;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("instrumentId")
     @OrderBy("sortOrder")
     private Instrument instrument;

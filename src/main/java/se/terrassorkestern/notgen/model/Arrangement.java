@@ -30,7 +30,7 @@ public class Arrangement {
         this.name = "New arr";
     }
 
-    @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ArrangementPart> arrangementParts = new ArrayList<>();
 
     public void addArrangementPart(ArrangementPart arrangementPart) {
@@ -44,5 +44,10 @@ public class Arrangement {
             result.add(arrangementPart.getInstrument());
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return name + " (" + id +")";
     }
 }

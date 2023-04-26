@@ -104,7 +104,18 @@ public class StorageService {
     }
 
     public boolean isScoreGenerated(Score score) throws IOException {
-        return backendStorage.isScoreGenerated(score);
+        boolean allArrangementsGenerated = true;
+
+        for (Arrangement arrangement : score.getArrangements()) {
+            if (!backendStorage.isArrangementGenerated(arrangement)) {
+                allArrangementsGenerated = false;
+            }
+        }
+        return allArrangementsGenerated;
+    }
+
+    public boolean isArrangementGenerated(Arrangement arrangement) throws IOException {
+        return backendStorage.isArrangementGenerated(arrangement);
     }
 
     public Path replaceExtension(Path path, String newExtension) {
