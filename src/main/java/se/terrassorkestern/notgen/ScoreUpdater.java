@@ -23,16 +23,15 @@ public class ScoreUpdater {
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("********* Score updater starting");
-        for (Score score : scoreRepository.findAll()) {
-            if (score.getArrangements() != null) {
-                for (Arrangement arrangement : score.getArrangements()) {
-                    if (arrangement.getScoreType() == null) {
-                        arrangement.setScoreType(score.getScoreType());
-                    }
-                }
-                scoreRepository.save(score);
-            }
-        }
+//        for (Score score : scoreRepository.findAll()) {
+//            if (score.getArrangements() != null) {
+//                for (Arrangement arrangement : score.getArrangements()) {
+//                    arrangement.setCover(score.getCover());
+//                    arrangement.setArchiveLocation(score.getArchiveLocation());
+//                }
+//                scoreRepository.save(score);
+//            }
+//        }
         log.info("********* Score updater completed");
     }
 
