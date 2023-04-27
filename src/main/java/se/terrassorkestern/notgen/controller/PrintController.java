@@ -105,7 +105,7 @@ public class PrintController extends CommonController {
 
     @GetMapping(value = "/arrangement", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> printArrangement(@RequestParam(name = "score_id") UUID scoreId,
-                                                                @RequestParam(name = "arrangement_id") UUID arrangementId,
+                                                                @RequestParam(name = "arrangement_id", required = false) UUID arrangementId,
                                                                 @RequestParam(name = "instrument_id") UUID instrumentId) {
         Score score = scoreRepository.findById(scoreId).orElseThrow();
         Instrument instrument = getInstrument(instrumentId);

@@ -149,49 +149,53 @@
                          th:each="arr, arrStat : ${score.getArrangements()}">
                         <div class="alert alert-info" th:text="${arr.getComment()}"
                              th:if="${arr.getComment()}"/>
-                        <div class="row row-cols-5">
-                            <div class="col"><b>Instrument</b></div>
-                            <div class="col"><b>Placering</b></div>
-                            <div class="col"><b>Antal</b></div>
-                            <div class="col"><b>Kommentar</b></div>
-                            <div class="col"></div>
-                        </div>
-
-                        <div class="row row-cols-5 mb-1" th:each="arrPart,rowStat : ${arr.getArrangementParts()}">
-                            <div class="col">
-                                <select th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].instrument.id}">
-                                    <option th:each="i2 : ${instruments}" th:value="${i2.id}"
-                                            th:text="${i2.name}">
-                                        bla
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <input type="number" class="form-control form-control-sm"
-                                       th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].page}"
-                                       th:value="${arrPart.page}"/>
-                            </div>
-                            <div class="col">
-                                <input type="number" class="form-control form-control-sm"
-                                       th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].length}"
-                                       th:value="${arrPart.length}"/>
-                            </div>
-                            <div class="col">
-                                <input type="text" class="form-control form-control-sm"
-                                       th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].comment}"
-                                       th:value="${arrPart.comment}"/>
-                            </div>
-
-                            <div class="col">
-                                <button sec:authorize="hasAuthority('EDIT_SONG')" class="btn btn-sm btn-danger"
-                                        type="submit" name="deleteArrangementPart"
-                                        th:value="${arr.getId()} + '-' + ${rowStat.index}">Ta bort
-                                </button>
-                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#uploadFile"><span class="bi-pencil-square"/>
-                                </button>
-                            </div>
-                        </div>
+                        <table class="table table-sm table-borderless mb-0">
+                            <thead>
+                            <tr>
+                                <th>Instrument</th>
+                                <th style="width:10%">Placering</th>
+                                <th style="width:10%">Antal</th>
+                                <th>Kommentar</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="arrPart,rowStat : ${arr.getArrangementParts()}">
+                                <td>
+                                    <select th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].instrument.id}">
+                                        <option th:each="i2 : ${instruments}" th:value="${i2.id}"
+                                                th:text="${i2.name}">
+                                            bla
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm"
+                                           th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].page}"
+                                           th:value="${arrPart.page}"/>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm"
+                                           th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].length}"
+                                           th:value="${arrPart.length}"/>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm"
+                                           th:field="*{arrangements[__${arrStat.index}__].arrangementParts[__${rowStat.index}__].comment}"
+                                           th:value="${arrPart.comment}"/>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger"
+                                            type="submit" name="deleteArrangementPart"
+                                            th:value="${arr.getId()} + '-' + ${rowStat.index}">Ta bort
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#uploadFile"><span class="bi-pencil-square"/>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                         <hr>
                         <div class="row">
                             <div class="col">
@@ -283,20 +287,21 @@
         <div class="form-row mb-3 border pt-2 px-2">
             <div class="form-group col">
                 <h3>Filhantering</h3>
-                <div class="row mb-1" th:each="file : ${score.getFiles()}">
-                    <div class="col" th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"/>
-                    <div class="col" th:text="${file.getType()}"/>
-                    <div class="col">
-                        <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
-                            <i class="bi-eye"></i></a>
-                        <a th:href="@{downloadFile(score_id=${score.id},file_id=${file.getId()})}">
-                            <i class="bi-cloud-arrow-down"></i></a>
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#uploadFile"><span class="bi-pencil-square"/>
-                        </button>
-                        <a th:href="@{deleteFile(file_id=${file.getId()})}"><i class="bi-trash"></i></a>
-                    </div>
-                </div>
+                <table class="table table-sm table-borderless mb-0">
+                    <tbody>
+                    <tr th:each="file : ${score.getFiles()}">
+                        <td th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"></td>
+                        <td th:text="${file.getType()}"></td>
+                        <td class="text-end">
+                            <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
+                                <i class="bi-eye me-2"></i></a>
+                            <a th:href="@{downloadFile(score_id=${score.id},file_id=${file.getId()})}">
+                                <i class="bi-cloud-arrow-down me-2"></i></a>
+                            <a th:href="@{deleteFile(file_id=${file.getId()})}"><i class="bi-trash"></i></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
                 <hr>
                 <!-- Button trigger modal -->
                 <div class="row mb-2">
@@ -425,15 +430,6 @@
                                    th:field="*{imageProcess}" th:value="${score.imageProcess}"/>
                         </label>
                     </div>
-                    <div class="form-check">
-                        <label class="form-check-label">Scanningsklass
-                            <select th:field="*{scoreType}">
-                                <option th:each="st : ${T(se.terrassorkestern.notgen.model.ScoreType).values()}"
-                                        th:value="${st}"
-                                        th:text="${st.getShortDescription()}"/>
-                            </select>
-                        </label>
-                    </div>
                 </div>
                 <div class="col">
                     <div class="form-check">
@@ -464,10 +460,8 @@
         <!-- Buttons -->
         <div class="form-group row mb-3">
             <div class="col-sm-10">
-                <a class="btn btn-secondary" th:href="@{view(id=${score.id})}">Avbryt</a>
-                <a class="btn btn-secondary" sec:authorize="hasAuthority('PRINT_SCORE')"
-                   th:href="@{/print/getpdf(score_id=${score.id},instrument_id=2)}">Skriv ut</a>
-                <button sec:authorize="hasAuthority('EDIT_SONG')" type="button" class="btn btn-danger"
+                <a class="btn btn-secondary me-2" th:href="@{view(id=${score.id})}">Avbryt</a>
+                <button sec:authorize="hasAuthority('EDIT_SONG')" type="button" class="btn btn-danger me-2"
                         data-toggle="modal" data-target="#deleteModal">Ta bort
                 </button>
                 <input sec:authorize="hasAuthority('EDIT_SONG')" type="submit" class="btn btn-primary"

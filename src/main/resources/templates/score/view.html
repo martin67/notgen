@@ -28,68 +28,67 @@
     <!-- General info -->
     <div class="row mb-3 border p-2">
         <div class="col">
-            <div class="row">
-                <div class="row" th:if="${score.title}" th:unless="${score.title.isEmpty()}">
-                    <div class="col">Titel</div>
-                    <div class="col" th:text="${score.title}"/>
-                </div>
-                <div class="row" th:if="${score.subTitle}" th:unless="${score.subTitle.isEmpty()}">
-                    <div class="col">Subtitel</div>
-                    <div class="col" th:text="${score.subTitle}"/>
-                </div>
-                <div class="row" th:if="${score.genre}" th:unless="${score.genre.isEmpty()}">
-                    <div class="col">Genre</div>
-                    <div class="col" th:text="${score.genre}"/>
-                </div>
-                <div class="row" th:if="${score.year}">
-                    <div class="col">År</div>
-                    <div class="col" th:text="${score.year}"/>
-                </div>
-                <div class="row" th:if="${score.composer}" th:unless="${score.composer.isEmpty()}">
-                    <div class="col">Kompositör</div>
-                    <div class="col" th:text="${score.composer}"/>
-                </div>
-                <div class="row" th:if="${score.author}" th:unless="${score.author.isEmpty()}">
-                    <div class="col">Författare</div>
-                    <div class="col" th:text="${score.author}"/>
-                </div>
-                <div class="row" th:if="${score.arranger}" th:unless="${score.arranger.isEmpty()}">
-                    <div class="col">Arrangör</div>
-                    <div class="col" th:text="${score.arranger}"/>
-                </div>
-                <div class="row" th:if="${score.publisher}" th:unless="${score.publisher.isEmpty()}">
-                    <div class="col">Förlag</div>
-                    <div class="col" th:text="${score.publisher}"/>
-                </div>
-                <div class="row" th:if="${score.comment}" th:unless="${score.comment.isEmpty()}">
-                    <div class="col">Kommentar</div>
-                    <div class="col" th:text="${score.comment}"/>
-                </div>
-                <div class="row" th:if="${score.internalComment}"
-                     sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')"
-                     th:unless="${score.internalComment.isEmpty()}">
-                </div>
-                <div class="row" th:if="${score.internalComment}"
-                     sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')"
-                     th:unless="${score.internalComment.isEmpty()}">
-                    <div class="col"> class="text-danger">Intern kommentar</div>
-                    <div class="col" th:text="${score.internalComment}"/>
-                </div>
-            </div>
+            <table class="table table-borderless table-sm mb-0">
+                <tbody>
+                <tr th:if="${score.title}" th:unless="${score.title.isEmpty()}">
+                    <td>Titel</td>
+                    <td th:text="${score.title}"></td>
+                </tr>
+                <tr th:if="${score.subTitle}" th:unless="${score.subTitle.isEmpty()}">
+                    <td>Subtitel</td>
+                    <td th:text="${score.subTitle}"></td>
+                </tr>
+                <tr th:if="${score.genre}" th:unless="${score.genre.isEmpty()}">
+                    <td>Genre</td>
+                    <td th:text="${score.genre}"></td>
+                </tr>
+                <tr th:if="${score.year}">
+                    <td>År</td>
+                    <td th:text="${score.year}"></td>
+                </tr>
+                <tr th:if="${score.composer}" th:unless="${score.composer.isEmpty()}">
+                    <td>Kompositör</td>
+                    <td th:text="${score.composer}"></td>
+                </tr>
+                <tr th:if="${score.author}" th:unless="${score.author.isEmpty()}">
+                    <td>Författare</td>
+                    <td th:text="${score.author}"></td>
+                </tr>
+                <tr th:if="${score.arranger}" th:unless="${score.arranger.isEmpty()}">
+                    <td>Arrangör</td>
+                    <td th:text="${score.arranger}"></td>
+                </tr>
+                <tr th:if="${score.publisher}" th:unless="${score.publisher.isEmpty()}">
+                    <td>Förlag</td>
+                    <td th:text="${score.publisher}"></td>
+                </tr>
+                <tr th:if="${score.comment}" th:unless="${score.comment.isEmpty()}">
+                    <td>Kommentar</td>
+                    <td th:text="${score.comment}"></td>
+                </tr>
+                <tr th:if="${score.internalComment}" th:unless="${score.internalComment.isEmpty()}"
+                    sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')">
+                    <td class="text-danger">Intern kommentar</td>
+                    <td class="text-danger" th:text="${score.internalComment}"></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <!-- Arrangement -->
-    <div class="row mb-3 border pt-2 px-2"
-         th:unless="${score.getArrangements().isEmpty()}">
+    <div class="row mb-3 border pt-2 px-2" th:unless="${score.getArrangements().isEmpty()}">
         <h3>Sättning</h3>
         <div th:if="${score.getArrangements().size() == 1}">
-            <table class="table table-sm table-borderless table-striped table-hover">
+            <table class="table table-sm table-borderless table-striped">
                 <tbody>
-                <tr th:each="arrPart : ${score.getArrangements().get(0).getArrangementParts()}"
-                    th:data-link="@{/print/arrangement(score_id=${score.id},arrangement_id=${score.defaultArrangement.id},instrument_id=${arrPart.instrument.id})}">
+                <tr th:each="arrPart : ${score.getArrangements().get(0).getArrangementParts()}">
                     <td th:text="${arrPart.instrument.name}"/>
                     <td th:text="${arrPart.comment}"/>
+                    <td class="text-end" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')">
+                        <a th:href="@{/print/arrangement(score_id=${score.id},instrument_id=${arrPart.instrument.id})}">
+                            <i class="bi-eye"></i></a>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -116,12 +115,15 @@
                      th:each="arr, i : ${score.getArrangements()}">
                     <div class="alert alert-info" th:text="${arr.getComment()}"
                          th:if="${arr.getComment()}"/>
-                    <table class="table table-sm table-borderless table-striped table-hover">
+                    <table class="table table-sm table-borderless table-striped">
                         <tbody>
-                        <tr th:each="arrPart : ${arr.getArrangementParts()}"
-                            th:data-link="@{/print/arrangement(score_id=${score.id},arrangement_id=${arr.getId()},instrument_id=${arrPart.instrument.id})}">
+                        <tr th:each="arrPart : ${arr.getArrangementParts()}">
                             <td th:text="${arrPart.instrument.name}"/>
                             <td th:text="${arrPart.comment}"/>
+                            <td class="text-end" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')">
+                                <a th:href="@{/print/arrangement(score_id=${score.id},arrangement_id=${arr.getId()},instrument_id=${arrPart.instrument.id})}">
+                                    <i class="bi-eye"></i></a>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -131,8 +133,7 @@
     </div>
 
     <!-- Song text -->
-    <div class="row mb-3 border p-2" th:if="${score.text}"
-         th:unless="${score.text.isEmpty()}">
+    <div class="row mb-3 border p-2" th:if="${score.text}" th:unless="${score.text.isEmpty()}">
         <div class="col">
             <h3>Text</h3>
             <div class="height-auto overflow-auto" style="white-space:pre"
@@ -145,16 +146,20 @@
          th:if="${score.files}" th:unless="${score.files.isEmpty()}">
         <div class="col">
             <h3>Filer</h3>
-            <div class="row mb-1" th:each="file : ${score.getFiles()}">
-                <div class="col" th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"/>
-                <div class="col" th:text="${file.getType()}"/>
-                <div class="col">
-                    <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
-                        <i class="bi-eye"></i></a>
-                    <a th:href="@{downloadFile(score_id=${score.id},file_id=${file.getId()})}">
-                        <i class="bi-cloud-arrow-down"></i></a>
-                </div>
-            </div>
+            <table class="table table-sm table-borderless mb-0">
+                <tbody>
+                <tr th:each="file : ${score.getFiles()}">
+                    <td th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"></td>
+                    <td th:text="${file.getType()}"></td>
+                    <td class="text-end">
+                        <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
+                            <i class="bi-eye me-2"></i></a>
+                        <a th:href="@{downloadFile(score_id=${score.id},file_id=${file.getId()})}">
+                            <i class="bi-cloud-arrow-down"></i></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -236,11 +241,5 @@
 <footer th:replace=" ~{fragments/general :: footer}"></footer>
 
 </body>
-<script>
-    $(function () {
-        $("table tbody tr").click(function (e) {
-            window.location.href = $(this).data("link");
-        });
-    });
-</script>
+
 </html>
