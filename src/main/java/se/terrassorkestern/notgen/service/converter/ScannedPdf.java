@@ -3,7 +3,6 @@ package se.terrassorkestern.notgen.service.converter;
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import se.terrassorkestern.notgen.model.Arrangement;
-import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
 
 import javax.imageio.ImageIO;
@@ -32,8 +31,6 @@ public class ScannedPdf implements ImageProcessor {
     @Override
     public void run() {
         try {
-            // Todo fix
-            Score score = arrangement.getScore();
             BufferedImage image = ImageIO.read(path.toFile());
 
             String basename = path.getFileName().toString();
@@ -43,7 +40,7 @@ public class ScannedPdf implements ImageProcessor {
             switch (arrangement.getScoreType()) {
                 case PDF -> {
                     if (image.getWidth() > image.getHeight()) {
-                        log.warn("Score type is PDF but landscape mode for score {}, path {}", score, path);
+                        log.warn("Score type is PDF but landscape mode for arr {}, path {}", arrangement, path);
                     }
                 }
                 case PDF_L -> {
@@ -55,14 +52,14 @@ public class ScannedPdf implements ImageProcessor {
                     ImageIO.write(image, Files.getFileExtension(path.toString()), path.toFile());
                 }
                 default -> {
-                    log.error("Score {} is not PDF", score);
+                    log.error("Arr {} is not PDF", arrangement);
                     return;
                 }
             }
 
-            if (firstPage && score.getCover() && arrangement.getScore().getDefaultArrangement() == arrangement) {
+            if (firstPage && arrangement.getCover()) {
                 log.debug("Saving cover");
-                try (OutputStream outputStream = storageService.getCoverOutputStream(score)) {
+                try (OutputStream outputStream = storageService.getCoverOutputStream(arrangement)) {
                     ImageIO.write(image, "jpg", outputStream);
                 }
 
@@ -70,7 +67,7 @@ public class ScannedPdf implements ImageProcessor {
                 Graphics g = thumbnail.createGraphics();
                 g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
                 g.dispose();
-                try (OutputStream outputStream = storageService.getThumbnailOutputStream(score)) {
+                try (OutputStream outputStream = storageService.getThumbnailOutputStream(arrangement)) {
                     ImageIO.write(thumbnail, "png", outputStream);
                 }
             }

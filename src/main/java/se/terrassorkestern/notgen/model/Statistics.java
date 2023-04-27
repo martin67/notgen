@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 public class Statistics {
     private long numberOfSongs;
+    private long numberOfArrangements;
     private long numberOfScannedSongs;
     private long numberOfScannedPages;
     private long numberOfInstruments;

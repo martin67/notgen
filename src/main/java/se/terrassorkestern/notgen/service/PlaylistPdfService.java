@@ -49,10 +49,13 @@ public class PlaylistPdfService {
             contents.showText(playlist.getName() + "  " + playlist.getDate().toString());
             contents.endText();
 
-            float ypos = drawMultiLineText(playlist.getComment(), 75, 740, 475,
-                    page, contents, commentFont, 10, 15) - 20;
-
-            //float ypos = 750;
+            float ypos;
+            if (playlist.getComment() != null) {
+                ypos = drawMultiLineText(playlist.getComment(), 75, 740, 475,
+                        page, contents, commentFont, 10, 15) - 20;
+            } else {
+                ypos = 750;
+            }
             for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
                 contents.beginText();
 

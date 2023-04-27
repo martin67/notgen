@@ -125,14 +125,14 @@ public class LocalStorage implements BackendStorage {
     }
 
     @Override
-    public OutputStream getCoverOutputStream(Score score) throws IOException {
-        Path outputPath = staticDir.resolve(getCoverName(score));
+    public OutputStream getCoverOutputStream(Arrangement arrangement) throws IOException {
+        Path outputPath = staticDir.resolve(getCoverName(arrangement));
         return Files.newOutputStream(outputPath);
     }
 
     @Override
-    public OutputStream getThumbnailOutputStream(Score score) throws IOException {
-        Path outputPath = staticDir.resolve(getThumbnailName(score));
+    public OutputStream getThumbnailOutputStream(Arrangement arrangement) throws IOException {
+        Path outputPath = staticDir.resolve(getThumbnailName(arrangement));
         return Files.newOutputStream(outputPath);
     }
 
