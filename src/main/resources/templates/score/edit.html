@@ -223,8 +223,6 @@
                                                 th:text="${ngf.getDisplayName()}"/>
                                     </select>
                                 </label>
-                            </div>
-                            <div class="col">
                                 <label class="form-select-label">Scanningsklass
                                     <select class="form-select-sm"
                                             th:field="*{arrangements[__${arrStat.index}__].scoreType}">
@@ -235,7 +233,7 @@
                                 </label>
                             </div>
                             <div class="col">
-                                <label class="form-select-label">Standardarrangemang
+                                <label class="form-select-label mb-3">Standardarrangemang
                                     <select class="form-select-sm" id="defaultArrangement"
                                             name="defaultArrangementIndex">
                                         <option th:each="a, i : ${score.getArrangements()}"
@@ -244,6 +242,12 @@
                                                 th:text="${a.getName()}"/>
                                     </select>
                                 </label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="cover"
+                                           th:field="*{arrangements[__${arrStat.index}__].cover}"
+                                           th:value="${arr.cover}"/>
+                                    <label for="cover" class="form-check-label">Har omslag</label>
+                                </div>
                             </div>
                             <div class="col">
                                 <label class="form-label">Namn
@@ -251,13 +255,17 @@
                                            th:field="*{arrangements[__${arrStat.index}__].name}"
                                            th:value="${arr.getName()}">
                                 </label>
+                                <label class="form-label">Arkivplats
+                                    <input type="text" class="form-control form-control-sm"
+                                           th:field="*{arrangements[__${arrStat.index}__].archiveLocation}"
+                                           th:value="${arr.archiveLocation}"/>
+                                </label>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
 
         <!-- Song text -->
         <div class="form-row mb-3 border pt-2 px-2">
@@ -393,65 +401,6 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
                         <button type="submit" class="btn btn-primary" name="upload">Ladda upp</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Details -->
-        <div class="form-row border mb-3 p-2">
-            <div class="form-group row">
-                <h3>Detaljer</h3>
-                <div class="col">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="scanned"
-                               th:field="*{scanned}" th:value="${score.scanned}"/>
-                        <label for="scanned" class="form-check-label">Inscannad</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="cover"
-                               th:field="*{cover}" th:value="${score.cover}"/>
-                        <label for="cover" class="form-check-label">Förstasida finns</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="color"
-                               th:field="*{color}" th:value="${score.color}"/>
-                        <label for="color" class="form-check-label">Förstasidan är i färg</label>
-                    </div>
-                    <div class="form-check">
-                        <label class="form-check-label">Scanningen är linjerad med övre vänstra hörnet
-                            <input class="form-check-input" type="checkbox"
-                                   th:field="*{upperleft}" th:value="${score.upperleft}"/>
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <label class="form-check-label">Bildbehandla (beskär, fixa färger etc.)
-                            <input class="form-check-input" type="checkbox"
-                                   th:field="*{imageProcess}" th:value="${score.imageProcess}"/>
-                        </label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-check">
-                        <label class="form-check-label">Original i arkivet
-                            <input class="form-check-input" type="checkbox" th:field="*{archived}"
-                                   th:value="${score.archived}"/>
-                        </label>
-                    </div>
-                    <div class="form-group row">
-                        <label for="archiveLocation" class="col-sm-6 col-form-label">Arkivplats</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="archiveLocation"
-                                   th:field="*{archiveLocation}"
-                                   th:value="${score.archiveLocation}"/>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="filename" class="col-sm-2 col-form-label">Filnamn</label>
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" id="filename" th:field="*{filename}"
-                                   th:value="${score.filename}"/>
-                        </div>
                     </div>
                 </div>
             </div>

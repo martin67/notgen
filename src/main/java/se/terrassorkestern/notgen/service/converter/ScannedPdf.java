@@ -40,7 +40,7 @@ public class ScannedPdf implements ImageProcessor {
             log.debug("Image processing {} ({}x{})", basename, image.getWidth(), image.getHeight());
 
             // Kolla först om man behöver rotera bilden. Vissa är liggande och behöver roteras 90 grader medsols
-            switch (score.getScoreType()) {
+            switch (arrangement.getScoreType()) {
                 case PDF -> {
                     if (image.getWidth() > image.getHeight()) {
                         log.warn("Score type is PDF but landscape mode for score {}, path {}", score, path);

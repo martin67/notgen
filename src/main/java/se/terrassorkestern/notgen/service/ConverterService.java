@@ -56,25 +56,23 @@ public class ConverterService implements ItemProcessor<Score, Score> {
     }
 
     private void convert(Score score) throws IOException, InterruptedException {
-        if (score.getScanned()) {
-            for (Arrangement arrangement : score.getArrangements()) {
-                if (arrangement.getArrangementParts().isEmpty()) {
-                    log.warn("No parts for score {}, arr {}", score, arrangement);
-                } else if (arrangement.getFile() == null) {
-                    log.warn("No file for score {}, arr {}", score, arrangement);
-                } else {
-                    log.info("Converting: {}, arr: {}", score, arrangement);
+        for (Arrangement arrangement : score.getArrangements()) {
+            if (arrangement.getArrangementParts().isEmpty()) {
+                log.warn("No parts for score {}, arr {}", score, arrangement);
+            } else if (arrangement.getFile() == null) {
+                log.warn("No file for score {}, arr {}", score, arrangement);
+            } else {
+                log.info("Converting: {}, arr: {}", score, arrangement);
 
-                    // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
-                    //score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
+                // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
+                //score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
 
-                    Path tempDir = storageService.createTempDir(score);
-                    Path downloadedArrangement = storageService.downloadArrangement(arrangement, tempDir);
-                    List<Path> extractedFilesList = split(tempDir, downloadedArrangement);
-                    imageProcess(tempDir, extractedFilesList, arrangement);
-                    createPdfs(tempDir, extractedFilesList, arrangement);
-                    storageService.deleteTempDir(tempDir);
-                }
+                Path tempDir = storageService.createTempDir(score);
+                Path downloadedArrangement = storageService.downloadArrangement(arrangement, tempDir);
+                List<Path> extractedFilesList = split(tempDir, downloadedArrangement);
+                imageProcess(tempDir, extractedFilesList, arrangement);
+                createPdfs(tempDir, extractedFilesList, arrangement);
+                storageService.deleteTempDir(tempDir);
             }
         }
     }
@@ -90,9 +88,9 @@ public class ConverterService implements ItemProcessor<Score, Score> {
      * @throws InterruptedException Exception if interrupted.
      */
     private void imageProcess(Path tmpDir, List<Path> extractedFilesList, Arrangement arrangement) throws InterruptedException {
-        // TODO temporary fix
-        Score score = arrangement.getScore();
-        if (!Files.exists(tmpDir) || !score.getImageProcess() || extractedFilesList.isEmpty()) {
+
+        if (!Files.exists(tmpDir) || extractedFilesList.isEmpty()) {
+            log.warn("No files for arrangement {}, skipping image processing", arrangement);
             return;
         }
 
