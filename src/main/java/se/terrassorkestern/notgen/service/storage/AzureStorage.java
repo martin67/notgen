@@ -147,14 +147,14 @@ public class AzureStorage implements BackendStorage {
     }
 
     @Override
-    public OutputStream getCoverOutputStream(Score score) throws IOException {
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getCoverName(score)));
+    public OutputStream getCoverOutputStream(Arrangement arrangement) throws IOException {
+        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getCoverName(arrangement)));
         return ((WritableResource) storageBlobResource).getOutputStream();
     }
 
     @Override
-    public OutputStream getThumbnailOutputStream(Score score) throws IOException {
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getThumbnailName(score)));
+    public OutputStream getThumbnailOutputStream(Arrangement arrangement) throws IOException {
+        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getThumbnailName(arrangement)));
         return ((WritableResource) storageBlobResource).getOutputStream();
     }
 

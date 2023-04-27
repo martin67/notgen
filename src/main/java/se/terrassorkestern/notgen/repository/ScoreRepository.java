@@ -30,7 +30,9 @@ public interface ScoreRepository extends SearchRepository<Score, UUID> {
 
     List<Score> findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(Instrument instrument);
 
-    List<Score> findByScannedFalseOrderByTitle();
+    List<Score> findByArrangementsIsNotEmpty();
+
+    List<Score> findByArrangementsIsNullOrderByTitle();
 
     @Query("SELECT s.title FROM Score s ORDER BY s.title")
     List<String> getAllTitles();
@@ -70,7 +72,8 @@ public interface ScoreRepository extends SearchRepository<Score, UUID> {
 
 
     // Statistics
-    long countByScannedIsTrue();
+    @Query(value = "select count(*) from arrangement", nativeQuery = true)
+    long numberOfArrangements();
 
     @Query("SELECT " +
             " new se.terrassorkestern.notgen.model.TopListEntry(s.genre, count(s.genre)) " +

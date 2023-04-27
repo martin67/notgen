@@ -39,7 +39,8 @@ public class StatisticsService {
     public Statistics getStatistics() {
         Statistics statistics = new Statistics();
         statistics.setNumberOfSongs(scoreRepository.count());
-        statistics.setNumberOfScannedSongs(scoreRepository.countByScannedIsTrue());
+        statistics.setNumberOfScannedSongs(scoreRepository.findByArrangementsIsNotEmpty().size());
+        statistics.setNumberOfArrangements(scoreRepository.numberOfArrangements());
         statistics.setNumberOfScannedPages(scoreRepository.numberOfPages());
         statistics.setNumberOfInstruments(instrumentRepository.count());
         statistics.setNumberOfPlaylists(playlistRepository.count());
@@ -108,7 +109,7 @@ public class StatisticsService {
     }
 
     public void writeUnscannedToCsv(Writer writer) {
-        List<Score> scores = scoreRepository.findByScannedFalseOrderByTitle();
+        List<Score> scores = scoreRepository.findByArrangementsIsNullOrderByTitle();
         try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
             for (Score score : scores) {
                 csvPrinter.printRecord(score.getTitle());

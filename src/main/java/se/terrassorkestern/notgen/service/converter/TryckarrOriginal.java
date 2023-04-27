@@ -2,9 +2,7 @@ package se.terrassorkestern.notgen.service.converter;
 
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.Arrangement;
-import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
 import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
 import se.terrassorkestern.notgen.service.converter.filters.GreyScaler;
@@ -38,16 +36,7 @@ public class TryckarrOriginal implements ImageProcessor {
     @Override
     public void run() {
         try {
-            // Todo fix
-            Score score = arrangement.getScore();
-
-            StopWatch oneScoreWatch = new StopWatch("imageProcess " + score.getTitle());
-            oneScoreWatch.start();
-            StopWatch onePageWatch = new StopWatch(score.getTitle() + ", page ");
-
-            BufferedImage image;
-
-            image = ImageIO.read(path.toFile());
+            BufferedImage image = ImageIO.read(path.toFile());
 
             String basename = path.getFileName().toString();
             log.debug("Image processing {} ({}x{})", basename, image.getWidth(), image.getHeight());
@@ -93,13 +82,11 @@ public class TryckarrOriginal implements ImageProcessor {
                 cropHeight = 1558;
             }
 
-            onePageWatch.start("cropping");
             BufferedImage cropped = new BufferedImage(cropWidth, cropHeight, BufferedImage.TYPE_INT_RGB);
             Graphics g = cropped.getGraphics();
             g.drawImage(image, 0, 0, cropped.getWidth(), cropped.getHeight(), 0, 0, cropped.getWidth(), cropped.getHeight(), null);
             g.dispose();
             image = cropped;
-            onePageWatch.stop();
 
             if (log.isTraceEnabled()) {
                 ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-1-cropped.png"));
@@ -110,9 +97,9 @@ public class TryckarrOriginal implements ImageProcessor {
             // Spara också en thumbnail i storlek 180 bredd
             // Gör bara detta för default arrangement
             //
-            if (firstPage && score.getCover() && arrangement.getScore().getDefaultArrangement() == arrangement) {
+            if (firstPage && arrangement.getCover()) {
                 log.debug("Saving cover");
-                try (OutputStream outputStream = storageService.getCoverOutputStream(score)) {
+                try (OutputStream outputStream = storageService.getCoverOutputStream(arrangement)) {
                     ImageIO.write(image, "jpg", outputStream);
                 }
 
@@ -120,7 +107,7 @@ public class TryckarrOriginal implements ImageProcessor {
                 g = thumbnail.createGraphics();
                 g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
                 g.dispose();
-                try (OutputStream outputStream = storageService.getThumbnailOutputStream(score)) {
+                try (OutputStream outputStream = storageService.getThumbnailOutputStream(arrangement)) {
                     ImageIO.write(thumbnail, "png", outputStream);
                 }
                 return;
@@ -128,7 +115,6 @@ public class TryckarrOriginal implements ImageProcessor {
 
             // Resize
             // Pad on both sides, 2550-2288=262, 262/2=131, => 131-(2288+131)-131
-            onePageWatch.start("resizing");
             BufferedImage resized = new BufferedImage(2419, 3501, BufferedImage.TYPE_INT_RGB);
             g = resized.getGraphics();
             g.setColor(Color.WHITE);
@@ -136,7 +122,6 @@ public class TryckarrOriginal implements ImageProcessor {
             g.drawImage(image, 149, 0, 2402, 3501, 0, 0, image.getWidth(), image.getHeight(), null);
             g.dispose();
             image = resized;
-            onePageWatch.stop();
 
             if (log.isTraceEnabled()) {
                 ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-2-resized.png"));
@@ -150,9 +135,7 @@ public class TryckarrOriginal implements ImageProcessor {
             //
             // Change to grey
             //
-            onePageWatch.start("to grey");
             image = greyScaler.toGreyScale(image);
-            onePageWatch.stop();
             if (log.isTraceEnabled()) {
                 ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-3-grey.png"));
             }
@@ -160,9 +143,7 @@ public class TryckarrOriginal implements ImageProcessor {
             //
             // Change to B/W
             //
-            onePageWatch.start("to black and white");
             image = binarizer.toBinary(image);
-            onePageWatch.stop();
             if (log.isTraceEnabled()) {
                 ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-4-bw.png"));
             }
@@ -170,8 +151,6 @@ public class TryckarrOriginal implements ImageProcessor {
             // Write final picture back to original.
             ImageIO.write(image, "png", storageService.replaceExtension(path, ".png").toFile());
 
-            log.debug("Time converting page {}, {} ms", path, onePageWatch.getTotalTimeMillis());
-            log.trace(onePageWatch.prettyPrint());
             image.flush();
         } catch (Exception e) {
             log.error("Oopsie", e);

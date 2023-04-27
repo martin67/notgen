@@ -28,18 +28,18 @@ public interface BackendStorage {
 
     void uploadArrangementPart(ArrangementPart arrangementPart, Path path) throws IOException;
 
-    OutputStream getCoverOutputStream(Score score) throws IOException;
+    OutputStream getCoverOutputStream(Arrangement arrangement) throws IOException;
 
-    OutputStream getThumbnailOutputStream(Score score) throws IOException;
+    OutputStream getThumbnailOutputStream(Arrangement arrangement) throws IOException;
 
     void cleanOutput() throws IOException;
 
-    default String getCoverName(Score score) {
-        return String.format("%s-cover.jpg", score.getId());
+    default String getCoverName(Arrangement arrangement) {
+        return String.format("%s-cover.jpg", arrangement.getId());
     }
 
-    default String getThumbnailName(Score score) {
-        return String.format("%s-thumbnail.png", score.getId());
+    default String getThumbnailName(Arrangement arrangement) {
+        return String.format("%s-thumbnail.png", arrangement.getId());
     }
 
     Set<String> listInputDirectory() throws IOException;

@@ -73,25 +73,6 @@ public class Score extends Auditable<String> {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<NgFile> files = new ArrayList<>();
 
-    private ScoreType scoreType;
-    private Boolean scanned = true;
-    private Boolean cover = true;
-    private Boolean imageProcess = true;
-    private Boolean upperleft = true;
-    private Boolean color = true;
-
-    private Boolean archived = true;
-    private String archiveLocation = "A";
-
-    private String filename;
-
-//    public List<Instrument> getInstruments() {
-//        List<Instrument> result = new ArrayList<>();
-//        for (ScorePart scorePart : scoreParts) {
-//            result.add(scorePart.getInstrument());
-//        }
-//        return result;
-//    }
 
     public Score() {
         this.id = UUID.randomUUID();
@@ -117,11 +98,11 @@ public class Score extends Auditable<String> {
     }
 
     public String getThumbnailPath() {
-        return (cover != null && cover) ? String.format("/%s-thumbnail.png", id) : "/images/thoreehrling.jpg";
+        return (defaultArrangement != null && defaultArrangement.getCover()) ? String.format("/%s-thumbnail.png", defaultArrangement.getId()) : "/images/thoreehrling.jpg";
     }
 
     public String getCoverPath() {
-        return (cover != null && cover) ? String.format("/%s-cover.jpg", id) : "/images/thoreehrling.jpg";
+        return (defaultArrangement != null && defaultArrangement.getCover()) ? String.format("/%s-cover.jpg", defaultArrangement.getId()) : "/images/thoreehrling.jpg";
     }
 
     public NgFile getFile(UUID fileId) {

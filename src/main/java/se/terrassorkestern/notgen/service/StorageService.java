@@ -124,12 +124,12 @@ public class StorageService {
         return parent.resolve(com.google.common.io.Files.getNameWithoutExtension(fileName) + newExtension);
     }
 
-    public OutputStream getCoverOutputStream(Score score) throws IOException {
-        return backendStorage.getCoverOutputStream(score);
+    public OutputStream getCoverOutputStream(Arrangement arrangement) throws IOException {
+        return backendStorage.getCoverOutputStream(arrangement);
     }
 
-    public OutputStream getThumbnailOutputStream(Score score) throws IOException {
-        return backendStorage.getThumbnailOutputStream(score);
+    public OutputStream getThumbnailOutputStream(Arrangement arrangement) throws IOException {
+        return backendStorage.getThumbnailOutputStream(arrangement);
     }
 
     public void extractZip(Path zipFile, Path dir) throws IOException {
