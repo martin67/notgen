@@ -81,31 +81,30 @@ public class TryckarrOriginal implements ImageProcessor {
             int cropHeight;
 
             //
-            // Om bilderna är inscannade med övre vänstra hörnet mot kanten så kan man beskära och förstora.
+            // Bilderna är inscannade med övre vänstra hörnet mot kanten så kan man beskära och förstora.
             // Standard för sådant som jag scannar
             //
-            if (score.getUpperleft()) {
-                if (image.getWidth() > 2000) {
-                    // 300 DPI
-                    cropWidth = 2036;
-                    cropHeight = 3116;
-                } else {
-                    cropWidth = 1018;
-                    cropHeight = 1558;
-                }
-
-                onePageWatch.start("cropping");
-                BufferedImage cropped = new BufferedImage(cropWidth, cropHeight, BufferedImage.TYPE_INT_RGB);
-                Graphics g = cropped.getGraphics();
-                g.drawImage(image, 0, 0, cropped.getWidth(), cropped.getHeight(), 0, 0, cropped.getWidth(), cropped.getHeight(), null);
-                g.dispose();
-                image = cropped;
-                onePageWatch.stop();
-
-                if (log.isTraceEnabled()) {
-                    ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-1-cropped.png"));
-                }
+            if (image.getWidth() > 2000) {
+                // 300 DPI
+                cropWidth = 2036;
+                cropHeight = 3116;
+            } else {
+                cropWidth = 1018;
+                cropHeight = 1558;
             }
+
+            onePageWatch.start("cropping");
+            BufferedImage cropped = new BufferedImage(cropWidth, cropHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics g = cropped.getGraphics();
+            g.drawImage(image, 0, 0, cropped.getWidth(), cropped.getHeight(), 0, 0, cropped.getWidth(), cropped.getHeight(), null);
+            g.dispose();
+            image = cropped;
+            onePageWatch.stop();
+
+            if (log.isTraceEnabled()) {
+                ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-1-cropped.png"));
+            }
+
             //
             // Om det är ett omslag så skall det sparas en kopia separat här (innan det skalas om)
             // Spara också en thumbnail i storlek 180 bredd
@@ -118,7 +117,7 @@ public class TryckarrOriginal implements ImageProcessor {
                 }
 
                 BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
-                Graphics g = thumbnail.createGraphics();
+                g = thumbnail.createGraphics();
                 g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
                 g.dispose();
                 try (OutputStream outputStream = storageService.getThumbnailOutputStream(score)) {
@@ -127,22 +126,20 @@ public class TryckarrOriginal implements ImageProcessor {
                 return;
             }
 
-            if (score.getUpperleft()) {
-                // Resize
-                // Pad on both sides, 2550-2288=262, 262/2=131, => 131-(2288+131)-131
-                onePageWatch.start("resizing");
-                BufferedImage resized = new BufferedImage(2419, 3501, BufferedImage.TYPE_INT_RGB);
-                Graphics g = resized.getGraphics();
-                g.setColor(Color.WHITE);
-                g.fillRect(0, 0, resized.getWidth(), resized.getHeight());
-                g.drawImage(image, 149, 0, 2402, 3501, 0, 0, image.getWidth(), image.getHeight(), null);
-                g.dispose();
-                image = resized;
-                onePageWatch.stop();
+            // Resize
+            // Pad on both sides, 2550-2288=262, 262/2=131, => 131-(2288+131)-131
+            onePageWatch.start("resizing");
+            BufferedImage resized = new BufferedImage(2419, 3501, BufferedImage.TYPE_INT_RGB);
+            g = resized.getGraphics();
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, resized.getWidth(), resized.getHeight());
+            g.drawImage(image, 149, 0, 2402, 3501, 0, 0, image.getWidth(), image.getHeight(), null);
+            g.dispose();
+            image = resized;
+            onePageWatch.stop();
 
-                if (log.isTraceEnabled()) {
-                    ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-2-resized.png"));
-                }
+            if (log.isTraceEnabled()) {
+                ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-2-resized.png"));
             }
 
             // Setup conversion filters
