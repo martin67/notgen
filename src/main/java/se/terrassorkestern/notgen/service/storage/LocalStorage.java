@@ -50,7 +50,7 @@ public class LocalStorage implements BackendStorage {
     @Override
     public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
         Path source = getArrangementPartPath(arrangement, instrument);
-        Path destination = location.resolve(instrument.getId() + ".pdf");
+        Path destination = location.resolve(arrangement.getId() + "-" + instrument.getId() + ".pdf");
         return Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
     }
 

@@ -10,7 +10,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.service.converter.ImageProcessor;
@@ -22,7 +21,10 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -257,9 +259,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
 
         // Todo: Can we assume that the input always will be sorted?
         //scores.sort(Comparator.comparing(Score::getTitle));
-        StopWatch stopWatch = new StopWatch("Assemble");
-        stopWatch.start("setup");
-        List<Instrument> sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
+        List<Instrument> sortedInstruments = instruments.stream().sorted().toList();
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -282,8 +282,6 @@ public class ConverterService implements ItemProcessor<Score, Score> {
             pdfMergerUtility.setDestinationDocumentInformation(docInfo);
         }
 
-        stopWatch.stop();
-        stopWatch.start("convert");
         // Check so that all pdfs have been generated before assembling. Even though we are checking that all
         // arrangements are generated, we're only using the default arrangement further on.
         for (Score score : scores) {
@@ -291,8 +289,6 @@ public class ConverterService implements ItemProcessor<Score, Score> {
                 convert(List.of(score));
             }
         }
-        stopWatch.stop();
-        stopWatch.start("convert");
 
         // temp directory for all downloads and assembly
         Path tempDir = storageService.createTempDir();
@@ -324,12 +320,9 @@ public class ConverterService implements ItemProcessor<Score, Score> {
                 }
             }
         }
-        stopWatch.stop();
-        stopWatch.start("merge");
         pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
         storageService.deleteTempDir(tempDir);
 
-        stopWatch.stop();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 }

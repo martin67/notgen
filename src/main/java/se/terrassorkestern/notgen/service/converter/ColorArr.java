@@ -55,7 +55,7 @@ public class ColorArr implements ImageProcessor {
             // Spara också en thumbnail i storlek 180 bredd
             // Gör bara detta för default arrangement
             //
-            if (firstPage && arrangement.getCover()) {
+            if (firstPage && arrangement.isCover()) {
                 log.debug("Saving cover");
                 try (OutputStream outputStream = storageService.getCoverOutputStream(arrangement)) {
                     ImageIO.write(image, "jpg", outputStream);

@@ -57,7 +57,7 @@ public class AzureStorage implements BackendStorage {
     @Override
     public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
         String fileName = getArrangementPartFilename(arrangement, instrument);
-        Path destination = location.resolve(instrument.getId() + ".pdf");
+        Path destination = location.resolve(arrangement.getId() + "-" + instrument.getId() + ".pdf");
         Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, fileName));
         Files.copy(resource.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return destination;

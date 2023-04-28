@@ -57,7 +57,7 @@ public class ScannedPdf implements ImageProcessor {
                 }
             }
 
-            if (firstPage && arrangement.getCover()) {
+            if (firstPage && arrangement.isCover()) {
                 log.debug("Saving cover");
                 try (OutputStream outputStream = storageService.getCoverOutputStream(arrangement)) {
                     ImageIO.write(image, "jpg", outputStream);

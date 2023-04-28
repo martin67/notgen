@@ -23,7 +23,7 @@ public class Arrangement {
     @ManyToOne
     private Score score;
     private ScoreType scoreType;
-    private Boolean cover = false;
+    private boolean cover = false;
     private String archiveLocation;
 
     public Arrangement() {
