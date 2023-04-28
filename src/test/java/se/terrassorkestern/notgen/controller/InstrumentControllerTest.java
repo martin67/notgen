@@ -59,29 +59,25 @@ class InstrumentControllerTest {
     @MockBean
     private CustomOidcUserService customOidcUserService;
 
-    private Band band1;
-    private Band band2;
     private Instrument sax;
-    private Instrument trumpet;
-    private Instrument flute;
 
 
     @BeforeEach
     void initTest() {
-        band1 = new Band();
-        band2 = new Band();
+        Band band1 = new Band();
+        Band band2 = new Band();
 
         sax = new Instrument();
         sax.setName("saxofon");
         sax.setSortOrder(10);
         sax.setBand(band1);
 
-        trumpet = new Instrument();
+        Instrument trumpet = new Instrument();
         trumpet.setName("trumpet");
         trumpet.setSortOrder(20);
         trumpet.setBand(band1);
 
-        flute = new Instrument();
+        Instrument flute = new Instrument();
         flute.setName("flöjt");
         flute.setSortOrder(10);
         flute.setBand(band2);

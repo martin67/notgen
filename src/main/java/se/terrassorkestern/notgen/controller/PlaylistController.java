@@ -68,7 +68,7 @@ public class PlaylistController extends CommonController {
         Playlist playlist = getPlaylist(id);
         model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, playlist);
         List<Instrument> sortedInstruments = playlist.getSetting().getInstruments().stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
-        model.addAttribute("instruments", sortedInstruments);
+        model.addAttribute(ATTRIBUTE_INSTRUMENTS, sortedInstruments);
         return "playlist/view";
     }
 

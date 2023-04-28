@@ -67,13 +67,12 @@ class ScoreControllerTest {
     private CustomOidcUserService customOidcUserService;
 
     private Score foo;
-    private Score bar;
 
     @BeforeEach
     void initTest() {
         Band band = new Band();
         foo = new Score();
-        bar = new Score();
+        Score bar = new Score();
         foo.setTitle("Foo score");
         bar.setTitle("Bar score");
         Arrangement arr = new Arrangement();

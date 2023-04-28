@@ -19,7 +19,7 @@ public class ScannedPdf implements ImageProcessor {
     private final StorageService storageService;
     private final boolean firstPage;
 
-    private enum Rotation {Left, Right}
+    private enum Rotation {LEFT, RIGHT}
 
     public ScannedPdf(Path path, Arrangement arrangement, StorageService storageService, boolean firstPage) {
         this.path = path;
@@ -44,11 +44,11 @@ public class ScannedPdf implements ImageProcessor {
                     }
                 }
                 case PDF_L -> {
-                    image = rotate(Rotation.Left, image);
+                    image = rotate(Rotation.LEFT, image);
                     ImageIO.write(image, Files.getFileExtension(path.toString()), path.toFile());
                 }
                 case PDF_R -> {
-                    image = rotate(Rotation.Right, image);
+                    image = rotate(Rotation.RIGHT, image);
                     ImageIO.write(image, Files.getFileExtension(path.toString()), path.toFile());
                 }
                 default -> {
@@ -80,7 +80,7 @@ public class ScannedPdf implements ImageProcessor {
         log.warn("Rotating picture {} for score {}", rotation, arrangement.getScore());
         BufferedImage rotated = new BufferedImage(image.getHeight(), image.getWidth(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = rotated.createGraphics();
-        if (rotation == Rotation.Left) {
+        if (rotation == Rotation.LEFT) {
             g2d.rotate(Math.toRadians(90), 0, image.getHeight());
             g2d.drawImage(image, -image.getHeight(), 0, null);
         } else {

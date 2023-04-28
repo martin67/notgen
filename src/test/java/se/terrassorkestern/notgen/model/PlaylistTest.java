@@ -14,6 +14,6 @@ class PlaylistTest {
 
         Playlist playlist2 = playlist1.copy();
         assertThat(playlist2.getName()).isEqualTo("Kopia av " + playlist1.getName());
-        assertThat(playlist2.getPlaylistEntries().size()).isEqualTo(playlist1.getPlaylistEntries().size());
+        assertThat(playlist2.getPlaylistEntries()).hasSameSizeAs(playlist1.getPlaylistEntries());
     }
 }

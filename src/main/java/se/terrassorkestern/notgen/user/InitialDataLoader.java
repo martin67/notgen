@@ -1,8 +1,7 @@
 package se.terrassorkestern.notgen.user;
 
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -23,9 +22,19 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 @Component
 public class InitialDataLoader implements ApplicationListener<ContextRefreshedEvent> {
-    static final Logger log = LoggerFactory.getLogger(InitialDataLoader.class);
+    public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_GUEST = "ROLE_GUEST";
+    public static final String PRIVILEGE_EDIT_BAND = "EDIT_BAND";
+    public static final String PRIVILEGE_EDIT_SONG = "EDIT_SONG";
+    public static final String PRIVILEGE_EDIT_INSTRUMENT = "EDIT_INSTRUMENT";
+    public static final String PRIVILEGE_EDIT_USER = "EDIT_USER";
+    public static final String PRIVILEGE_PRINT_SCORE = "PRINT_SCORE";
+    public static final String PRIVILEGE_EDIT_PLAYLIST = "EDIT_PLAYLIST";
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -52,23 +61,23 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
         User adminUser = userRepository.findByUsername("admin").orElseGet(() -> {
             log.info("Creating initial user admin with admin rights");
 
-            Role superAdmin = createRoleIfNotFound("ROLE_SUPERADMIN", "Super admin", List.of(
-                    createPrivilegeIfNotFound("EDIT_BAND"),
-                    createPrivilegeIfNotFound("EDIT_SONG"),
-                    createPrivilegeIfNotFound("EDIT_INSTRUMENT"),
-                    createPrivilegeIfNotFound("EDIT_USER"),
-                    createPrivilegeIfNotFound("PRINT_SCORE"),
-                    createPrivilegeIfNotFound("EDIT_PLAYLIST")));
-            createRoleIfNotFound("ROLE_ADMIN", "Admin", List.of(
-                    createPrivilegeIfNotFound("EDIT_SONG"),
-                    createPrivilegeIfNotFound("EDIT_INSTRUMENT"),
-                    createPrivilegeIfNotFound("EDIT_USER"),
-                    createPrivilegeIfNotFound("PRINT_SCORE"),
-                    createPrivilegeIfNotFound("EDIT_PLAYLIST")));
-            createRoleIfNotFound("ROLE_USER", "User", List.of(
-                    createPrivilegeIfNotFound("PRINT_SCORE"),
-                    createPrivilegeIfNotFound("EDIT_PLAYLIST")));
-            createRoleIfNotFound("ROLE_GUEST", "Guest", List.of());
+            Role superAdmin = createRoleIfNotFound(ROLE_SUPERADMIN, "Super admin", List.of(
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_BAND),
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_SONG),
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_INSTRUMENT),
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_USER),
+                    createPrivilegeIfNotFound(PRIVILEGE_PRINT_SCORE),
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_PLAYLIST)));
+            createRoleIfNotFound(ROLE_ADMIN, "Admin", List.of(
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_SONG),
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_INSTRUMENT),
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_USER),
+                    createPrivilegeIfNotFound(PRIVILEGE_PRINT_SCORE),
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_PLAYLIST)));
+            createRoleIfNotFound(ROLE_USER, "User", List.of(
+                    createPrivilegeIfNotFound(PRIVILEGE_PRINT_SCORE),
+                    createPrivilegeIfNotFound(PRIVILEGE_EDIT_PLAYLIST)));
+            createRoleIfNotFound(ROLE_GUEST, "Guest", List.of());
 
             User u = new User();
             u.setUsername("admin");
