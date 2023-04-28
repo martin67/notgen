@@ -26,6 +26,7 @@ import se.terrassorkestern.notgen.service.PlaylistPdfService;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,7 +63,7 @@ public class PlaylistController extends CommonController {
     public String view(@RequestParam("id") UUID id, Model model) {
         Playlist playlist = getPlaylist(id);
         model.addAttribute("playlist", playlist);
-        List<Instrument> sortedInstruments = playlist.getSetting().getInstruments().stream().sorted().toList();
+        List<Instrument> sortedInstruments = playlist.getSetting().getInstruments().stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
         model.addAttribute("instruments", sortedInstruments);
         return "playlist/view";
     }

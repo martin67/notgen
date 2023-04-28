@@ -16,7 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-public class Instrument implements Comparable<Instrument> {
+public class Instrument {
     @Id
     private UUID id;
 
@@ -34,11 +34,6 @@ public class Instrument implements Comparable<Instrument> {
 
     public Instrument() {
         this.id = UUID.randomUUID();
-    }
-
-    @Override
-    public int compareTo(Instrument o) {
-        return Integer.compare(sortOrder, o.sortOrder);
     }
 
     @Override

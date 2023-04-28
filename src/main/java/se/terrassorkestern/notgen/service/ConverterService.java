@@ -21,10 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -259,7 +256,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
 
         // Todo: Can we assume that the input always will be sorted?
         //scores.sort(Comparator.comparing(Score::getTitle));
-        List<Instrument> sortedInstruments = instruments.stream().sorted().toList();
+        List<Instrument> sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
