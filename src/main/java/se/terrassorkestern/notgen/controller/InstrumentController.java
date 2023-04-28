@@ -18,6 +18,8 @@ import java.util.UUID;
 @RequestMapping("/instrument")
 public class InstrumentController extends CommonController {
 
+    public static final String ATTRIBUTE_ALL_INSTRUMENTS = "instruments";
+    public static final String ATTRIBUTE_ONE_INSTRUMENT = "instrument";
     private final ActiveBand activeBand;
     private final InstrumentRepository instrumentRepository;
 
@@ -28,31 +30,31 @@ public class InstrumentController extends CommonController {
 
     @GetMapping("/list")
     public String list(Model model) {
-        model.addAttribute("instruments", getInstruments());
+        model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
         return "instrument/list";
     }
 
     @GetMapping("/view")
     public String view(@RequestParam("id") UUID id, Model model) {
-        model.addAttribute("instrument", getInstrument(id));
+        model.addAttribute(ATTRIBUTE_ONE_INSTRUMENT, getInstrument(id));
         return "instrument/view";
     }
 
     @GetMapping("/edit")
     public String edit(@RequestParam("id") UUID id, Model model) {
-        model.addAttribute("instrument", getInstrument(id));
+        model.addAttribute(ATTRIBUTE_ONE_INSTRUMENT, getInstrument(id));
         return "instrument/edit";
     }
 
     @GetMapping("/editOrder")
     public String editOrder(Model model) {
-        model.addAttribute("instruments", getInstruments());
+        model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
         return "instrument/editOrder";
     }
 
     @GetMapping("/create")
     public String create(Model model) {
-        model.addAttribute("instrument", new Instrument());
+        model.addAttribute(ATTRIBUTE_ONE_INSTRUMENT, new Instrument());
         return "instrument/edit";
     }
 

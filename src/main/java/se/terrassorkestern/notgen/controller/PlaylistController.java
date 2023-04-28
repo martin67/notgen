@@ -35,6 +35,10 @@ import java.util.UUID;
 @RequestMapping("/playlist")
 public class PlaylistController extends CommonController {
 
+    public static final String ATTRIBUTE_ONE_PLAYLIST = "playlist";
+    public static final String ATTRIBUTE_SETTINGS = "settings";
+    public static final String ATTRIBUTE_INSTRUMENTS = "instruments";
+    public static final String ATTRIBUTE_ALL_PLAYLISTS = "playlists";
     private final ActiveBand activeBand;
     private final PlaylistRepository playlistRepository;
     private final SettingRepository settingRepository;
@@ -55,14 +59,14 @@ public class PlaylistController extends CommonController {
 
     @GetMapping("/list")
     public String playlistList(Model model) {
-        model.addAttribute("playlists", getPlaylists());
+        model.addAttribute(ATTRIBUTE_ALL_PLAYLISTS, getPlaylists());
         return "playlist/list";
     }
 
     @GetMapping("/view")
     public String view(@RequestParam("id") UUID id, Model model) {
         Playlist playlist = getPlaylist(id);
-        model.addAttribute("playlist", playlist);
+        model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, playlist);
         List<Instrument> sortedInstruments = playlist.getSetting().getInstruments().stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
         model.addAttribute("instruments", sortedInstruments);
         return "playlist/view";
@@ -70,9 +74,9 @@ public class PlaylistController extends CommonController {
 
     @GetMapping("/edit")
     public String playlistEdit(@RequestParam("id") UUID id, Model model) {
-        model.addAttribute("playlist", getPlaylist(id));
-        model.addAttribute("settings", settingRepository.findByBand(activeBand.getBand()));
-        model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
+        model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, getPlaylist(id));
+        model.addAttribute(ATTRIBUTE_SETTINGS, settingRepository.findByBand(activeBand.getBand()));
+        model.addAttribute(ATTRIBUTE_INSTRUMENTS, instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
         int selectedInstrument = 0;
         model.addAttribute("selectedInstrument", selectedInstrument);
         return "playlist/edit";
@@ -80,9 +84,9 @@ public class PlaylistController extends CommonController {
 
     @GetMapping("/create")
     public String playlistNew(Model model) {
-        model.addAttribute("playlist", new Playlist());
-        model.addAttribute("settings", settingRepository.findByBand(activeBand.getBand()));
-        model.addAttribute("instruments", instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
+        model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, new Playlist());
+        model.addAttribute(ATTRIBUTE_SETTINGS, settingRepository.findByBand(activeBand.getBand()));
+        model.addAttribute(ATTRIBUTE_INSTRUMENTS, instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
         return "playlist/edit";
     }
 
@@ -122,7 +126,7 @@ public class PlaylistController extends CommonController {
         PlaylistEntry playlistEntry = new PlaylistEntry();
         playlistEntry.setSortOrder(playlist.getPlaylistEntries().size() + 1);
         playlist.getPlaylistEntries().add(playlistEntry);
-        model.addAttribute("playlist", playlist);
+        model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, playlist);
         return "playlist/edit";
     }
 
@@ -131,7 +135,7 @@ public class PlaylistController extends CommonController {
         try {
             int playlistPartId = Integer.parseInt(req.getParameter("deleteRow"));
             playlist.getPlaylistEntries().remove(playlistPartId);
-            model.addAttribute("playlist", playlist);
+            model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, playlist);
         } catch (NumberFormatException ignored) {
         }
         return "playlist/edit";

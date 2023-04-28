@@ -62,10 +62,6 @@ public class ConverterService implements ItemProcessor<Score, Score> {
                 log.warn("No file for score {}, arr {}", score, arrangement);
             } else {
                 log.info("Converting: {}, arr: {}", score, arrangement);
-
-                // Sortera så att instrumenten är sorterade i sortorder. Fick inte till det med JPA...
-                //score.getScoreParts().sort(Comparator.comparing((ScorePart s) -> s.getInstrument().getSortOrder()));
-
                 Path tempDir = storageService.createTempDir(score);
                 Path downloadedArrangement = storageService.downloadArrangement(arrangement, tempDir);
                 List<Path> extractedFilesList = split(tempDir, downloadedArrangement);
@@ -254,8 +250,6 @@ public class ConverterService implements ItemProcessor<Score, Score> {
     public InputStream assemble(List<Score> scores, List<Instrument> instruments, boolean sortByInstrument) throws
             IOException, InterruptedException {
 
-        // Todo: Can we assume that the input always will be sorted?
-        //scores.sort(Comparator.comparing(Score::getTitle));
         List<Instrument> sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();

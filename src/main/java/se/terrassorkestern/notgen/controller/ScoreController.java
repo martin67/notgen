@@ -28,6 +28,9 @@ import java.util.UUID;
 @RequestMapping("/score")
 @SessionAttributes({"score", "instruments"})
 public class ScoreController extends CommonController {
+    public static final String ATTRIBUTE_ONE_SCORE = "score";
+    public static final String ATTRIBUTE_ALL_INSTRUMENTS = "instruments";
+    public static final String ATTRIBUTE_ALL_SCORES = "scores";
     @Value("${notgen.ocr.enable:false}")
     private boolean enableOcr;
     @Value("${notgen.ocr.songids:0}")
@@ -51,7 +54,7 @@ public class ScoreController extends CommonController {
 
     @GetMapping("/list")
     public String songList(Model model) {
-        model.addAttribute("scores", getScores());
+        model.addAttribute(ATTRIBUTE_ALL_SCORES, getScores());
         return "score/list";
     }
 
@@ -66,8 +69,8 @@ public class ScoreController extends CommonController {
     @GetMapping("/view")
     public String view(@RequestParam("id") UUID id, Model model) {
         Score score = getScore(id);
-        model.addAttribute("score", score);
-        model.addAttribute("instruments", getInstruments());
+        model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
+        model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
         model.addAttribute("settings", getSettings());
         return "score/view";
     }
@@ -85,8 +88,8 @@ public class ScoreController extends CommonController {
                 model.addAttribute("doSongOcr", "false");
             }
         }
-        model.addAttribute("score", score);
-        model.addAttribute("instruments", getInstruments());
+        model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
+        model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
         return "score/edit";
     }
 
@@ -101,8 +104,8 @@ public class ScoreController extends CommonController {
         for (Instrument instrument : getInstruments()) {
             arrangement.addArrangementPart(new ArrangementPart(arrangement, instrument));
         }
-        model.addAttribute("score", score);
-        model.addAttribute("instruments", getInstruments());
+        model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
+        model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
         return "score/edit";
     }
 
@@ -199,11 +202,10 @@ public class ScoreController extends CommonController {
     @PreAuthorize("hasAuthority('EDIT_SONG')")
     @GetMapping("/deleteFile")
     public String deleteFile(@ModelAttribute("score") Score score,
-                             @RequestParam("file_id") UUID fileId, Model model) {
+                             @RequestParam("file_id") UUID fileId) {
         NgFile file = score.getFile(fileId);
         score.getFiles().remove(file);
         log.info("delete: {}, file id: {}", file.getOriginalFilename(), file.getId());
-        model.addAttribute("allInstruments", getInstruments());
         return "score/edit";
     }
 
