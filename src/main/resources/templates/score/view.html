@@ -28,7 +28,7 @@
     <!-- General info -->
     <div class="row mb-3 border p-2">
         <div class="col">
-            <table class="table table-borderless table-sm mb-0">
+            <table class="table table-borderless table-sm mb-0" role="presentation">
                 <tbody>
                 <tr th:if="${score.title}" th:unless="${score.title.isEmpty()}">
                     <td>Titel</td>
@@ -80,7 +80,7 @@
     <div class="row mb-3 border pt-2 px-2" th:unless="${score.getArrangements().isEmpty()}">
         <h3>Sättning</h3>
         <div th:if="${score.getArrangements().size() == 1}">
-            <table class="table table-sm table-borderless table-striped">
+            <table class="table table-sm table-borderless table-striped" role="presentation">
                 <tbody>
                 <tr th:each="arrPart : ${score.getArrangements().get(0).getArrangementParts()}">
                     <td th:text="${arrPart.instrument.name}"/>
@@ -115,7 +115,7 @@
                      th:each="arr, i : ${score.getArrangements()}">
                     <div class="alert alert-info" th:text="${arr.getComment()}"
                          th:if="${arr.getComment()}"/>
-                    <table class="table table-sm table-borderless table-striped">
+                    <table class="table table-sm table-borderless table-striped" role="presentation">
                         <tbody>
                         <tr th:each="arrPart : ${arr.getArrangementParts()}">
                             <td th:text="${arrPart.instrument.name}"/>
@@ -146,11 +146,11 @@
          th:if="${score.files}" th:unless="${score.files.isEmpty()}">
         <div class="col">
             <h3>Filer</h3>
-            <table class="table table-sm table-borderless mb-0">
+            <table class="table table-sm table-borderless mb-0" role="presentation">
                 <tbody>
                 <tr th:each="file : ${score.getFiles()}">
                     <td th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"></td>
-                    <td th:text="${file.getType()}"></td>
+                    <td th:text="${file.getType().getShortDescription()}"></td>
                     <td class="text-end">
                         <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
                             <i class="bi-eye me-2"></i></a>

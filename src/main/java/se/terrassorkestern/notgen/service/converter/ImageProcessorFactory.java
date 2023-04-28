@@ -19,11 +19,11 @@ public class ImageProcessorFactory {
             return null;
         } else {
             return switch (arrangement.getScoreType()) {
-                case NotScanned -> null;
+                case NOT_SCANNED -> null;
                 case PDF, PDF_L, PDF_R -> new ScannedPdf(path, arrangement, storageService, firstPage);
                 case BW -> new BlackAndWhite(path, arrangement, storageService, firstPage);
-                case Color -> new ColorArr(path, tmpDir, arrangement, storageService, firstPage);
-                case ScannedTryckArr -> new TryckarrOriginal(path, tmpDir, arrangement, storageService, firstPage);
+                case COLOR -> new ColorArr(path, tmpDir, arrangement, storageService, firstPage);
+                case SCANNED_TRYCK_ARR -> new TryckarrOriginal(path, tmpDir, arrangement, storageService, firstPage);
             };
         }
     }
