@@ -84,7 +84,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
             u.setFullName("Administrator");
             u.setDisplayName("The Admin");
             u.setEmail("admin@admin");
-            u.setPassword(passwordEncoder.encode("admin"));
+            u.setPassword(passwordEncoder.encode("password"));
             u.setRole(superAdmin);
             u.setEnabled(true);
             u.setProvider(AuthProvider.local);
