@@ -30,6 +30,7 @@ import java.util.zip.ZipInputStream;
 public class StorageService {
 
     private static final int BUFFER_SIZE = 4096;
+    public static final String TEMPDIR_PREFIX = "notgen";
     private final BackendStorage backendStorage;
     private final String tempDir;
     private final NgFileRepository ngFileRepository;
@@ -55,9 +56,9 @@ public class StorageService {
     public Path createTempDir() throws IOException {
         Path t;
         if (tempDir.isEmpty()) {
-            t = Files.createTempDirectory("notgen");
+            t = Files.createTempDirectory(TEMPDIR_PREFIX);
         } else {
-            t = Files.createTempDirectory(Path.of(tempDir), "notgen");
+            t = Files.createTempDirectory(Path.of(tempDir), TEMPDIR_PREFIX);
         }
         log.debug("Creating temporary directory {}", t);
         return t;
@@ -66,7 +67,7 @@ public class StorageService {
     public Path createTempDir(Score score) throws IOException {
         Path t;
         if (tempDir.isEmpty()) {
-            t = Files.createTempDirectory("notgen");
+            t = Files.createTempDirectory(TEMPDIR_PREFIX);
         } else {
             t = Files.createDirectories(Path.of(tempDir).resolve(score.getTitle()).resolve(String.valueOf(Instant.now().getEpochSecond())));
         }

@@ -74,7 +74,6 @@ public class ColorArr implements ImageProcessor {
             // Setup conversion filters
             GreyScaler greyScaler = new Standard();
             Binarizer binarizer = new Otsu();
-            //Binarizer binarizer = new Standard();
 
             //
             // Change to grey

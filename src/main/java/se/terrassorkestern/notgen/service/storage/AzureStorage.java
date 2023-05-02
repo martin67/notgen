@@ -30,11 +30,11 @@ public class AzureStorage implements BackendStorage {
     private static final String BLOB_RESOURCE_PATTERN = "azure-blob://%s/%s";
     private final ResourceLoader resourceLoader;
     private final AzureStorageBlobProtocolResolver azureStorageBlobProtocolResolver;
-    @Value("${notgen.storage.input}")
+    @Value("${notgen.storage.input:scores}")
     private String scoreContainer;
-    @Value("${notgen.storage.output}")
-    private String scorePartsContainer;
-    @Value("${notgen.storage.static}")
+    @Value("${notgen.storage.output:arrangementParts}")
+    private String arrangementPartsContainer;
+    @Value("${notgen.storage.static:static}")
     private String staticContainer;
 
 
@@ -58,7 +58,7 @@ public class AzureStorage implements BackendStorage {
     public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
         String fileName = getArrangementPartFilename(arrangement, instrument);
         Path destination = location.resolve(arrangement.getId() + "-" + instrument.getId() + ".pdf");
-        Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, fileName));
+        Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, arrangementPartsContainer, fileName));
         Files.copy(resource.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return destination;
     }
@@ -68,7 +68,7 @@ public class AzureStorage implements BackendStorage {
         // check that all arrangement parts are generated
         boolean allGenerated = true;
         String pattern = String.format("%s-*.pdf", arrangement.getId());
-        Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, pattern));
+        Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, arrangementPartsContainer, pattern));
         // Just check that there are equal number of files as there should be score parts.
         if (resources.length != arrangement.getArrangementParts().size()) {
             allGenerated = false;
@@ -115,10 +115,10 @@ public class AzureStorage implements BackendStorage {
                 arrangementPart.getArrangement(),
                 arrangementPart.getInstrument());
         String fileName = getArrangementPartFilename(arrangementPart);
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scorePartsContainer, fileName));
+        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, arrangementPartsContainer, fileName));
         try (OutputStream os = ((WritableResource) storageBlobResource).getOutputStream()) {
             Files.copy(path, os);
-            log.debug("write data to container={}, fileName={}", scorePartsContainer, fileName);
+            log.debug("write data to container={}, fileName={}", arrangementPartsContainer, fileName);
         }
     }
 

@@ -14,7 +14,8 @@ spring:
   # Don't use Liquibase for unit & integration tests
   liquibase:
     enabled: false
-
+  config:
+    import: git.properties
   cloud:
     azure:
       storage:
