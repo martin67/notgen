@@ -31,6 +31,10 @@ public class ScoreController extends CommonController {
     public static final String ATTRIBUTE_ONE_SCORE = "score";
     public static final String ATTRIBUTE_ALL_INSTRUMENTS = "instruments";
     public static final String ATTRIBUTE_ALL_SCORES = "scores";
+    public static final String REDIRECT_SCORE_LIST = "redirect:/score/list";
+    public static final String VIEW_SCORE_EDIT = "score/edit";
+    public static final String VIEW_SCORE_VIEW = "score/view";
+    public static final String VIEW_SCORE_LIST = "score/list";
     @Value("${notgen.ocr.enable:false}")
     private boolean enableOcr;
     @Value("${notgen.ocr.songids:0}")
@@ -55,7 +59,7 @@ public class ScoreController extends CommonController {
     @GetMapping("/list")
     public String songList(Model model) {
         model.addAttribute(ATTRIBUTE_ALL_SCORES, getScores());
-        return "score/list";
+        return VIEW_SCORE_LIST;
     }
 
     @GetMapping("/delete")
@@ -63,7 +67,7 @@ public class ScoreController extends CommonController {
         Score score = getScore(id);
         log.info("Tar bort låt {} [{}]", score.getTitle(), score.getId());
         scoreRepository.delete(score);
-        return "redirect:/score/list";
+        return REDIRECT_SCORE_LIST;
     }
 
     @GetMapping("/view")
@@ -72,7 +76,7 @@ public class ScoreController extends CommonController {
         model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
         model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
         model.addAttribute("settings", getSettings());
-        return "score/view";
+        return VIEW_SCORE_VIEW;
     }
 
     @GetMapping("/edit")
@@ -82,15 +86,12 @@ public class ScoreController extends CommonController {
         // Check if the score has a song instrument. Only one for now
         if (enableOcr) {
             UUID songId = UUID.fromString(ocrSongIds);
-            if (arrangement.getInstruments().stream().anyMatch(instrument -> instrument.getId().equals(songId))) {
-                model.addAttribute("doSongOcr", "true");
-            } else {
-                model.addAttribute("doSongOcr", "false");
-            }
+            model.addAttribute("doSongOcr",
+                    arrangement.getInstruments().stream().anyMatch(instrument -> instrument.getId().equals(songId)) ? "true" : "false");
         }
         model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
         model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
-        return "score/edit";
+        return VIEW_SCORE_EDIT;
     }
 
     @GetMapping("/create")
@@ -106,7 +107,7 @@ public class ScoreController extends CommonController {
         }
         model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
         model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
-        return "score/edit";
+        return VIEW_SCORE_EDIT;
     }
 
     @PostMapping(value = "/submit", params = {"save"})
@@ -114,21 +115,21 @@ public class ScoreController extends CommonController {
                        @RequestParam("defaultArrangementIndex") int defaultArrangementIndex,
                        Errors errors) {
         if (errors.hasErrors()) {
-            return "score/edit";
+            return VIEW_SCORE_EDIT;
         }
         log.info("Sparar låt {} [{}]", score.getTitle(), score.getId());
         if (!score.getArrangements().isEmpty()) {
             score.setDefaultArrangement(score.getArrangements().get(defaultArrangementIndex));
         }
         scoreRepository.save(score);
-        return "redirect:/score/list";
+        return REDIRECT_SCORE_LIST;
     }
 
     @PostMapping(value = "/submit", params = {"addArrangement"})
     public String addArrangement(@ModelAttribute("score") Score score) {
         Arrangement arrangement = new Arrangement();
         score.addArrangement(arrangement);
-        return "score/edit";
+        return VIEW_SCORE_EDIT;
     }
 
     @PostMapping(value = "/submit", params = {"deleteArrangement"})
@@ -136,7 +137,7 @@ public class ScoreController extends CommonController {
                                     @RequestParam("deleteArrangement") String arrangementId) {
         Arrangement arrangement = score.getArrangement(arrangementId);
         score.getArrangements().remove(arrangement);
-        return "score/edit";
+        return VIEW_SCORE_EDIT;
     }
 
     @PostMapping(value = "/submit", params = {"addArrangementPart"})
@@ -144,7 +145,7 @@ public class ScoreController extends CommonController {
                                      @RequestParam("addArrangementPart") String arrangementId) {
         Arrangement arrangement = score.getArrangement(arrangementId);
         arrangement.addArrangementPart(new ArrangementPart());
-        return "score/edit";
+        return VIEW_SCORE_EDIT;
     }
 
     @PostMapping(value = "/submit", params = {"deleteArrangementPart"})
@@ -153,7 +154,7 @@ public class ScoreController extends CommonController {
         Arrangement arrangement = score.getArrangement(arrangementPart.substring(0, 36));
         int rowIndex = Integer.parseInt(arrangementPart.substring(37));
         arrangement.getArrangementParts().remove(rowIndex);
-        return "score/edit";
+        return VIEW_SCORE_EDIT;
     }
 
     @PostMapping(value = "/submit", params = {"upload"})
@@ -168,7 +169,7 @@ public class ScoreController extends CommonController {
             ngFile.setName(fileName);
         }
         score.getFiles().add(ngFile);
-        return "score/edit";
+        return VIEW_SCORE_EDIT;
     }
 
     @GetMapping("/downloadFile")
@@ -206,13 +207,13 @@ public class ScoreController extends CommonController {
         NgFile file = score.getFile(fileId);
         score.getFiles().remove(file);
         log.info("delete: {}, file id: {}", file.getOriginalFilename(), file.getId());
-        return "score/edit";
+        return VIEW_SCORE_EDIT;
     }
 
     @GetMapping("/convert")
     public String convert(@RequestParam("id") UUID id) throws IOException, InterruptedException {
         converterService.convert(List.of(getScore(id)));
-        return "redirect:/score/list";
+        return REDIRECT_SCORE_LIST;
     }
 
     @GetMapping("/edit/ocr")

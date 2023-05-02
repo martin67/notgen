@@ -149,7 +149,7 @@
                          th:each="arr, arrStat : ${score.getArrangements()}">
                         <div class="alert alert-info" th:text="${arr.getComment()}"
                              th:if="${arr.getComment()}"/>
-                        <table class="table table-sm table-borderless mb-0">
+                        <table class="table table-sm table-borderless mb-0" aria-label="Arrangements">
                             <thead>
                             <tr>
                                 <th>Instrument</th>
@@ -295,7 +295,7 @@
         <div class="form-row mb-3 border pt-2 px-2">
             <div class="form-group col">
                 <h3>Filhantering</h3>
-                <table class="table table-sm table-borderless mb-0">
+                <table class="table table-sm table-borderless mb-0" aria-label="Files">
                     <tbody>
                     <tr th:each="file : ${score.getFiles()}">
                         <td th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"></td>

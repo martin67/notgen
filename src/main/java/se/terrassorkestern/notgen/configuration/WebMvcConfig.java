@@ -18,20 +18,7 @@ import java.util.Locale;
 @Slf4j
 @Configuration
 @EnableAsync
-@PropertySource("classpath:git.properties")
 public class WebMvcConfig implements WebMvcConfigurer {
-
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
-        PropertySourcesPlaceholderConfigurer propsConfig = new PropertySourcesPlaceholderConfigurer();
-        ClassPathResource hej = new ClassPathResource("git.properties");
-        //propsConfig.setLocation(new ClassPathResource("git.properties"));
-        propsConfig.setLocation(hej);
-        log.info("PropertySourcesPlaceholderConfigurer: {}, {}", hej, hej.getDescription());
-        propsConfig.setIgnoreResourceNotFound(true);
-        propsConfig.setIgnoreUnresolvablePlaceholders(true);
-        return propsConfig;
-    }
 
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
