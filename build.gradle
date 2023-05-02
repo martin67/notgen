@@ -108,6 +108,7 @@ dependencies {
                 url System.getenv("SPRING_DATASOURCE_URL")
                 username System.getenv("SPRING_DATASOURCE_USERNAME")
                 password System.getenv("SPRING_DATASOURCE_PASSWORD")
+                includeObjects "BATCH_*"
             }
         }
     }

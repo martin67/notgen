@@ -9,6 +9,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.stereotype.Service;
+import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Playlist;
 import se.terrassorkestern.notgen.model.PlaylistEntry;
 
@@ -22,11 +23,17 @@ import java.util.List;
 @Service
 public class PlaylistPdfService {
 
+    private final ActiveBand activeBand;
+
+    public PlaylistPdfService(ActiveBand activeBand) {
+        this.activeBand = activeBand;
+    }
+
     public ByteArrayInputStream create(Playlist playlist) throws IOException {
 
         PDDocument doc = new PDDocument();
         PDDocumentInformation pdd = doc.getDocumentInformation();
-        pdd.setAuthor("Terrassorkestern");
+        pdd.setAuthor(activeBand.getBand().getName());
         pdd.setTitle(playlist.getName() + " " + playlist.getDate().toString());
         pdd.setSubject("Låtlista");
 
@@ -85,10 +92,8 @@ public class PlaylistPdfService {
                 // Add page(s) if needed
                 // TODO: fix
                 if (ypos < 50) {
-                    //contents.close();
                     page = new PDPage(PDRectangle.A4);
                     doc.addPage(page);
-                    //contents = new PDPageContentStream(doc, page);
                     ypos = 750;
                 }
             }

@@ -17,6 +17,9 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/band")
 public class BandController {
+    public static final String VIEW_BAND_LIST = "band/list";
+    public static final String VIEW_BAND_EDIT = "band/edit";
+    public static final String REDIRECT_BAND_LIST = "redirect:/band/list";
     private final BandRepository bandRepository;
 
 
@@ -27,7 +30,7 @@ public class BandController {
     @GetMapping("/list")
     public String list(Model model) {
         model.addAttribute("bands", bandRepository.findAll());
-        return "band/list";
+        return VIEW_BAND_LIST;
     }
 
     @GetMapping("/edit")
@@ -35,13 +38,13 @@ public class BandController {
         Band band = bandRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Band %s not found", id)));
         model.addAttribute("band", band);
-        return "band/edit";
+        return VIEW_BAND_EDIT;
     }
 
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("band", new Band());
-        return "band/edit";
+        return VIEW_BAND_EDIT;
     }
 
     @GetMapping("/delete")
@@ -50,17 +53,17 @@ public class BandController {
                 .orElseThrow(() -> new NotFoundException(String.format("Band %s not found", id)));
         log.info("Tar bort band {} [{}]", band.getName(), band.getId());
         bandRepository.delete(band);
-        return "redirect:/band/list";
+        return REDIRECT_BAND_LIST;
     }
 
     @PostMapping("/save")
     public String save(@Valid @ModelAttribute Band band, Errors errors) {
         if (errors.hasErrors()) {
-            return "band/edit";
+            return VIEW_BAND_EDIT;
         }
         log.info("Sparar band {} [{}]", band.getName(), band.getId());
         bandRepository.save(band);
-        return "redirect:/band/list";
+        return REDIRECT_BAND_LIST;
     }
 
 }

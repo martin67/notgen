@@ -38,7 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
     private static Band band1;
-    private static Band band2;
     private static User normalUser;
     private static User disabledUser;
     private static User adminUser;
@@ -74,7 +73,7 @@ class UserControllerTest {
     @BeforeAll
     static void init() {
         band1 = new Band();
-        band2 = new Band();
+        Band band2 = new Band();
         normalUser = new User();
         normalUser.setUsername("normal");
         normalUser.getBands().add(band1);

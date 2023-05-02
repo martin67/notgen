@@ -1,6 +1,9 @@
 package se.terrassorkestern.notgen.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -24,7 +27,7 @@ public class Instrument {
     private String name;
     private String shortName;
     @NotNull(message = "Sorteringsordning måste anges")
-    private Integer sortOrder;
+    private int sortOrder;
 
     @ManyToMany(mappedBy = "instruments")
     private Set<Setting> settings = new HashSet<>();
@@ -35,6 +38,6 @@ public class Instrument {
 
     @Override
     public String toString() {
-        return name + " (" + id +")";
+        return name + " (" + id + ")";
     }
 }

@@ -12,10 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
-import se.terrassorkestern.notgen.model.ActiveBand;
-import se.terrassorkestern.notgen.model.Band;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Playlist;
+import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.*;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.PlaylistPdfService;
@@ -66,19 +63,20 @@ class PlaylistControllerTest {
     @MockBean
     private CustomOidcUserService customOidcUserService;
 
-    private Band band1;
     private Playlist foo;
-    private Playlist bar;
     private Instrument sax;
 
     @BeforeEach
     void initTest() throws IOException {
-        band1 = new Band();
+        sax = new Instrument();
+        Setting setting = new Setting();
+        setting.getInstruments().add(sax);
+        Band band1 = new Band();
         foo = new Playlist();
         foo.setBand(band1);
-        bar = new Playlist();
+        foo.setSetting(setting);
+        Playlist bar = new Playlist();
         bar.setBand(band1);
-        sax = new Instrument();
         sax.setBand(band1);
         List<Playlist> allPlaylists = List.of(foo, bar);
 

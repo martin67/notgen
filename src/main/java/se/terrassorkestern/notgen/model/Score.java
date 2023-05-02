@@ -98,11 +98,11 @@ public class Score extends Auditable<String> {
     }
 
     public String getThumbnailPath() {
-        return (defaultArrangement != null && defaultArrangement.getCover()) ? String.format("/%s-thumbnail.png", defaultArrangement.getId()) : "/images/thoreehrling.jpg";
+        return (defaultArrangement != null && defaultArrangement.isCover()) ? String.format("/%s-thumbnail.png", defaultArrangement.getId()) : "/images/thoreehrling.jpg";
     }
 
     public String getCoverPath() {
-        return (defaultArrangement != null && defaultArrangement.getCover()) ? String.format("/%s-cover.jpg", defaultArrangement.getId()) : "/images/thoreehrling.jpg";
+        return (defaultArrangement != null && defaultArrangement.isCover()) ? String.format("/%s-cover.jpg", defaultArrangement.getId()) : "/images/thoreehrling.jpg";
     }
 
     public NgFile getFile(UUID fileId) {

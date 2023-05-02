@@ -299,7 +299,7 @@
                     <tbody>
                     <tr th:each="file : ${score.getFiles()}">
                         <td th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"></td>
-                        <td th:text="${file.getType()}"></td>
+                        <td th:text="${file.getType().getShortDescription()}"></td>
                         <td class="text-end">
                             <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
                                 <i class="bi-eye me-2"></i></a>
@@ -385,7 +385,7 @@
                                 <select th:name="file_type">
                                     <option th:each="ft : ${T(se.terrassorkestern.notgen.model.NgFileType).values()}"
                                             th:value="${ft}"
-                                            th:text="${ft}"/>
+                                            th:text="${ft.getShortDescription()}"/>
                                 </select>
                             </div>
                         </div>

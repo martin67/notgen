@@ -25,7 +25,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
         PropertySourcesPlaceholderConfigurer propsConfig = new PropertySourcesPlaceholderConfigurer();
         ClassPathResource hej = new ClassPathResource("git.properties");
-        propsConfig.setLocation(new ClassPathResource("git.properties"));
+        //propsConfig.setLocation(new ClassPathResource("git.properties"));
+        propsConfig.setLocation(hej);
         log.info("PropertySourcesPlaceholderConfigurer: {}, {}", hej, hej.getDescription());
         propsConfig.setIgnoreResourceNotFound(true);
         propsConfig.setIgnoreUnresolvablePlaceholders(true);
