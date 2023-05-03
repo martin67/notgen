@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Playlist;
@@ -97,24 +98,26 @@ public class PlaylistController extends CommonController {
     }
 
     @GetMapping("/delete")
-    public String playlistDelete(@RequestParam("id") UUID id) {
+    public String playlistDelete(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
         Playlist playlist = getPlaylist(id);
         log.info("Tar bort låtlista {} [{}]", playlist.getName(), playlist.getId());
         playlistRepository.delete(playlist);
+        sessionStatus.setComplete();
         return REDIRECT_PLAYLIST_LIST;
     }
 
     @GetMapping("/copy")
-    public String playlistCopy(@RequestParam("id") UUID id) {
+    public String playlistCopy(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
         Playlist playlist = getPlaylist(id);
         log.info("Kopierar låtlista {} [{}]", playlist.getName(), playlist.getId());
         Playlist newPlaylist = playlist.copy();
         playlistRepository.save(newPlaylist);
+        sessionStatus.setComplete();
         return REDIRECT_PLAYLIST_LIST;
     }
 
     @PostMapping("/save")
-    public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors) {
+    public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors, SessionStatus sessionStatus) {
         if (errors.hasErrors()) {
             return VIEW_PLAYLIST_EDIT;
         }
@@ -124,6 +127,7 @@ public class PlaylistController extends CommonController {
             playlist.setBand(activeBand.getBand());
             playlistRepository.save(playlist);
         }
+        sessionStatus.setComplete();
         return REDIRECT_PLAYLIST_LIST;
     }
 
@@ -144,8 +148,8 @@ public class PlaylistController extends CommonController {
 
     @PostMapping(value = "/save", params = {"createPack"})
     public ResponseEntity<InputStreamResource> createPack(@ModelAttribute("playlist") Playlist playlist,
-                                                          @RequestParam String instrument_id) {
-        UUID id = UUID.fromString(instrument_id);
+                                                          @RequestParam String instrumentId) {
+        UUID id = UUID.fromString(instrumentId);
         log.debug("Startar createPack för instrument id {} ", id);
 
         Instrument instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id).orElseThrow();
