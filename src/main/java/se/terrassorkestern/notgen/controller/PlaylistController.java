@@ -1,6 +1,5 @@
 package se.terrassorkestern.notgen.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
@@ -15,8 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import se.terrassorkestern.notgen.exceptions.NotFoundException;
-import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.model.Instrument;
+import se.terrassorkestern.notgen.model.Playlist;
+import se.terrassorkestern.notgen.model.PlaylistEntry;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
@@ -33,12 +34,17 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping("/playlist")
+@SessionAttributes("playlist")
 public class PlaylistController extends CommonController {
 
     public static final String ATTRIBUTE_ONE_PLAYLIST = "playlist";
     public static final String ATTRIBUTE_SETTINGS = "settings";
     public static final String ATTRIBUTE_INSTRUMENTS = "instruments";
     public static final String ATTRIBUTE_ALL_PLAYLISTS = "playlists";
+    public static final String VIEW_PLAYLIST_LIST = "playlist/list";
+    public static final String VIEW_PLAYLIST_VIEW = "playlist/view";
+    public static final String VIEW_PLAYLIST_EDIT = "playlist/edit";
+    public static final String REDIRECT_PLAYLIST_LIST = "redirect:/playlist/list";
     private final ActiveBand activeBand;
     private final PlaylistRepository playlistRepository;
     private final SettingRepository settingRepository;
@@ -60,7 +66,7 @@ public class PlaylistController extends CommonController {
     @GetMapping("/list")
     public String playlistList(Model model) {
         model.addAttribute(ATTRIBUTE_ALL_PLAYLISTS, getPlaylists());
-        return "playlist/list";
+        return VIEW_PLAYLIST_LIST;
     }
 
     @GetMapping("/view")
@@ -69,7 +75,7 @@ public class PlaylistController extends CommonController {
         model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, playlist);
         List<Instrument> sortedInstruments = playlist.getSetting().getInstruments().stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
         model.addAttribute(ATTRIBUTE_INSTRUMENTS, sortedInstruments);
-        return "playlist/view";
+        return VIEW_PLAYLIST_VIEW;
     }
 
     @GetMapping("/edit")
@@ -79,7 +85,7 @@ public class PlaylistController extends CommonController {
         model.addAttribute(ATTRIBUTE_INSTRUMENTS, instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
         int selectedInstrument = 0;
         model.addAttribute("selectedInstrument", selectedInstrument);
-        return "playlist/edit";
+        return VIEW_PLAYLIST_EDIT;
     }
 
     @GetMapping("/create")
@@ -87,7 +93,7 @@ public class PlaylistController extends CommonController {
         model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, new Playlist());
         model.addAttribute(ATTRIBUTE_SETTINGS, settingRepository.findByBand(activeBand.getBand()));
         model.addAttribute(ATTRIBUTE_INSTRUMENTS, instrumentRepository.findByBandOrderBySortOrder(activeBand.getBand()));
-        return "playlist/edit";
+        return VIEW_PLAYLIST_EDIT;
     }
 
     @GetMapping("/delete")
@@ -95,7 +101,7 @@ public class PlaylistController extends CommonController {
         Playlist playlist = getPlaylist(id);
         log.info("Tar bort låtlista {} [{}]", playlist.getName(), playlist.getId());
         playlistRepository.delete(playlist);
-        return "redirect:/playlist/list";
+        return REDIRECT_PLAYLIST_LIST;
     }
 
     @GetMapping("/copy")
@@ -104,13 +110,13 @@ public class PlaylistController extends CommonController {
         log.info("Kopierar låtlista {} [{}]", playlist.getName(), playlist.getId());
         Playlist newPlaylist = playlist.copy();
         playlistRepository.save(newPlaylist);
-        return "redirect:/playlist/list";
+        return REDIRECT_PLAYLIST_LIST;
     }
 
     @PostMapping("/save")
     public String playlistSave(@Valid @ModelAttribute Playlist playlist, Errors errors) {
         if (errors.hasErrors()) {
-            return "playlist/edit";
+            return VIEW_PLAYLIST_EDIT;
         }
         Authentication user = SecurityContextHolder.getContext().getAuthentication();
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
@@ -118,39 +124,28 @@ public class PlaylistController extends CommonController {
             playlist.setBand(activeBand.getBand());
             playlistRepository.save(playlist);
         }
-        return "redirect:/playlist/list";
+        return REDIRECT_PLAYLIST_LIST;
     }
 
     @PostMapping(value = "/save", params = {"addRow"})
-    public String addRow(final Playlist playlist, Model model) {
+    public String addRow(@ModelAttribute("playlist") Playlist playlist) {
         PlaylistEntry playlistEntry = new PlaylistEntry();
         playlistEntry.setSortOrder(playlist.getPlaylistEntries().size() + 1);
         playlist.getPlaylistEntries().add(playlistEntry);
-        model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, playlist);
-        return "playlist/edit";
+        return VIEW_PLAYLIST_EDIT;
     }
 
     @PostMapping(value = "/save", params = {"deleteRow"})
-    public String deleteRow(final Playlist playlist, Model model, final HttpServletRequest req) {
-        try {
-            int playlistPartId = Integer.parseInt(req.getParameter("deleteRow"));
-            playlist.getPlaylistEntries().remove(playlistPartId);
-            model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, playlist);
-        } catch (NumberFormatException ignored) {
-        }
-        return "playlist/edit";
+    public String deleteRow(@ModelAttribute("playlist") Playlist playlist,
+                            @RequestParam("deleteRow") int rowIndex) {
+        playlist.getPlaylistEntries().remove(rowIndex);
+        return VIEW_PLAYLIST_EDIT;
     }
 
     @PostMapping(value = "/save", params = {"createPack"})
-    public ResponseEntity<InputStreamResource> createPack(final Playlist playlist,
-                                                          final HttpServletRequest req) {
-        UUID id;
-        try {
-            id = UUID.fromString(req.getParameter("selectedInstrument"));
-        } catch (NumberFormatException e) {
-            throw new NotFoundException("Instrument not found");
-        }
-
+    public ResponseEntity<InputStreamResource> createPack(@ModelAttribute("playlist") Playlist playlist,
+                                                          @RequestParam String instrument_id) {
+        UUID id = UUID.fromString(instrument_id);
         log.debug("Startar createPack för instrument id {} ", id);
 
         Instrument instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id).orElseThrow();

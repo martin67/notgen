@@ -95,7 +95,6 @@ public class PdfAssembler implements Runnable {
 
         } catch (IOException e) {
             log.error("Ooopsie", e);
-            throw new RuntimeException(e);
         }
     }
 }

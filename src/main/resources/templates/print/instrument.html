@@ -52,8 +52,8 @@
 <script>
     $(function () {
         $("table tbody tr").click(function (e) {
-            var u = $(this).data("link");
-            var t = $(this).data("target");
+            let u = $(this).data("link");
+            let t = $(this).data("target");
             console.log(u, t);
             if (t.length) {
                 window.open(u, t);

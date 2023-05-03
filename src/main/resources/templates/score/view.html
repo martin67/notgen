@@ -29,6 +29,12 @@
     <div class="row mb-3 border p-2">
         <div class="col">
             <table class="table table-borderless table-sm mb-0" aria-label="General info">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
                 <tbody>
                 <tr th:if="${score.title}" th:unless="${score.title.isEmpty()}">
                     <td>Titel</td>
@@ -81,6 +87,13 @@
         <h3>Sättning</h3>
         <div th:if="${score.getArrangements().size() == 1}">
             <table class="table table-sm table-borderless table-striped" aria-label="Arrangements">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
                 <tbody>
                 <tr th:each="arrPart : ${score.getArrangements().get(0).getArrangementParts()}">
                     <td th:text="${arrPart.instrument.name}"/>
@@ -116,6 +129,13 @@
                     <div class="alert alert-info" th:text="${arr.getComment()}"
                          th:if="${arr.getComment()}"/>
                     <table class="table table-sm table-borderless table-striped" aria-label="Arrangements">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        </thead>
                         <tbody>
                         <tr th:each="arrPart : ${arr.getArrangementParts()}">
                             <td th:text="${arrPart.instrument.name}"/>
@@ -147,6 +167,13 @@
         <div class="col">
             <h3>Filer</h3>
             <table class="table table-sm table-borderless mb-0" aria-label="Files">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
                 <tbody>
                 <tr th:each="file : ${score.getFiles()}">
                     <td th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"></td>

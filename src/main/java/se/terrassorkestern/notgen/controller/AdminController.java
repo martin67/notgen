@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping("/admin")
 public class AdminController extends CommonController {
 
-
+    public static final String REDIRECT_ADMIN = "redirect:/admin";
     private final ImageDataExtractor imageDataExtractor;
     private final ScoreRepository scoreRepository;
     private final AdminService adminService;
@@ -50,13 +50,13 @@ public class AdminController extends CommonController {
     public String create() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         // Run with Spring batch as the job will take a long time
         jobLauncher.run(job, new JobParameters());
-        return "redirect:/admin";
+        return REDIRECT_ADMIN;
     }
 
     @GetMapping("/imageExtract")
     public String extract() throws IOException, ImageReadException {
         imageDataExtractor.extract(scoreRepository.findAll());
-        return "redirect:/admin";
+        return REDIRECT_ADMIN;
     }
 
     @GetMapping("/export")

@@ -20,6 +20,10 @@ public class InstrumentController extends CommonController {
 
     public static final String ATTRIBUTE_ALL_INSTRUMENTS = "instruments";
     public static final String ATTRIBUTE_ONE_INSTRUMENT = "instrument";
+    public static final String REDIRECT_INSTRUMENT_LIST = "redirect:/instrument/list";
+    public static final String VIEW_INSTRUMENT_EDIT = "instrument/edit";
+    public static final String VIEW_INSTRUMENT_VIEW = "instrument/view";
+    public static final String VIEW_INSTRUMENT_LIST = "instrument/list";
     private final ActiveBand activeBand;
     private final InstrumentRepository instrumentRepository;
 
@@ -31,19 +35,19 @@ public class InstrumentController extends CommonController {
     @GetMapping("/list")
     public String list(Model model) {
         model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
-        return "instrument/list";
+        return VIEW_INSTRUMENT_LIST;
     }
 
     @GetMapping("/view")
     public String view(@RequestParam("id") UUID id, Model model) {
         model.addAttribute(ATTRIBUTE_ONE_INSTRUMENT, getInstrument(id));
-        return "instrument/view";
+        return VIEW_INSTRUMENT_VIEW;
     }
 
     @GetMapping("/edit")
     public String edit(@RequestParam("id") UUID id, Model model) {
         model.addAttribute(ATTRIBUTE_ONE_INSTRUMENT, getInstrument(id));
-        return "instrument/edit";
+        return VIEW_INSTRUMENT_EDIT;
     }
 
     @GetMapping("/editOrder")
@@ -55,7 +59,7 @@ public class InstrumentController extends CommonController {
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute(ATTRIBUTE_ONE_INSTRUMENT, new Instrument());
-        return "instrument/edit";
+        return VIEW_INSTRUMENT_EDIT;
     }
 
     @GetMapping("/delete")
@@ -63,18 +67,18 @@ public class InstrumentController extends CommonController {
         Instrument instrument = getInstrument(id);
         log.info("Tar bort instrument {} [{}]", instrument.getName(), instrument.getId());
         instrumentRepository.delete(instrument);
-        return "redirect:/instrument/list";
+        return REDIRECT_INSTRUMENT_LIST;
     }
 
     @PostMapping("/save")
     public String save(@Valid @ModelAttribute Instrument instrument, Errors errors) {
         if (errors.hasErrors()) {
-            return "instrument/edit";
+            return VIEW_INSTRUMENT_EDIT;
         }
         log.info("Sparar instrument {} [{}]", instrument.getName(), instrument.getId());
         instrument.setBand(activeBand.getBand());
         instrumentRepository.save(instrument);
-        return "redirect:/instrument/list";
+        return REDIRECT_INSTRUMENT_LIST;
     }
 
     @PostMapping("/saveOrder")
@@ -84,7 +88,7 @@ public class InstrumentController extends CommonController {
             log.info("Sparar instrument {}", instrument);
             //instrumentRepository.save(instrument);
         }
-        return "redirect:/instrument/list";
+        return REDIRECT_INSTRUMENT_LIST;
     }
 
 }

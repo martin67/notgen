@@ -17,6 +17,9 @@ import java.util.UUID;
 @RequestMapping("/setting")
 public class SettingController extends CommonController {
 
+    public static final String VIEW_SETTING_EDIT = "setting/edit";
+    public static final String VIEW_SETTING_LIST = "setting/list";
+    public static final String REDIRECT_SETTING_LIST = "redirect:/setting/list";
     private final ActiveBand activeBand;
     private final SettingRepository settingRepository;
 
@@ -28,21 +31,21 @@ public class SettingController extends CommonController {
     @GetMapping("/list")
     public String settingList(Model model) {
         model.addAttribute("settings", getSettings());
-        return "settingList";
+        return VIEW_SETTING_LIST;
     }
 
     @GetMapping("/edit")
     public String settingEdit(@RequestParam("id") UUID id, Model model) {
         model.addAttribute("setting", getSetting(id));
         model.addAttribute("allSettings", getSettings());
-        return "settingEdit";
+        return VIEW_SETTING_EDIT;
     }
 
     @GetMapping("/new")
     public String settingNew(Model model) {
         model.addAttribute("setting", new Setting());
         model.addAttribute("allSettings", getSettings());
-        return "settingEdit";
+        return VIEW_SETTING_EDIT;
     }
 
     @GetMapping("/delete")
@@ -50,18 +53,18 @@ public class SettingController extends CommonController {
         Setting setting = getSetting(id);
         log.info("Tar bort sättning {} [{}]", setting.getName(), setting.getId());
         settingRepository.delete(setting);
-        return "redirect:/setting/list";
+        return REDIRECT_SETTING_LIST;
     }
 
     @PostMapping("/save")
     public String settingSave(@Valid @ModelAttribute Setting setting, Errors errors) {
         if (errors.hasErrors()) {
-            return "settingEdit";
+            return VIEW_SETTING_EDIT;
         }
         log.info("Sparar sättning {} [{}]", setting.getName(), setting.getId());
         setting.setBand(activeBand.getBand());
         settingRepository.save(setting);
-        return "redirect:/setting/list";
+        return REDIRECT_SETTING_LIST;
     }
 
 }

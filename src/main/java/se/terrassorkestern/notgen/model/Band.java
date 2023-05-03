@@ -19,4 +19,10 @@ public class Band {
     public Band() {
         this.id = UUID.randomUUID();
     }
+
+    public Band(String name, String description) {
+        this.id = UUID.randomUUID();
+        this.name = name;
+        this.description = description;
+    }
 }

@@ -36,6 +36,14 @@ public class Instrument {
         this.id = UUID.randomUUID();
     }
 
+    public Instrument(Band band, String name, String shortName, int sortOrder) {
+        this.id = UUID.randomUUID();
+        this.band = band;
+        this.name = name;
+        this.shortName = shortName;
+        this.sortOrder = sortOrder;
+    }
+
     @Override
     public String toString() {
         return name + " (" + id + ")";

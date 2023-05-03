@@ -29,4 +29,10 @@ public class Setting {
     public Setting() {
         this.id = UUID.randomUUID();
     }
+
+    public Setting(Band band, String name) {
+        this.id = UUID.randomUUID();
+        this.band = band;
+        this.name = name;
+    }
 }

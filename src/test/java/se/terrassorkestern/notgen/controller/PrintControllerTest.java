@@ -81,7 +81,7 @@ private Instrument instrument;
     void whenPrintInstrument_thenReturnOk() throws Exception {
         mvc.perform(get("/print/instrument").param("id", instrument.getId().toString())
                         .contentType(MediaType.TEXT_HTML))
-                .andExpect(view().name("printInstrument"))
+                .andExpect(view().name("print/instrument"))
                 .andExpect(model().attributeExists("scores"))
                 .andExpect(model().attribute("scores", hasSize(2)))
                 .andExpect(model().attributeExists("selectedInstrument"))

@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 
 import java.util.UUID;
 
-
 @Getter
 @Setter
 @Entity
@@ -15,13 +14,20 @@ import java.util.UUID;
 public class PlaylistEntry {
     @Id
     private UUID id;
-
-    private Integer sortOrder;
+    private int sortOrder;
     private String text;
-    private Boolean bold;
+    private boolean bold;
     private String comment;
 
     public PlaylistEntry() {
         this.id = UUID.randomUUID();
+    }
+
+    public PlaylistEntry(int sortOrder, String text, boolean bold, String comment) {
+        this.id = UUID.randomUUID();
+        this.sortOrder = sortOrder;
+        this.text = text;
+        this.bold = bold;
+        this.comment = comment;
     }
 }
