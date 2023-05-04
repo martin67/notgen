@@ -173,7 +173,7 @@ class ScoreControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getArrangements().size()).isEqualTo(numberOfArrangements + 1);
+            assertThat(foo.getArrangements()).hasSize(numberOfArrangements + 1);
         }
 
         @Test
@@ -185,7 +185,7 @@ class ScoreControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getArrangements().size()).isEqualTo(numberOfArrangements - 1);
+            assertThat(foo.getArrangements()).hasSize(numberOfArrangements - 1);
         }
 
         @Test
@@ -197,7 +197,7 @@ class ScoreControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getDefaultArrangement().getArrangementParts().size()).isEqualTo(numberOfArrangementParts + 1);
+            assertThat(foo.getDefaultArrangement().getArrangementParts()).hasSize(numberOfArrangementParts + 1);
         }
 
         @Test
@@ -209,7 +209,7 @@ class ScoreControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getDefaultArrangement().getArrangementParts().size()).isEqualTo(numberOfArrangementParts - 1);
+            assertThat(foo.getDefaultArrangement().getArrangementParts()).hasSize(numberOfArrangementParts - 1);
         }
     }
 
@@ -229,7 +229,7 @@ class ScoreControllerTest {
                             .param("file_name", "myfile.txt"))
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"));
-            assertThat(foo.getFiles().size()).isEqualTo(numberOfFiles + 1);
+            assertThat(foo.getFiles()).hasSize(numberOfFiles + 1);
         }
 
         @Test
@@ -262,7 +262,7 @@ class ScoreControllerTest {
             mvc.perform(get("/score/deleteFile").sessionAttr("score", foo)
                             .param("file_id", ngFile.getId().toString()))
                     .andExpect(status().isOk());
-            assertThat(foo.getFiles().size()).isEqualTo(numberOfFiles - 1);
+            assertThat(foo.getFiles()).hasSize(numberOfFiles - 1);
             mvc.perform(get("/score/deleteFile").sessionAttr("score", foo)
                             .param("file_id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());

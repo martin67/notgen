@@ -72,24 +72,22 @@ class UserControllerTest {
 
     @BeforeAll
     static void init() {
-        band1 = new Band();
-        Band band2 = new Band();
-        normalUser = new User();
-        normalUser.setUsername("normal");
+        band1 = new Band("Band 1", "The first band");
+        Band band2 = new Band("Band 2", "The second band");
+
+        normalUser = new User("normal");
         normalUser.getBands().add(band1);
         userRole = new Role("ROLE_USER");
         userRole.setPrivileges(Collections.emptySet());
         normalUser.setRole(userRole);
         normalUser.setEnabled(true);
 
-        disabledUser = new User();
-        disabledUser.setUsername("disabled");
+        disabledUser = new User("disabled");
         disabledUser.getBands().add(band2);
         disabledUser.setRole(userRole);
         disabledUser.setEnabled(false);
 
-        adminUser = new User();
-        adminUser.setUsername("admin");
+        adminUser = new User("admin");
         adminRole = new Role("ROLE_ADMIN");
         adminRole.setPrivileges(List.of(new Privilege("EDIT_USER")));
         adminUser.setRole(adminRole);

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -88,34 +90,27 @@ class StatisticsControllerTest {
     @DisplayName("Access")
     class Access {
 
-        @Test
+        @ParameterizedTest
+        @ValueSource(strings = {"/statistics", "/statistics/scorelist", "/statistics/fullscorelist", "/statistics/unscanned"})
         @DisplayName("Anonymous user")
         @WithAnonymousUser
-        void anonymous() throws Exception {
-            mvc.perform(get("/statistics")).andExpect(status().isOk());
-            mvc.perform(get("/statistics/scorelist")).andExpect(status().isOk());
-            mvc.perform(get("/statistics/fullscorelist")).andExpect(status().isOk());
-            mvc.perform(get("/statistics/unscanned")).andExpect(status().isOk());
+        void anonymous(String url) throws Exception {
+            mvc.perform(get(url)).andExpect(status().isOk());
         }
 
-        @Test
+        @ParameterizedTest
+        @ValueSource(strings = {"/statistics", "/statistics/scorelist", "/statistics/fullscorelist", "/statistics/unscanned"})
         @DisplayName("Normal user")
         @WithMockUser
-        void normal() throws Exception {
-            mvc.perform(get("/statistics")).andExpect(status().isOk());
-            mvc.perform(get("/statistics/scorelist")).andExpect(status().isOk());
-            mvc.perform(get("/statistics/fullscorelist")).andExpect(status().isOk());
-            mvc.perform(get("/statistics/unscanned")).andExpect(status().isOk());
+        void normal(String url) throws Exception {
+            mvc.perform(get(url)).andExpect(status().isOk());
         }
 
-        @Test
-        @DisplayName("Admin user")
+        @ParameterizedTest
+        @ValueSource(strings = {"/statistics", "/statistics/scorelist", "/statistics/fullscorelist", "/statistics/unscanned"})
         @WithMockUser(authorities = "EDIT_BAND")
-        void admin() throws Exception {
-            mvc.perform(get("/statistics")).andExpect(status().isOk());
-            mvc.perform(get("/statistics/scorelist")).andExpect(status().isOk());
-            mvc.perform(get("/statistics/fullscorelist")).andExpect(status().isOk());
-            mvc.perform(get("/statistics/unscanned")).andExpect(status().isOk());
+        void admin(String url) throws Exception {
+            mvc.perform(get(url)).andExpect(status().isOk());
         }
     }
 

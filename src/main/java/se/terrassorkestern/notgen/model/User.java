@@ -44,6 +44,11 @@ public class User {
         this.id = UUID.randomUUID();
     }
 
+    public User(String username) {
+        this.id = UUID.randomUUID();
+        this.username = username;
+    }
+
     public boolean isRemoteUser() {
         return (provider != AuthProvider.local);
     }

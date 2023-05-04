@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
@@ -66,22 +67,24 @@ public class InstrumentController extends CommonController {
 
     @GetMapping("/delete")
     @PreAuthorize("hasAuthority('EDIT_INSTRUMENT')")
-    public String delete(@RequestParam("id") UUID id) {
+    public String delete(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
         Instrument instrument = getInstrument(id);
         log.info("Tar bort instrument {} [{}]", instrument.getName(), instrument.getId());
         instrumentRepository.delete(instrument);
+        sessionStatus.setComplete();
         return REDIRECT_INSTRUMENT_LIST;
     }
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('EDIT_INSTRUMENT')")
-    public String save(@Valid @ModelAttribute Instrument instrument, Errors errors) {
+    public String save(@Valid @ModelAttribute Instrument instrument, Errors errors, SessionStatus sessionStatus) {
         if (errors.hasErrors()) {
             return VIEW_INSTRUMENT_EDIT;
         }
         log.info("Sparar instrument {} [{}]", instrument.getName(), instrument.getId());
         instrument.setBand(activeBand.getBand());
         instrumentRepository.save(instrument);
+        sessionStatus.setComplete();
         return REDIRECT_INSTRUMENT_LIST;
     }
 

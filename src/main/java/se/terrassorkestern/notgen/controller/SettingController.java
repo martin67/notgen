@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Setting;
 import se.terrassorkestern.notgen.repository.SettingRepository;
@@ -52,22 +53,24 @@ public class SettingController extends CommonController {
 
     @GetMapping("/delete")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
-    public String settingDelete(@RequestParam("id") UUID id) {
+    public String settingDelete(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
         Setting setting = getSetting(id);
         log.info("Tar bort sättning {} [{}]", setting.getName(), setting.getId());
         settingRepository.delete(setting);
+        sessionStatus.setComplete();
         return REDIRECT_SETTING_LIST;
     }
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
-    public String settingSave(@Valid @ModelAttribute Setting setting, Errors errors) {
+    public String settingSave(@Valid @ModelAttribute Setting setting, Errors errors, SessionStatus sessionStatus) {
         if (errors.hasErrors()) {
             return VIEW_SETTING_EDIT;
         }
         log.info("Sparar sättning {} [{}]", setting.getName(), setting.getId());
         setting.setBand(activeBand.getBand());
         settingRepository.save(setting);
+        sessionStatus.setComplete();
         return REDIRECT_SETTING_LIST;
     }
 
