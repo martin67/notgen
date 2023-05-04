@@ -2,10 +2,12 @@ package se.terrassorkestern.notgen.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
@@ -16,10 +18,15 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping("/instrument")
+@SessionAttributes("instrument")
 public class InstrumentController extends CommonController {
 
     public static final String ATTRIBUTE_ALL_INSTRUMENTS = "instruments";
     public static final String ATTRIBUTE_ONE_INSTRUMENT = "instrument";
+    public static final String REDIRECT_INSTRUMENT_LIST = "redirect:/instrument/list";
+    public static final String VIEW_INSTRUMENT_EDIT = "instrument/edit";
+    public static final String VIEW_INSTRUMENT_VIEW = "instrument/view";
+    public static final String VIEW_INSTRUMENT_LIST = "instrument/list";
     private final ActiveBand activeBand;
     private final InstrumentRepository instrumentRepository;
 
@@ -28,22 +35,22 @@ public class InstrumentController extends CommonController {
         this.instrumentRepository = instrumentRepository;
     }
 
-    @GetMapping("/list")
+    @GetMapping({"", "/list"})
     public String list(Model model) {
         model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
-        return "instrument/list";
+        return VIEW_INSTRUMENT_LIST;
     }
 
     @GetMapping("/view")
     public String view(@RequestParam("id") UUID id, Model model) {
         model.addAttribute(ATTRIBUTE_ONE_INSTRUMENT, getInstrument(id));
-        return "instrument/view";
+        return VIEW_INSTRUMENT_VIEW;
     }
 
     @GetMapping("/edit")
     public String edit(@RequestParam("id") UUID id, Model model) {
         model.addAttribute(ATTRIBUTE_ONE_INSTRUMENT, getInstrument(id));
-        return "instrument/edit";
+        return VIEW_INSTRUMENT_EDIT;
     }
 
     @GetMapping("/editOrder")
@@ -55,26 +62,30 @@ public class InstrumentController extends CommonController {
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute(ATTRIBUTE_ONE_INSTRUMENT, new Instrument());
-        return "instrument/edit";
+        return VIEW_INSTRUMENT_EDIT;
     }
 
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") UUID id) {
+    @PreAuthorize("hasAuthority('EDIT_INSTRUMENT')")
+    public String delete(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
         Instrument instrument = getInstrument(id);
         log.info("Tar bort instrument {} [{}]", instrument.getName(), instrument.getId());
         instrumentRepository.delete(instrument);
-        return "redirect:/instrument/list";
+        sessionStatus.setComplete();
+        return REDIRECT_INSTRUMENT_LIST;
     }
 
     @PostMapping("/save")
-    public String save(@Valid @ModelAttribute Instrument instrument, Errors errors) {
+    @PreAuthorize("hasAuthority('EDIT_INSTRUMENT')")
+    public String save(@Valid @ModelAttribute Instrument instrument, Errors errors, SessionStatus sessionStatus) {
         if (errors.hasErrors()) {
-            return "instrument/edit";
+            return VIEW_INSTRUMENT_EDIT;
         }
         log.info("Sparar instrument {} [{}]", instrument.getName(), instrument.getId());
         instrument.setBand(activeBand.getBand());
         instrumentRepository.save(instrument);
-        return "redirect:/instrument/list";
+        sessionStatus.setComplete();
+        return REDIRECT_INSTRUMENT_LIST;
     }
 
     @PostMapping("/saveOrder")
@@ -84,7 +95,7 @@ public class InstrumentController extends CommonController {
             log.info("Sparar instrument {}", instrument);
             //instrumentRepository.save(instrument);
         }
-        return "redirect:/instrument/list";
+        return REDIRECT_INSTRUMENT_LIST;
     }
 
 }

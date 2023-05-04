@@ -9,35 +9,10 @@ package se.terrassorkestern.notgen.service.converter.filters;
 
 import jakarta.validation.constraints.NotNull;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class Otsu implements Binarizer, GreyScaler {
-
-    private static BufferedImage original;
-    private static BufferedImage grayscale;
-    private static BufferedImage binarized;
-
-  /*
-    public static void main(String[] args) throws IOException {
-
-        File original_f = new File(args[0]+".jpg");
-        String output_f = args[0]+"_bin";
-        original = ImageIO.read(original_f);
-        grayscale = toGray(original);
-        binarized = binarize(grayscale);
-        writeImage(output_f);
-
-    }
-   */
-
-    private static void writeImage(String output) throws IOException {
-        File file = new File(output + ".jpg");
-        ImageIO.write(binarized, "jpg", file);
-    }
 
     // Return histogram of grayscale image
     private static int[] imageHistogram(BufferedImage input) {
@@ -52,10 +27,9 @@ public class Otsu implements Binarizer, GreyScaler {
         }
 
         return histogram;
-
     }
 
-    // Check wich method that works best
+    // Check which method that works best
     // luminosity - problem with some lyrics
     // Bäst: decompMax
     BufferedImage toGray(BufferedImage original) {
@@ -128,12 +102,10 @@ public class Otsu implements Binarizer, GreyScaler {
 
                 // Write pixels into image
                 avgGray.setRGB(i, j, newPixel);
-
             }
         }
 
         return avgGray;
-
     }
 
     // The desaturation method
@@ -173,12 +145,9 @@ public class Otsu implements Binarizer, GreyScaler {
 
                 // Write pixels into image
                 des.setRGB(i, j, newPixel);
-
             }
         }
-
         return des;
-
     }
 
     // The minimal decomposition method
@@ -213,12 +182,9 @@ public class Otsu implements Binarizer, GreyScaler {
 
                 // Write pixels into image
                 decomp.setRGB(i, j, newPixel);
-
             }
         }
-
         return decomp;
-
     }
 
     // The maximum decomposition method
@@ -254,13 +220,9 @@ public class Otsu implements Binarizer, GreyScaler {
 
                 // Write pixels into image
                 decomp.setRGB(i, j, newPixel);
-
             }
-
         }
-
         return decomp;
-
     }
 
     // The "pick the color" method
@@ -295,17 +257,13 @@ public class Otsu implements Binarizer, GreyScaler {
 
                 // Write pixels into image
                 rgb.setRGB(i, j, newPixel);
-
             }
-
         }
-
         return rgb;
-
     }
 
 
-    // Get binary treshold using Otsu's method
+    // Get binary threshold using Otsu's method
     private static int otsuTreshold(BufferedImage original) {
 
         int[] histogram = imageHistogram(original);
@@ -345,16 +303,13 @@ public class Otsu implements Binarizer, GreyScaler {
                 threshold = i;
             }
         }
-
         return threshold;
-
     }
 
     BufferedImage binarize(BufferedImage original) {
 
         int red;
         int newPixel;
-
         int threshold = otsuTreshold(original);
 
         BufferedImage binarized = new BufferedImage(original.getWidth(), original.getHeight(), original.getType());
@@ -372,12 +327,9 @@ public class Otsu implements Binarizer, GreyScaler {
                 }
                 newPixel = colorToRgb(alpha, newPixel, newPixel, newPixel);
                 binarized.setRGB(i, j, newPixel);
-
             }
         }
-
         return binarized;
-
     }
 
     // Convert R, G, B, Alpha to standard 8 bit
@@ -393,7 +345,6 @@ public class Otsu implements Binarizer, GreyScaler {
         newPixel += blue;
 
         return newPixel;
-
     }
 
     private static int findMin(@NotNull int[] pixels) {
@@ -405,9 +356,7 @@ public class Otsu implements Binarizer, GreyScaler {
                 min = pixel;
             }
         }
-
         return min;
-
     }
 
     private static int findMax(@NotNull int[] pixels) {
@@ -419,9 +368,7 @@ public class Otsu implements Binarizer, GreyScaler {
                 max = pixel;
             }
         }
-
         return max;
-
     }
 
     @Override

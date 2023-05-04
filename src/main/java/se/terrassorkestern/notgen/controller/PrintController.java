@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,14 +59,14 @@ public class PrintController extends CommonController {
         model.addAttribute("scores", scores);
         model.addAttribute("instruments", getInstruments());
         model.addAttribute("selectedInstrument", id);
-        return "printInstrument";
+        return "print/instrument";
     }
 
     @GetMapping("/setting")
     public String selectSetting(@RequestParam(name = "id", required = false) UUID id, Model model) {
         Setting setting;
         if (id == null) {
-            setting = settingRepository.findFirstByBand(activeBand.getBand());
+            setting = settingRepository.findFirstByBand(activeBand.getBand()).orElseThrow();
             id = setting.getId();
         } else {
             setting = getSetting(id);
@@ -76,13 +77,14 @@ public class PrintController extends CommonController {
         model.addAttribute("scores", scores);
         model.addAttribute("settings", getSettings());
         model.addAttribute("selectedSetting", id);
-        return "printSetting";
+        return "print/setting";
     }
 
-    @GetMapping(value = "/getscorepart", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> printScorePart(@RequestParam(name = "instrument_id") UUID instrumentId,
-                                                              @RequestParam(name = "score_id") UUID scoreId) {
-        Score score = scoreRepository.findById(scoreId).orElseThrow();
+    @GetMapping(value = "/arrangementPart", produces = MediaType.APPLICATION_PDF_VALUE)
+    @PreAuthorize("hasAuthority('PRINT_SCORE')")
+    public ResponseEntity<InputStreamResource> printArrangementPart(@RequestParam(name = "instrument_id") UUID instrumentId,
+                                                                    @RequestParam(name = "score_id") UUID scoreId) {
+        Score score = getScore(scoreId);
         Instrument instrument = getInstrument(instrumentId);
 
         try (InputStream is = converterService.assemble(score, instrument)) {
@@ -93,21 +95,20 @@ public class PrintController extends CommonController {
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(new InputStreamResource(is));
-
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         } catch (InterruptedException e) {
-            log.error("Interrupted", e);
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
     }
 
     @GetMapping(value = "/arrangement", produces = MediaType.APPLICATION_PDF_VALUE)
+    @PreAuthorize("hasAuthority('PRINT_SCORE')")
     public ResponseEntity<InputStreamResource> printArrangement(@RequestParam(name = "score_id") UUID scoreId,
                                                                 @RequestParam(name = "arrangement_id", required = false) UUID arrangementId,
                                                                 @RequestParam(name = "instrument_id") UUID instrumentId) {
-        Score score = scoreRepository.findById(scoreId).orElseThrow();
+        Score score = getScore(scoreId);
         Instrument instrument = getInstrument(instrumentId);
         Arrangement arrangement;
         if (arrangementId == null) {
@@ -130,17 +131,17 @@ public class PrintController extends CommonController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         } catch (InterruptedException e) {
-            log.error("Interrupted", e);
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
     }
 
-    @GetMapping(value = "/getscore", produces = MediaType.APPLICATION_PDF_VALUE)
+    @GetMapping(value = "/score", produces = MediaType.APPLICATION_PDF_VALUE)
+    @PreAuthorize("hasAuthority('PRINT_SCORE')")
     public ResponseEntity<InputStreamResource> printScore(@RequestParam(name = "setting_id") UUID settingId,
                                                           @RequestParam(name = "score_id") UUID scoreId) {
 
-        Score score = scoreRepository.findById(scoreId).orElseThrow();
+        Score score = getScore(scoreId);
         Setting setting = getSetting(settingId);
 
         try (InputStream is = converterService.assemble(score, setting)) {
@@ -156,16 +157,15 @@ public class PrintController extends CommonController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         } catch (InterruptedException e) {
-            log.error("Interrupted", e);
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
     }
 
     @GetMapping(value = "/playlist", produces = MediaType.APPLICATION_PDF_VALUE)
+    @PreAuthorize("hasAuthority('PRINT_SCORE')")
     public ResponseEntity<InputStreamResource> printPlaylist(@RequestParam(name = "playlist_id") UUID playlistId,
                                                              @RequestParam(name = "instrument_id") UUID instrumentId) {
-
         Playlist playlist = getPlaylist(playlistId);
         Instrument instrument = getInstrument(instrumentId);
 

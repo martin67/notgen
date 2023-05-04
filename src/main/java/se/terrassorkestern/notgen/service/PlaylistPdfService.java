@@ -66,7 +66,7 @@ public class PlaylistPdfService {
             for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
                 contents.beginText();
 
-                if (playlistEntry.getBold()) {
+                if (playlistEntry.isBold()) {
                     ypos -= 10;
                     contents.setFont(songFontBold, 12);
                 } else {
@@ -85,7 +85,7 @@ public class PlaylistPdfService {
                 }
 
                 ypos -= 20;
-                if (playlistEntry.getBold()) {
+                if (playlistEntry.isBold()) {
                     ypos -= 10;
                 }
 

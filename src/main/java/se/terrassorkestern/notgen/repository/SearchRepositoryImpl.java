@@ -12,8 +12,8 @@ import java.io.Serializable;
 import java.util.List;
 
 @Transactional
-public class SearchRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
-        implements SearchRepository<T, ID> {
+public class SearchRepositoryImpl<T, I extends Serializable> extends SimpleJpaRepository<T, I>
+        implements SearchRepository<T, I> {
 
     private final EntityManager entityManager;
 
@@ -24,7 +24,7 @@ public class SearchRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     }
 
     public SearchRepositoryImpl(
-            JpaEntityInformation<T, ID> entityInformation, EntityManager entityManager) {
+            JpaEntityInformation<T, I> entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
         this.entityManager = entityManager;
     }

@@ -78,6 +78,12 @@ public class Score extends Auditable<String> {
         this.id = UUID.randomUUID();
     }
 
+    public Score(Band band, String title) {
+        this.id = UUID.randomUUID();
+        this.band = band;
+        this.title = title;
+    }
+
     public void addArrangement(Arrangement arrangement) {
         arrangement.setScore(this);
         arrangements.add(arrangement);

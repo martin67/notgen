@@ -9,6 +9,6 @@ public class ImageJ implements GreyScaler {
     @Override
     public BufferedImage toGreyScale(BufferedImage in) {
         ImagePlus ip = new ImagePlus("Hejsan", in);
-         return null;
+        return null;
     }
 }

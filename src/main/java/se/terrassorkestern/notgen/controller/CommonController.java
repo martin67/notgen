@@ -67,7 +67,7 @@ public class CommonController {
             setting = settingRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException(String.format("Setting %s not found", id)));
         } else {
-            setting = settingRepository.findByIdAndBand(id, activeBand.getBand())
+            setting = settingRepository.findByBandAndId(activeBand.getBand(), id)
                     .orElseThrow(() -> new NotFoundException(String.format("Setting %s not found", id)));
         }
         return setting;

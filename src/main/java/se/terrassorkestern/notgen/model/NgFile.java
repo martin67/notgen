@@ -25,6 +25,15 @@ public class NgFile {
         this.id = UUID.randomUUID();
     }
 
+    public NgFile(String filename, NgFileType type, String name, String originalFilename, String comment) {
+        this.id = UUID.randomUUID();
+        this.filename = filename;
+        this.type = type;
+        this.name = name;
+        this.originalFilename = originalFilename;
+        this.comment = comment;
+    }
+
     public void setFilename(String extension) {
         filename = String.format("%s.%s", id, extension);
     }

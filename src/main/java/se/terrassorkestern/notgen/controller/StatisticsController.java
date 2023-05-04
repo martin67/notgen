@@ -16,7 +16,7 @@ import java.io.IOException;
 @RequestMapping("/statistics")
 public class StatisticsController {
 
-    private static final String TEXT_CSV = "text/csv";
+    public static final String TEXT_CSV = "text/csv";
     private final StatisticsService statisticsService;
 
 

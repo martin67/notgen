@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @NoRepositoryBean
-public interface SearchRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
+public interface SearchRepository<T, I extends Serializable> extends JpaRepository<T, I> {
 
     List<T> searchBy(String text, int limit, String... fields);
 }

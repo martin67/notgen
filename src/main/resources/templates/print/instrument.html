@@ -11,30 +11,24 @@
 <script type="text/javascript">
     function gotopage(selval) {
         var value = selval.options[selval.selectedIndex].value;
-        window.location.href = "setting?id=" + value;
+        window.location.href = "instrument?id=" + value;
     }
 </script>
 
 <div class="container">
-    <h1>Skriv ut hela arr</h1>
+    <h1>Skriv ut enstaka noter</h1>
 
     <div class="form-group">
-        <label for="setting" th:text="#{setting}">Sättning</label>
-        <select class="form-select" id="setting" onchange="gotopage(this)">
-            <option th:each="s : ${settings}" th:value="${s.id}" th:text="${s.name}"
-                    th:selected="${s.id} == ${selectedSetting} ? true : false"/>
+        <label for="instrument" th:text="#{instrument}">Instrument</label>
+        <select class="form-select" id="instrument" onchange="gotopage(this)">
+            <option th:each="i : ${instruments}" th:value="${i.id}" th:text="${i.name}"
+                    th:selected="${i.id} == ${selectedInstrument} ? true : false">bla
+            </option>
         </select>
-        <small class="form-text text-muted">Noterna som listas nedan innehåller minst ett av instrumenten i den valda
-            sättningen.</small>
-    </div>
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="allIncluded">
-        <label class="form-check-label" for="allIncluded">Visa bara låtar där <b>alla</b> instrument i sättningen finns.</label>
     </div>
 
-    <p/>
-
-    <table class="table table-bordered table-striped table-hover table-sm">
+    <br>
+    <table class="table table-bordered table-striped table-hover table-sm" aria-label="instruments">
         <thead>
         <tr>
             <th scope="col">Namn</th>
@@ -43,7 +37,7 @@
         </thead>
         <tbody>
         <tr th:each="score : ${scores}"
-            th:data-link="@{getscore(setting_id=${selectedSetting},score_id=${score.id})}" data-target="_BLANK">
+            th:data-link="@{arrangementPart(instrument_id=${selectedInstrument},score_id=${score.id})}" data-target="_BLANK">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
         </tr>
@@ -58,8 +52,8 @@
 <script>
     $(function () {
         $("table tbody tr").click(function (e) {
-            var u = $(this).data("link");
-            var t = $(this).data("target");
+            let u = $(this).data("link");
+            let t = $(this).data("target");
             console.log(u, t);
             if (t.length) {
                 window.open(u, t);

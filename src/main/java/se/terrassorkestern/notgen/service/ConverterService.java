@@ -142,7 +142,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
     public List<Path> split(Path tmpDir, Path downloadedScore) throws IOException {
 
         if (tmpDir == null || downloadedScore == null || !Files.exists(tmpDir) || !Files.exists(downloadedScore)) {
-            return null;
+            return List.of();
         }
 
         // Unzip files into temp directory

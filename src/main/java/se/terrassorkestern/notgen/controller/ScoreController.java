@@ -63,6 +63,7 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/delete")
+    @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String delete(@RequestParam("id") UUID id) {
         Score score = getScore(id);
         log.info("Tar bort låt {} [{}]", score.getTitle(), score.getId());
@@ -111,6 +112,7 @@ public class ScoreController extends CommonController {
     }
 
     @PostMapping(value = "/submit", params = {"save"})
+    @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String save(@Valid @ModelAttribute Score score,
                        @RequestParam("defaultArrangementIndex") int defaultArrangementIndex,
                        Errors errors) {
@@ -158,6 +160,7 @@ public class ScoreController extends CommonController {
     }
 
     @PostMapping(value = "/submit", params = {"upload"})
+    @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String upload(@ModelAttribute("score") Score score,
                          @RequestPart("file") MultipartFile file,
                          @RequestParam("file_type") NgFileType fileType,
@@ -173,6 +176,7 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/downloadFile")
+    @PreAuthorize("hasAuthority('EDIT_SONG')")
     public ResponseEntity<InputStreamResource> downloadFile(@ModelAttribute("score") Score score,
                                                             @RequestParam("file_id") UUID fileId) {
         NgFile file = score.getFile(fileId);
@@ -189,8 +193,8 @@ public class ScoreController extends CommonController {
                 .body(new InputStreamResource(storageService.downloadFile(file)));
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_SUPERADMIN')")
     @GetMapping("/viewFile")
+    @PreAuthorize("hasAuthority('EDIT_SONG')")
     public ResponseEntity<InputStreamResource> viewFile(@ModelAttribute("score") Score score,
                                                         @RequestParam("file_id") UUID fileId) {
         NgFile file = score.getFile(fileId);
@@ -200,8 +204,8 @@ public class ScoreController extends CommonController {
                 .body(new InputStreamResource(storageService.downloadFile(file)));
     }
 
-    @PreAuthorize("hasAuthority('EDIT_SONG')")
     @GetMapping("/deleteFile")
+    @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String deleteFile(@ModelAttribute("score") Score score,
                              @RequestParam("file_id") UUID fileId) {
         NgFile file = score.getFile(fileId);
@@ -211,12 +215,14 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/convert")
+    @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String convert(@RequestParam("id") UUID id) throws IOException, InterruptedException {
         converterService.convert(List.of(getScore(id)));
         return REDIRECT_SCORE_LIST;
     }
 
     @GetMapping("/edit/ocr")
+    @PreAuthorize("hasAuthority('EDIT_SONG')")
     public @ResponseBody
     String ocr(@RequestParam("id") UUID id) throws Exception {
         return songOcrService.process(getScore(id));

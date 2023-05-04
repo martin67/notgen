@@ -78,7 +78,7 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public NgFile uploadFile(MultipartFile file) throws StorageException {
-        if (file.isEmpty()) {
+        if (file == null || file.isEmpty()) {
             throw new StorageException("Failed to store empty file.");
         }
         if (file.getOriginalFilename() == null) {

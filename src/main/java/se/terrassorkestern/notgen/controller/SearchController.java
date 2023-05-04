@@ -24,13 +24,13 @@ public class SearchController {
         this.scoreRepository = scoreRepository;
     }
 
-    @PostMapping("/")
+    @PostMapping({"", "/"})
     public String find(@RequestParam("search") String searchTerm, RedirectAttributes redirectAttributes) {
         redirectAttributes.addAttribute("q", searchTerm);
         return "redirect:";
     }
 
-    @GetMapping("/")
+    @GetMapping({"", "/"})
     public String list(@RequestParam(name = "q", defaultValue = "") String searchTerm, Model model) {
         List<Score> scores = scoreRepository.searchBy(searchTerm, 1000, "title", "subTitle", "genre",
                 "composer", "author", "arranger", "publisher", "comment", "text");

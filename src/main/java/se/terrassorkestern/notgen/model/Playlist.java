@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +28,7 @@ public class Playlist extends Auditable<String> {
     private String name;
     private String comment;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDateTime date;
+    private LocalDate date;
     @ManyToOne
     private Setting setting;
 
@@ -41,6 +41,15 @@ public class Playlist extends Auditable<String> {
         this.id = UUID.randomUUID();
     }
 
+    public Playlist(Band band, String name, String comment, LocalDate date, Setting setting) {
+        this.id = UUID.randomUUID();
+        this.band = band;
+        this.name = name;
+        this.comment = comment;
+        this.date = date;
+        this.setting = setting;
+    }
+
     public Playlist copy() {
         Playlist newPlaylist = new Playlist();
 
@@ -48,10 +57,11 @@ public class Playlist extends Auditable<String> {
         newPlaylist.setDate(this.getDate());
         newPlaylist.setComment(this.getComment());
         newPlaylist.setBand(this.getBand());
+        newPlaylist.setSetting(this.getSetting());
         for (PlaylistEntry playlistEntry : this.getPlaylistEntries()) {
             PlaylistEntry newPlaylistEntry = new PlaylistEntry();
             newPlaylistEntry.setText(playlistEntry.getText());
-            newPlaylistEntry.setBold(playlistEntry.getBold());
+            newPlaylistEntry.setBold(playlistEntry.isBold());
             newPlaylistEntry.setComment(playlistEntry.getComment());
             newPlaylistEntry.setSortOrder(playlistEntry.getSortOrder());
             newPlaylist.getPlaylistEntries().add(newPlaylistEntry);
@@ -60,6 +70,6 @@ public class Playlist extends Auditable<String> {
     }
 
     public long numberOfSongs() {
-        return playlistEntries.stream().filter(playlistEntry -> !playlistEntry.getBold()).count();
+        return playlistEntries.stream().filter(playlistEntry -> !playlistEntry.isBold()).count();
     }
 }

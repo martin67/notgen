@@ -85,8 +85,8 @@
                     </div>
 
                 </div>
-                <div class="col-md-3" align="center">
-                    <figure class="figure">
+                <div class="col-md-3">
+                    <figure class="figure text-center">
                         <img class="figure-img img-fluid rounded" th:src="@{${score.getThumbnailPath()}}"/>
                     </figure>
                 </div>
@@ -296,6 +296,13 @@
             <div class="form-group col">
                 <h3>Filhantering</h3>
                 <table class="table table-sm table-borderless mb-0" aria-label="Files">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
                     <tbody>
                     <tr th:each="file : ${score.getFiles()}">
                         <td th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"></td>
