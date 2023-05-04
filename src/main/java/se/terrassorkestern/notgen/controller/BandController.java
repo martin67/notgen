@@ -2,10 +2,12 @@ package se.terrassorkestern.notgen.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import se.terrassorkestern.notgen.exceptions.NotFoundException;
 import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.repository.BandRepository;
@@ -16,6 +18,8 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping("/band")
+@SessionAttributes("band")
+@PreAuthorize("hasAuthority('EDIT_BAND')")
 public class BandController {
     public static final String VIEW_BAND_LIST = "band/list";
     public static final String VIEW_BAND_EDIT = "band/edit";
@@ -27,7 +31,7 @@ public class BandController {
         this.bandRepository = bandRepository;
     }
 
-    @GetMapping("/list")
+    @GetMapping({"", "/list"})
     public String list(Model model) {
         model.addAttribute("bands", bandRepository.findAll());
         return VIEW_BAND_LIST;
@@ -48,21 +52,23 @@ public class BandController {
     }
 
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") UUID id) {
+    public String delete(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
         Band band = bandRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Band %s not found", id)));
         log.info("Tar bort band {} [{}]", band.getName(), band.getId());
         bandRepository.delete(band);
+        sessionStatus.setComplete();
         return REDIRECT_BAND_LIST;
     }
 
     @PostMapping("/save")
-    public String save(@Valid @ModelAttribute Band band, Errors errors) {
+    public String save(@Valid @ModelAttribute Band band, Errors errors, SessionStatus sessionStatus) {
         if (errors.hasErrors()) {
             return VIEW_BAND_EDIT;
         }
         log.info("Sparar band {} [{}]", band.getName(), band.getId());
         bandRepository.save(band);
+        sessionStatus.setComplete();
         return REDIRECT_BAND_LIST;
     }
 

@@ -37,7 +37,7 @@
         </thead>
         <tbody>
         <tr th:each="score : ${scores}"
-            th:data-link="@{getscorepart(instrument_id=${selectedInstrument},score_id=${score.id})}" data-target="_BLANK">
+            th:data-link="@{arrangementPart(instrument_id=${selectedInstrument},score_id=${score.id})}" data-target="_BLANK">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
         </tr>

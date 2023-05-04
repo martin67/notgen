@@ -2,6 +2,7 @@ package se.terrassorkestern.notgen.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping("/instrument")
+@SessionAttributes("instrument")
 public class InstrumentController extends CommonController {
 
     public static final String ATTRIBUTE_ALL_INSTRUMENTS = "instruments";
@@ -32,7 +34,7 @@ public class InstrumentController extends CommonController {
         this.instrumentRepository = instrumentRepository;
     }
 
-    @GetMapping("/list")
+    @GetMapping({"", "/list"})
     public String list(Model model) {
         model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
         return VIEW_INSTRUMENT_LIST;
@@ -63,6 +65,7 @@ public class InstrumentController extends CommonController {
     }
 
     @GetMapping("/delete")
+    @PreAuthorize("hasAuthority('EDIT_INSTRUMENT')")
     public String delete(@RequestParam("id") UUID id) {
         Instrument instrument = getInstrument(id);
         log.info("Tar bort instrument {} [{}]", instrument.getName(), instrument.getId());
@@ -71,6 +74,7 @@ public class InstrumentController extends CommonController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasAuthority('EDIT_INSTRUMENT')")
     public String save(@Valid @ModelAttribute Instrument instrument, Errors errors) {
         if (errors.hasErrors()) {
             return VIEW_INSTRUMENT_EDIT;

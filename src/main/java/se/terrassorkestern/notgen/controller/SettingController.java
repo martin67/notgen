@@ -2,6 +2,7 @@ package se.terrassorkestern.notgen.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping("/setting")
+@SessionAttributes("setting")
 public class SettingController extends CommonController {
 
     public static final String VIEW_SETTING_EDIT = "setting/edit";
@@ -28,7 +30,7 @@ public class SettingController extends CommonController {
         this.settingRepository = settingRepository;
     }
 
-    @GetMapping("/list")
+    @GetMapping({"", "/list"})
     public String settingList(Model model) {
         model.addAttribute("settings", getSettings());
         return VIEW_SETTING_LIST;
@@ -49,6 +51,7 @@ public class SettingController extends CommonController {
     }
 
     @GetMapping("/delete")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
     public String settingDelete(@RequestParam("id") UUID id) {
         Setting setting = getSetting(id);
         log.info("Tar bort sättning {} [{}]", setting.getName(), setting.getId());
@@ -57,6 +60,7 @@ public class SettingController extends CommonController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
     public String settingSave(@Valid @ModelAttribute Setting setting, Errors errors) {
         if (errors.hasErrors()) {
             return VIEW_SETTING_EDIT;

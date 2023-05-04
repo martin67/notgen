@@ -31,6 +31,11 @@ public class Arrangement {
         this.name = "New arr";
     }
 
+    public Arrangement(String name) {
+        this.id = UUID.randomUUID();
+        this.name = name;
+    }
+
     @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ArrangementPart> arrangementParts = new ArrayList<>();
 

@@ -1,6 +1,7 @@
 package se.terrassorkestern.notgen.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,10 +15,9 @@ import java.util.UUID;
 public class Setting {
     @Id
     private UUID id;
-
     @ManyToOne
     private Band band;
-
+    @NotBlank(message = "Namn på sättningen måste anges")
     private String name;
     @ManyToMany
     @JoinTable(
@@ -25,6 +25,7 @@ public class Setting {
             joinColumns = @JoinColumn(name = "setting_id"),
             inverseJoinColumns = @JoinColumn(name = "instrument_id"))
     private Set<Instrument> instruments = new HashSet<>();
+
 
     public Setting() {
         this.id = UUID.randomUUID();

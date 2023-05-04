@@ -16,9 +16,7 @@ public interface SettingRepository extends JpaRepository<Setting, UUID> {
 
     List<Setting> findByBand(Band band);
 
-    Optional<Setting> findByIdAndBand(UUID id, Band band);
+    Optional<Setting> findByBandAndId(Band band, UUID id);
 
-    Setting findFirstBy();
-
-    Setting findFirstByBand(Band band);
+    Optional<Setting> findFirstByBand(Band band);
 }

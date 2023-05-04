@@ -21,6 +21,7 @@ import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
 import se.terrassorkestern.notgen.user.CustomOidcUserService;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -53,7 +54,7 @@ class BandControllerTest {
 
     @BeforeEach
     void init() {
-        band = new Band();
+        band = new Band("The band", "The test band");
         given(bandRepository.findById(band.getId())).willReturn(Optional.of(band));
     }
 
@@ -92,16 +93,23 @@ class BandControllerTest {
     @WithMockUser(authorities = "EDIT_BAND")
     void delete() throws Exception {
         mvc.perform(get("/band/delete").param("id", band.getId().toString()))
-                .andExpect(redirectedUrlPattern("/band/list*"));
+                .andExpect(redirectedUrl("/band/list"));
+        mvc.perform(get("/band/delete").param("id", UUID.randomUUID().toString()))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Save")
     @WithMockUser(authorities = "EDIT_BAND")
     void save() throws Exception {
-        mvc.perform(post("/band/save")
-                        .with(csrf()))
-                .andExpect(redirectedUrlPattern("/band/list*"));
+        mvc.perform(post("/band/save").with(csrf()).sessionAttr("band", band))
+                .andExpect(redirectedUrl("/band/list"));
+        band.setName("");
+        mvc.perform(post("/band/save").with(csrf()).sessionAttr("band", band))
+                .andExpect(status().isOk())
+                .andExpect(view().name("band/edit"));
+        mvc.perform(post("/band/save"))
+                .andExpect(status().isForbidden());
     }
 
     @Nested
@@ -111,24 +119,36 @@ class BandControllerTest {
         @Test
         @DisplayName("Anonymous user")
         @WithAnonymousUser
-        void accessToProtected_anonymousUser() throws Exception {
-            mvc.perform(get("/band")).andExpect(status().isFound())
-                    .andExpect(redirectedUrlPattern("**/login"));
+        void anonymous() throws Exception {
+            mvc.perform(get("/band/list")).andExpect(redirectedUrlPattern("**/login"));
+            mvc.perform(get("/band/edit")).andExpect(redirectedUrlPattern("**/login"));
+            mvc.perform(get("/band/new")).andExpect(redirectedUrlPattern("**/login"));
+            mvc.perform(get("/band/delete")).andExpect(redirectedUrlPattern("**/login"));
+            mvc.perform(post("/band/save").with(csrf())).andExpect(redirectedUrlPattern("**/login"));
         }
 
         @Test
         @DisplayName("Normal user")
         @WithMockUser
-        void accessToProtected_normalUser() throws Exception {
-            mvc.perform(get("/band")).andExpect(status().isForbidden());
+        void normal() throws Exception {
+            mvc.perform(get("/band/list")).andExpect(status().isForbidden());
+            mvc.perform(get("/band/edit")).andExpect(status().isForbidden());
+            mvc.perform(get("/band/new")).andExpect(status().isForbidden());
+            mvc.perform(get("/band/delete")).andExpect(status().isForbidden());
+            mvc.perform(post("/band/save").with(csrf())).andExpect(status().isForbidden());
         }
 
         @Test
         @DisplayName("Admin user")
         @WithMockUser(authorities = "EDIT_BAND")
-        void whenAccessProtectedContentAsAdminUser_returnOk() throws Exception {
+        void admin() throws Exception {
             mvc.perform(get("/band/list")).andExpect(status().isOk());
+            mvc.perform(get("/band/edit").param("id", band.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/band/new")).andExpect(status().isOk());
+            mvc.perform(get("/band/delete").param("id", band.getId().toString()))
+                    .andExpect(redirectedUrl("/band/list"));
+            mvc.perform(post("/band/save").with(csrf()).sessionAttr("band", band))
+                    .andExpect(redirectedUrl("/band/list"));
         }
     }
 }
