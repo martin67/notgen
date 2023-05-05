@@ -73,6 +73,9 @@ public class Score extends Auditable<String> {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<NgFile> files = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Link> links = new ArrayList<>();
+
 
     public Score() {
         this.id = UUID.randomUUID();
@@ -101,6 +104,13 @@ public class Score extends Auditable<String> {
                 .filter(a -> a.getId().toString().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(String.format("Arrangement %s not found", id)));
+    }
+
+    public Link getLink(UUID id) {
+        return links.stream()
+                .filter(a -> a.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(String.format("Link %s not found", id)));
     }
 
     public String getThumbnailPath() {

@@ -84,6 +84,9 @@ class ScoreControllerTest {
         ngFile = new NgFile("123.pdf", NgFileType.ARRANGEMENT, "Test file", "org.pdf", "A comment");
         foo.getFiles().add(ngFile);
         mpFile = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello world!".getBytes());
+        Link link = new Link("https://open.spotify.com/track/5d7rTGv8JFT3ukLXhzKytw?si=65c7dcafa74a48a6",
+                LinkType.SPOTIFY, "Terrassorkestern", "");
+        foo.getLinks().add(link);
 
         List<Score> allScores = List.of(foo, bar);
         given(activeBand.getBand()).willReturn(band);
@@ -266,6 +269,38 @@ class ScoreControllerTest {
             mvc.perform(get("/score/deleteFile").sessionAttr("score", foo)
                             .param("file_id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
+        }
+    }
+
+    @Nested
+    @DisplayName("Link management")
+    class LinkGroup {
+        @Test
+        @DisplayName("Add link")
+        void addLink() throws Exception {
+            int numberOfLinks = foo.getLinks().size();
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
+                            .param("addLink", "dummy")
+                            .param("link_name", "The link")
+                            .param("link_uri", "http://www.terrassorkestern.se")
+                            .param("link_type", "YOUTUBE")
+                            .param("link_comment", ""))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("score/edit"))
+                    .andExpect(model().attributeExists("score"));
+            assertThat(foo.getLinks()).hasSize(numberOfLinks + 1);
+        }
+
+        @Test
+        @DisplayName("Delete link")
+        void deleteLink() throws Exception {
+            int numberOfLinks = foo.getLinks().size();
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
+                            .param("deleteLink", foo.getLinks().get(0).getId().toString()))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("score/edit"))
+                    .andExpect(model().attributeExists("score"));
+            assertThat(foo.getLinks()).hasSize(numberOfLinks - 1);
         }
     }
 

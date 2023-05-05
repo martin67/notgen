@@ -291,6 +291,48 @@
             </div>
         </div>
 
+        <!-- Media link management -->
+        <div class="form-row mb-3 border pt-2 px-2">
+            <div class="form-group col">
+                <h3>Länkar</h3>
+                <table class="table table-sm table-borderless mb-0" aria-label="Media links">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="link : ${score.getLinks()}">
+                        <td th:text="${link.getName()}"></td>
+                        <td th:text="${link.getType()}"></td>
+                        <td th:text="${link.getComment()}"></td>
+                        <td class="text-end">
+                            <a th:href="${link.getUri()}">
+                                <i class="bi-eye align-middle me-2"></i></a>
+                            <button type="submit"
+                                    style="border: none; padding: 0; line-height: 21px; font-size: 1rem; color: var(--bs-link-color)"
+                                    class="btn align-middle" name="deleteLink" th:value="${link.getId()}"><i
+                                    class="bi-trash"></i></button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <hr>
+                <!-- Button trigger modal -->
+                <div class="row mb-2">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#addLink">
+                            Lägg till länk
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- File management -->
         <div class="form-row mb-3 border pt-2 px-2">
             <div class="form-group col">
@@ -408,6 +450,61 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
                         <button type="submit" class="btn btn-primary" name="upload">Ladda upp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal add link -->
+        <div class="modal fade" id="addLink" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="addLinkLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="addLinkLabel">Lägg till medialänk</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-2">
+                            <div class="col-2">
+                                <label for="link_uri">URI</label>
+                            </div>
+                            <div class="col">
+                                <input id="link_uri" type="text" name="link_uri"/>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-2">
+                                <label>Typ</label>
+                            </div>
+                            <div class="col">
+                                <select th:name="link_type">
+                                    <option th:each="ml : ${T(se.terrassorkestern.notgen.model.LinkType).values()}"
+                                            th:value="${ml}"
+                                            th:text="${ml}"/>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-2">
+                                <label for="link_name">Namn</label>
+                            </div>
+                            <div class="col">
+                                <input id="link_name" name="link_name" type="text"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2">
+                                <label for="link_comment">Kommentar</label>
+                            </div>
+                            <div class="col">
+                                <input id="link_comment" name="link_comment" type="text"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                        <button type="submit" class="btn btn-primary" name="addLink">Lägg till</button>
                     </div>
                 </div>
             </div>

@@ -11,7 +11,13 @@
 <div class="container">
     <h1 th:text="${instrument.name}"/>
 
-    <table class="table table-sm table-borderless">
+    <table class="table table-sm table-borderless" aria-label="instruments">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
         <tbody>
         <tr th:if="${instrument.name}">
             <td>Namn</td>

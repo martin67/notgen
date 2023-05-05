@@ -72,6 +72,15 @@ public class User {
         return enabled;
     }
 
+    public boolean isMemberOf(Band band) {
+        for (Band b : bands) {
+            if (b.getId().equals(band.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String getBandNames() {
         return bands.stream().map(Band::getName).collect(Collectors.joining(", "));
     }

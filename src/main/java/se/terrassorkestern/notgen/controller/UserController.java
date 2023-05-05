@@ -2,6 +2,7 @@ package se.terrassorkestern.notgen.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +31,8 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/user")
 public class UserController extends CommonController {
-
+    public static final String VIEW_USER_EDIT = "user/edit";
+    public static final String REDIRECT_USER_LIST = "redirect:/user/list";
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BandRepository bandRepository;
@@ -52,7 +54,7 @@ public class UserController extends CommonController {
         List<User> otherUsers = new ArrayList<>();
 
         for (User user : userRepository.findAll()) {
-            if (user.getBands().contains(activeBand.getBand())) {
+            if (user.isMemberOf(activeBand.getBand())) {
                 bandUsers.add(user);
             } else {
                 otherUsers.add(user);
@@ -69,7 +71,7 @@ public class UserController extends CommonController {
         model.addAttribute("user", new UserFormData());
         model.addAttribute("roles", roleRepository.findAll());
         model.addAttribute("bands", bands);
-        return "user/edit";
+        return VIEW_USER_EDIT;
     }
 
     @GetMapping("/edit")
@@ -83,7 +85,9 @@ public class UserController extends CommonController {
         } else {
             // First check that the user has permission to edit user (i.e. is admin)
             if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_USER"))) {
-                user = getUser(id);
+                // will be able to edit all users???
+                user = userRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException(String.format("User %s not found", id)));
             } else {
                 return "redirect:/";
             }
@@ -92,14 +96,14 @@ public class UserController extends CommonController {
         model.addAttribute("user", userFormData);
         model.addAttribute("roles", roleRepository.findAll());
         model.addAttribute("bands", bandRepository.findAll());
-        return "user/edit";
+        return VIEW_USER_EDIT;
     }
 
 
     @PostMapping("/save")
     public String save(@Valid @ModelAttribute("user") UserFormData userFormData, Errors errors) {
         if (errors.hasErrors()) {
-            return "user/edit";
+            return VIEW_USER_EDIT;
         }
 
         // true if the edit/save is done by an admin user
@@ -166,18 +170,19 @@ public class UserController extends CommonController {
         // If we are an admin editing the user, return to the user list. Otherwise go to the start screen.
         // Or should we go the last page used??
         if (adminEdit) {
-            return "redirect:/user/list";
+            return REDIRECT_USER_LIST;
         } else {
             return "redirect:/";
         }
     }
 
     @GetMapping("/delete")
+    @PreAuthorize("hasAuthority('EDIT_USER')")
     public String delete(@RequestParam("id") UUID id) {
         User user = getUser(id);
         log.info("Tar bort användare {} [{}]", user.getUsername(), user.getId());
         userRepository.delete(user);
-        return "redirect:/user/list";
+        return REDIRECT_USER_LIST;
     }
 
     private User getUser(UUID id) {
