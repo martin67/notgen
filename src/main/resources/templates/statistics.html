@@ -13,6 +13,13 @@
 
     <h4>Databasen</h4>
     <table class="table table-bordered table-sm w-auto" aria-label="Database statistics">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
         <tr>
             <td>Antal låtar</td>
             <td th:text="${statistics.numberOfSongs}"></td>
@@ -37,6 +44,7 @@
             <td>Antal låtlistor</td>
             <td th:text="${statistics.numberOfPlaylists}"></td>
         </tr>
+        </tbody>
     </table>
 
     <h4>Rapporter</h4>
@@ -49,42 +57,82 @@
     <h4>10 i topp listor</h4>
     <h5>Populäraste genres</h5>
     <table class="table table-bordered table-sm w-auto" aria-label="Top 10 genres">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
         <tr th:each="genre : ${statistics.topGenres}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
         </tr>
+        </tbody>
     </table>
 
     <h5>Populäraste kompositörer</h5>
     <table class="table table-bordered table-sm w-auto" aria-label="Top 10 composers">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
         <tr th:each="genre : ${statistics.topComposers}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
         </tr>
+        </tbody>
     </table>
 
     <h5>Populäraste arrangörer</h5>
     <table class="table table-bordered table-sm w-auto" aria-label="Top 10 arrangers">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
         <tr th:each="genre : ${statistics.topArrangers}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
         </tr>
+        </tbody>
     </table>
 
     <h5>Populäraste textförfattare</h5>
     <table class="table table-bordered table-sm w-auto" aria-label="Top 10 authors">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
         <tr th:each="genre : ${statistics.topAuthors}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
         </tr>
+        </tbody>
     </table>
 
     <h5>Populäraste notförlag</h5>
     <table class="table table-bordered table-sm w-auto" aria-label="Top 10 publishers">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
         <tr th:each="genre : ${statistics.topPublishers}">
             <td th:text="${genre.name}"></td>
             <td th:text="${genre.value}"></td>
         </tr>
+        </tbody>
     </table>
 
     <div class="row mb-3">

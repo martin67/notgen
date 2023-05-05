@@ -38,7 +38,13 @@
 <div class="container">
     <h1 th:text="${playlist.name}"/>
 
-    <table class="table table-sm table-borderless">
+    <table class="table table-sm table-borderless" aria-label="general info">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
         <tbody>
         <tr th:if="${playlist.name}">
             <td>Namn</td>
@@ -68,7 +74,13 @@
     </table>
 
     <h3>Låtar</h3>
-    <table class="table table-sm">
+    <table class="table table-sm" aria-label="playlist entries">
+        <thead>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+        </thead>
         <tbody>
         <tr th:each="playListentry : ${playlist.playlistEntries}">
             <td th:class="${playListentry.bold}? 'fw-bold text-center'" th:text="${playListentry.text}"/>

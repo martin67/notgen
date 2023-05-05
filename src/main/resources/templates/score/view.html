@@ -161,6 +161,35 @@
         </div>
     </div>
 
+    <!-- Media links -->
+    <div class="row mb-3 border p-2"
+         th:if="${score.links}" th:unless="${score.links.isEmpty()}">
+        <div class="col">
+            <h3>Media</h3>
+            <table class="table table-sm table-borderless mb-0" aria-label="Media">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="link : ${score.getLinks()}">
+                    <td th:text="${link.getName()}"></td>
+                    <td th:text="${link.getType().getShortDescription()}"></td>
+                    <td th:text="${link.getComment()}"></td>
+                    <td class="text-end">
+                        <a th:href="${link.getUri()}">
+                            <i class="bi-eye me-2"></i></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Files -->
     <div class="row mb-3 border p-2" sec:authorize="hasAuthority('EDIT_SONG')"
          th:if="${score.files}" th:unless="${score.files.isEmpty()}">

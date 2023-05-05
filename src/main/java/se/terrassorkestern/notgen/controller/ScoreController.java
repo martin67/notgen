@@ -204,6 +204,23 @@ public class ScoreController extends CommonController {
                 .body(new InputStreamResource(storageService.downloadFile(file)));
     }
 
+    @PostMapping(value = "/submit", params = {"addLink"})
+    public String addLink(@ModelAttribute("score") Score score,
+                          @RequestParam("link_name") String linkName,
+                          @RequestParam("link_uri") String linkUri,
+                          @RequestParam("link_type") LinkType linkType,
+                          @RequestParam(name = "link_comment", required = false) String linkComment) {
+        score.getLinks().add(new Link(linkUri, linkType, linkName, linkComment));
+        return VIEW_SCORE_EDIT;
+    }
+
+    @PostMapping(value = "/submit", params = {"deleteLink"})
+    public String addLink(@ModelAttribute("score") Score score,
+                          @RequestParam("deleteLink") UUID linkId) {
+        score.getLinks().remove(score.getLink(linkId));
+        return VIEW_SCORE_EDIT;
+    }
+
     @GetMapping("/deleteFile")
     @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String deleteFile(@ModelAttribute("score") Score score,

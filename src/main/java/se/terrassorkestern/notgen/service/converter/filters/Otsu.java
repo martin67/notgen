@@ -292,7 +292,7 @@ public class Otsu implements Binarizer, GreyScaler {
                 break;
             }
 
-            sumB += (float) (i * histogram[i]);
+            sumB += i * histogram[i];
             float meanBackground = sumB / weightBackground;
             float meanForeground = (sum - sumB) / weightForeground;
 

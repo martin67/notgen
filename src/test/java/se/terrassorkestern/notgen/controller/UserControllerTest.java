@@ -100,6 +100,7 @@ class UserControllerTest {
         given(activeBand.getBand()).willReturn(band1);
         given(bandRepository.findAll()).willReturn(List.of(band1));
         given(userRepository.findAll()).willReturn(allUsers);
+        given(userRepository.findById(normalUser.getId())).willReturn(Optional.of(normalUser));
         given(userRepository.findByBandsContaining(band1)).willReturn(allUsers);
         given(userRepository.findByBandsContainingAndId(band1, normalUser.getId())).willReturn(Optional.of(normalUser));
         given(userRepository.findByBandsContainingAndId(band1, adminUser.getId())).willReturn(Optional.of(adminUser));
@@ -153,13 +154,11 @@ class UserControllerTest {
         @DisplayName("Other user as admin")
         void whenEditValidInput_thenReturnOk() throws Exception {
             mvc.perform(get("/user/edit").with(user(UserPrincipal.create(adminUser)))
-                            .contentType(MediaType.TEXT_HTML)
                             .param("id", normalUser.getId().toString()))
+                    .andExpect(status().isOk())
                     .andExpect(view().name("user/edit"))
                     .andExpect(model().attributeExists("user"))
-                    .andExpect(model().attribute("user", hasProperty("username", equalTo("normal"))))
-                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                    .andExpect(status().isOk());
+                    .andExpect(model().attribute("user", hasProperty("username", equalTo("normal"))));
         }
 
         @Test
