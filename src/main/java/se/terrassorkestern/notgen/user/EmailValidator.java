@@ -13,10 +13,6 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
             + "[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$";
 
     @Override
-    public void initialize(ValidEmail constraintAnnotation) {
-    }
-
-    @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
         if (email == null) {
             // Ok with null as Oauth2 users have this field disabled, and then it sends null

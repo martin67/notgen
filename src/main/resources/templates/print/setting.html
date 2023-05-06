@@ -43,7 +43,7 @@
         </thead>
         <tbody>
         <tr th:each="score : ${scores}"
-            th:data-link="@{getscore(setting_id=${selectedSetting},score_id=${score.id})}" data-target="_BLANK">
+            th:data-link="@{score(setting_id=${selectedSetting},score_id=${score.id})}" data-target="_BLANK">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
         </tr>
