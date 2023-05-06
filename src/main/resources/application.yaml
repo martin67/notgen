@@ -58,7 +58,7 @@ management:
         include: health,info
 
 # Local storage config
-notgen:
+se.terrassorkestern.notgen:
   ocr:
     enable: true
     songids: BF0D7BFF-8683-7B40-868E-155140E595F1
@@ -68,6 +68,5 @@ notgen:
     type: local
     input: /var/lib/notgen/input
     output: /var/lib/notgen/output
-  folders:
+    content: /var/lib/notgen/static
     # Static content such as thumbnails and folders are stored here
-    static: /var/lib/notgen/static

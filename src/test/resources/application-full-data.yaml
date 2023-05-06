@@ -4,15 +4,16 @@ spring:
     url: jdbc:h2:file:./todb
     username: ${SPRING_DATASOURCE_USERNAME:sa}
     password: ${SPRING_DATASOURCE_PASSWORD:sa}
-notgen:
+
+se.terrassorkestern.notgen:
   storage:
     type: local
     input: /Work/TO/notgen/score_input
     output: /Work/TO/notgen/score_output
-  folders:
-    static: /Work/TO/notgen/static_content
+    content: /Work/TO/notgen/static_content
     temp: /Work/TO/notgen/temp
-  keep.tempdir: true
+    keeptemp: true
+
 logging:
   level:
     se.terrassorkestern.notgen.service.converter: TRACE

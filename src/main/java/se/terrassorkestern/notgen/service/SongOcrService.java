@@ -29,13 +29,13 @@ import java.util.UUID;
 @Service
 public class SongOcrService {
 
-    @Value("${notgen.ocr.enable:false}")
+    @Value("${se.terrassorkestern.notgen.ocr.enable:false}")
     private boolean enableOcr;
-    @Value("${notgen.ocr.songids:0}")
+    @Value("${se.terrassorkestern.notgen.ocr.songids:0}")
     private String songIds;
-    @Value("${notgen.ocr.username:}")
+    @Value("${se.terrassorkestern.notgen.ocr.username:}")
     private String username;
-    @Value("${notgen.ocr.license:}")
+    @Value("${se.terrassorkestern.notgen.ocr.license:}")
     private String license;
 
     private final InstrumentRepository instrumentRepository;

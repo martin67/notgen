@@ -30,11 +30,11 @@ public class AzureStorage implements BackendStorage {
     private static final String BLOB_RESOURCE_PATTERN = "azure-blob://%s/%s";
     private final ResourceLoader resourceLoader;
     private final AzureStorageBlobProtocolResolver azureStorageBlobProtocolResolver;
-    @Value("${notgen.storage.input:scores}")
+    @Value("${se.terrassorkestern.notgen.storage.input:scores}")
     private String scoreContainer;
-    @Value("${notgen.storage.output:arrangementParts}")
+    @Value("${se.terrassorkestern.notgen.storage.output:arrangementParts}")
     private String arrangementPartsContainer;
-    @Value("${notgen.storage.static:static}")
+    @Value("${se.terrassorkestern.notgen.storage.static:static}")
     private String staticContainer;
 
 

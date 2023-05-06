@@ -1,6 +1,5 @@
 package se.terrassorkestern.notgen.user;
 
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
@@ -45,7 +44,8 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
 
     public InitialDataLoader(UserRepository userRepository, RoleRepository roleRepository,
                              PrivilegeRepository privilegeRepository, BandRepository bandRepository,
-                             PasswordEncoder passwordEncoder, @Value("${notgen.folders.static}") String configFolder) {
+                             PasswordEncoder passwordEncoder,
+                             @Value("${se.terrassorkestern.notgen.storage.content}") String configFolder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.privilegeRepository = privilegeRepository;
@@ -55,7 +55,6 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     }
 
     @Override
-    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
         User adminUser = userRepository.findByUsername("admin").orElseGet(() -> {

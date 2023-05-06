@@ -34,11 +34,10 @@ spring:
             client-id: notused
             client-secret: notused
 
-notgen:
+se.terrassorkestern.notgen:
   storage:
     type: local
     input: /tmp/notgen/score_input
     output: /tmp/notgen/score_output
-  folders:
-    static: /tmp/notgen/static_content
+    content: /tmp/notgen/static_content
 

@@ -28,9 +28,9 @@ logging:
   #notgen.keep.tempdir=true
 
 # Storage
-notgen:
+se.terrassorkestern.notgen:
   storage:
     type: azure
     input: scores
     output: scoreparts
-    static: static
+    content: static
