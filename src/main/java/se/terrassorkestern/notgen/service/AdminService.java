@@ -23,8 +23,8 @@ import java.util.zip.ZipOutputStream;
 public class AdminService {
 
     public static final List<String> tables = List.of("band", "score", "instrument", "role", "user_",
-            "setting", "playlist", "privilege", "ngfile", "arrangement", "user_band", "arrangement_instrument",
-            "setting_instrument", "score_files", "score_playlist", "role_privilege");
+            "setting", "playlist", "privilege", "ngfile", "link", "arrangement", "user_band", "arrangement_instrument",
+            "setting_instrument", "score_files", "score_links", "score_playlist", "role_privilege");
     private final DataSource dataSource;
 
     public AdminService(DataSource dataSource) {

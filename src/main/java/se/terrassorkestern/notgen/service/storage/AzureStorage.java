@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import se.terrassorkestern.notgen.exceptions.StorageException;
 import se.terrassorkestern.notgen.model.*;
 
+import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,7 +78,7 @@ public class AzureStorage implements BackendStorage {
     }
 
     @Override
-    public NgFile uploadFile(MultipartFile file) throws StorageException {
+    public NgFile uploadFile(@Nullable MultipartFile file) throws StorageException {
         if (file == null || file.isEmpty()) {
             throw new StorageException("Failed to store empty file.");
         }
