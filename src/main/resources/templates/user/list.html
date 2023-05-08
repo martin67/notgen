@@ -24,12 +24,12 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user : ${bandUsers}" th:data-link="@{edit(id=${user.id})}">
+        <tr class="clickable-row" th:each="user : ${bandUsers}" data-th-data-link="@{edit(id=${user.id})}">
             <td th:text="${user.username}"></td>
             <td th:text="${user.getDisplayName()}"></td>
             <td th:text="${user.getFullName()}"></td>
             <td th:text="${user.getBandNames()}"></td>
-            <td><input type="checkbox" th:checked="${user.enabled}" ? 'checked' /></td>
+            <td><input type="checkbox" th:checked="${user.enabled} ? 'checked'"/></td>
             <td th:text="${user.role} ? ${user.role.displayName} : ''"></td>
             <td th:text="${user.getProvider()}"></td>
         </tr>
@@ -50,12 +50,12 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user : ${otherUsers}" th:data-link="@{edit(id=${user.id})}">
+        <tr class="clickable-row" th:each="user : ${otherUsers}" data-th-data-link="@{edit(id=${user.id})}">
             <td th:text="${user.username}"></td>
             <td th:text="${user.getDisplayName()}"></td>
             <td th:text="${user.getFullName()}"></td>
             <td th:text="${user.getBandNames()}"></td>
-            <td><input type="checkbox" th:checked="${user.enabled}" ? 'checked' /></td>
+            <td><input type="checkbox" th:checked="${user.enabled} ? 'checked'"/></td>
             <td th:text="${user.role} ? ${user.role.displayName} : ''"></td>
             <td th:text="${user.getProvider()}"></td>
         </tr>
@@ -78,9 +78,9 @@
 </body>
 
 <script>
-    $(function () {
-        $("table tbody tr").click(function (e) {
-            window.location.href = $(this).data("link");
+    jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+            window.location = $(this).data("link");
         });
     });
 </script>

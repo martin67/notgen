@@ -20,7 +20,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="instrument : ${instruments}" th:data-link="@{view(id=${instrument.id})}">
+        <tr class="clickable-row" th:each="instrument : ${instruments}"
+            data-th-data-link="@{view(id=${instrument.id})}">
             <td th:text="${instrument.name}"></td>
             <td th:text="${instrument.shortName}"></td>
             <td th:text="${instrument.sortOrder}"></td>
@@ -43,11 +44,13 @@
 
 <footer th:replace="~{fragments/general :: footer}"></footer>
 </body>
+
 <script>
-    $(function () {
-        $("table tbody tr").click(function (e) {
-            window.location.href = $(this).data("link");
+    jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+            window.location = $(this).data("link");
         });
     });
 </script>
+
 </html>

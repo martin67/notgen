@@ -91,17 +91,13 @@
                 <tr>
                     <th></th>
                     <th></th>
-                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="arrPart : ${score.getArrangements().get(0).getArrangementParts()}">
+                <tr class="clickable-row" th:each="arrPart : ${score.getArrangements().get(0).getArrangementParts()}"
+                    data-th-data-link="@{/print/arrangement(score_id=${score.id},instrument_id=${arrPart.instrument.id})}">
                     <td th:text="${arrPart.instrument.name}"/>
                     <td th:text="${arrPart.comment}"/>
-                    <td class="text-end" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')">
-                        <a th:href="@{/print/arrangement(score_id=${score.id},instrument_id=${arrPart.instrument.id})}">
-                            <i class="bi-eye"></i></a>
-                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -250,5 +246,13 @@
 <footer th:replace=" ~{fragments/general :: footer}"></footer>
 
 </body>
+
+<script>
+    jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+            window.location = $(this).data("link");
+        });
+    });
+</script>
 
 </html>

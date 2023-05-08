@@ -18,7 +18,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="score : ${scores}" th:data-link="@{/score/view(id=${score.id})}">
+        <tr class="clickable-row" th:each="score : ${scores}" data-th-data-link="@{/score/view(id=${score.id})}">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
         </tr>
@@ -37,11 +37,10 @@
 </body>
 
 <script>
-    $(function () {
-        $("table tbody tr").click(function (e) {
-            window.location.href = $(this).data("link");
+    jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+            window.location = $(this).data("link");
         });
     });
 </script>
-
 </html>

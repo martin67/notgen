@@ -42,8 +42,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="score : ${scores}"
-            th:data-link="@{score(setting_id=${selectedSetting},score_id=${score.id})}" data-target="_BLANK">
+        <tr class="clickable-row" th:each="score : ${scores}"
+            data-th-data-link="@{score(setting_id=${selectedSetting},score_id=${score.id})}">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
         </tr>
@@ -56,16 +56,9 @@
 </body>
 
 <script>
-    $(function () {
-        $("table tbody tr").click(function (e) {
-            var u = $(this).data("link");
-            var t = $(this).data("target");
-            console.log(u, t);
-            if (t.length) {
-                window.open(u, t);
-            } else {
-                window.location.href = u;
-            }
+    jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+            window.location = $(this).data("link");
         });
     });
 </script>
