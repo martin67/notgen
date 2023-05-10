@@ -17,7 +17,7 @@ spring:
     cache: false
   web:
     resources:
-      static-locations: file:${notgen.folders.static}/,file:src/main/resources/static/
+      static-locations: file:${se.terrassorkestern.notgen.storage.content}/,file:src/main/resources/static/
 
 # Full logging on the notgen parts
 logging:
