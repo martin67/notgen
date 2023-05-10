@@ -68,35 +68,37 @@ class ScoreControllerTest {
     @MockBean
     private CustomOidcUserService customOidcUserService;
 
-    private Score foo;
+    private Score score;
+    private Score scoreWithoutArrangements;
     private NgFile ngFile;
     MockMultipartFile mpFile;
 
     @BeforeEach
     void initTest() throws Exception {
         Band band = new Band("The band", "The test band");
-        foo = new Score(band, "Foo score");
-        Score bar = new Score(band, "Bar score");
+        score = new Score(band, "Foo score");
+        scoreWithoutArrangements = new Score(band, "Bar score");
         Arrangement arr = new Arrangement();
         arr.addArrangementPart(new ArrangementPart(arr, new Instrument()));
-        foo.getArrangements().add(arr);
-        foo.setDefaultArrangement(arr);
+        score.getArrangements().add(arr);
+        score.setDefaultArrangement(arr);
         ngFile = new NgFile("123.pdf", NgFileType.ARRANGEMENT, "Test file", "org.pdf", "A comment");
-        foo.getFiles().add(ngFile);
+        score.getFiles().add(ngFile);
         mpFile = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello world!".getBytes());
         Link link = new Link("https://open.spotify.com/track/5d7rTGv8JFT3ukLXhzKytw?si=65c7dcafa74a48a6",
                 LinkType.SPOTIFY, "Terrassorkestern", "");
-        foo.getLinks().add(link);
+        score.getLinks().add(link);
 
-        List<Score> allScores = List.of(foo, bar);
+        List<Score> allScores = List.of(score, scoreWithoutArrangements);
         given(activeBand.getBand()).willReturn(band);
         given(scoreRepository.findByOrderByTitle()).willReturn(allScores);
         given(scoreRepository.findByBandOrderByTitleAsc(band)).willReturn(allScores);
-        given(scoreRepository.findById(foo.getId())).willReturn(Optional.of(foo));
-        given(scoreRepository.findByBandAndId(band, foo.getId())).willReturn(Optional.of(foo));
+        given(scoreRepository.findById(score.getId())).willReturn(Optional.of(score));
+        given(scoreRepository.findById(scoreWithoutArrangements.getId())).willReturn(Optional.of(scoreWithoutArrangements));
+        given(scoreRepository.findByBandAndId(band, score.getId())).willReturn(Optional.of(score));
         given(storageService.downloadFile(ngFile)).willReturn(new ByteArrayInputStream(new byte[0]));
         given(storageService.uploadFile(mpFile)).willReturn(new NgFile());
-        given(songOcrService.process(foo)).willReturn("This is a song text");
+        given(songOcrService.process(score)).willReturn("This is a song text");
     }
 
     @Test
@@ -122,7 +124,7 @@ class ScoreControllerTest {
     @Test
     @DisplayName("Edit")
     void scoreEdit() throws Exception {
-        mvc.perform(get("/score/edit").param("id", foo.getId().toString()))
+        mvc.perform(get("/score/edit").param("id", score.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("score/edit"))
                 .andExpect(model().attributeExists("score"))
@@ -136,18 +138,23 @@ class ScoreControllerTest {
     @WithMockUser(authorities = "EDIT_SONG")
     void scoreSave() throws Exception {
         mvc.perform(post("/score/submit").with(csrf())
-                        .sessionAttr("score", foo)
+                        .sessionAttr("score", score)
                         .param("save", "dummy")
                         .param("defaultArrangementIndex", "0"))
                 .andExpect(redirectedUrl("/score/list"));
-        foo.setTitle("");
+        score.setTitle("");
         mvc.perform(post("/score/submit").with(csrf())
-                        .sessionAttr("score", foo)
+                        .sessionAttr("score", scoreWithoutArrangements)
+                        .param("save", "dummy"))
+                .andExpect(redirectedUrl("/score/list"));
+        score.setTitle("");
+        mvc.perform(post("/score/submit").with(csrf())
+                        .sessionAttr("score", score)
                         .param("save", "dummy")
                         .param("defaultArrangementIndex", "0"))
                 .andExpect(status().is4xxClientError());
         mvc.perform(post("/score/submit")
-                        .sessionAttr("score", foo)
+                        .sessionAttr("score", score)
                         .param("save", "dummy")
                         .param("defaultArrangementIndex", "0"))
                 .andExpect(status().isForbidden());
@@ -157,7 +164,7 @@ class ScoreControllerTest {
     @DisplayName("Delete")
     @WithMockUser(authorities = "EDIT_SONG")
     void scoreDelete() throws Exception {
-        mvc.perform(get("/score/delete").param("id", foo.getId().toString()))
+        mvc.perform(get("/score/delete").param("id", score.getId().toString()))
                 .andExpect(redirectedUrl("/score/list"));
         mvc.perform(get("/score/delete").param("id", UUID.randomUUID().toString()))
                 .andExpect(status().isNotFound());
@@ -170,49 +177,49 @@ class ScoreControllerTest {
         @Test
         @DisplayName("Add arrangement")
         void whenAddArrangement_thenReturnOk() throws Exception {
-            int numberOfArrangements = foo.getArrangements().size();
-            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
+            int numberOfArrangements = score.getArrangements().size();
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("addArrangement", "dummy"))
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getArrangements()).hasSize(numberOfArrangements + 1);
+            assertThat(score.getArrangements()).hasSize(numberOfArrangements + 1);
         }
 
         @Test
         @DisplayName("Delete arrangement")
         void whenDeleteArrangement_thenReturnOk() throws Exception {
-            int numberOfArrangements = foo.getArrangements().size();
-            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
-                            .param("deleteArrangement", foo.getDefaultArrangement().getId().toString()))
+            int numberOfArrangements = score.getArrangements().size();
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
+                            .param("deleteArrangement", score.getDefaultArrangement().getId().toString()))
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getArrangements()).hasSize(numberOfArrangements - 1);
+            assertThat(score.getArrangements()).hasSize(numberOfArrangements - 1);
         }
 
         @Test
         @DisplayName("Add arrangement part")
         void whenSaveAddRow_thenReturnOk() throws Exception {
-            int numberOfArrangementParts = foo.getDefaultArrangement().getArrangementParts().size();
-            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
-                            .param("addArrangementPart", foo.getDefaultArrangement().getId().toString()))
+            int numberOfArrangementParts = score.getDefaultArrangement().getArrangementParts().size();
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
+                            .param("addArrangementPart", score.getDefaultArrangement().getId().toString()))
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getDefaultArrangement().getArrangementParts()).hasSize(numberOfArrangementParts + 1);
+            assertThat(score.getDefaultArrangement().getArrangementParts()).hasSize(numberOfArrangementParts + 1);
         }
 
         @Test
         @DisplayName("Delete arrangement part")
         void whenSaveDeleteRow_thenReturnOk() throws Exception {
-            int numberOfArrangementParts = foo.getDefaultArrangement().getArrangementParts().size();
-            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
-                            .param("deleteArrangementPart", foo.getDefaultArrangement().getId().toString() + "-0"))
+            int numberOfArrangementParts = score.getDefaultArrangement().getArrangementParts().size();
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
+                            .param("deleteArrangementPart", score.getDefaultArrangement().getId().toString() + "-0"))
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getDefaultArrangement().getArrangementParts()).hasSize(numberOfArrangementParts - 1);
+            assertThat(score.getDefaultArrangement().getArrangementParts()).hasSize(numberOfArrangementParts - 1);
         }
     }
 
@@ -224,24 +231,24 @@ class ScoreControllerTest {
         @Test
         @DisplayName("Upload")
         void fileUpload() throws Exception {
-            int numberOfFiles = foo.getFiles().size();
+            int numberOfFiles = score.getFiles().size();
             mvc.perform(multipart("/score/submit").file(mpFile).with(csrf())
-                            .sessionAttr("score", foo)
+                            .sessionAttr("score", score)
                             .param("upload", "dummy")
                             .param("file_type", "ARRANGEMENT")
                             .param("file_name", "myfile.txt"))
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"));
-            assertThat(foo.getFiles()).hasSize(numberOfFiles + 1);
+            assertThat(score.getFiles()).hasSize(numberOfFiles + 1);
         }
 
         @Test
         @DisplayName("Download")
         void fileDownload() throws Exception {
-            mvc.perform(get("/score/downloadFile").sessionAttr("score", foo)
+            mvc.perform(get("/score/downloadFile").sessionAttr("score", score)
                             .param("file_id", ngFile.getId().toString()))
                     .andExpect(status().isOk());
-            mvc.perform(get("/score/downloadFile").sessionAttr("score", foo)
+            mvc.perform(get("/score/downloadFile").sessionAttr("score", score)
                             .param("file_id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
@@ -249,11 +256,11 @@ class ScoreControllerTest {
         @Test
         @DisplayName("View")
         void fileView() throws Exception {
-            mvc.perform(get("/score/viewFile").sessionAttr("score", foo)
+            mvc.perform(get("/score/viewFile").sessionAttr("score", score)
                             .param("file_id", ngFile.getId().toString()))
                     .andExpect(status().isOk())
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
-            mvc.perform(get("/score/viewFile").sessionAttr("score", foo)
+            mvc.perform(get("/score/viewFile").sessionAttr("score", score)
                             .param("file_id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
@@ -261,12 +268,12 @@ class ScoreControllerTest {
         @Test
         @DisplayName("Delete")
         void fileDelete() throws Exception {
-            int numberOfFiles = foo.getFiles().size();
-            mvc.perform(get("/score/deleteFile").sessionAttr("score", foo)
+            int numberOfFiles = score.getFiles().size();
+            mvc.perform(get("/score/deleteFile").sessionAttr("score", score)
                             .param("file_id", ngFile.getId().toString()))
                     .andExpect(status().isOk());
-            assertThat(foo.getFiles()).hasSize(numberOfFiles - 1);
-            mvc.perform(get("/score/deleteFile").sessionAttr("score", foo)
+            assertThat(score.getFiles()).hasSize(numberOfFiles - 1);
+            mvc.perform(get("/score/deleteFile").sessionAttr("score", score)
                             .param("file_id", UUID.randomUUID().toString()))
                     .andExpect(status().isNotFound());
         }
@@ -278,8 +285,8 @@ class ScoreControllerTest {
         @Test
         @DisplayName("Add link")
         void addLink() throws Exception {
-            int numberOfLinks = foo.getLinks().size();
-            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
+            int numberOfLinks = score.getLinks().size();
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("addLink", "dummy")
                             .param("link_name", "The link")
                             .param("link_uri", "https://www.terrassorkestern.se")
@@ -288,19 +295,19 @@ class ScoreControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getLinks()).hasSize(numberOfLinks + 1);
+            assertThat(score.getLinks()).hasSize(numberOfLinks + 1);
         }
 
         @Test
         @DisplayName("Delete link")
         void deleteLink() throws Exception {
-            int numberOfLinks = foo.getLinks().size();
-            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
-                            .param("deleteLink", foo.getLinks().get(0).getId().toString()))
+            int numberOfLinks = score.getLinks().size();
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
+                            .param("deleteLink", score.getLinks().get(0).getId().toString()))
                     .andExpect(status().isOk())
                     .andExpect(view().name("score/edit"))
                     .andExpect(model().attributeExists("score"));
-            assertThat(foo.getLinks()).hasSize(numberOfLinks - 1);
+            assertThat(score.getLinks()).hasSize(numberOfLinks - 1);
         }
     }
 
@@ -309,7 +316,7 @@ class ScoreControllerTest {
     @WithMockUser(authorities = "EDIT_SONG")
     void convert() throws Exception {
         mvc.perform(get("/score/convert")
-                        .param("id", foo.getId().toString()))
+                        .param("id", score.getId().toString()))
                 .andExpect(redirectedUrl("/score/list"));
     }
 
@@ -317,7 +324,7 @@ class ScoreControllerTest {
     @DisplayName("OCR")
     @WithMockUser(authorities = "EDIT_SONG")
     void ocr() throws Exception {
-        mvc.perform(get("/score/edit/ocr").param("id", foo.getId().toString()))
+        mvc.perform(get("/score/edit/ocr").param("id", score.getId().toString()))
                 .andExpect(status().isOk());
     }
 
@@ -341,12 +348,12 @@ class ScoreControllerTest {
         @WithAnonymousUser
         void whenAccessProtectedContentAsAnonymousUser_redirectToLogin() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/view").param("id", foo.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/view").param("id", score.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isOk());
-            mvc.perform(get("/score/edit").param("id", foo.getId().toString())).andExpect(status().isOk());
-            mvc.perform(get("/score/delete").param("id", foo.getId().toString())).andExpect(status().isFound())
+            mvc.perform(get("/score/edit").param("id", score.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/delete").param("id", score.getId().toString())).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
-            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("save", "dummy")
                             .param("defaultArrangementIndex", "0"))
                     .andExpect(redirectedUrlPattern("**/login"));
@@ -358,11 +365,11 @@ class ScoreControllerTest {
         @WithMockUser
         void whenAccessProtectedContentAsNormalUser_returnForbidden() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/view").param("id", foo.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/view").param("id", score.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isOk());
-            mvc.perform(get("/score/edit").param("id", foo.getId().toString())).andExpect(status().isOk());
-            mvc.perform(get("/score/delete").param("id", foo.getId().toString())).andExpect(status().isForbidden());
-            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
+            mvc.perform(get("/score/edit").param("id", score.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/delete").param("id", score.getId().toString())).andExpect(status().isForbidden());
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("save", "dummy")
                             .param("defaultArrangementIndex", "0"))
                     .andExpect(status().isForbidden());
@@ -374,11 +381,11 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenAccessProtectedContentAsAdminUser_returnForbiddenOk() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/view").param("id", foo.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/view").param("id", score.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isOk());
-            mvc.perform(get("/score/edit").param("id", foo.getId().toString())).andExpect(status().isOk());
-            mvc.perform(get("/score/delete").param("id", foo.getId().toString())).andExpect(redirectedUrl("/score/list"));
-            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
+            mvc.perform(get("/score/edit").param("id", score.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/delete").param("id", score.getId().toString())).andExpect(redirectedUrl("/score/list"));
+            mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("save", "dummy")
                             .param("defaultArrangementIndex", "0"))
                     .andExpect(redirectedUrl("/score/list"));
