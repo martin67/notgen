@@ -85,7 +85,7 @@ public class ScoreController extends CommonController {
         Score score = getScore(id);
         Arrangement arrangement = score.getDefaultArrangement();
         // Check if the score has a song instrument. Only one for now
-        if (enableOcr) {
+        if (arrangement != null && enableOcr) {
             UUID songId = UUID.fromString(ocrSongIds);
             model.addAttribute("doSongOcr",
                     arrangement.getInstruments().stream().anyMatch(instrument -> instrument.getId().equals(songId)) ? "true" : "false");
