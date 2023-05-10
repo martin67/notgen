@@ -75,7 +75,7 @@ dependencies {
     implementation 'org.liquibase:liquibase-core:4.21.1'
     implementation 'com.mysql:mysql-connector-j:8.0.32'
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
-    implementation 'com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre17'
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:12.3.0.jre17-preview'
     implementation 'com.h2database:h2:2.1.214'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'com.azure.spring:spring-cloud-azure-dependencies:5.0.0'
