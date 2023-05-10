@@ -114,7 +114,7 @@ public class ScoreController extends CommonController {
     @PostMapping(value = "/submit", params = {"save"})
     @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String save(@Valid @ModelAttribute Score score,
-                       @RequestParam("defaultArrangementIndex") int defaultArrangementIndex,
+                       @RequestParam(value = "defaultArrangementIndex", defaultValue = "0") int defaultArrangementIndex,
                        Errors errors) {
         if (errors.hasErrors()) {
             return VIEW_SCORE_EDIT;
