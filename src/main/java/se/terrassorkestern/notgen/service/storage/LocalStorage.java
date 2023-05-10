@@ -33,9 +33,9 @@ public class LocalStorage implements BackendStorage {
     private final Path outputDir;
     private final Path staticDir;
 
-    public LocalStorage(@Value("${notgen.storage.input}") String inputDir,
-                        @Value("${notgen.storage.output}") String outputDir,
-                        @Value("${notgen.folders.static}") String staticDir) {
+    public LocalStorage(@Value("${se.terrassorkestern.notgen.storage.input}") String inputDir,
+                        @Value("${se.terrassorkestern.notgen.storage.output}") String outputDir,
+                        @Value("${se.terrassorkestern.notgen.storage.content}") String staticDir) {
         this.inputDir = Path.of(inputDir);
         this.outputDir = Path.of(outputDir);
         this.staticDir = Path.of(staticDir);

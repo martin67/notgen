@@ -12,14 +12,9 @@ spring:
           backend.directory.root: /var/lib/notgen/index
 
 # Storage config
-notgen:
+se.terrassorkestern.notgen:
   storage:
     type: azure
     input: scores
     output: scoreparts
-    static: static
-
-  # Local folders
-  # Mounted from static container
-  folders:
-    static: /var/lib/notgen/static
+    content: static      # Mounted from static container

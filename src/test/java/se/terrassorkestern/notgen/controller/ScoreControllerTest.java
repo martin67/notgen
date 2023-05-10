@@ -282,7 +282,7 @@ class ScoreControllerTest {
             mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", foo)
                             .param("addLink", "dummy")
                             .param("link_name", "The link")
-                            .param("link_uri", "http://www.terrassorkestern.se")
+                            .param("link_uri", "https://www.terrassorkestern.se")
                             .param("link_type", "YOUTUBE")
                             .param("link_comment", ""))
                     .andExpect(status().isOk())

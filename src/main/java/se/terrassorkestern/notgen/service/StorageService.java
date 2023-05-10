@@ -36,9 +36,9 @@ public class StorageService {
     private final NgFileRepository ngFileRepository;
     private final boolean keepTempDir;
 
-    public StorageService(@Value("${notgen.keep.tempdir:false}") boolean keepTempDir,
-                          @Value("${notgen.storage.type}") String storage,
-                          @Value("${notgen.folders.temp:}") String tempDir,
+    public StorageService(@Value("${se.terrassorkestern.notgen.storage.keeptemp:false}") boolean keepTempDir,
+                          @Value("${se.terrassorkestern.notgen.storage.type}") String storage,
+                          @Value("${se.terrassorkestern.notgen.storage.temp:}") String tempDir,
                           NgFileRepository ngFileRepository,
                           AzureStorage azureStorage, LocalStorage localStorage) {
         this.keepTempDir = keepTempDir;

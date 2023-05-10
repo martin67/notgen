@@ -19,7 +19,7 @@
         </tr>
         </thead>
 
-        <tr th:each="playlist : ${playlists}" th:data-link="@{view(id=${playlist.id})}">
+        <tr class="clickable-row" th:each="playlist : ${playlists}" data-th-data-link="@{view(id=${playlist.id})}">
             <td th:text="${playlist.name}"></td>
             <td th:text="${playlist.date}"></td>
             <td th:text="${playlist.playlistEntries.size()}"></td>
@@ -41,9 +41,9 @@
 </body>
 
 <script>
-    $(function () {
-        $("table tbody tr").click(function (e) {
-            window.location.href = $(this).data("link");
+    jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+            window.location = $(this).data("link");
         });
     });
 </script>

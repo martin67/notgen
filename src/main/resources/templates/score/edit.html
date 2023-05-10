@@ -190,7 +190,7 @@
                                             th:value="${arr.getId()} + '-' + ${rowStat.index}">Ta bort
                                     </button>
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#uploadFile"><span class="bi-pencil-square"/>
+                                            data-bs-target="#uploadFile"><span class="bi-pencil-square"></span>
                                     </button>
                                 </td>
                             </tr>
@@ -204,9 +204,6 @@
                                         type="submit" name="addArrangementPart" th:value="${arr.getId()}">Lägg
                                     till
                                     instrument
-                                </button>
-                                <button type="submit" class="btn btn-primary btn-sm mb-2" name="addArrangement">
-                                    Lägg till arrangemang
                                 </button>
                                 <button type="submit" class="btn btn-danger btn-sm" name="deleteArrangement"
                                         th:value="${arr.getId()}">
@@ -261,6 +258,14 @@
                                            th:value="${arr.archiveLocation}"/>
                                 </label>
                             </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary btn-sm mb-2" name="addArrangement">
+                                Lägg till arrangemang
+                            </button>
                         </div>
                     </div>
                 </div>

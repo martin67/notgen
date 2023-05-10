@@ -28,10 +28,9 @@ logging:
 #notgen.keep.tempdir=true
 
 # Storage
-notgen:
+se.terrassorkestern.notgen:
   storage:
     type: local
     input: /Work/TO/notgen/score_input
     output: /Work/TO/notgen/score_output
-  folders:
-    static: /Work/TO/notgen/static_content
+    content: /Work/TO/notgen/static_content

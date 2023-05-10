@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen.model;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.stereotype.Component;
@@ -16,9 +15,9 @@ import java.util.Map;
 @AllArgsConstructor
 public class NoteStats implements InfoContributor {
 
-    private final @NonNull ScoreRepository scoreRepository;
-    private final @NonNull InstrumentRepository instrumentRepository;
-    private final @NonNull PlaylistRepository playlistRepository;
+    private final ScoreRepository scoreRepository;
+    private final InstrumentRepository instrumentRepository;
+    private final PlaylistRepository playlistRepository;
 
     @Override
     public void contribute(Info.Builder builder) {

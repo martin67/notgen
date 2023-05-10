@@ -35,9 +35,9 @@ public class ScoreController extends CommonController {
     public static final String VIEW_SCORE_EDIT = "score/edit";
     public static final String VIEW_SCORE_VIEW = "score/view";
     public static final String VIEW_SCORE_LIST = "score/list";
-    @Value("${notgen.ocr.enable:false}")
+    @Value("${se.terrassorkestern.notgen.ocr.enable:false}")
     private boolean enableOcr;
-    @Value("${notgen.ocr.songids:0}")
+    @Value("${se.terrassorkestern.notgen.ocr.songids:0}")
     private String ocrSongIds;
 
     private final ActiveBand activeBand;
@@ -85,7 +85,7 @@ public class ScoreController extends CommonController {
         Score score = getScore(id);
         Arrangement arrangement = score.getDefaultArrangement();
         // Check if the score has a song instrument. Only one for now
-        if (enableOcr) {
+        if (arrangement != null && enableOcr) {
             UUID songId = UUID.fromString(ocrSongIds);
             model.addAttribute("doSongOcr",
                     arrangement.getInstruments().stream().anyMatch(instrument -> instrument.getId().equals(songId)) ? "true" : "false");

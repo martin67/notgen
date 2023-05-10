@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="sv">
+<html xmlns:th="http://www.thymeleaf.org" lang="sv">
 <head>
     <th:block th:replace="~{fragments/general :: header-css}"></th:block>
     <title>Lista noter</title>
@@ -18,7 +18,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="score : ${scores}" th:data-link="@{/score/view(id=${score.id})}">
+        <tr class="clickable-row" th:each="score : ${scores}" data-th-data-link="@{/score/view(id=${score.id})}">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
         </tr>
@@ -37,11 +37,10 @@
 </body>
 
 <script>
-    $(function () {
-        $("table tbody tr").click(function (e) {
-            window.location.href = $(this).data("link");
+    jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+            window.location = $(this).data("link");
         });
     });
 </script>
-
 </html>

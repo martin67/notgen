@@ -22,7 +22,7 @@
         <label for="setting" th:text="#{setting}">Sättning</label>
         <select class="form-select" id="setting" onchange="gotopage(this)">
             <option th:each="s : ${settings}" th:value="${s.id}" th:text="${s.name}"
-                    th:selected="${s.id} == ${selectedSetting} ? true : false"/>
+                    th:selected="(${s.id} == ${selectedSetting} ? true : false)"/>
         </select>
         <small class="form-text text-muted">Noterna som listas nedan innehåller minst ett av instrumenten i den valda
             sättningen.</small>
@@ -32,7 +32,7 @@
         <label class="form-check-label" for="allIncluded">Visa bara låtar där <b>alla</b> instrument i sättningen finns.</label>
     </div>
 
-    <p/>
+    <p></p>
 
     <table class="table table-bordered table-striped table-hover table-sm" aria-label="scores">
         <thead>
@@ -42,8 +42,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="score : ${scores}"
-            th:data-link="@{getscore(setting_id=${selectedSetting},score_id=${score.id})}" data-target="_BLANK">
+        <tr class="clickable-row" th:each="score : ${scores}"
+            data-th-data-link="@{score(setting_id=${selectedSetting},score_id=${score.id})}">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
         </tr>
@@ -56,16 +56,9 @@
 </body>
 
 <script>
-    $(function () {
-        $("table tbody tr").click(function (e) {
-            var u = $(this).data("link");
-            var t = $(this).data("target");
-            console.log(u, t);
-            if (t.length) {
-                window.open(u, t);
-            } else {
-                window.location.href = u;
-            }
+    jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+            window.location = $(this).data("link");
         });
     });
 </script>
