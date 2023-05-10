@@ -17,4 +17,4 @@ se.terrassorkestern.notgen:
     type: azure
     input: scores
     output: scoreparts
-    content: static      # Mounted from static container
+    content: /var/lib/notgen/static      # Mounted from static container
