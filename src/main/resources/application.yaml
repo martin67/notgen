@@ -7,7 +7,7 @@ spring:
   web:
     resources:
       # Add thumbnails directory to web server content path
-      static-locations: classpath:/static,file:${notgen.folders.static}
+      static-locations: classpath:/static,file:${se.terrassorkestern.notgen.storage.content}
   jpa:
     properties:
       hibernate:
