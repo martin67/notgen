@@ -75,6 +75,8 @@ public class Score extends Auditable<String> {
 
     @OneToMany(mappedBy ="score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Link> links = new ArrayList<>();
+    private boolean linksPresent = false;
+
 
     public Score() {
         this.id = UUID.randomUUID();
@@ -143,11 +145,15 @@ public class Score extends Auditable<String> {
 
     public void addLink(Link link) {
         links.add(link);
+        linksPresent = true;
         link.setScore(this);
     }
 
     public void removeLink(Link link) {
         links.remove(link);
+        if (links.isEmpty()) {
+            linksPresent = false;
+        }
         link.setScore(null);
     }
 
