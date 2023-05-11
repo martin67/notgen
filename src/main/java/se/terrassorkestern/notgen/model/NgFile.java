@@ -14,7 +14,8 @@ import java.util.UUID;
 public class NgFile {
     @Id
     private UUID id;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Score score;
     private String filename;
     private NgFileType type;
     private String name;
