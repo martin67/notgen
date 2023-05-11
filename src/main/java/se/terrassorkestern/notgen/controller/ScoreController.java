@@ -171,7 +171,7 @@ public class ScoreController extends CommonController {
         if (fileName != null) {
             ngFile.setName(fileName);
         }
-        score.getFiles().add(ngFile);
+        score.addFile(ngFile);
         return VIEW_SCORE_EDIT;
     }
 
@@ -210,14 +210,14 @@ public class ScoreController extends CommonController {
                           @RequestParam("link_uri") String linkUri,
                           @RequestParam("link_type") LinkType linkType,
                           @RequestParam(name = "link_comment", required = false) String linkComment) {
-        score.getLinks().add(new Link(linkUri, linkType, linkName, linkComment));
+        score.addLink(new Link(linkUri, linkType, linkName, linkComment));
         return VIEW_SCORE_EDIT;
     }
 
     @PostMapping(value = "/submit", params = {"deleteLink"})
     public String addLink(@ModelAttribute("score") Score score,
                           @RequestParam("deleteLink") UUID linkId) {
-        score.getLinks().remove(score.getLink(linkId));
+        score.removeLink(linkId);
         return VIEW_SCORE_EDIT;
     }
 
@@ -225,9 +225,7 @@ public class ScoreController extends CommonController {
     @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String deleteFile(@ModelAttribute("score") Score score,
                              @RequestParam("file_id") UUID fileId) {
-        NgFile file = score.getFile(fileId);
-        score.getFiles().remove(file);
-        log.info("delete: {}, file id: {}", file.getOriginalFilename(), file.getId());
+        score.removeFile(fileId);
         return VIEW_SCORE_EDIT;
     }
 

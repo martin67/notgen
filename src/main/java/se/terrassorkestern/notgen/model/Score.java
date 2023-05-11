@@ -64,18 +64,17 @@ public class Score extends Auditable<String> {
     @Lob
     private String presentation;
 
-    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Arrangement> arrangements = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Arrangement defaultArrangement;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy ="score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NgFile> files = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy ="score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Link> links = new ArrayList<>();
-
 
     public Score() {
         this.id = UUID.randomUUID();
@@ -126,6 +125,34 @@ public class Score extends Auditable<String> {
                 .filter(f -> f.getId().equals(fileId))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(String.format("File %s not found", fileId)));
+    }
+
+    public void addFile(NgFile file) {
+        files.add(file);
+        file.setScore(this);
+    }
+
+    public void removeFile(NgFile file) {
+        files.remove(file);
+        file.setScore(null);
+    }
+
+    public void removeFile(UUID uuid) {
+        removeFile(getFile(uuid));
+    }
+
+    public void addLink(Link link) {
+        links.add(link);
+        link.setScore(this);
+    }
+
+    public void removeLink(Link link) {
+        links.remove(link);
+        link.setScore(null);
+    }
+
+    public void removeLink(UUID uuid) {
+        removeLink(getLink(uuid));
     }
 
     @Override

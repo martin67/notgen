@@ -162,24 +162,19 @@
          th:if="${score.getLinks}" th:unless="${score.getLinks.isEmpty()}">
         <div class="col">
             <h3>Media</h3>
-            <table class="table table-sm table-borderless mb-0" aria-label="Media">
+            <table class="table table-sm table-borderless table-striped" aria-label="Media">
                 <thead>
                 <tr>
-                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="link : ${score.getLinks()}">
+                <tr class="clickable-row" th:each="link : ${score.getLinks()}" data-th-data-link="${link.getUri()}">
                     <td th:text="${link.getName()}"></td>
                     <td th:text="${link.getType().getShortDescription()}"></td>
                     <td th:text="${link.getComment()}"></td>
-                    <td class="text-end">
-                        <a th:href="${link.getUri()}">
-                            <i class="bi-eye me-2"></i></a>
-                    </td>
                 </tr>
                 </tbody>
             </table>
