@@ -15,12 +15,14 @@
         <tr>
             <th scope="col">Namn</th>
             <th scope="col">Genre</th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
         <tr class="clickable-row" th:each="score : ${scores}" data-th-data-link="@{/score/view(id=${score.id})}">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
+            <td><span th:if="${score.isLinksPresent()}" class="bi-music-note-beamed"></span></td>
         </tr>
         </tbody>
     </table>

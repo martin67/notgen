@@ -12,7 +12,7 @@
     function setPrintButton() {
         let setting_id = document.getElementById("setting").value;
         let score_id = /*[[${score.id}]]*/ 'bla';
-        document.getElementById("print-button").href = "/print/getscore?score_id=" + score_id + "&setting_id=" + setting_id;
+        document.getElementById("print-button").href = "/print/score?score_id=" + score_id + "&setting_id=" + setting_id;
     }
 </script>
 
@@ -129,31 +129,18 @@
                         <tr>
                             <th></th>
                             <th></th>
-                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="arrPart : ${arr.getArrangementParts()}">
+                        <tr class="clickable-row" th:each="arrPart : ${arr.getArrangementParts()}"
+                            data-th-data-link="@{/print/arrangement(score_id=${score.id},arrangement_id=${arr.getId()},instrument_id=${arrPart.instrument.id})}">
                             <td th:text="${arrPart.instrument.name}"/>
                             <td th:text="${arrPart.comment}"/>
-                            <td class="text-end" sec:authorize="hasAnyRole('USER', 'ADMIN', 'SUPERADMIN')">
-                                <a th:href="@{/print/arrangement(score_id=${score.id},arrangement_id=${arr.getId()},instrument_id=${arrPart.instrument.id})}">
-                                    <i class="bi-eye"></i></a>
-                            </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Song text -->
-    <div class="row mb-3 border p-2" th:if="${score.text}" th:unless="${score.text.isEmpty()}">
-        <div class="col">
-            <h3>Text</h3>
-            <div class="height-auto overflow-auto" style="white-space:pre"
-                 th:text="${score.text}"/>
         </div>
     </div>
 
@@ -178,6 +165,15 @@
                 </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Song text -->
+    <div class="row mb-3 border p-2" th:if="${score.text}" th:unless="${score.text.isEmpty()}">
+        <div class="col">
+            <h3>Text</h3>
+            <div class="height-auto overflow-auto" style="white-space:pre"
+                 th:text="${score.text}"/>
         </div>
     </div>
 

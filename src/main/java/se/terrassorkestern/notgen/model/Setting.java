@@ -36,4 +36,9 @@ public class Setting {
         this.band = band;
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return name + " (" + id + ")";
+    }
 }

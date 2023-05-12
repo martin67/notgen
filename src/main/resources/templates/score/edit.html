@@ -271,30 +271,6 @@
             </div>
         </div>
 
-        <!-- Song text -->
-        <div class="form-row mb-3 border pt-2 px-2">
-            <div class="form-group col">
-                <h3>Sångtext</h3>
-                <div class="form-row mb-1">
-                    <textarea class="form-control" rows="10" id="songtext" th:field="*{text}"
-                              th:value="${score.text}"></textarea>
-                </div>
-
-                <div class="form-row mb-2">
-                    <button type="button" class="btn btn-sm btn-primary"
-                            th:disabled="${doSongOcr}? ${!doSongOcr} : true"
-                            th:data-parameter1="${score.id}"
-                            th:onclick="doOCR(this.getAttribute('data-parameter1'))" id="ocr-button">
-                        OCR
-                    </button>
-                    <button type="button" class="btn btn-sm btn-primary d-none" id="ocr-button-loading" disabled>
-                        <span class="spinner-border spinner-border-sm" role="status"></span>
-                        Processing ...
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- Media link management -->
         <div class="form-row mb-3 border pt-2 px-2">
             <div class="form-group col">
@@ -333,6 +309,30 @@
                             Lägg till länk
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Song text -->
+        <div class="form-row mb-3 border pt-2 px-2">
+            <div class="form-group col">
+                <h3>Sångtext</h3>
+                <div class="form-row mb-1">
+                    <textarea class="form-control" rows="10" id="songtext" th:field="*{text}"
+                              th:value="${score.text}"></textarea>
+                </div>
+
+                <div class="form-row mb-2">
+                    <button type="button" class="btn btn-sm btn-primary"
+                            th:disabled="${doSongOcr}? ${!doSongOcr} : true"
+                            th:data-parameter1="${score.id}"
+                            th:onclick="doOCR(this.getAttribute('data-parameter1'))" id="ocr-button">
+                        OCR
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary d-none" id="ocr-button-loading" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        Processing ...
+                    </button>
                 </div>
             </div>
         </div>

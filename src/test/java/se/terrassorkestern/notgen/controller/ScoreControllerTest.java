@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -71,15 +72,19 @@ class ScoreControllerTest {
     private Score score;
     private Score scoreWithoutArrangements;
     private NgFile ngFile;
+    private Instrument sax;
+    private Instrument trumpet;
     MockMultipartFile mpFile;
 
     @BeforeEach
     void initTest() throws Exception {
         Band band = new Band("The band", "The test band");
+        sax = new Instrument(band, "Altsaxofon", "asx", 1);
+        trumpet = new Instrument(band, "Trumpet", "tp", 2);
         score = new Score(band, "Foo score");
         scoreWithoutArrangements = new Score(band, "Bar score");
         Arrangement arr = new Arrangement();
-        arr.addArrangementPart(new ArrangementPart(arr, new Instrument()));
+        arr.addArrangementPart(new ArrangementPart(arr, sax));
         score.getArrangements().add(arr);
         score.setDefaultArrangement(arr);
         ngFile = new NgFile("123.pdf", NgFileType.ARRANGEMENT, "Test file", "org.pdf", "A comment");
@@ -200,7 +205,7 @@ class ScoreControllerTest {
 
         @Test
         @DisplayName("Add arrangement part")
-        void whenSaveAddRow_thenReturnOk() throws Exception {
+        void whenAddArrangementPart_thenReturnOk() throws Exception {
             int numberOfArrangementParts = score.getDefaultArrangement().getArrangementParts().size();
             mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("addArrangementPart", score.getDefaultArrangement().getId().toString()))
@@ -212,7 +217,7 @@ class ScoreControllerTest {
 
         @Test
         @DisplayName("Delete arrangement part")
-        void whenSaveDeleteRow_thenReturnOk() throws Exception {
+        void whenDeleteArrangementPart_thenReturnOk() throws Exception {
             int numberOfArrangementParts = score.getDefaultArrangement().getArrangementParts().size();
             mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("deleteArrangementPart", score.getDefaultArrangement().getId().toString() + "-0"))
