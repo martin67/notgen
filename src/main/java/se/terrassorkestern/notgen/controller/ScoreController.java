@@ -138,7 +138,7 @@ public class ScoreController extends CommonController {
     public String deleteArrangement(@ModelAttribute("score") Score score,
                                     @RequestParam("deleteArrangement") String arrangementId) {
         Arrangement arrangement = score.getArrangement(arrangementId);
-        score.getArrangements().remove(arrangement);
+        score.removeArrangement(arrangement);
         return VIEW_SCORE_EDIT;
     }
 
@@ -152,10 +152,21 @@ public class ScoreController extends CommonController {
 
     @PostMapping(value = "/submit", params = {"deleteArrangementPart"})
     public String deleteArrangementPart(@ModelAttribute("score") Score score,
-                                        @RequestParam("deleteArrangementPart") String arrangementPart) {
-        Arrangement arrangement = score.getArrangement(arrangementPart.substring(0, 36));
-        int rowIndex = Integer.parseInt(arrangementPart.substring(37));
-        arrangement.getArrangementParts().remove(rowIndex);
+                                        @RequestParam("deleteArrangementPart") String arrangementPartAndIndex) {
+        Arrangement arrangement = score.getArrangement(arrangementPartAndIndex.substring(0, 36));
+        int rowIndex = Integer.parseInt(arrangementPartAndIndex.substring(37));
+        // A bit of a kludge. Need to get record n of a sorted set.
+        ArrangementPart arrangementPart = null;
+        int counter = 0;
+        for (ArrangementPart ap : arrangement.getArrangementParts()) {
+            if (rowIndex == counter) {
+                arrangementPart = ap;
+                break;
+            }
+            counter++;
+        }
+
+        arrangement.removeArrangementPart(arrangementPart);
         return VIEW_SCORE_EDIT;
     }
 

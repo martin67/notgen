@@ -10,7 +10,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "arrangement_instrument")
-public class ArrangementPart {
+public class ArrangementPart implements Comparable<ArrangementPart> {
 
     @EmbeddedId
     private ArrangementPartId id;
@@ -19,9 +19,8 @@ public class ArrangementPart {
     @MapsId("arrangementId")
     private Arrangement arrangement;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("instrumentId")
-    @OrderBy("sortOrder")
     private Instrument instrument;
 
     private int page;
@@ -64,5 +63,19 @@ public class ArrangementPart {
     @Override
     public int hashCode() {
         return Objects.hash(arrangement, instrument);
+    }
+
+    @Override
+    public int compareTo(ArrangementPart o) {
+        if (this.instrument == null && o.instrument == null) {
+            return 0;
+        }
+        if (this.instrument == null) {
+            return 1;
+        }
+        if (o.instrument == null) {
+            return -1;
+        }
+        return Integer.compare(instrument.getSortOrder(), o.instrument.getSortOrder());
     }
 }

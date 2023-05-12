@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter
@@ -14,14 +12,14 @@ import java.util.UUID;
 public class Arrangement {
     @Id
     private UUID id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Score score;
     private String arranger;
     private String name;
     @Lob
     private String comment;
     @ManyToOne(fetch = FetchType.LAZY)
     private NgFile file;
-    @ManyToOne
-    private Score score;
     private ScoreType scoreType;
     private boolean cover = false;
     private String archiveLocation;
@@ -36,12 +34,18 @@ public class Arrangement {
         this.name = name;
     }
 
-    @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<ArrangementPart> arrangementParts = new ArrayList<>();
+    @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SortedSet<ArrangementPart> arrangementParts = new TreeSet<>();
+    //private List<ArrangementPart> arrangementParts = new ArrayList<>();
 
     public void addArrangementPart(ArrangementPart arrangementPart) {
-        arrangementPart.setArrangement(this);
         arrangementParts.add(arrangementPart);
+        arrangementPart.setArrangement(this);
+    }
+
+    public void removeArrangementPart(ArrangementPart arrangementPart) {
+        arrangementParts.remove(arrangementPart);
+        arrangementPart.setArrangement(null);
     }
 
     public List<Instrument> getInstruments() {

@@ -108,7 +108,7 @@ public class StorageService {
         boolean allArrangementsGenerated = true;
 
         for (Arrangement arrangement : score.getArrangements()) {
-            if (!backendStorage.isArrangementGenerated(arrangement)) {
+            if (arrangement.getFile() != null && !backendStorage.isArrangementGenerated(arrangement)) {
                 allArrangementsGenerated = false;
             }
         }

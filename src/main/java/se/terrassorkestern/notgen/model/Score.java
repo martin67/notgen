@@ -89,8 +89,13 @@ public class Score extends Auditable<String> {
     }
 
     public void addArrangement(Arrangement arrangement) {
-        arrangement.setScore(this);
         arrangements.add(arrangement);
+        arrangement.setScore(this);
+    }
+
+    public void removeArrangement(Arrangement arrangement) {
+        arrangements.remove(arrangement);
+        arrangement.setScore(null);
     }
 
     public Arrangement getArrangement(UUID id) {
