@@ -77,7 +77,7 @@ public interface ScoreRepository extends SearchRepository<Score, UUID> {
 
     @Query("SELECT " +
             " new se.terrassorkestern.notgen.model.TopListEntry(s.genre, count(s.genre)) " +
-            " FROM Score s GROUP BY s.genre ORDER BY COUNT(s.genre) DESC")
+            " FROM Score s WHERE s.genre != ''GROUP BY s.genre ORDER BY COUNT(s.genre) DESC")
     List<TopListEntry> findTopGenres(Pageable pageable);
 
     @Query("SELECT " +
@@ -87,17 +87,17 @@ public interface ScoreRepository extends SearchRepository<Score, UUID> {
 
     @Query("SELECT " +
             " new se.terrassorkestern.notgen.model.TopListEntry(s.arranger, count(s.arranger)) " +
-            " FROM Score s GROUP BY s.arranger ORDER BY COUNT(s.arranger) DESC")
+            " FROM Score s WHERE s.arranger != '' GROUP BY s.arranger ORDER BY COUNT(s.arranger) DESC")
     List<TopListEntry> findTopArrangers(Pageable pageable);
 
     @Query("SELECT " +
             " new se.terrassorkestern.notgen.model.TopListEntry(s.author, count(s.author)) " +
-            " FROM Score s GROUP BY s.author ORDER BY COUNT(s.author) DESC")
+            " FROM Score s WHERE s.author != '' GROUP BY s.author ORDER BY COUNT(s.author) DESC")
     List<TopListEntry> findTopAuthors(Pageable pageable);
 
     @Query("SELECT " +
             " new se.terrassorkestern.notgen.model.TopListEntry(s.publisher, count(s.publisher)) " +
-            " FROM Score s GROUP BY s.publisher ORDER BY COUNT(s.publisher) DESC")
+            " FROM Score s WHERE s.publisher != '' GROUP BY s.publisher ORDER BY COUNT(s.publisher) DESC")
     List<TopListEntry> findTopPublishers(Pageable pageable);
 
     //@Query("SELECT SUM(sp.length) FROM ScorePart sp")
