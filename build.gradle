@@ -91,7 +91,7 @@ dependencies {
     implementation 'org.hibernate.search:hibernate-search-backend-lucene:6.1.8.Final'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     testImplementation 'org.seleniumhq.selenium:selenium-java:4.9.1'
     testImplementation 'io.github.bonigarcia:webdrivermanager:5.3.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
