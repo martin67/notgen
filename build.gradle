@@ -80,7 +80,7 @@ dependencies {
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'com.azure.spring:spring-cloud-azure-dependencies:5.0.0'
     implementation 'com.azure.spring:spring-cloud-azure-starter-storage:5.0.0'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-keyvault:5.0.0'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-keyvault:5.1.0'
     implementation 'commons-cli:commons-cli:1.5.0'
     implementation 'org.apache.commons:commons-csv:1.10.0'
     implementation 'org.apache.commons:commons-imaging:1.0-alpha3'
