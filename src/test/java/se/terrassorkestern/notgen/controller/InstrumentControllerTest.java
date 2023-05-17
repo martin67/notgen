@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -72,8 +73,8 @@ class InstrumentControllerTest {
 
         given(activeBand.getBand()).willReturn(band1);
         given(instrumentRepository.findByBandOrderBySortOrder(band1)).willReturn(List.of(sax, trumpet));
-        given(instrumentRepository.findByBandAndId(band1, sax.getId())).willReturn(Optional.of(sax));
-        given(instrumentRepository.findByBandAndId(band2, flute.getId())).willReturn(Optional.of(flute));
+        doReturn(Optional.of(sax)).when(instrumentRepository).findByBandAndId(band1, sax.getId());
+        doReturn(Optional.of(flute)).when(instrumentRepository).findByBandAndId(band1, flute.getId());
     }
 
     @Test

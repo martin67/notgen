@@ -63,15 +63,11 @@ public class BackupImporter {
         Collections.reverse(reverseTables);
         try (Connection conn = DriverManager.getConnection(database, username, password)) {
             StringBuilder sb = new StringBuilder();
+            sb.append("alter table score drop constraint score_arrangement_id_fk; ");
             for (String table : reverseTables) {
                 sb.append(String.format("delete from %s; ", table));
             }
             log.trace("SQL: {}", sb);
-            try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
-                pstmt.execute();
-            }
-            sb = new StringBuilder();
-            sb.append("alter table score alter column id restart with 1;");
             try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
                 pstmt.execute();
             }
@@ -103,6 +99,13 @@ public class BackupImporter {
                         }
                     }
                 }
+
+            }
+            sb = new StringBuilder();
+            sb.append("alter table score add constraint score_arrangement_id_fk" +
+                    "        foreign key (default_arrangement_id) references arrangement;");
+            try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
+                pstmt.execute();
             }
         }
     }
