@@ -4,21 +4,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.net.URI;
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
+@Data
 public class Link {
     @Id
     private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
     private Score score;
     private URI uri;
+    private String uri2;
     private LinkType type;
     private String name;
     private String comment;
@@ -33,5 +32,10 @@ public class Link {
         this.type = type;
         this.name = name;
         this.comment = comment;
+    }
+
+    @Override
+    public String toString() {
+        return name + " (" + id + ")";
     }
 }
