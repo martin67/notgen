@@ -17,7 +17,6 @@ public class Link {
     @ManyToOne(fetch = FetchType.LAZY)
     private Score score;
     private URI uri;
-    private String uri2;
     private LinkType type;
     private String name;
     private String comment;
