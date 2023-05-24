@@ -3,10 +3,7 @@ package se.terrassorkestern.notgen.service.converter;
 import lombok.extern.slf4j.Slf4j;
 import se.terrassorkestern.notgen.model.Arrangement;
 import se.terrassorkestern.notgen.service.StorageService;
-import se.terrassorkestern.notgen.service.converter.filters.Binarizer;
-import se.terrassorkestern.notgen.service.converter.filters.GreyScaler;
-import se.terrassorkestern.notgen.service.converter.filters.Otsu;
-import se.terrassorkestern.notgen.service.converter.filters.Standard;
+import se.terrassorkestern.notgen.service.converter.filters.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -70,6 +67,22 @@ public class ColorArr implements ImageProcessor {
                 }
                 return;
             }
+
+            // Autocrop
+            AutoCropper autoCropper = new AutoCropper(image, 2, 0.30);
+            image = autoCropper.crop(false);
+            if (log.isTraceEnabled()) {
+                ImageIO.write(image, "png", new File(tmpDir.toFile(), basename + "-autocrop.png"));
+            }
+
+            // Resize to A4
+            BufferedImage resized = new BufferedImage(2480, 3508, BufferedImage.TYPE_INT_RGB);
+            Graphics g = resized.getGraphics();
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, resized.getWidth(), resized.getHeight());
+            g.drawImage(image, 0, 0, 2480, 3508, 0, 0, image.getWidth(), image.getHeight(), null);
+            g.dispose();
+            image = resized;
 
             // Setup conversion filters
             GreyScaler greyScaler = new Standard();
