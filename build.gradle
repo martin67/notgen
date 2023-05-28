@@ -78,11 +78,11 @@ dependencies {
     implementation 'com.microsoft.sqlserver:mssql-jdbc:12.3.0.jre17-preview'
     implementation 'com.h2database:h2:2.1.214'
     implementation 'com.google.guava:guava:31.1-jre'
-    implementation 'com.azure.spring:spring-cloud-azure-dependencies:5.0.0'
+    implementation 'com.azure.spring:spring-cloud-azure-dependencies:5.1.0'
     implementation 'com.azure.spring:spring-cloud-azure-starter-storage:5.1.0'
     implementation 'com.azure.spring:spring-cloud-azure-starter-keyvault:5.1.0'
     implementation 'commons-cli:commons-cli:1.5.0'
-    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'commons-io:commons-io:2.12.0'
     implementation 'org.apache.commons:commons-csv:1.10.0'
     implementation 'org.apache.commons:commons-imaging:1.0-alpha3'
     implementation 'org.apache.pdfbox:pdfbox:2.0.28'
@@ -98,8 +98,8 @@ dependencies {
     testImplementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
-    liquibaseRuntime 'info.picocli:picocli:4.7.1'
-    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate6:4.21.1'
+    liquibaseRuntime 'info.picocli:picocli:4.7.3'
+    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate6:4.22.0'
     liquibaseRuntime sourceSets.main.output
 
     liquibase {
