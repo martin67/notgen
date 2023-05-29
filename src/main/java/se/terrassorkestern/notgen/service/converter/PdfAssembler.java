@@ -9,6 +9,8 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.ArrangementPart;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
@@ -18,24 +20,20 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-public class PdfAssembler implements Runnable {
+@Service
+public class PdfAssembler {
 
-    private final ArrangementPart arrangementPart;
-    private final Path tmpDir;
     private final StorageService storageService;
-    private final List<Path> extractedFilesList;
 
-    public PdfAssembler(ArrangementPart arrangementPart, Path tmpDir, StorageService storageService, List<Path> extractedFilesList) {
-        this.arrangementPart = arrangementPart;
-        this.tmpDir = tmpDir;
+    public PdfAssembler(StorageService storageService) {
         this.storageService = storageService;
-        this.extractedFilesList = extractedFilesList;
     }
 
-    @Override
-    public void run() {
+    @Async
+    public CompletableFuture<Path> assemble(ArrangementPart arrangementPart, Path tmpDir, List<Path> extractedFilesList) {
         Score score = arrangementPart.getArrangement().getScore();
         Path path = Path.of(tmpDir.toString(), Files.getNameWithoutExtension(score.getTitle()).replaceAll("\\W+", "")
                 + " - " + arrangementPart.getInstrument().getName() + ".pdf");
@@ -96,5 +94,6 @@ public class PdfAssembler implements Runnable {
         } catch (IOException e) {
             log.error("Ooopsie", e);
         }
+        return CompletableFuture.completedFuture(path);
     }
 }

@@ -242,7 +242,7 @@ public class ScoreController extends CommonController {
 
     @GetMapping("/convert")
     @PreAuthorize("hasAuthority('EDIT_SONG')")
-    public String convert(@RequestParam("id") UUID id) throws IOException, InterruptedException {
+    public String convert(@RequestParam("id") UUID id) throws IOException {
         converterService.convert(List.of(getScore(id)));
         return REDIRECT_SCORE_LIST;
     }

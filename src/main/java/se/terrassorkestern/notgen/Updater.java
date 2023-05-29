@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @Transactional
 public class Updater {
 
-
     public Updater() {
     }
 

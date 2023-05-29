@@ -69,7 +69,9 @@ public class StorageService {
         if (tempDir.isEmpty()) {
             t = Files.createTempDirectory(TEMPDIR_PREFIX);
         } else {
-            t = Files.createDirectories(Path.of(tempDir).resolve(score.getTitle()).resolve(String.valueOf(Instant.now().getEpochSecond())));
+            t = Files.createDirectories(Path.of(tempDir)
+                    .resolve(score.getTitle().replaceAll("[?]", "_"))
+                    .resolve(String.valueOf(Instant.now().getEpochSecond())));
         }
         log.debug("Creating temporary directory {}", t);
         return t;
