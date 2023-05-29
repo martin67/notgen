@@ -12,6 +12,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
     generate-ddl: true
+    # show-sql: true    # See all sql queries
   thymeleaf:
     # Use thymeleaf templates from source so that changes are visible immediately
     prefix: file:src/main/resources/templates/

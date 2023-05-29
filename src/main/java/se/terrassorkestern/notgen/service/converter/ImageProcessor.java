@@ -52,7 +52,7 @@ public class ImageProcessor {
                 if (image.getWidth() > image.getHeight()) {
                     log.warn("width > height!");
                 }
-                image = autoCrop(image, tmpDir, basename);
+                image = autoCrop(image, tmpDir, basename, arrangement);
                 if (firstPage && arrangement.isCover()) {
                     saveCover(image, arrangement);
                 } else {
@@ -136,8 +136,11 @@ public class ImageProcessor {
         return resized;
     }
 
-    private BufferedImage autoCrop(BufferedImage image, Path tmpDir, String basename) throws IOException {
-        BufferedImage nextImage = autoCropper.crop(image, 2, 0.30, false);
+    private BufferedImage autoCrop(BufferedImage image, Path tmpDir, String basename, Arrangement arrangement) throws IOException {
+        int detectionRadius = arrangement.getConfig(autoCropper.CONFIG_AUTOCROPPER_DETECTION_RADIUS, 2);
+        double tolerance = arrangement.getConfig(autoCropper.CONFIG_AUTOCROPPER_DETECTION_RADIUS, 0.30);
+        log.debug("Detection radius: {}, tolerance: {}", detectionRadius, tolerance);
+        BufferedImage nextImage = autoCropper.crop(image, detectionRadius, tolerance, false);
         if (log.isTraceEnabled()) {
             ImageIO.write(nextImage, "png", new File(tmpDir.toFile(), basename + "-autocrop.png"));
         }

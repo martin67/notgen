@@ -24,7 +24,7 @@ public class Arrangement {
     private boolean cover = false;
     private String archiveLocation;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="item_id", referencedColumnName = "id")
+    @JoinColumn(name = "item_id", referencedColumnName = "id")
     private List<Configuration> configurations;
 
     public Arrangement() {
@@ -58,8 +58,31 @@ public class Arrangement {
         return result;
     }
 
+    public String getConfig(String key, String defaultValue) {
+        return configurations.stream()
+                .filter(c -> c.getKey().getToken().equals(key))
+                .map(Configuration::getVal)
+                .findFirst().orElse(defaultValue);
+    }
+
+    public int getConfig(String key, int defaultValue) {
+        return configurations.stream()
+                .filter(c -> c.getKey().getToken().equals(key))
+                .map(Configuration::getVal)
+                .mapToInt(Integer::parseInt)
+                .findFirst().orElse(defaultValue);
+    }
+
+    public double getConfig(String key, double defaultValue) {
+        return configurations.stream()
+                .filter(c -> c.getKey().getToken().equals(key))
+                .map(Configuration::getVal)
+                .mapToDouble(Double::parseDouble)
+                .findFirst().orElse(defaultValue);
+    }
+
     @Override
     public String toString() {
-        return name + " (" + id +")";
+        return name + " (" + id + ")";
     }
 }

@@ -170,6 +170,29 @@ public class Score extends Auditable<String> {
         removeLink(getLink(uuid));
     }
 
+    public String getConfig(String key, String defaultValue) {
+        return configurations.stream()
+                .filter(c -> c.getKey().getToken().equals(key))
+                .map(Configuration::getVal)
+                .findFirst().orElse(defaultValue);
+    }
+
+    public int getConfig(String key, int defaultValue) {
+        return configurations.stream()
+                .filter(c -> c.getKey().getToken().equals(key))
+                .map(Configuration::getVal)
+                .mapToInt(Integer::parseInt)
+                .findFirst().orElse(defaultValue);
+    }
+
+    public double getConfig(String key, double defaultValue) {
+        return configurations.stream()
+                .filter(c -> c.getKey().getToken().equals(key))
+                .map(Configuration::getVal)
+                .mapToDouble(Double::parseDouble)
+                .findFirst().orElse(defaultValue);
+    }
+
     @Override
     public String toString() {
         return title + " (" + id +")";
