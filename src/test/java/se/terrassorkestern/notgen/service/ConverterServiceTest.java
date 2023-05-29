@@ -59,14 +59,14 @@ class ConverterServiceTest {
 
     @Test
     @WithMockUser
-    void convertOneScore() throws IOException, InterruptedException {
+    void convertOneScore() throws IOException {
         List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
         converterService.convert(scores);
     }
 
     @Test
     @WithMockUser
-    void convertMultipleScores() throws IOException, InterruptedException {
+    void convertMultipleScores() throws IOException {
         List<Score> scores = scoreRepository.findByTitleContaining("valsen");
         converterService.convert(scores);
     }
@@ -81,7 +81,7 @@ class ConverterServiceTest {
 
     @Test
     @WithMockUser
-    void assembleOneScore() throws IOException, InterruptedException {
+    void assembleOneScore() throws IOException {
         List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
         List<Instrument> instruments = instrumentRepository.findByNameContaining("saxofon");
         InputStream is = converterService.assemble(scores, instruments, false);

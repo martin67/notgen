@@ -1,20 +1,19 @@
 package se.terrassorkestern.notgen.service.converter.filters;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+@Slf4j
+@Service
 public class AutoCropper {
-    private final BufferedImage source;
-    private final int detectionRadius;
-    private final double tolerance;
-
-    public AutoCropper(BufferedImage source, int detectionRadius, double tolerance) {
-        this.source = source;
-        this.detectionRadius = detectionRadius;
-        this.tolerance = tolerance;
+    public AutoCropper() {
+        log.info("**** constructor");
     }
 
-    public BufferedImage crop(boolean writeCross) {
+    public BufferedImage crop(BufferedImage source, int detectionRadius, double tolerance, boolean writeCross) {
         // Get top-left pixel color as the "baseline" for cropping
         //int baseColor = source.getRGB(0, 0);    // upper left
         //int baseColor = Color.WHITE.getRGB();
@@ -35,7 +34,7 @@ public class AutoCropper {
         label1:
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (colorWithinArea(source, baseColor, x, y, tolerance)) {
+                if (colorWithinArea(source, detectionRadius, baseColor, x, y, tolerance)) {
                     minY = y;
                     if (writeCross) {
                         cross(source, x, y);
@@ -49,7 +48,7 @@ public class AutoCropper {
         label2:
         for (int x = 0; x < width; x++) {
             for (int y = minY; y < height; y++) {
-                if (colorWithinArea(source, baseColor, x, y, tolerance)) {
+                if (colorWithinArea(source, detectionRadius, baseColor, x, y, tolerance)) {
                     minX = x;
                     if (writeCross) {
                         cross(source, x, y);
@@ -65,7 +64,7 @@ public class AutoCropper {
         label3:
         for (int y = height - 1; y >= minY; y--) {
             for (int x = minX; x < width; x++) {
-                if (colorWithinArea(source, baseColor, x, y, tolerance)) {
+                if (colorWithinArea(source, detectionRadius, baseColor, x, y, tolerance)) {
                     maxY = y;
                     if (writeCross) {
                         cross(source, x, y);
@@ -78,7 +77,7 @@ public class AutoCropper {
         label4:
         for (int x = width - 1; x >= minX; x--) {
             for (int y = minY; y < maxY; y++) {
-                if (colorWithinArea(source, baseColor, x, y, tolerance)) {
+                if (colorWithinArea(source, detectionRadius, baseColor, x, y, tolerance)) {
                     maxX = x;
                     if (writeCross) {
                         cross(source, x, y);
@@ -102,6 +101,7 @@ public class AutoCropper {
         g.drawImage(source, 0, 0, target.getWidth(), target.getHeight(), minX, minY, maxX + 1, maxY + 1, null);
         g.dispose();
 
+        log.info("**** done");
         return target;
     }
 
@@ -127,7 +127,7 @@ public class AutoCropper {
         return (percentAway > tolerance);
     }
 
-    private boolean colorWithinArea(BufferedImage source, int a, int x, int y, double tolerance) {
+    private boolean colorWithinArea(BufferedImage source, int detectionRadius, int a, int x, int y, double tolerance) {
         for (int dx = Integer.max(0, x - detectionRadius); dx < Integer.min(source.getWidth(), x + detectionRadius); dx++) {
             for (int dy = Integer.max(0, y - detectionRadius); dy < Integer.min(source.getHeight(), y + detectionRadius); dy++) {
                 if (!colorWithinTolerance(a, source.getRGB(dx, dy), tolerance)) {

@@ -97,9 +97,6 @@ public class PrintController extends CommonController {
                     .body(new InputStreamResource(is));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
     }
 
@@ -130,9 +127,6 @@ public class PrintController extends CommonController {
                     .body(new InputStreamResource(is));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
     }
 
@@ -156,9 +150,6 @@ public class PrintController extends CommonController {
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
     }
 
@@ -180,10 +171,6 @@ public class PrintController extends CommonController {
                     .body(new InputStreamResource(is));
 
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        } catch (InterruptedException e) {
-            log.error("Interrupted", e);
-            Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
     }

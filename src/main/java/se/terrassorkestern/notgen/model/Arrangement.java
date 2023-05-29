@@ -23,6 +23,9 @@ public class Arrangement {
     private ScoreType scoreType;
     private boolean cover = false;
     private String archiveLocation;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="item_id", referencedColumnName = "id")
+    private List<Configuration> configurations;
 
     public Arrangement() {
         this.id = UUID.randomUUID();
@@ -36,7 +39,6 @@ public class Arrangement {
 
     @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true)
     private SortedSet<ArrangementPart> arrangementParts = new TreeSet<>();
-    //private List<ArrangementPart> arrangementParts = new ArrayList<>();
 
     public void addArrangementPart(ArrangementPart arrangementPart) {
         arrangementParts.add(arrangementPart);

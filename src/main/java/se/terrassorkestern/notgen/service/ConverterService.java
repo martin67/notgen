@@ -12,9 +12,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
-import se.terrassorkestern.notgen.service.converter.ImageProcessor;
-import se.terrassorkestern.notgen.service.converter.ImageProcessorFactory;
-import se.terrassorkestern.notgen.service.converter.PdfAssembler;
+import se.terrassorkestern.notgen.service.converter.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -22,9 +20,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,10 +30,14 @@ public class ConverterService implements ItemProcessor<Score, Score> {
 
     private final ScoreRepository scoreRepository;
     private final StorageService storageService;
+    private final ImageProcessor imageProcessor;
+    private final PdfAssembler pdfAssembler;
 
-    public ConverterService(ScoreRepository scoreRepository, StorageService storageService) {
+    public ConverterService(ScoreRepository scoreRepository, StorageService storageService, ImageProcessor imageProcessor, PdfAssembler pdfAssembler) {
         this.scoreRepository = scoreRepository;
         this.storageService = storageService;
+        this.imageProcessor = imageProcessor;
+        this.pdfAssembler = pdfAssembler;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         return null;
     }
 
-    public void convert(List<Score> scores) throws IOException, InterruptedException {
+    public void convert(List<Score> scores) throws IOException {
         log.debug("Starting main convert loop for {} scores", scores.size());
         for (Score score : scores) {
             convert(score);
@@ -54,7 +54,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         log.debug("Done converting");
     }
 
-    private void convert(Score score) throws IOException, InterruptedException {
+    private void convert(Score score) throws IOException {
         for (Arrangement arrangement : score.getArrangements()) {
             if (arrangement.getArrangementParts().isEmpty()) {
                 log.warn("No parts for score {}, arr {}", score, arrangement);
@@ -80,36 +80,30 @@ public class ConverterService implements ItemProcessor<Score, Score> {
      * @param tmpDir             Temporary directory for working files.
      * @param extractedFilesList All files that was unzipped/unpacked from the original pdf or zip file
      * @param arrangement        Arrangement that should be converted.
-     * @throws InterruptedException Exception if interrupted.
      */
-    private void imageProcess(Path tmpDir, List<Path> extractedFilesList, Arrangement arrangement) throws InterruptedException {
+    private void imageProcess(Path tmpDir, List<Path> extractedFilesList, Arrangement arrangement) throws IOException {
 
+        if (arrangement.getScoreType() == ScoreType.NOT_SCANNED) {
+            log.warn("Arrangement {} is not scanned, skipping.", arrangement);
+            return;
+        }
         if (!Files.exists(tmpDir) || extractedFilesList.isEmpty()) {
             log.warn("No files for arrangement {}, skipping image processing", arrangement);
             return;
         }
+        if (arrangement.getScoreType() == null) {
+            log.warn("scoreType not set for arrangement {}", arrangement);
+            return;
+        }
 
-        log.debug("Starting image processing");
         boolean firstPage = true;
-
-        ExecutorService executorService = null;
-        try {
-            executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-            for (Path path : extractedFilesList) {
-                ImageProcessor imageProcessor = ImageProcessorFactory.create(path, tmpDir, arrangement, storageService, firstPage);
-                if (imageProcessor != null) {
-                    executorService.submit(imageProcessor);
-                }
-                firstPage = false;
-            }
-        } finally {
-            if (executorService != null) executorService.shutdown();
+        List<CompletableFuture<Path>> completedParts = new ArrayList<>();
+        for (Path path : extractedFilesList) {
+            completedParts.add(imageProcessor.process(path, tmpDir, arrangement, firstPage));
+            firstPage = false;
         }
-
-        if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
-            log.error("problem terminating image processing");
-        }
-        log.debug("Finished with image processing");
+        // Wait until they are all done
+        CompletableFuture.allOf(completedParts.toArray(new CompletableFuture[0])).join();
     }
 
     /**
@@ -118,25 +112,17 @@ public class ConverterService implements ItemProcessor<Score, Score> {
      * @param tmpDir             Directory where the image files are located
      * @param extractedFilesList List of original images
      * @param arrangement        Arrangement to use
-     * @throws InterruptedException Exception if interrupted
      */
-    private void createPdfs(Path tmpDir, List<Path> extractedFilesList, Arrangement arrangement) throws InterruptedException {
+    private void createPdfs(Path tmpDir, List<Path> extractedFilesList, Arrangement arrangement) {
         if (!Files.exists(tmpDir) || extractedFilesList.isEmpty()) {
             return;
         }
-        ExecutorService executorService = null;
-        try {
-            executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-            for (ArrangementPart arrangementPart : arrangement.getArrangementParts()) {
-                executorService.submit(new PdfAssembler(arrangementPart, tmpDir, storageService, extractedFilesList));
-            }
-        } finally {
-            if (executorService != null) executorService.shutdown();
+        List<CompletableFuture<Path>> completedParts = new ArrayList<>();
+        for (ArrangementPart arrangementPart : arrangement.getArrangementParts()) {
+            // multithreaded
+            completedParts.add(pdfAssembler.assemble(arrangementPart, tmpDir, extractedFilesList));
         }
-
-        if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
-            log.error("problem terminating pdf creation");
-        }
+        CompletableFuture.allOf(completedParts.toArray(new CompletableFuture[0])).join();
     }
 
     public List<Path> split(Path tmpDir, Path downloadedScore) throws IOException {
@@ -188,26 +174,24 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         return extractedFilesList;
     }
 
-
     public InputStream assemble(List<Score> scores, Setting setting, boolean sortByInstrument) throws
-            IOException, InterruptedException {
+            IOException {
         return assemble(scores, new ArrayList<>(setting.getInstruments()), sortByInstrument);
     }
 
-    public InputStream assemble(Score score, Setting setting) throws IOException, InterruptedException {
+    public InputStream assemble(Score score, Setting setting) throws IOException {
         return assemble(List.of(score), new ArrayList<>(setting.getInstruments()), false);
     }
 
-    public InputStream assemble(Score score, Instrument instrument) throws IOException, InterruptedException {
+    public InputStream assemble(Score score, Instrument instrument) throws IOException {
         return assemble(List.of(score), List.of(instrument), false);
     }
 
-    // New handling for arrangements
-    public InputStream assemble(Arrangement arrangement, Instrument instrument) throws IOException, InterruptedException {
+    public InputStream assemble(Arrangement arrangement, Instrument instrument) throws IOException {
         return assemble(arrangement, List.of(instrument));
     }
 
-    public InputStream assemble(Arrangement arrangement, List<Instrument> instruments) throws IOException, InterruptedException {
+    public InputStream assemble(Arrangement arrangement, List<Instrument> instruments) throws IOException {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         pdfMergerUtility.setDestinationStream(byteArrayOutputStream);
@@ -231,7 +215,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
-    public InputStream assemble(Playlist playlist, Instrument instrument) throws IOException, InterruptedException {
+    public InputStream assemble(Playlist playlist, Instrument instrument) throws IOException {
         List<Score> scores = new ArrayList<>();
         List<Instrument> instruments = List.of(instrument);
 
@@ -248,7 +232,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
     }
 
     public InputStream assemble(List<Score> scores, List<Instrument> instruments, boolean sortByInstrument) throws
-            IOException, InterruptedException {
+            IOException {
 
         List<Instrument> sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
 

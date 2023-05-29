@@ -77,6 +77,10 @@ public class Score extends Auditable<String> {
     private List<Link> links = new ArrayList<>();
     private boolean linksPresent = false;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="item_id", referencedColumnName = "id")
+    private List<Configuration> configurations;
+
 
     public Score() {
         this.id = UUID.randomUUID();
