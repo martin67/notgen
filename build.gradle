@@ -73,7 +73,7 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 //    implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time'
     implementation 'org.liquibase:liquibase-core:4.22.0'
-    implementation 'com.mysql:mysql-connector-j:8.0.32'
+    implementation 'com.mysql:mysql-connector-j:8.0.33'
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
     implementation 'com.microsoft.sqlserver:mssql-jdbc:12.3.0.jre17-preview'
     implementation 'com.h2database:h2:2.1.214'
