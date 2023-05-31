@@ -229,7 +229,7 @@
         </div>
         <div class="col-auto">
             <a class="btn btn-primary" sec:authorize="hasAuthority('EDIT_SONG')"
-               th:href="@{edit(id=${score.id})}">Ändra</a>
+               th:href="@{/score/edit/{id}(id=${score.id})}">Ändra</a>
         </div>
     </div>
 </div>

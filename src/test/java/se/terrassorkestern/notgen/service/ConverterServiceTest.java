@@ -90,7 +90,7 @@ class ConverterServiceTest {
 
     @Test
     @WithMockUser
-    void assembleTOScores() throws IOException, InterruptedException {
+    void assembleTOScores() throws IOException {
         List<Score> scores = scoreRepository.findByTitleContaining("ögon");
         List<Setting> setting = settingRepository.findByName("Terrassorkestern");
         InputStream is = converterService.assemble(scores, setting.get(0), true);

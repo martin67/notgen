@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface ConfigurationKeyRepository extends JpaRepository<ConfigurationKey, UUID> {
-    Optional<ConfigurationKey> findByName(String name);
+    Optional<ConfigurationKey> findByToken(String token);
 }

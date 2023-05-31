@@ -2,6 +2,8 @@ package se.terrassorkestern.notgen.service.converter.filters;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.terrassorkestern.notgen.model.ConfigurationKey;
+import se.terrassorkestern.notgen.repository.ConfigurationKeyRepository;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -9,8 +11,15 @@ import java.awt.image.BufferedImage;
 @Slf4j
 @Service
 public class AutoCropper {
-    public AutoCropper() {
-        log.info("**** constructor");
+    public static final String CONFIG_AUTOCROPPER_TOLERANCE = "AUTOCROPPER_TOLERANCE";
+    public static final String CONFIG_AUTOCROPPER_DETECTION_RADIUS = "AUTOCROPPER_DETECTION_RADIUS";
+
+    private final ConfigurationKeyRepository configurationKeyRepository;
+
+
+    public AutoCropper(ConfigurationKeyRepository configurationKeyRepository) {
+        this.configurationKeyRepository = configurationKeyRepository;
+        setupConfig();
     }
 
     public BufferedImage crop(BufferedImage source, int detectionRadius, double tolerance, boolean writeCross) {
@@ -148,4 +157,17 @@ public class AutoCropper {
         }
     }
 
+    private void setupConfig() {
+        if (configurationKeyRepository.findByToken(CONFIG_AUTOCROPPER_TOLERANCE).isEmpty()) {
+            ConfigurationKey key = new ConfigurationKey("AutoCropper", CONFIG_AUTOCROPPER_TOLERANCE,
+                    "Tolerance", "Color detection bla", "");
+            configurationKeyRepository.save(key);
+        }
+        if (configurationKeyRepository.findByToken(CONFIG_AUTOCROPPER_DETECTION_RADIUS).isEmpty()) {
+            ConfigurationKey key = new ConfigurationKey("AutoCropper", CONFIG_AUTOCROPPER_DETECTION_RADIUS,
+                    "Detection radius", "Size of the spot", "");
+            configurationKeyRepository.save(key);
+        }
+
+    }
 }
