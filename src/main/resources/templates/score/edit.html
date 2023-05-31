@@ -236,7 +236,7 @@
                                     <label for="cover" class="form-check-label">Har omslag</label>
                                 </div>
                                 <div>
-                                    <table class="table table-sm">
+                                    <table class="table table-sm" aria-label="Configurations">
                                         <tbody>
                                         <tr th:each="c : ${arr.getConfigurations()}">
                                             <td th:text="${c.getKey().getName()}"></td>
@@ -440,45 +440,6 @@
             </div>
         </div>
 
-        <!-- Modal edit file -->
-        <div class="modal fade" id="editFile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-             aria-labelledby="editFileLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="editFileLabel">Ladda upp fil</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row mb-2">
-                            <div class="col-2">
-                                <label>Typ</label>
-                            </div>
-                            <div class="col">
-                                <select th:name="file_type">
-                                    <option th:each="ft : ${T(se.terrassorkestern.notgen.model.NgFileType).values()}"
-                                            th:value="${ft}"
-                                            th:text="${ft.getShortDescription()}"/>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-2">
-                                <label for="fileupload_name">Namn</label>
-                            </div>
-                            <div class="col">
-                                <input id="fileview_name" name="file_name" type="text"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                        <button type="submit" class="btn btn-primary" name="upload">Ladda upp</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Buttons -->
         <div class="form-group row mb-3">
             <div class="col-sm-10">
@@ -492,6 +453,49 @@
             </div>
         </div>
 
+        <!-- Modal edit file -->
+        <div id="fileModalHolder"></div>
+        <div id="fileModal" class="modal fade" th:fragment="fileModalContents" data-bs-backdrop="static"
+             data-bs-keyboard="false"
+             tabindex="-1">
+            <div class="modal-dialog" th:if="${link}">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Redigera fil</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="file_id" name="file_id" th:value="${link.id}"/>
+                        <div class="form-floating mb-2">
+                            <input class="form-control" id="file_uri" type="text" name="file_uri"
+                                   th:value="${file.uri}"/>
+                            <label for="link_uri">URI</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <select class="form-select" id="link_type" th:name="link_type">
+                                <option th:each="ml : ${T(se.terrassorkestern.notgen.model.LinkType).values()}"
+                                        th:value="${ml}" th:text="${ml}" th:selected="${link.type == ml}"/>
+                            </select>
+                            <label for="link_type">Typ</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <input class="form-control" id="link_name" type="text" name="link_name"
+                                   th:value="${link.name}"/>
+                            <label for="link_name">Namn</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                    <textarea class="form-control" id="link_comment" name="link_comment"
+                              th:text="${link.comment}"></textarea>
+                            <label for="link_comment">Kommentar</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                        <button type="submit" class="btn btn-primary" name="editLink">Spara</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Modal edit link -->
         <div id="linkModalHolder"></div>
@@ -550,7 +554,7 @@
                     </div>
                     <div class="modal-body">
                         <p th:text="${arrangement} ? 'Arrangemang: ' + ${arrangement.name} : 'hej'"></p>
-                        <table>
+                        <table class="table table-sm" aria-label="Configurations">
                             <thead>
                             <th>Area</th>
                             <th>Key</th>

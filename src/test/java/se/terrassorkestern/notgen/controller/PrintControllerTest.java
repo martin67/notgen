@@ -67,7 +67,7 @@ class PrintControllerTest {
     private Playlist playlist;
 
     @BeforeEach
-    void initTest() throws IOException, InterruptedException {
+    void initTest() throws IOException {
         Band band = new Band("The band", "The first test band");
         arrangement = new Arrangement("The arrangement");
         score = new Score(band, "The score");

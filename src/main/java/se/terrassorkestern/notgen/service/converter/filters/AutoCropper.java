@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen.service.converter.filters;
 
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.ConfigurationKey;
 import se.terrassorkestern.notgen.repository.ConfigurationKeyRepository;

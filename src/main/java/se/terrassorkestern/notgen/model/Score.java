@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.model;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -70,15 +71,15 @@ public class Score extends Auditable<String> {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Arrangement defaultArrangement;
 
-    @OneToMany(mappedBy ="score", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NgFile> files = new ArrayList<>();
 
-    @OneToMany(mappedBy ="score", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Link> links = new ArrayList<>();
     private boolean linksPresent = false;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="item_id", referencedColumnName = "id")
+    @JoinColumn(name = "item_id", referencedColumnName = "id")
     private List<Configuration> configurations;
 
 
@@ -102,6 +103,7 @@ public class Score extends Auditable<String> {
         arrangement.setScore(null);
     }
 
+    @Nonnull
     public Arrangement getArrangement(UUID id) {
         return arrangements.stream()
                 .filter(a -> a.getId().equals(id))
@@ -109,6 +111,7 @@ public class Score extends Auditable<String> {
                 .orElseThrow(() -> new NotFoundException(String.format("Arrangement %s not found", id)));
     }
 
+    @Nonnull
     public Arrangement getArrangement(String id) {
         return arrangements.stream()
                 .filter(a -> a.getId().toString().equals(id))
@@ -116,6 +119,7 @@ public class Score extends Auditable<String> {
                 .orElseThrow(() -> new NotFoundException(String.format("Arrangement %s not found", id)));
     }
 
+    @Nonnull
     public Link getLink(UUID id) {
         return links.stream()
                 .filter(a -> a.getId().equals(id))
@@ -131,6 +135,7 @@ public class Score extends Auditable<String> {
         return (defaultArrangement != null && defaultArrangement.isCover()) ? String.format("/%s-cover.jpg", defaultArrangement.getId()) : "/images/thoreehrling.jpg";
     }
 
+    @Nonnull
     public NgFile getFile(UUID fileId) {
         return files.stream()
                 .filter(f -> f.getId().equals(fileId))
@@ -195,6 +200,6 @@ public class Score extends Auditable<String> {
 
     @Override
     public String toString() {
-        return title + " (" + id +")";
+        return title + " (" + id + ")";
     }
 }

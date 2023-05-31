@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.ConfigurationKeyRepository;
@@ -71,10 +72,11 @@ public class ScoreController extends CommonController {
 
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('EDIT_SONG')")
-    public String delete(@PathVariable("id") UUID id) {
+    public String delete(@PathVariable("id") UUID id, SessionStatus sessionStatus) {
         Score score = getScore(id);
         log.info("Tar bort låt {} [{}]", score.getTitle(), score.getId());
         scoreRepository.delete(score);
+        sessionStatus.setComplete();
         return REDIRECT_SCORE_LIST;
     }
 
@@ -88,15 +90,13 @@ public class ScoreController extends CommonController {
     }
 
     @GetMapping("/edit/arr/{id}")
-    public String editConfig(@PathVariable("id") UUID arrangementId, Model model) {
-        Score score = (Score) model.getAttribute("score");
+    public String editConfig(@PathVariable("id") UUID arrangementId, @ModelAttribute Score score, Model model) {
         model.addAttribute("arrangement", score.getArrangement(arrangementId));
         return "score/edit :: configModalContents";
     }
 
     @GetMapping("/edit/link/{id}")
-    public String editLink(@PathVariable("id") UUID linkId, Model model) {
-        Score score = (Score) model.getAttribute("score");
+    public String editLink(@PathVariable("id") UUID linkId, @ModelAttribute Score score, Model model) {
         Link link;
         if (linkId.equals(NULL_UUID)) {
             link = new Link();
@@ -144,7 +144,8 @@ public class ScoreController extends CommonController {
     @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String save(@Valid @ModelAttribute Score score,
                        @RequestParam(value = "defaultArrangementIndex", defaultValue = "0") int defaultArrangementIndex,
-                       Errors errors) {
+                       Errors errors,
+                       SessionStatus sessionStatus) {
         if (errors.hasErrors()) {
             return VIEW_SCORE_EDIT;
         }
@@ -153,6 +154,7 @@ public class ScoreController extends CommonController {
             score.setDefaultArrangement(score.getArrangements().get(defaultArrangementIndex));
         }
         scoreRepository.save(score);
+        sessionStatus.setComplete();
         return REDIRECT_SCORE_LIST;
     }
 
@@ -280,8 +282,9 @@ public class ScoreController extends CommonController {
 
     @GetMapping("/convert")
     @PreAuthorize("hasAuthority('EDIT_SONG')")
-    public String convert(@RequestParam("id") UUID id) throws IOException {
+    public String convert(@RequestParam("id") UUID id, SessionStatus sessionStatus) throws IOException {
         converterService.convert(List.of(getScore(id)));
+        sessionStatus.setComplete();
         return REDIRECT_SCORE_LIST;
     }
 
