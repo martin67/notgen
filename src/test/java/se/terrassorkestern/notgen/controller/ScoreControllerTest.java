@@ -34,6 +34,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static se.terrassorkestern.notgen.controller.ScoreController.NULL_UUID;
 
 @WebMvcTest
 @Import(ScoreController.class)
@@ -56,6 +57,8 @@ class ScoreControllerTest {
     private SongOcrService songOcrService;
     @MockBean
     private StorageService storageService;
+    @MockBean
+    private ConfigurationKeyRepository configurationKeyRepository;
 
     @MockBean
     private ActiveBand activeBand;
@@ -128,7 +131,7 @@ class ScoreControllerTest {
     @Test
     @DisplayName("Edit")
     void scoreEdit() throws Exception {
-        mvc.perform(get("/score/edit").param("id", score.getId().toString()))
+        mvc.perform(get("/score/edit/{id}", score.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("score/edit"))
                 .andExpect(model().attributeExists("score"))
@@ -168,7 +171,7 @@ class ScoreControllerTest {
     @DisplayName("Delete")
     @WithMockUser(authorities = "EDIT_SONG")
     void scoreDelete() throws Exception {
-        mvc.perform(get("/score/delete").param("id", score.getId().toString()))
+        mvc.perform(get("/score/delete/{id}", score.getId().toString()))
                 .andExpect(redirectedUrl("/score/list"));
         mvc.perform(get("/score/delete").param("id", UUID.randomUUID().toString()))
                 .andExpect(status().isNotFound());
@@ -291,7 +294,8 @@ class ScoreControllerTest {
         void addLink() throws Exception {
             int numberOfLinks = score.getLinks().size();
             mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
-                            .param("addLink", "dummy")
+                            .param("editLink", "dummy")
+                            .param("link_id", NULL_UUID.toString())
                             .param("link_name", "The link")
                             .param("link_uri", "https://www.terrassorkestern.se")
                             .param("link_type", "YOUTUBE")
@@ -352,10 +356,10 @@ class ScoreControllerTest {
         @WithAnonymousUser
         void whenAccessProtectedContentAsAnonymousUser_redirectToLogin() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/view").param("id", score.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/view/{id}", score.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isOk());
-            mvc.perform(get("/score/edit").param("id", score.getId().toString())).andExpect(status().isOk());
-            mvc.perform(get("/score/delete").param("id", score.getId().toString())).andExpect(status().isFound())
+            mvc.perform(get("/score/edit/{id}", score.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/delete/{id}", score.getId().toString())).andExpect(status().isFound())
                     .andExpect(redirectedUrlPattern("**/login"));
             mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("save", "dummy")
@@ -369,10 +373,10 @@ class ScoreControllerTest {
         @WithMockUser
         void whenAccessProtectedContentAsNormalUser_returnForbidden() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/view").param("id", score.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/view/{id}", score.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isOk());
-            mvc.perform(get("/score/edit").param("id", score.getId().toString())).andExpect(status().isOk());
-            mvc.perform(get("/score/delete").param("id", score.getId().toString())).andExpect(status().isForbidden());
+            mvc.perform(get("/score/edit/{id}", score.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/delete/{id}", score.getId().toString())).andExpect(status().isForbidden());
             mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("save", "dummy")
                             .param("defaultArrangementIndex", "0"))
@@ -385,10 +389,10 @@ class ScoreControllerTest {
         @WithMockUser(authorities = "EDIT_SONG")
         void whenAccessProtectedContentAsAdminUser_returnForbiddenOk() throws Exception {
             mvc.perform(get("/score/list")).andExpect(status().isOk());
-            mvc.perform(get("/score/view").param("id", score.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/view/{id}", score.getId().toString())).andExpect(status().isOk());
             mvc.perform(get("/score/create")).andExpect(status().isOk());
-            mvc.perform(get("/score/edit").param("id", score.getId().toString())).andExpect(status().isOk());
-            mvc.perform(get("/score/delete").param("id", score.getId().toString())).andExpect(redirectedUrl("/score/list"));
+            mvc.perform(get("/score/edit/{id}", score.getId().toString())).andExpect(status().isOk());
+            mvc.perform(get("/score/delete/{id}", score.getId().toString())).andExpect(redirectedUrl("/score/list"));
             mvc.perform(post("/score/submit").with(csrf()).sessionAttr("score", score)
                             .param("save", "dummy")
                             .param("defaultArrangementIndex", "0"))

@@ -111,7 +111,7 @@ public class ImageProcessor {
             ImageIO.write(image, "jpg", outputStream);
         }
 
-        BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_BYTE_BINARY);
+        BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
         Graphics g = thumbnail.createGraphics();
         g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
         g.dispose();

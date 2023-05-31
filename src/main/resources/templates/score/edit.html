@@ -229,21 +229,26 @@
                                 </label>
                             </div>
                             <div class="col">
-                                <label class="form-select-label mb-3">Standardarrangemang
-                                    <select class="form-select-sm" id="defaultArrangement"
-                                            name="defaultArrangementIndex">
-                                        <option th:each="a, i : ${score.getArrangements()}"
-                                                th:value="${i.index}"
-                                                th:selected="${score.defaultArrangement} == ${a}"
-                                                th:text="${a.getName()}"/>
-                                    </select>
-                                </label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="cover"
                                            th:field="*{arrangements[__${arrStat.index}__].cover}"
                                            th:value="${arr.cover}"/>
                                     <label for="cover" class="form-check-label">Har omslag</label>
                                 </div>
+                                <div>
+                                    <table class="table table-sm">
+                                        <tbody>
+                                        <tr th:each="c : ${arr.getConfigurations()}">
+                                            <td th:text="${c.getKey().getName()}"></td>
+                                            <td th:text="${c.getVal()}"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm"
+                                        th:onclick="openConfigModal(this.getAttribute('data-arr-id'))"
+                                        th:data-arr-id="${arr.id}">Ändra konfiguration
+                                </button>
                             </div>
                             <div class="col">
                                 <label class="form-label">Namn
@@ -265,6 +270,17 @@
                             <button type="submit" class="btn btn-primary btn-sm mb-2" name="addArrangement">
                                 Lägg till arrangemang
                             </button>
+                        </div>
+                        <div class="col">
+                            <label class="form-select-label mb-3">Standardarrangemang
+                                <select class="form-select-sm" id="defaultArrangement"
+                                        name="defaultArrangementIndex">
+                                    <option th:each="a, i : ${score.getArrangements()}"
+                                            th:value="${i.index}"
+                                            th:selected="${score.defaultArrangement} == ${a}"
+                                            th:text="${a.getName()}"/>
+                                </select>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -292,6 +308,9 @@
                         <td class="text-end">
                             <a th:href="${link.getUri()}">
                                 <i class="bi-eye align-middle me-2"></i></a>
+                            <button type="button" class="btn"
+                                    th:onclick="openLinkModal(this.getAttribute('data-link-id'))"
+                                    th:data-link-id="${link.getId()}"><i class="bi-pencil-square"></i></button>
                             <button type="submit"
                                     style="border: none; padding: 0; line-height: 21px; font-size: 1rem; color: var(--bs-link-color)"
                                     class="btn align-middle" name="deleteLink" th:value="${link.getId()}"><i
@@ -304,8 +323,9 @@
                 <!-- Button trigger modal -->
                 <div class="row mb-2">
                     <div class="col">
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#addLink">
+                        <button type="button" class="btn btn-primary btn-sm"
+                                th:onclick="openLinkModal(this.getAttribute('data-link-id'))"
+                                th:data-link-id="00000000-0000-0000-0000-000000000000">
                             Lägg till länk
                         </button>
                     </div>
@@ -459,65 +479,10 @@
             </div>
         </div>
 
-        <!-- Modal add link -->
-        <div class="modal fade" id="addLink" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-             aria-labelledby="addLinkLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="addLinkLabel">Lägg till medialänk</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row mb-2">
-                            <div class="col-2">
-                                <label for="link_uri">URI</label>
-                            </div>
-                            <div class="col">
-                                <input id="link_uri" type="text" name="link_uri"/>
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-2">
-                                <label>Typ</label>
-                            </div>
-                            <div class="col">
-                                <select th:name="link_type">
-                                    <option th:each="ml : ${T(se.terrassorkestern.notgen.model.LinkType).values()}"
-                                            th:value="${ml}"
-                                            th:text="${ml}"/>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-2">
-                                <label for="link_name">Namn</label>
-                            </div>
-                            <div class="col">
-                                <input id="link_name" name="link_name" type="text"/>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-2">
-                                <label for="link_comment">Kommentar</label>
-                            </div>
-                            <div class="col">
-                                <input id="link_comment" name="link_comment" type="text"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                        <button type="submit" class="btn btn-primary" name="addLink">Lägg till</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Buttons -->
         <div class="form-group row mb-3">
             <div class="col-sm-10">
-                <a class="btn btn-secondary me-2" th:href="@{view(id=${score.id})}">Avbryt</a>
+                <a class="btn btn-secondary me-2" th:href="@{view/{id}(id=${score.id})}">Avbryt</a>
                 <button sec:authorize="hasAuthority('EDIT_SONG')" type="button" class="btn btn-danger me-2"
                         data-toggle="modal" data-target="#deleteModal">Ta bort
                 </button>
@@ -526,6 +491,89 @@
                        value="Spara"/>
             </div>
         </div>
+
+
+        <!-- Modal edit link -->
+        <div id="linkModalHolder"></div>
+        <div id="linkModal" class="modal fade" th:fragment="linkModalContents" data-bs-backdrop="static"
+             data-bs-keyboard="false"
+             tabindex="-1">
+            <div class="modal-dialog" th:if="${link}">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="addLinkLabel2">Redigera medialänk</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="link_id" name="link_id" th:value="${link.id}"/>
+                        <div class="form-floating mb-2">
+                            <input class="form-control" id="link_uri" type="text" name="link_uri"
+                                   th:value="${link.uri}"/>
+                            <label for="link_uri">URI</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <select class="form-select" id="link_type" th:name="link_type">
+                                <option th:each="ml : ${T(se.terrassorkestern.notgen.model.LinkType).values()}"
+                                        th:value="${ml}" th:text="${ml}" th:selected="${link.type == ml}"/>
+                            </select>
+                            <label for="link_type">Typ</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <input class="form-control" id="link_name" type="text" name="link_name"
+                                   th:value="${link.name}"/>
+                            <label for="link_name">Namn</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                    <textarea class="form-control" id="link_comment" name="link_comment"
+                              th:text="${link.comment}"></textarea>
+                            <label for="link_comment">Kommentar</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                        <button type="submit" class="btn btn-primary" name="editLink">Spara</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal edit config -->
+        <div id="configModalHolder"></div>
+        <div id="configModal" class="modal fade" th:fragment="configModalContents" data-bs-backdrop="static"
+             data-bs-keyboard="false"
+             tabindex="-1">
+            <div class="modal-dialog" th:if="${arrangement}">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" th:text="${score.title}">Konfiguration</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p th:text="${arrangement} ? 'Arrangemang: ' + ${arrangement.name} : 'hej'"></p>
+                        <table>
+                            <thead>
+                            <th>Area</th>
+                            <th>Key</th>
+                            <th>Value</th>
+                            </thead>
+                            <tbody>
+                            <tr th:each="config : ${arrangement.configurations}">
+                                <td th:text="${config.getKey().getArea()}"></td>
+                                <td th:text="${config.getKey().getName()}"></td>
+                                <td><input type="text" class="form-control form-control-sm"
+                                           th:value="${config.getVal()}"/>
+                                </td>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Spara</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </form>
 </div>
 
@@ -537,31 +585,31 @@
         const genres = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
-            prefetch: '/score/genres.json'
+            prefetch: '/score/edit/genres.json'
         });
 
         const composers = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
-            prefetch: '/score/composers.json'
+            prefetch: '/score/edit/composers.json'
         });
 
         const authors = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
-            prefetch: '/score/authors.json'
+            prefetch: '/score/edit/authors.json'
         });
 
         const arrangers = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
-            prefetch: '/score/arrangers.json'
+            prefetch: '/score/edit/arrangers.json'
         });
 
         const publishers = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
-            prefetch: '/score/publishers.json'
+            prefetch: '/score/edit/publishers.json'
         });
 
         $('#prefetch-genres .typeahead').typeahead({
@@ -584,7 +632,7 @@
                 highlight: true
             },
             {
-                name: 'edit/authors',
+                name: 'authors',
                 source: authors
             });
 
@@ -592,7 +640,7 @@
                 highlight: true
             },
             {
-                name: 'edit/arrangers',
+                name: 'arrangers',
                 source: arrangers
             });
 
@@ -600,13 +648,33 @@
                 highlight: true
             },
             {
-                name: 'edit/publishers',
+                name: 'publishers',
                 source: publishers
             });
     }
 </script>
 
 <script>
+    function openConfigModal(id) {
+        $.ajax({
+            url: "/score/edit/arr/" + id,
+            success: function (data) {
+                $('#configModalHolder').html(data);
+                $('#configModal').modal('show');
+            }
+        });
+    }
+
+    function openLinkModal(id) {
+        $.ajax({
+            url: "/score/edit/link/" + id,
+            success: function (data) {
+                $('#linkModalHolder').html(data);
+                $('#linkModal').modal('show');
+            }
+        });
+    }
+
     function doOCR(id, songIds) {
         $('#ocr-button').addClass('d-none');
         $('#ocr-button-loading').removeClass('d-none')

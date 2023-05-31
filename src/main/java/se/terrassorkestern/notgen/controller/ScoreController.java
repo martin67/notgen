@@ -14,27 +14,31 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.repository.ConfigurationKeyRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.service.ConverterService;
 import se.terrassorkestern.notgen.service.SongOcrService;
 import se.terrassorkestern.notgen.service.StorageService;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
 @Slf4j
 @Controller
 @RequestMapping("/score")
-@SessionAttributes({"score", "instruments"})
+@SessionAttributes({"score", "instruments", "configurations"})
 public class ScoreController extends CommonController {
     public static final String ATTRIBUTE_ONE_SCORE = "score";
     public static final String ATTRIBUTE_ALL_INSTRUMENTS = "instruments";
+    public static final String ATTRIBUTE_ALL_CONFIGURATIONS = "configurations";
     public static final String ATTRIBUTE_ALL_SCORES = "scores";
     public static final String REDIRECT_SCORE_LIST = "redirect:/score/list";
     public static final String VIEW_SCORE_EDIT = "score/edit";
     public static final String VIEW_SCORE_VIEW = "score/view";
     public static final String VIEW_SCORE_LIST = "score/list";
+    public static final UUID NULL_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
     @Value("${se.terrassorkestern.notgen.ocr.enable:false}")
     private boolean enableOcr;
     @Value("${se.terrassorkestern.notgen.ocr.songids:0}")
@@ -45,15 +49,18 @@ public class ScoreController extends CommonController {
     private final ConverterService converterService;
     private final SongOcrService songOcrService;
     private final StorageService storageService;
+    private final ConfigurationKeyRepository configurationKeyRepository;
 
     public ScoreController(ActiveBand activeBand, ScoreRepository scoreRepository,
                            ConverterService converterService,
-                           SongOcrService songOcrService, StorageService storageService) {
+                           SongOcrService songOcrService, StorageService storageService,
+                           ConfigurationKeyRepository configurationKeyRepository) {
         this.activeBand = activeBand;
         this.scoreRepository = scoreRepository;
         this.converterService = converterService;
         this.songOcrService = songOcrService;
         this.storageService = storageService;
+        this.configurationKeyRepository = configurationKeyRepository;
     }
 
     @GetMapping("/list")
@@ -62,17 +69,17 @@ public class ScoreController extends CommonController {
         return VIEW_SCORE_LIST;
     }
 
-    @GetMapping("/delete")
+    @GetMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('EDIT_SONG')")
-    public String delete(@RequestParam("id") UUID id) {
+    public String delete(@PathVariable("id") UUID id) {
         Score score = getScore(id);
         log.info("Tar bort låt {} [{}]", score.getTitle(), score.getId());
         scoreRepository.delete(score);
         return REDIRECT_SCORE_LIST;
     }
 
-    @GetMapping("/view")
-    public String view(@RequestParam("id") UUID id, Model model) {
+    @GetMapping("/view/{id}")
+    public String view(@PathVariable("id") UUID id, Model model) {
         Score score = getScore(id);
         model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
         model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
@@ -80,8 +87,29 @@ public class ScoreController extends CommonController {
         return VIEW_SCORE_VIEW;
     }
 
-    @GetMapping("/edit")
-    public String edit(@RequestParam("id") UUID id, Model model) {
+    @GetMapping("/edit/arr/{id}")
+    public String editConfig(@PathVariable("id") UUID arrangementId, Model model) {
+        Score score = (Score) model.getAttribute("score");
+        model.addAttribute("arrangement", score.getArrangement(arrangementId));
+        return "score/edit :: configModalContents";
+    }
+
+    @GetMapping("/edit/link/{id}")
+    public String editLink(@PathVariable("id") UUID linkId, Model model) {
+        Score score = (Score) model.getAttribute("score");
+        Link link;
+        if (linkId.equals(NULL_UUID)) {
+            link = new Link();
+            link.setId(NULL_UUID);
+        } else {
+            link = score.getLink(linkId);
+        }
+        model.addAttribute("link", link);
+        return "score/edit :: linkModalContents";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable("id") UUID id, Model model) {
         Score score = getScore(id);
         Arrangement arrangement = score.getDefaultArrangement();
         // Check if the score has a song instrument. Only one for now
@@ -92,6 +120,7 @@ public class ScoreController extends CommonController {
         }
         model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
         model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
+        model.addAttribute(ATTRIBUTE_ALL_CONFIGURATIONS, configurationKeyRepository.findAll());
         return VIEW_SCORE_EDIT;
     }
 
@@ -215,13 +244,22 @@ public class ScoreController extends CommonController {
                 .body(new InputStreamResource(storageService.downloadFile(file)));
     }
 
-    @PostMapping(value = "/submit", params = {"addLink"})
-    public String addLink(@ModelAttribute("score") Score score,
-                          @RequestParam("link_name") String linkName,
-                          @RequestParam("link_uri") String linkUri,
-                          @RequestParam("link_type") LinkType linkType,
-                          @RequestParam(name = "link_comment", required = false) String linkComment) {
-        score.addLink(new Link(linkUri, linkType, linkName, linkComment));
+    @PostMapping(value = "/submit", params = {"editLink"})
+    public String editLink(@ModelAttribute("score") Score score,
+                           @RequestParam("link_id") UUID linkId,
+                           @RequestParam("link_name") String linkName,
+                           @RequestParam("link_uri") String linkUri,
+                           @RequestParam("link_type") LinkType linkType,
+                           @RequestParam(name = "link_comment", required = false) String linkComment) {
+        if (linkId.equals(NULL_UUID)) {
+            score.addLink(new Link(linkUri, linkType, linkName, linkComment));
+        } else {
+            Link link = score.getLink(linkId);
+            link.setName(linkName);
+            link.setUri(URI.create(linkUri));
+            link.setType(linkType);
+            link.setComment(linkComment);
+        }
         return VIEW_SCORE_EDIT;
     }
 

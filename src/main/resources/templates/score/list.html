@@ -19,7 +19,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="clickable-row" th:each="score : ${scores}" data-th-data-link="@{view(id=${score.id})}">
+        <tr class="clickable-row" th:each="score : ${scores}" data-th-data-link="@{view/{id}(id=${score.id})}">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
             <td><span th:if="${score.isLinksPresent()}" class="bi-music-note-beamed"></span></td>
