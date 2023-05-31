@@ -237,6 +237,11 @@
                                 </div>
                                 <div>
                                     <table class="table table-sm" aria-label="Configurations">
+                                        <thead>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        </thead>
                                         <tbody>
                                         <tr th:each="c : ${arr.getConfigurations()}">
                                             <td th:text="${c.getKey().getName()}"></td>
