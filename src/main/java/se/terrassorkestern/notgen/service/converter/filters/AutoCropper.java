@@ -11,8 +11,8 @@ import java.awt.image.BufferedImage;
 @Slf4j
 @Service
 public class AutoCropper {
-    public final String CONFIG_AUTOCROPPER_TOLERANCE = "AUTOCROPPER_TOLERANCE";
-    public final String CONFIG_AUTOCROPPER_DETECTION_RADIUS = "AUTOCROPPER_DETECTION_RADIUS";
+    public static final String CONFIG_AUTOCROPPER_TOLERANCE = "AUTOCROPPER_TOLERANCE";
+    public static final String CONFIG_AUTOCROPPER_DETECTION_RADIUS = "AUTOCROPPER_DETECTION_RADIUS";
 
     private final ConfigurationKeyRepository configurationKeyRepository;
 
