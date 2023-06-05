@@ -79,7 +79,7 @@ dependencies {
     implementation 'com.h2database:h2:2.1.214'
     implementation 'com.google.guava:guava:32.0.0-jre'
     implementation 'com.azure.spring:spring-cloud-azure-dependencies:5.1.0'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-storage:5.1.0'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-storage:5.2.0'
     implementation 'com.azure.spring:spring-cloud-azure-starter-keyvault:5.1.0'
     implementation 'commons-cli:commons-cli:1.5.0'
     implementation 'commons-io:commons-io:2.12.0'
