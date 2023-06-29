@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import se.terrassorkestern.notgen.configuration.SecurityConfig;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Statistics;
+import se.terrassorkestern.notgen.repository.LinkRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.service.StatisticsService;
 import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
@@ -43,6 +45,10 @@ class StatisticsControllerTest {
     private ActiveBand activeBand;
     @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private LinkRepository linkRepository;
+    @MockBean
+    private EntityManager entityManager;
     @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
     @MockBean

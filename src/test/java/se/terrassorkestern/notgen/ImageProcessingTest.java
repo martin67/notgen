@@ -115,10 +115,12 @@ class ImageProcessingTest {
             "Palais stroll",        // BW
             "En månskenspromenad",  // null
             "Jamming",              // COLOR
+            "Cherie-Mona",           // COLOR
             "One hundred per cent", // PDF
             "Swing ändå",           // PDF_L
             "Easy swing",           // PDF_R
-            "Stockholmshambo"       // SWPRINT
+            "Stockholmshambo",       // SWPRINT
+            "Arbetslösa amoriner"   // SWPRINT
     );
 
     @Autowired
@@ -159,7 +161,7 @@ class ImageProcessingTest {
 
     @Test
     @WithMockUser
-    void assembleOneScore() throws IOException, InterruptedException {
+    void assembleOneScore() throws IOException {
         List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
         List<Instrument> instruments = instrumentRepository.findByNameContaining("saxofon");
         InputStream is = converterService.assemble(scores, instruments, false);
@@ -168,7 +170,7 @@ class ImageProcessingTest {
 
     @Test
     @WithMockUser
-    void assembleTOScores() throws IOException, InterruptedException {
+    void assembleTOScores() throws IOException {
         List<Score> scores = scoreRepository.findByTitleContaining("ögon");
         List<Setting> setting = settingRepository.findByName("Terrassorkestern");
         InputStream is = converterService.assemble(scores, setting.get(0), true);
