@@ -9,8 +9,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:sa}
   jpa:
     properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+      hibernate.dialect: org.hibernate.dialect.H2Dialect
     generate-ddl: true
     # show-sql: true    # See all sql queries
   thymeleaf:
