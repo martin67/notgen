@@ -6,10 +6,9 @@ spring:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     properties:
-      hibernate:
-        dialect: org.hibernate.dialect.SQLServerDialect
-        search:
-          backend.directory.root: /var/lib/notgen/index
+      hibernate.dialect: org.hibernate.dialect.SQLServerDialect
+      search:
+        backend.directory.root: /var/lib/notgen/index
 
 # Storage config
 se.terrassorkestern.notgen:
