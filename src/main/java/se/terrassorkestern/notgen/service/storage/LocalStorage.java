@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 import se.terrassorkestern.notgen.exceptions.StorageException;
-import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.model.Arrangement;
+import se.terrassorkestern.notgen.model.ArrangementPart;
+import se.terrassorkestern.notgen.model.Instrument;
+import se.terrassorkestern.notgen.model.NgFile;
 
 import java.io.*;
 import java.nio.file.Files;

@@ -2,7 +2,10 @@ package se.terrassorkestern.notgen.service.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 import se.terrassorkestern.notgen.exceptions.StorageException;
-import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.model.Arrangement;
+import se.terrassorkestern.notgen.model.ArrangementPart;
+import se.terrassorkestern.notgen.model.Instrument;
+import se.terrassorkestern.notgen.model.NgFile;
 
 import java.io.IOException;
 import java.io.InputStream;
