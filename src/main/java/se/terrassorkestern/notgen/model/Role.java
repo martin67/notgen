@@ -1,10 +1,9 @@
 package se.terrassorkestern.notgen.model;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import jakarta.persistence.*;
 
 import java.util.Collection;
 import java.util.UUID;

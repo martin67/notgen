@@ -12,7 +12,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
-import se.terrassorkestern.notgen.service.converter.*;
+import se.terrassorkestern.notgen.service.converter.ImageProcessor;
+import se.terrassorkestern.notgen.service.converter.PdfAssembler;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
