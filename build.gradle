@@ -99,7 +99,7 @@ dependencies {
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
     liquibaseRuntime 'info.picocli:picocli:4.7.4'
-    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate6:4.22.0'
+    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate6:4.23.0'
     liquibaseRuntime sourceSets.main.output
 
     liquibase {
