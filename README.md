@@ -32,11 +32,7 @@ Bildbehandlingen utgörs sedan av följande steg:
 
 För omslag så sker det ingen färgkonvertering samt att filen sparas som JPG istället.
 
-## Listning
-
-Det finns också en ytterligare funktion som skapar ett Google Sheet dokument med en lista på alla noter och sättning.
-
-## Hantering av metadata
+ ## Hantering av metadata
 
 Vidare så finns det stöd för att hantera all metadata kring noterna. Detta innefattar upplägg och redigering av:
 
