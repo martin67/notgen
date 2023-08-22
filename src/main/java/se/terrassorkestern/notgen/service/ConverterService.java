@@ -1,6 +1,8 @@
 package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
@@ -10,12 +12,14 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.service.converter.ImageProcessor;
 import se.terrassorkestern.notgen.service.converter.PdfAssembler;
 
 import javax.imageio.ImageIO;
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
@@ -136,26 +140,26 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         switch (com.google.common.io.Files.getFileExtension(downloadedScore.getFileName().toString().toLowerCase())) {
             case "zip" -> storageService.extractZip(downloadedScore, tmpDir);
             case "pdf" -> {
-                PDDocument document = PDDocument.load(downloadedScore.toFile());
-                PDPageTree list = document.getPages();
-                int i = 100;
-                for (PDPage page : list) {
-                    PDResources pdResources = page.getResources();
+                try (PDDocument document = Loader.loadPDF(downloadedScore.toFile())) {
+                    PDPageTree list = document.getPages();
+                    int i = 100;
+                    for (PDPage page : list) {
+                        PDResources pdResources = page.getResources();
 
-                    for (COSName name : pdResources.getXObjectNames()) {
-                        PDXObject o = pdResources.getXObject(name);
-                        if (o instanceof PDImageXObject image) {
-                            String filename = tmpDir + File.separator + "extracted-image-" + i;
-                            if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
-                                ImageIO.write(image.getImage(), "jpg", new File(filename + ".jpg"));
-                            } else {
-                                ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
+                        for (COSName name : pdResources.getXObjectNames()) {
+                            PDXObject o = pdResources.getXObject(name);
+                            if (o instanceof PDImageXObject image) {
+                                String filename = tmpDir + File.separator + "extracted-image-" + i;
+                                if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
+                                    ImageIO.write(image.getImage(), "jpg", new File(filename + ".jpg"));
+                                } else {
+                                    ImageIO.write(image.getImage(), "png", new File(filename + ".png"));
+                                }
+                                i++;
                             }
-                            i++;
                         }
                     }
                 }
-                document.close();
             }
             default -> log.error("Unknown file format for {}", downloadedScore);
         }
@@ -211,7 +215,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
                 pdfMergerUtility.addSource(storageService.downloadArrangementPart(arrangement, instrument, tempDir).toFile());
             }
         }
-        pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+        pdfMergerUtility.mergeDocuments(null);
         storageService.deleteTempDir(tempDir);
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
@@ -296,7 +300,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
                 }
             }
         }
-        pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+        pdfMergerUtility.mergeDocuments(null);
         storageService.deleteTempDir(tempDir);
 
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());

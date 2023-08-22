@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Playlist;
@@ -42,11 +43,11 @@ public class PlaylistPdfService {
         doc.addPage(page);
 
         // Create a new font object selecting one of the PDF base fonts
-        PDFont titleFont = PDType1Font.HELVETICA_BOLD;
-        PDFont commentFont = PDType1Font.HELVETICA_OBLIQUE;
-        PDFont songFont = PDType1Font.HELVETICA;
-        PDFont songFontBold = PDType1Font.HELVETICA_BOLD;
-        PDFont songCommentFont = PDType1Font.HELVETICA;
+        PDFont titleFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        PDFont commentFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
+        PDFont songFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+        PDFont songFontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        PDFont songCommentFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
 
         try (PDPageContentStream contents = new PDPageContentStream(doc, page)) {
 

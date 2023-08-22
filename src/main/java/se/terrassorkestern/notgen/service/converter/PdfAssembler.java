@@ -1,16 +1,20 @@
 package se.terrassorkestern.notgen.service.converter;
 
 import com.google.common.io.Files;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import se.terrassorkestern.notgen.model.ArrangementPart;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.service.StorageService;
@@ -80,7 +84,7 @@ public class PdfAssembler {
                 PDRectangle mediaBox = page.getMediaBox();
                 contents.drawImage(pdImage, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());
                 contents.beginText();
-                contents.setFont(PDType1Font.HELVETICA_OBLIQUE, 5);
+                contents.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE), 5);
                 contents.setNonStrokingColor(Color.DARK_GRAY);
                 contents.newLineAtOffset(495, 5);
                 contents.showText("Godhetsfullt inscannad av Terrassorkestern");
@@ -90,7 +94,6 @@ public class PdfAssembler {
             doc.save(path.toFile());
             log.debug("Saving: {}", path);
             storageService.uploadArrangementPart(arrangementPart, path);
-
         } catch (IOException e) {
             log.error("Ooopsie", e);
         }
