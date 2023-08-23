@@ -10,6 +10,11 @@ spring:
       search:
         backend.directory.root: /var/lib/notgen/index
 
+logging:
+  level:
+    root: INFO
+    org.apache.pdfbox.pdmodel.font.PDType1Font: ERROR
+
 # Storage config
 se.terrassorkestern.notgen:
   storage:

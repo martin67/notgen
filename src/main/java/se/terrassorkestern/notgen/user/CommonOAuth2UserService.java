@@ -1,5 +1,6 @@
 package se.terrassorkestern.notgen.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -14,6 +15,7 @@ import se.terrassorkestern.notgen.repository.UserRepository;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class CommonOAuth2UserService {
 
@@ -53,6 +55,7 @@ public class CommonOAuth2UserService {
         Band band = user.getBands().iterator().next();
 
         activeBand.setBand(band);
+        log.info("User {}, band {} logged in", user.getFullName(), band.getName());
         return UserPrincipal.create(user, oAuth2User.getAttributes());
     }
 
