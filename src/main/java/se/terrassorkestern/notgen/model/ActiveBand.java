@@ -29,7 +29,7 @@ public class ActiveBand {
     }
 
     public void setBand(Band band) {
-        log.info("Setting band to: {} ({})", band.getName(), band.getId());
+        log.debug("Setting band to: {} ({})", band.getName(), band.getId());
         this.band = band;
     }
 }

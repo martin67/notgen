@@ -195,9 +195,9 @@
                     <td th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"></td>
                     <td th:text="${file.getType().getShortDescription()}"></td>
                     <td class="text-end">
-                        <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
+                        <a th:href="@{/score/viewFile(file_id=${file.getId()})}">
                             <i class="bi-eye me-2"></i></a>
-                        <a th:href="@{downloadFile(score_id=${score.id},file_id=${file.getId()})}">
+                        <a th:href="@{/score/downloadFile(file_id=${file.getId()})}">
                             <i class="bi-cloud-arrow-down"></i></a>
                     </td>
                 </tr>
@@ -225,7 +225,7 @@
         </div>
         <div class="col-auto">
             <a class="btn btn-primary" sec:authorize="hasAuthority('EDIT_SONG')"
-               th:href="@{convert(id=${score.id})}">Uppdatera PDF</a>
+               th:href="@{/score/convert(id=${score.id})}">Uppdatera PDF</a>
         </div>
         <div class="col-auto">
             <a class="btn btn-primary" sec:authorize="hasAuthority('EDIT_SONG')"

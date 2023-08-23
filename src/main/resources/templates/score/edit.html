@@ -87,7 +87,7 @@
                 </div>
                 <div class="col-md-3">
                     <figure class="figure text-center">
-                        <img class="figure-img img-fluid rounded" th:src="@{${score.getThumbnailPath()}}"/>
+                        <img class="figure-img img-fluid rounded" th:src="@{${score.getThumbnailPath()}}" alt="thumbnail"/>
                     </figure>
                 </div>
             </div>
@@ -379,9 +379,9 @@
                         <td th:text="${file.getName()} ? ${file.getName()} : ${file.getOriginalFilename()}"></td>
                         <td th:text="${file.getType().getShortDescription()}"></td>
                         <td class="text-end">
-                            <a th:href="@{viewFile(score_id=${score.id},file_id=${file.getId()})}">
+                            <a th:href="@{/score/viewFile(file_id=${file.getId()})}">
                                 <i class="bi-eye me-2"></i></a>
-                            <a th:href="@{downloadFile(score_id=${score.id},file_id=${file.getId()})}">
+                            <a th:href="@{/score/downloadFile(file_id=${file.getId()})}">
                                 <i class="bi-cloud-arrow-down me-2"></i></a>
                             <a th:href="@{deleteFile(file_id=${file.getId()})}"><i class="bi-trash"></i></a>
                         </td>
