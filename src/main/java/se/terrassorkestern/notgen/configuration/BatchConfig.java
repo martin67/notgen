@@ -37,7 +37,7 @@ public class BatchConfig {
                 .name("score reader")
                 .repository(scoreRepository)
                 .methodName("findAll")
-                .sorts(Map.of("id", Sort.Direction.ASC))
+                .sorts(Map.of("title", Sort.Direction.ASC))
                 .build();
     }
 
