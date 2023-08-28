@@ -16,6 +16,7 @@ spring:
             type: lucene
             analysis.configurer: se.terrassorkestern.notgen.index.AnalysisConfig
             directory.root: ./build/index
+    open-in-view: false
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -24,6 +25,10 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
   config:
     import: git.properties
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   security:
     oauth2:
       client:

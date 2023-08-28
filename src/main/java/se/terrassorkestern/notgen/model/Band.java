@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +16,8 @@ public class Band {
     @NotBlank(message = "Bandnamn måste anges")
     private String name;
     private String description;
-
+    @OneToOne
+    private Setting standardSetting;
 
     public Band() {
         this.id = UUID.randomUUID();
