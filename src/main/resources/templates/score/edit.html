@@ -448,7 +448,7 @@
         <!-- Buttons -->
         <div class="form-group row mb-3">
             <div class="col-sm-10">
-                <a class="btn btn-secondary me-2" th:href="@{view/{id}(id=${score.id})}">Avbryt</a>
+                <a class="btn btn-secondary me-2" th:href="@{/score/view/{id}(id=${score.id})}">Avbryt</a>
                 <button sec:authorize="hasAuthority('EDIT_SONG')" type="button" class="btn btn-danger me-2"
                         data-toggle="modal" data-target="#deleteModal">Ta bort
                 </button>

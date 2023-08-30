@@ -16,7 +16,7 @@ spring:
             type: lucene
             analysis.configurer: se.terrassorkestern.notgen.index.AnalysisConfig
             directory.root: ./build/index
-    open-in-view: false
+    open-in-view: true
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
