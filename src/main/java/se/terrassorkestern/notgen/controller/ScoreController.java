@@ -23,6 +23,8 @@ import se.terrassorkestern.notgen.service.StorageService;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -127,12 +129,21 @@ public class ScoreController extends CommonController {
     @GetMapping("/create")
     public String create(Model model) {
         Score score = new Score();
+        score.setBand(activeBand.getBand());
         Arrangement arrangement = new Arrangement();
         score.addArrangement(arrangement);
         score.setDefaultArrangement(arrangement);
 
         // Fyll på med standardinstrumenten så går det lite fortare att editera...
-        for (Instrument instrument : getInstruments()) {
+        List<Instrument> preloadedInstruments;
+        if (activeBand.getBand().getStandardSetting() != null) {
+            Setting standardSetting = getSetting(activeBand.getBand().getStandardSetting().getId());
+            preloadedInstruments = new ArrayList<>(standardSetting.getInstruments());
+            preloadedInstruments.sort(Comparator.comparing(Instrument::getSortOrder));
+        } else {
+            preloadedInstruments = getInstruments();
+        }
+        for (Instrument instrument : preloadedInstruments) {
             arrangement.addArrangementPart(new ArrangementPart(arrangement, instrument));
         }
         model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
