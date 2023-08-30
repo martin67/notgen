@@ -16,8 +16,6 @@ spring:
     # Use thymeleaf templates from source so that changes are visible immediately
     prefix: file:src/main/resources/templates/
     cache: false
-  liquibase:
-    enabled: false
 
 # Full logging on the notgen parts
 logging:
