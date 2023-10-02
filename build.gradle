@@ -85,7 +85,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    testImplementation 'org.seleniumhq.selenium:selenium-java:4.12.0'
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.13.0'
     testImplementation 'io.github.bonigarcia:webdrivermanager:5.5.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
 }
