@@ -1,25 +1,21 @@
 package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
-import org.apache.pdfbox.pdmodel.*;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-
 import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.service.converter.ImageProcessor;
 import se.terrassorkestern.notgen.service.converter.PdfAssembler;
 
 import javax.imageio.ImageIO;
-
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
@@ -53,23 +49,23 @@ public class ConverterService implements ItemProcessor<Score, Score> {
 
     public void convert(List<Score> scores) throws IOException {
         log.debug("Starting main convert loop for {} scores", scores.size());
-        for (Score score : scores) {
+        for (var score : scores) {
             convert(score);
         }
         log.debug("Done converting");
     }
 
     private void convert(Score score) throws IOException {
-        for (Arrangement arrangement : score.getArrangements()) {
+        for (var arrangement : score.getArrangements()) {
             if (arrangement.getArrangementParts().isEmpty()) {
                 log.warn("No parts for score {}, arr {}", score, arrangement);
             } else if (arrangement.getFile() == null) {
                 log.warn("No file for score {}, arr {}", score, arrangement);
             } else {
                 log.info("Converting: {}, arr: {}", score, arrangement);
-                Path tempDir = storageService.createTempDir(score);
-                Path downloadedArrangement = storageService.downloadArrangement(arrangement, tempDir);
-                List<Path> extractedFilesList = split(tempDir, downloadedArrangement);
+                var tempDir = storageService.createTempDir(score);
+                var downloadedArrangement = storageService.downloadArrangement(arrangement, tempDir);
+                var extractedFilesList = split(tempDir, downloadedArrangement);
                 imageProcess(tempDir, extractedFilesList, arrangement);
                 createPdfs(tempDir, extractedFilesList, arrangement);
                 storageService.deleteTempDir(tempDir);
@@ -103,7 +99,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
 
         boolean firstPage = true;
         List<CompletableFuture<Path>> completedParts = new ArrayList<>();
-        for (Path path : extractedFilesList) {
+        for (var path : extractedFilesList) {
             completedParts.add(imageProcessor.process(path, tmpDir, arrangement, firstPage));
             firstPage = false;
         }
@@ -123,7 +119,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
             return;
         }
         List<CompletableFuture<Path>> completedParts = new ArrayList<>();
-        for (ArrangementPart arrangementPart : arrangement.getArrangementParts()) {
+        for (var arrangementPart : arrangement.getArrangementParts()) {
             // multithreaded
             completedParts.add(pdfAssembler.assemble(arrangementPart, tmpDir, extractedFilesList));
         }
@@ -141,15 +137,15 @@ public class ConverterService implements ItemProcessor<Score, Score> {
             case "zip" -> storageService.extractZip(downloadedScore, tmpDir);
             case "pdf" -> {
                 try (PDDocument document = Loader.loadPDF(downloadedScore.toFile())) {
-                    PDPageTree list = document.getPages();
+                    var list = document.getPages();
                     int i = 100;
-                    for (PDPage page : list) {
-                        PDResources pdResources = page.getResources();
+                    for (var page : list) {
+                        var pdResources = page.getResources();
 
                         for (COSName name : pdResources.getXObjectNames()) {
-                            PDXObject o = pdResources.getXObject(name);
+                            var o = pdResources.getXObject(name);
                             if (o instanceof PDImageXObject image) {
-                                String filename = tmpDir + File.separator + "extracted-image-" + i;
+                                var filename = tmpDir + File.separator + "extracted-image-" + i;
                                 if (image.getImage().getType() == BufferedImage.TYPE_INT_RGB) {
                                     ImageIO.write(image.getImage(), "jpg", new File(filename + ".jpg"));
                                 } else {
@@ -197,8 +193,8 @@ public class ConverterService implements ItemProcessor<Score, Score> {
     }
 
     public InputStream assemble(Arrangement arrangement, List<Instrument> instruments) throws IOException {
-        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        var pdfMergerUtility = new PDFMergerUtility();
+        var byteArrayOutputStream = new ByteArrayOutputStream();
         pdfMergerUtility.setDestinationStream(byteArrayOutputStream);
 
         if (!storageService.isArrangementGenerated(arrangement)) {
@@ -206,10 +202,10 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         }
 
         // temp directory for all downloads and assembly
-        Path tempDir = storageService.createTempDir();
+        var tempDir = storageService.createTempDir();
 
         log.info("Adding score: {} to pdf output", arrangement.getScore());
-        for (Instrument instrument : instruments) {
+        for (var instrument : instruments) {
             if (arrangement.getInstruments().contains(instrument)) {
                 log.debug("Score: {}, arr: {}, instrument: {}", arrangement.getScore(), arrangement, instrument);
                 pdfMergerUtility.addSource(storageService.downloadArrangementPart(arrangement, instrument, tempDir).toFile());
@@ -222,9 +218,9 @@ public class ConverterService implements ItemProcessor<Score, Score> {
 
     public InputStream assemble(Playlist playlist, Instrument instrument) throws IOException {
         List<Score> scores = new ArrayList<>();
-        List<Instrument> instruments = List.of(instrument);
+        var instruments = List.of(instrument);
 
-        for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
+        for (var playlistEntry : playlist.getPlaylistEntries()) {
             List<Score> scoresFound = scoreRepository.findByTitle(playlistEntry.getText());
             if (scoresFound != null && !scoresFound.isEmpty()) {
                 if (scoresFound.size() > 1) {
@@ -239,23 +235,23 @@ public class ConverterService implements ItemProcessor<Score, Score> {
     public InputStream assemble(List<Score> scores, List<Instrument> instruments, boolean sortByInstrument) throws
             IOException {
 
-        List<Instrument> sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
+        var sortedInstruments = instruments.stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
 
-        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        var pdfMergerUtility = new PDFMergerUtility();
+        var byteArrayOutputStream = new ByteArrayOutputStream();
         pdfMergerUtility.setDestinationStream(byteArrayOutputStream);
 
         if (scores.size() > 1) {
             // Use generic info if there are more than one score. Otherwise, use the already present info.
-            PDDocumentInformation docInfo = new PDDocumentInformation();
+            var docInfo = new PDDocumentInformation();
             docInfo.setTitle("Noter");
             docInfo.setAuthor("Terrassorkestern");
             docInfo.setSubject("Notsamling");
             docInfo.setCreator("Terrassorkesterns notgenerator 3.0");
             docInfo.setModificationDate(Calendar.getInstance());
 
-            StringBuilder keywords = new StringBuilder();
-            for (Score score : scores) {
+            var keywords = new StringBuilder();
+            for (var score : scores) {
                 keywords.append(score.getTitle()).append("\n");
             }
             docInfo.setKeywords(keywords.toString());
@@ -264,32 +260,32 @@ public class ConverterService implements ItemProcessor<Score, Score> {
 
         // Check so that all pdfs have been generated before assembling. Even though we are checking that all
         // arrangements are generated, we're only using the default arrangement further on.
-        for (Score score : scores) {
+        for (var score : scores) {
             if (!storageService.isScoreGenerated(score)) {
                 convert(List.of(score));
             }
         }
 
         // temp directory for all downloads and assembly
-        Path tempDir = storageService.createTempDir();
+        var tempDir = storageService.createTempDir();
 
         // Create PDF
         if (sortByInstrument) {
-            for (Instrument instrument : sortedInstruments) {
+            for (var instrument : sortedInstruments) {
                 log.info("Adding instrument: {} to pdf output", instrument);
-                for (Score score : scores) {
-                    Arrangement arrangement = score.getDefaultArrangement();
+                for (var score : scores) {
+                    var arrangement = score.getDefaultArrangement();
                     if (arrangement.getInstruments().contains(instrument)) {
                         pdfMergerUtility.addSource(storageService.downloadArrangementPart(arrangement, instrument, tempDir).toFile());
                     }
                 }
             }
         } else {
-            for (Score score : scores) {
+            for (var score : scores) {
                 log.info("Adding score: {} to pdf output", score);
-                Arrangement arrangement = score.getDefaultArrangement();
+                var arrangement = score.getDefaultArrangement();
                 if (arrangement != null) {
-                    for (Instrument instrument : sortedInstruments) {
+                    for (var instrument : sortedInstruments) {
                         if (arrangement.getInstruments().contains(instrument)) {
                             log.debug("Score: {}, instrument: {}", score, instrument);
                             pdfMergerUtility.addSource(storageService.downloadArrangementPart(arrangement, instrument, tempDir).toFile());

@@ -64,12 +64,12 @@ class InstrumentControllerTest {
 
     @BeforeEach
     void initTest() {
-        Band band1 = new Band("Band 1", "Band nr 1");
-        Band band2 = new Band("Band 2", "Band nr 2");
+        var band1 = new Band("Band 1", "Band nr 1");
+        var band2 = new Band("Band 2", "Band nr 2");
 
         sax = new Instrument(band1, "Saxofon", "sax", 10);
-        Instrument trumpet = new Instrument(band1, "Trumpet", "tp", 20);
-        Instrument flute = new Instrument(band2, "Flöjt", "fl", 10);
+        var trumpet = new Instrument(band1, "Trumpet", "tp", 20);
+        var flute = new Instrument(band2, "Flöjt", "fl", 10);
 
         given(activeBand.getBand()).willReturn(band1);
         given(instrumentRepository.findByBandOrderBySortOrder(band1)).willReturn(List.of(sax, trumpet));

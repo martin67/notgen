@@ -93,7 +93,7 @@ public class StorageService {
     }
 
     public NgFile uploadFile(MultipartFile file) throws StorageException {
-        NgFile ngFile = backendStorage.uploadFile(file);
+        var ngFile = backendStorage.uploadFile(file);
         ngFile.setOriginalFilename(file.getOriginalFilename());
         return ngFile;
     }
@@ -109,7 +109,7 @@ public class StorageService {
     public boolean isScoreGenerated(Score score) throws IOException {
         boolean allArrangementsGenerated = true;
 
-        for (Arrangement arrangement : score.getArrangements()) {
+        for (var arrangement : score.getArrangements()) {
             if (arrangement.getFile() != null && !backendStorage.isArrangementGenerated(arrangement)) {
                 allArrangementsGenerated = false;
             }
@@ -122,8 +122,8 @@ public class StorageService {
     }
 
     public Path replaceExtension(Path path, String newExtension) {
-        Path parent = path.getParent();
-        String fileName = path.getFileName().toString();
+        var parent = path.getParent();
+        var fileName = path.getFileName().toString();
         return parent.resolve(com.google.common.io.Files.getNameWithoutExtension(fileName) + newExtension);
     }
 
@@ -136,7 +136,7 @@ public class StorageService {
     }
 
     public void extractZip(Path zipFile, Path dir) throws IOException {
-        try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile.toFile())), Charset.forName("CP437"))
+        try (var zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile.toFile())), Charset.forName("CP437"))
         ) {
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -144,7 +144,7 @@ public class StorageService {
                     log.warn("zip {} contains a directory {}", zipFile, zipEntry.getName());
                 } else {
                     // if the entry is a file, extracts it
-                    try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dir.resolve(zipEntry.getName()).toFile()))) {
+                    try (var bos = new BufferedOutputStream(new FileOutputStream(dir.resolve(zipEntry.getName()).toFile()))) {
                         byte[] bytesIn = new byte[BUFFER_SIZE];
                         int read;
                         while ((read = zipInputStream.read(bytesIn)) != -1) {
@@ -159,7 +159,7 @@ public class StorageService {
     @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     public void cleanupInput() throws IOException {
         // List all files in input directory
-        Set<String> existingFiles = backendStorage.listInputDirectory();
+        var existingFiles = backendStorage.listInputDirectory();
 
         // List all files that should be in the input directory
         Set<String> ngFiles = new HashSet<>();

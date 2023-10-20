@@ -8,7 +8,7 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
 
     @Override
     public boolean isValid(Object obj, ConstraintValidatorContext context) {
-        UserFormData user = (UserFormData) obj;
+        var user = (UserFormData) obj;
         // oauth2 users have a null password
         if (user.getPassword() == null && user.getMatchingPassword() == null) {
             return true;

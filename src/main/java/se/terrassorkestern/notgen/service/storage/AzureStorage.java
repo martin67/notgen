@@ -51,18 +51,18 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public Path downloadArrangement(Arrangement arrangement, Path location) throws IOException {
-        String fileName = arrangement.getFile().getFilename();
-        Path destination = location.resolve(fileName);
-        Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
+        var fileName = arrangement.getFile().getFilename();
+        var destination = location.resolve(fileName);
+        var resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
         Files.copy(resource.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return destination;
     }
 
     @Override
     public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
-        String fileName = getArrangementPartFilename(arrangement, instrument);
-        Path destination = location.resolve(arrangement.getId() + "-" + instrument.getId() + ".pdf");
-        Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, arrangementPartsContainer, fileName));
+        var fileName = getArrangementPartFilename(arrangement, instrument);
+        var destination = location.resolve(arrangement.getId() + "-" + instrument.getId() + ".pdf");
+        var resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, arrangementPartsContainer, fileName));
         Files.copy(resource.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return destination;
     }
@@ -71,7 +71,7 @@ public class AzureStorage implements BackendStorage {
     public boolean isArrangementGenerated(Arrangement arrangement) throws IOException {
         // check that all arrangement parts are generated
         boolean allGenerated = true;
-        String pattern = String.format("%s-*.pdf", arrangement.getId());
+        var pattern = String.format("%s-*.pdf", arrangement.getId());
         Resource[] resources = azureStorageBlobProtocolResolver.getResources(String.format(BLOB_RESOURCE_PATTERN, arrangementPartsContainer, pattern));
         // Just check that there are equal number of files as there should be score parts.
         if (resources.length != arrangement.getArrangementParts().size()) {
@@ -90,8 +90,8 @@ public class AzureStorage implements BackendStorage {
         }
 
         try (InputStream inputStream = file.getInputStream()) {
-            NgFile ngFile = new NgFile();
-            String extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
+            var ngFile = new NgFile();
+            var extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
             ngFile.setFilename(extension);
             upload(ngFile.getFilename(), inputStream, scoreContainer);
             return ngFile;
@@ -118,17 +118,17 @@ public class AzureStorage implements BackendStorage {
                 arrangementPart.getArrangement().getScore(),
                 arrangementPart.getArrangement(),
                 arrangementPart.getInstrument());
-        String fileName = getArrangementPartFilename(arrangementPart);
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, arrangementPartsContainer, fileName));
-        try (OutputStream os = ((WritableResource) storageBlobResource).getOutputStream()) {
-            Files.copy(path, os);
+        var fileName = getArrangementPartFilename(arrangementPart);
+        var storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, arrangementPartsContainer, fileName));
+        try (var outputStream = ((WritableResource) storageBlobResource).getOutputStream()) {
+            Files.copy(path, outputStream);
             log.debug("write data to container={}, fileName={}", arrangementPartsContainer, fileName);
         }
     }
 
     private void upload(String fileName, InputStream inputStream, String container) throws IOException {
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, container, fileName));
-        try (OutputStream outputStream = ((WritableResource) storageBlobResource).getOutputStream()) {
+        var storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, container, fileName));
+        try (var outputStream = ((WritableResource) storageBlobResource).getOutputStream()) {
             inputStream.transferTo(outputStream);
             log.debug("write data to container={}, fileName={}", container, fileName);
         }
@@ -141,8 +141,8 @@ public class AzureStorage implements BackendStorage {
         }
         BufferedInputStream bis;
         try {
-            String fileName = file.getFilename();
-            Resource resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
+            var fileName = file.getFilename();
+            var resource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, scoreContainer, fileName));
             bis = new BufferedInputStream(resource.getInputStream());
         } catch (IOException e) {
             throw new StorageException("Could not open file");
@@ -152,13 +152,13 @@ public class AzureStorage implements BackendStorage {
 
     @Override
     public OutputStream getCoverOutputStream(Arrangement arrangement) throws IOException {
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getCoverName(arrangement)));
+        var storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getCoverName(arrangement)));
         return ((WritableResource) storageBlobResource).getOutputStream();
     }
 
     @Override
     public OutputStream getThumbnailOutputStream(Arrangement arrangement) throws IOException {
-        Resource storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getThumbnailName(arrangement)));
+        var storageBlobResource = resourceLoader.getResource(String.format(BLOB_RESOURCE_PATTERN, staticContainer, getThumbnailName(arrangement)));
         return ((WritableResource) storageBlobResource).getOutputStream();
     }
 

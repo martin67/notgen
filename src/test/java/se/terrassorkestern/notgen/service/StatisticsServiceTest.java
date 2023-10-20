@@ -6,10 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-import se.terrassorkestern.notgen.model.Statistics;
 
 import java.io.StringWriter;
-import java.io.Writer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +22,7 @@ class StatisticsServiceTest {
 
     @Test
     void getStatistics() {
-        Statistics statistics = statisticsService.getStatistics();
+        var statistics = statisticsService.getStatistics();
         assertThat(statistics).isNotNull();
         assertThat(statistics.getNumberOfInstruments()).isEqualTo(3);
         assertThat(statistics.getNumberOfPlaylists()).isEqualTo(3);
@@ -36,7 +34,7 @@ class StatisticsServiceTest {
 
     @Test
     void writeScoresToCsv() {
-        Writer writer = new StringWriter();
+        var writer = new StringWriter();
         statisticsService.writeScoresToCsv(writer);
         assertThat(writer.toString()).contains("Titel");
         assertThat(writer.toString()).hasLineCount(4);
@@ -44,7 +42,7 @@ class StatisticsServiceTest {
 
     @Test
     void writeFullScoresToCsv() {
-        Writer writer = new StringWriter();
+        var writer = new StringWriter();
         statisticsService.writeFullScoresToCsv(writer);
         assertThat(writer.toString()).contains("Titel", "Instrument");
         assertThat(writer.toString()).hasLineCount(4);
@@ -52,7 +50,7 @@ class StatisticsServiceTest {
 
     @Test
     void writeUnscannedToCsv() {
-        Writer writer = new StringWriter();
+        var writer = new StringWriter();
         statisticsService.writeUnscannedToCsv(writer);
         assertThat(writer.toString()).hasLineCount(2);
     }

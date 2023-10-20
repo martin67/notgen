@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import se.terrassorkestern.notgen.model.Link;
-import se.terrassorkestern.notgen.model.Statistics;
 import se.terrassorkestern.notgen.repository.LinkRepository;
 import se.terrassorkestern.notgen.service.StatisticsService;
 
@@ -36,7 +35,7 @@ public class StatisticsController {
 
     @GetMapping(value = {"", "/"})
     public String statistics(Model model) {
-        Statistics statistics = statisticsService.getStatistics();
+        var statistics = statisticsService.getStatistics();
         model.addAttribute("statistics", statistics);
         model.addAttribute("numberOfSongs", statistics.getNumberOfSongs());
         return "statistics";
@@ -62,11 +61,11 @@ public class StatisticsController {
     @GetMapping("/listen")
     public String listAudio(Model model) {
         //List<Link> links = entityManager.createQuery("select * from link").getResultList();
-        List<Link> links = linkRepository.findByOrderByName();
+        var links = linkRepository.findByOrderByName();
         Map<String, List<String>> linksAndSongs = new HashMap<>();
         for (Link link : links) {
             linksAndSongs.putIfAbsent(link.getName(), new ArrayList<>());
-            List<String> ls = linksAndSongs.get(link.getName());
+            var ls = linksAndSongs.get(link.getName());
             ls.add(link.getScore().getTitle());
             log.info("Adding");
         }

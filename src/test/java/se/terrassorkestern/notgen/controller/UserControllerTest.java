@@ -73,7 +73,7 @@ class UserControllerTest {
     @BeforeAll
     static void init() {
         band1 = new Band("Band 1", "The first band");
-        Band band2 = new Band("Band 2", "The second band");
+        var band2 = new Band("Band 2", "The second band");
 
         normalUser = new User("normal");
         normalUser.getBands().add(band1);
@@ -96,7 +96,7 @@ class UserControllerTest {
 
     @BeforeEach
     void initTest() {
-        List<User> allUsers = List.of(normalUser, disabledUser, adminUser);
+        var allUsers = List.of(normalUser, disabledUser, adminUser);
         given(activeBand.getBand()).willReturn(band1);
         given(bandRepository.findAll()).willReturn(List.of(band1));
         given(userRepository.findAll()).willReturn(allUsers);

@@ -8,16 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
-import se.terrassorkestern.notgen.model.Setting;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
 import se.terrassorkestern.notgen.service.ConverterService;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -135,14 +132,14 @@ class ImageProcessingTest {
     @Test
     @WithMockUser
     void convertOneScore() throws IOException {
-        List<Score> scores = scoreRepository.findByTitle("Express");
+        var scores = scoreRepository.findByTitle("Express");
         converterService.convert(scores);
     }
 
     @Test
     @WithMockUser
     void convertMultipleScores() throws IOException {
-        List<Score> scores = scoreRepository.findByTitleContaining("valsen");
+        var scores = scoreRepository.findByTitleContaining("valsen");
         converterService.convert(scores);
     }
 
@@ -150,10 +147,10 @@ class ImageProcessingTest {
     @WithMockUser
     void convertExampleScores() throws IOException {
         List<Score> scores = new ArrayList<>();
-        for (String name : differentTypeScores) {
+        for (var name : differentTypeScores) {
             scores.addAll(scoreRepository.findByTitle(name));
         }
-        for (Score score : scores) {
+        for (var score : scores) {
             //log.info("Score: {}, type: {}", score, score.getDefaultArrangement().getScoreType());
         }
         converterService.convert(scores);
@@ -162,19 +159,19 @@ class ImageProcessingTest {
     @Test
     @WithMockUser
     void assembleOneScore() throws IOException {
-        List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
-        List<Instrument> instruments = instrumentRepository.findByNameContaining("saxofon");
-        InputStream is = converterService.assemble(scores, instruments, false);
-        Files.copy(is, Path.of("test.pdf"), StandardCopyOption.REPLACE_EXISTING);
+        var scores = scoreRepository.findByTitle("Drömvalsen");
+        var instruments = instrumentRepository.findByNameContaining("saxofon");
+        var inputStream = converterService.assemble(scores, instruments, false);
+        Files.copy(inputStream, Path.of("test.pdf"), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Test
     @WithMockUser
     void assembleTOScores() throws IOException {
-        List<Score> scores = scoreRepository.findByTitleContaining("ögon");
-        List<Setting> setting = settingRepository.findByName("Terrassorkestern");
-        InputStream is = converterService.assemble(scores, setting.get(0), true);
-        Files.copy(is, Path.of("test2.pdf"), StandardCopyOption.REPLACE_EXISTING);
+        var scores = scoreRepository.findByTitleContaining("ögon");
+        var setting = settingRepository.findByName("Terrassorkestern");
+        var inputStream = converterService.assemble(scores, setting.get(0), true);
+        Files.copy(inputStream, Path.of("test2.pdf"), StandardCopyOption.REPLACE_EXISTING);
     }
 
 }

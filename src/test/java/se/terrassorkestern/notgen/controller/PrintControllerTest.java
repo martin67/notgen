@@ -68,7 +68,7 @@ class PrintControllerTest {
 
     @BeforeEach
     void initTest() throws IOException {
-        Band band = new Band("The band", "The first test band");
+        var band = new Band("The band", "The first test band");
         arrangement = new Arrangement("The arrangement");
         score = new Score(band, "The score");
         score.addArrangement(arrangement);
@@ -77,7 +77,7 @@ class PrintControllerTest {
         setting = new Setting(band, "My setting");
         playlist = new Playlist(band, "My playlist", "bla bla", LocalDate.now(), setting);
 
-        List<Score> allScores = List.of(score);
+        var allScores = List.of(score);
         given(activeBand.getBand()).willReturn(band);
         given(scoreRepository.findByBandAndId(band, score.getId())).willReturn(Optional.of(score));
         given(scoreRepository.findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(instrument)).willReturn(allScores);

@@ -31,8 +31,8 @@ public class ImageProcessor {
 
     @Async
     public CompletableFuture<Path> process(Path path, Path tmpDir, Arrangement arrangement, boolean firstPage) throws IOException {
-        BufferedImage image = ImageIO.read(path.toFile());
-        String basename = path.getFileName().toString();
+        var image = ImageIO.read(path.toFile());
+        var basename = path.getFileName().toString();
         log.debug("Image processing {} ({}x{})", basename, image.getWidth(), image.getHeight());
 
         switch (arrangement.getScoreType()) {
@@ -111,11 +111,11 @@ public class ImageProcessor {
             ImageIO.write(image, "jpg", outputStream);
         }
 
-        BufferedImage thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
-        Graphics g = thumbnail.createGraphics();
-        g.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
-        g.dispose();
-        try (OutputStream outputStream = storageService.getThumbnailOutputStream(arrangement)) {
+        var thumbnail = new BufferedImage(180, 275, BufferedImage.TYPE_INT_RGB);
+        var thumbnailGraphics = thumbnail.createGraphics();
+        thumbnailGraphics.drawImage(image, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), null);
+        thumbnailGraphics.dispose();
+        try (var outputStream = storageService.getThumbnailOutputStream(arrangement)) {
             ImageIO.write(thumbnail, "png", outputStream);
         }
     }
@@ -127,12 +127,12 @@ public class ImageProcessor {
     }
 
     private BufferedImage resizeToA4(BufferedImage image) {
-        BufferedImage resized = new BufferedImage(2480, 3508, BufferedImage.TYPE_INT_RGB);
-        Graphics g = resized.getGraphics();
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, resized.getWidth(), resized.getHeight());
-        g.drawImage(image, 0, 0, 2480, 3508, 0, 0, image.getWidth(), image.getHeight(), null);
-        g.dispose();
+        var resized = new BufferedImage(2480, 3508, BufferedImage.TYPE_INT_RGB);
+        var resizedGraphics = resized.getGraphics();
+        resizedGraphics.setColor(Color.WHITE);
+        resizedGraphics.fillRect(0, 0, resized.getWidth(), resized.getHeight());
+        resizedGraphics.drawImage(image, 0, 0, 2480, 3508, 0, 0, image.getWidth(), image.getHeight(), null);
+        resizedGraphics.dispose();
         return resized;
     }
 
@@ -140,7 +140,7 @@ public class ImageProcessor {
         int detectionRadius = arrangement.getConfig(AutoCropper.CONFIG_AUTOCROPPER_DETECTION_RADIUS, 2);
         double tolerance = arrangement.getConfig(AutoCropper.CONFIG_AUTOCROPPER_DETECTION_RADIUS, 0.30);
         log.debug("Detection radius: {}, tolerance: {}", detectionRadius, tolerance);
-        BufferedImage nextImage = autoCropper.crop(image, detectionRadius, tolerance, false);
+        var nextImage = autoCropper.crop(image, detectionRadius, tolerance, false);
         if (log.isTraceEnabled()) {
             ImageIO.write(nextImage, "png", new File(tmpDir.toFile(), basename + "-autocrop.png"));
         }
@@ -171,10 +171,10 @@ public class ImageProcessor {
             cropHeight = 1558;
         }
 
-        BufferedImage cropped = new BufferedImage(cropWidth, cropHeight, BufferedImage.TYPE_INT_RGB);
-        Graphics g = cropped.getGraphics();
-        g.drawImage(image, 0, 0, cropped.getWidth(), cropped.getHeight(), 0, 0, cropped.getWidth(), cropped.getHeight(), null);
-        g.dispose();
+        var cropped = new BufferedImage(cropWidth, cropHeight, BufferedImage.TYPE_INT_RGB);
+        var croppedGraphics = cropped.getGraphics();
+        croppedGraphics.drawImage(image, 0, 0, cropped.getWidth(), cropped.getHeight(), 0, 0, cropped.getWidth(), cropped.getHeight(), null);
+        croppedGraphics.dispose();
 
         if (log.isTraceEnabled()) {
             ImageIO.write(cropped, "png", new File(tmpDir.toFile(), basename + "-1-cropped.png"));
@@ -183,8 +183,8 @@ public class ImageProcessor {
     }
 
     private BufferedImage toGrey(BufferedImage image, Path tmpDir, String basename) throws IOException {
-        GreyScaler greyScaler = new Standard();
-        BufferedImage nextImage = greyScaler.toGreyScale(image);
+        var greyScaler = new Standard();
+        var nextImage = greyScaler.toGreyScale(image);
         if (log.isTraceEnabled()) {
             ImageIO.write(nextImage, "png", new File(tmpDir.toFile(), basename + "-3-grey.png"));
         }
@@ -192,8 +192,8 @@ public class ImageProcessor {
     }
 
     private BufferedImage toBW(BufferedImage image, Path tmpDir, String basename) throws IOException {
-        Binarizer binarizer = new Otsu();
-        BufferedImage nextImage = binarizer.toBinary(image);
+        var binarizer = new Otsu();
+        var nextImage = binarizer.toBinary(image);
         if (log.isTraceEnabled()) {
             ImageIO.write(nextImage, "png", new File(tmpDir.toFile(), basename + "-4-bw.png"));
         }
@@ -202,16 +202,16 @@ public class ImageProcessor {
 
     private BufferedImage rotate(Rotation rotation, BufferedImage image, Arrangement arrangement) {
         log.info("Rotating picture {} for score {}", rotation, arrangement.getScore());
-        BufferedImage rotated = new BufferedImage(image.getHeight(), image.getWidth(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = rotated.createGraphics();
+        var rotated = new BufferedImage(image.getHeight(), image.getWidth(), BufferedImage.TYPE_INT_RGB);
+        var graphics2D = rotated.createGraphics();
         if (rotation == Rotation.LEFT) {
-            g2d.rotate(Math.toRadians(90), 0, image.getHeight());
-            g2d.drawImage(image, -image.getHeight(), 0, null);
+            graphics2D.rotate(Math.toRadians(90), 0, image.getHeight());
+            graphics2D.drawImage(image, -image.getHeight(), 0, null);
         } else {
-            g2d.rotate(Math.toRadians(-90), 0, 0);
-            g2d.drawImage(image, -image.getWidth(), 0, null);
+            graphics2D.rotate(Math.toRadians(-90), 0, 0);
+            graphics2D.drawImage(image, -image.getWidth(), 0, null);
         }
-        g2d.dispose();
+        graphics2D.dispose();
         return rotated;
     }
 }
