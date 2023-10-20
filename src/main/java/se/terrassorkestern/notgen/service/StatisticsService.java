@@ -5,9 +5,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import se.terrassorkestern.notgen.model.Arrangement;
-import se.terrassorkestern.notgen.model.Instrument;
-import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.model.Statistics;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
@@ -37,7 +34,7 @@ public class StatisticsService {
     }
 
     public Statistics getStatistics() {
-        Statistics statistics = new Statistics();
+        var statistics = new Statistics();
         statistics.setNumberOfSongs(scoreRepository.count());
         statistics.setNumberOfScannedSongs(scoreRepository.findByArrangementsIsNotEmpty().size());
         statistics.setNumberOfArrangements(scoreRepository.numberOfArrangements());
@@ -53,11 +50,11 @@ public class StatisticsService {
     }
 
     public void writeScoresToCsv(Writer writer) {
-        List<Score> scores = scoreRepository.findByOrderByTitle();
-        CSVFormat format = CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').setHeader(SCORE_HEADERS).build();
+        var scores = scoreRepository.findByOrderByTitle();
+        var csvFormat = CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').setHeader(SCORE_HEADERS).build();
 
-        try (CSVPrinter csvPrinter = new CSVPrinter(writer, format)) {
-            for (Score score : scores) {
+        try (var csvPrinter = new CSVPrinter(writer, csvFormat)) {
+            for (var score : scores) {
                 csvPrinter.printRecord(score.getTitle(), score.getSubTitle(), score.getGenre(), score.getYear(),
                         score.getComposer(), score.getAuthor(), score.getArranger(), score.getPublisher(),
                         score.getComment());
@@ -68,22 +65,22 @@ public class StatisticsService {
     }
 
     public void writeFullScoresToCsv(Writer writer) {
-        List<Score> scores = scoreRepository.findByOrderByTitle();
-        List<String> headers = new ArrayList<>(List.of(SCORE_HEADERS));
-        List<Instrument> allInstruments = instrumentRepository.findByOrderBySortOrder();
+        var scores = scoreRepository.findByOrderByTitle();
+        var headers = new ArrayList<>(List.of(SCORE_HEADERS));
+        var allInstruments = instrumentRepository.findByOrderBySortOrder();
 
-        for (Instrument instrument : allInstruments) {
+        for (var instrument : allInstruments) {
             headers.add(instrument.getName());
         }
         String[] header = new String[headers.size()];
         for (int i = 0; i < headers.size(); i++) {
             header[i] = headers.get(i);
         }
-        CSVFormat format = CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').setHeader(header).build();
+        var csvFormat = CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').setHeader(header).build();
 
-        try (CSVPrinter csvPrinter = new CSVPrinter(writer, format)) {
-            for (Score score : scores) {
-                Arrangement arrangement = score.getDefaultArrangement();
+        try (var csvPrinter = new CSVPrinter(writer, csvFormat)) {
+            for (var score : scores) {
+                var arrangement = score.getDefaultArrangement();
                 List<String> values = new ArrayList<>();
                 values.add(score.getTitle());
                 values.add(score.getSubTitle());
@@ -94,7 +91,7 @@ public class StatisticsService {
                 values.add(score.getArranger());
                 values.add(score.getPublisher());
                 values.add(score.getComment());
-                for (Instrument instrument : allInstruments) {
+                for (var instrument : allInstruments) {
                     if (arrangement.getInstruments().contains(instrument)) {
                         values.add("X");
                     } else {
@@ -109,9 +106,9 @@ public class StatisticsService {
     }
 
     public void writeUnscannedToCsv(Writer writer) {
-        List<Score> scores = scoreRepository.findByArrangementsIsNullOrderByTitle();
-        try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
-            for (Score score : scores) {
+        var scores = scoreRepository.findByArrangementsIsNullOrderByTitle();
+        try (var csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
+            for (var score : scores) {
                 csvPrinter.printRecord(score.getTitle());
             }
         } catch (IOException e) {

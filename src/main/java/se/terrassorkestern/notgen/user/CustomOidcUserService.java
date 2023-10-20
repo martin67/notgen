@@ -6,7 +6,6 @@ import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +19,7 @@ public class CustomOidcUserService extends OidcUserService {
 
     @Override
     public OidcUser loadUser(OidcUserRequest oidcUserRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(oidcUserRequest);
+        var oAuth2User = super.loadUser(oidcUserRequest);
 
         try {
             return commonOAuth2UserService.processOAuth2User(oidcUserRequest, oAuth2User);

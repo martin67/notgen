@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
-
-import java.util.List;
 
 
 @Slf4j
@@ -32,7 +29,7 @@ public class SearchController {
 
     @GetMapping({"", "/"})
     public String list(@RequestParam(name = "q", defaultValue = "") String searchTerm, Model model) {
-        List<Score> scores = scoreRepository.searchBy(searchTerm, 1000, "title", "subTitle", "genre",
+        var scores = scoreRepository.searchBy(searchTerm, 1000, "title", "subTitle", "genre",
                 "composer", "author", "arranger", "publisher", "comment", "text");
         model.addAttribute("scores", scores);
         return "search/list";

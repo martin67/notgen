@@ -33,10 +33,10 @@ class AdminServiceTest {
 
     @Test
     void exportData() throws IOException, SQLException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(1024);
+        var outputStream = new ByteArrayOutputStream(1024);
         adminService.export(outputStream);
 
-        try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(outputStream.toByteArray()))) {
+        try (var zipInputStream = new ZipInputStream(new ByteArrayInputStream(outputStream.toByteArray()))) {
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 log.info("Namn: {}", zipEntry.getName());

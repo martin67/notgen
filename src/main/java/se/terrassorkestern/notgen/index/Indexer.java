@@ -4,9 +4,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.search.mapper.orm.Search;
-import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
-import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.stereotype.Component;
+import se.terrassorkestern.notgen.exceptions.IndexException;
 
 @Slf4j
 @Transactional
@@ -22,10 +21,10 @@ public class Indexer {
 
     public void indexPersistedData(String indexClassName) throws IndexException {
         try {
-            SearchSession searchSession = Search.session(entityManager);
+            var searchSession = Search.session(entityManager);
 
             Class<?> classToIndex = Class.forName(indexClassName);
-            MassIndexer indexer =
+            var indexer =
                     searchSession
                             .massIndexer(classToIndex)
                             .threadsToLoadObjects(THREAD_NUMBER);

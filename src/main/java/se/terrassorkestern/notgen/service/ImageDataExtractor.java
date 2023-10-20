@@ -1,10 +1,8 @@
 package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.ImageReadException;
 import org.springframework.stereotype.Service;
-import se.terrassorkestern.notgen.model.Arrangement;
 import se.terrassorkestern.notgen.model.Imagedata;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.ImagedataRepository;
@@ -12,7 +10,6 @@ import se.terrassorkestern.notgen.repository.ImagedataRepository;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import static org.apache.commons.imaging.Imaging.getImageInfo;
@@ -32,23 +29,23 @@ public class ImageDataExtractor {
 
     public void extract(List<Score> scores) throws IOException, ImageReadException {
 
-        for (Score score : scores) {
-            for (Arrangement arrangement : score.getArrangements())
+        for (var score : scores) {
+            for (var arrangement : score.getArrangements())
                 if (arrangement.getFile() != null) {
                     log.info("Extracting image data for {} ({}), arr: {} ({})",
                             score.getTitle(), score.getId(), arrangement.getName(), arrangement.getId());
 
-                    Path tempDir = storageService.createTempDir();
-                    Path downloadedArrangement = storageService.downloadArrangement(arrangement, tempDir);
-                    List<Path> extractedFilesList = converterService.split(tempDir, downloadedArrangement);
+                    var tempDir = storageService.createTempDir();
+                    var downloadedArrangement = storageService.downloadArrangement(arrangement, tempDir);
+                    var extractedFilesList = converterService.split(tempDir, downloadedArrangement);
 
                     int index = 0;
-                    for (Path path : extractedFilesList) {
+                    for (var path : extractedFilesList) {
 
-                        File file = new File(String.valueOf(path));
-                        ImageInfo imageInfo = getImageInfo(file);
+                        var file = new File(String.valueOf(path));
+                        var imageInfo = getImageInfo(file);
 
-                        Imagedata imageData = new Imagedata();
+                        var imageData = new Imagedata();
                         imageData.setPage(index + 1);
                         imageData.setFileSize(Files.size(path));
                         imageData.setFormat(imageInfo.getFormat().getName());

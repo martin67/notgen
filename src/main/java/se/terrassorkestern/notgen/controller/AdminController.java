@@ -63,8 +63,8 @@ public class AdminController extends CommonController {
     public void export(HttpServletResponse response) throws IOException, SQLException {
         response.setContentType("application/zip");
         response.setStatus(HttpServletResponse.SC_OK);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd_HHmm");
-        String fileName = String.format("notgen_dump_%s.zip", LocalDateTime.now().format(formatter));
+        var formatter = DateTimeFormatter.ofPattern("yyMMdd_HHmm");
+        var fileName = String.format("notgen_dump_%s.zip", LocalDateTime.now().format(formatter));
         response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         adminService.export(response.getOutputStream());
     }

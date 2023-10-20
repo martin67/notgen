@@ -80,23 +80,23 @@ class ScoreControllerTest {
 
     @BeforeEach
     void initTest() throws Exception {
-        Band band = new Band("The band", "The test band");
+        var band = new Band("The band", "The test band");
         sax = new Instrument(band, "Altsaxofon", "asx", 1);
         trumpet = new Instrument(band, "Trumpet", "tp", 2);
         score = new Score(band, "Foo score");
         scoreWithoutArrangements = new Score(band, "Bar score");
-        Arrangement arr = new Arrangement();
-        arr.addArrangementPart(new ArrangementPart(arr, sax));
-        score.getArrangements().add(arr);
-        score.setDefaultArrangement(arr);
+        var arrangement = new Arrangement();
+        arrangement.addArrangementPart(new ArrangementPart(arrangement, sax));
+        score.getArrangements().add(arrangement);
+        score.setDefaultArrangement(arrangement);
         ngFile = new NgFile("123.pdf", NgFileType.ARRANGEMENT, "Test file", "org.pdf", "A comment");
         score.getFiles().add(ngFile);
         mpFile = new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "Hello world!".getBytes());
-        Link link = new Link("https://open.spotify.com/track/5d7rTGv8JFT3ukLXhzKytw?si=65c7dcafa74a48a6",
+        var link = new Link("https://open.spotify.com/track/5d7rTGv8JFT3ukLXhzKytw?si=65c7dcafa74a48a6",
                 LinkType.SPOTIFY, "Terrassorkestern", "");
         score.getLinks().add(link);
 
-        List<Score> allScores = List.of(score, scoreWithoutArrangements);
+        var allScores = List.of(score, scoreWithoutArrangements);
         given(activeBand.getBand()).willReturn(band);
         given(scoreRepository.findByOrderByTitle()).willReturn(allScores);
         given(scoreRepository.findByBandOrderByTitleAsc(band)).willReturn(allScores);

@@ -56,7 +56,7 @@ class StatisticsControllerTest {
 
     @BeforeEach
     void setUp() {
-        Statistics statistics = new Statistics();
+        var statistics = new Statistics();
         given(statisticsService.getStatistics()).willReturn(statistics);
     }
 

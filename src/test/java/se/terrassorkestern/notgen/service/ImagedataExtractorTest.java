@@ -7,11 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
-import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 
 import java.io.IOException;
-import java.util.List;
 
 @SpringBootTest
 @Transactional
@@ -26,7 +24,7 @@ class ImagedataExtractorTest {
     @Test
     @WithMockUser
     void extract() throws IOException, ImageReadException {
-        List<Score> scores = scoreRepository.findByTitle("Drömvalsen");
+        var scores = scoreRepository.findByTitle("Drömvalsen");
         imageDataExtractor.extract(scores);
     }
 
@@ -34,7 +32,7 @@ class ImagedataExtractorTest {
     @Test
     @WithMockUser
     void extractMultipleScores() throws IOException, ImageReadException {
-        List<Score> scores = scoreRepository.findByTitleContaining("valsen");
+        var scores = scoreRepository.findByTitleContaining("valsen");
         imageDataExtractor.extract(scores);
     }
 

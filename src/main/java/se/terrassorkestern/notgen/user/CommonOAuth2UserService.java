@@ -8,12 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import se.terrassorkestern.notgen.exceptions.OAuth2AuthenticationProcessingException;
 import se.terrassorkestern.notgen.model.ActiveBand;
-import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.RoleRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,12 +27,12 @@ public class CommonOAuth2UserService {
     }
 
     UserPrincipal processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
-        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
+        var oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
         if (!StringUtils.hasLength(oAuth2UserInfo.getEmail())) {
             throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
         }
 
-        Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
+        var userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
         User user;
         if (userOptional.isPresent()) {
             user = userOptional.get();
@@ -52,7 +49,7 @@ public class CommonOAuth2UserService {
             user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
         }
         // Todo use the default band for the user
-        Band band = user.getBands().iterator().next();
+        var band = user.getBands().iterator().next();
 
         activeBand.setBand(band);
         log.info("User {}, band {} logged in", user.getFullName(), band.getName());

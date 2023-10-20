@@ -59,7 +59,7 @@ class SettingControllerTest {
 
     @BeforeEach
     void setUp() {
-        Band band = new Band("The band", "The test band");
+        var band = new Band("The band", "The test band");
         setting = new Setting(band, "The setting");
 
         given(activeBand.getBand()).willReturn(band);

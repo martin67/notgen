@@ -4,8 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.search.mapper.orm.Search;
-import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
-import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -33,9 +31,9 @@ public class IndexBuilder implements ApplicationListener<ApplicationReadyEvent> 
 
         if (Boolean.parseBoolean(jpaSearchEnabled)) {
             log.info("Started Initializing Indexes");
-            SearchSession searchSession = Search.session(entityManager);
+            var searchSession = Search.session(entityManager);
 
-            MassIndexer indexer = searchSession.massIndexer().idFetchSize(150).batchSizeToLoadObjects(25)
+            var indexer = searchSession.massIndexer().idFetchSize(150).batchSizeToLoadObjects(25)
                     .threadsToLoadObjects(12);
             try {
                 indexer.startAndWait();

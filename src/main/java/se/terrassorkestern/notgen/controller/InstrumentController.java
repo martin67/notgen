@@ -68,7 +68,7 @@ public class InstrumentController extends CommonController {
     @GetMapping("/delete")
     @PreAuthorize("hasAuthority('EDIT_INSTRUMENT')")
     public String delete(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
-        Instrument instrument = getInstrument(id);
+        var instrument = getInstrument(id);
         log.info("Tar bort instrument {} [{}]", instrument.getName(), instrument.getId());
         instrumentRepository.delete(instrument);
         sessionStatus.setComplete();

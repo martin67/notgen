@@ -85,7 +85,7 @@ public class BackupImporter {
                         StringBuilder keys = new StringBuilder();
                         StringBuilder values = new StringBuilder();
                         for (Map.Entry<String, String> entry : csvRecord.toMap().entrySet()) {
-                            if (entry.getValue().length() > 0) {
+                            if (!entry.getValue().isEmpty()) {
                                 keys.append(entry.getKey()).append(", ");
                                 values.append("'").append(escapeSql(entry.getValue())).append("'").append(", ");
                             }
