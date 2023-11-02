@@ -146,7 +146,7 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public Set<String> listInputDirectory() throws IOException {
-        try (Stream<Path> stream = Files.list(inputDir)) {
+        try (var stream = Files.list(inputDir)) {
             return stream
                     .filter(file -> !Files.isDirectory(file))
                     .map(Path::getFileName)

@@ -89,7 +89,7 @@ public class AzureStorage implements BackendStorage {
             throw new StorageException("No file name set");
         }
 
-        try (InputStream inputStream = file.getInputStream()) {
+        try (var inputStream = file.getInputStream()) {
             var ngFile = new NgFile();
             var extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
             ngFile.setFilename(extension);
