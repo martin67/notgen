@@ -139,7 +139,7 @@ public class SongOcrService {
             String jsonResponse = getResponseToString(connection.getInputStream());
 
             // Parse and print response from OCR server
-            JsonParser parser = JsonParserFactory.getJsonParser();
+            var parser = JsonParserFactory.getJsonParser();
             Map<String, Object> jsonObj = parser.parseMap(jsonResponse);
             List<List<String>> texts = (List<List<String>>) jsonObj.get("OCRText");
             return texts.get(0).get(0);

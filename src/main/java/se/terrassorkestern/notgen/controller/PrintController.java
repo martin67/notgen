@@ -89,14 +89,14 @@ public class PrintController extends CommonController {
         var score = getScore(scoreId);
         var instrument = getInstrument(instrumentId);
 
-        try (InputStream is = converterService.assemble(score, instrument)) {
+        try (var inputStream = converterService.assemble(score, instrument)) {
             var headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), instrument.getShortName()));
             return ResponseEntity
                     .ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .body(new InputStreamResource(is));
+                    .body(new InputStreamResource(inputStream));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
@@ -119,14 +119,14 @@ public class PrintController extends CommonController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        try (InputStream is = converterService.assemble(arrangement, instrument)) {
+        try (var inputStream = converterService.assemble(arrangement, instrument)) {
             var headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), instrument.getShortName()));
             return ResponseEntity
                     .ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .body(new InputStreamResource(is));
+                    .body(new InputStreamResource(inputStream));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
@@ -140,7 +140,7 @@ public class PrintController extends CommonController {
         var score = getScore(scoreId);
         var setting = getSetting(settingId);
 
-        try (InputStream is = converterService.assemble(score, setting)) {
+        try (var inputStream = converterService.assemble(score, setting)) {
             var headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), setting.getName()));
 
@@ -148,7 +148,7 @@ public class PrintController extends CommonController {
                     .ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .body(new InputStreamResource(is));
+                    .body(new InputStreamResource(inputStream));
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
@@ -162,7 +162,7 @@ public class PrintController extends CommonController {
         var playlist = getPlaylist(playlistId);
         var instrument = getInstrument(instrumentId);
 
-        try (InputStream is = converterService.assemble(playlist, instrument)) {
+        try (var inputStream = converterService.assemble(playlist, instrument)) {
             var headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(playlist.getName(), instrument.getShortName()));
 
@@ -170,7 +170,7 @@ public class PrintController extends CommonController {
                     .ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .body(new InputStreamResource(is));
+                    .body(new InputStreamResource(inputStream));
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();

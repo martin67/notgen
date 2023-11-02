@@ -38,7 +38,7 @@ public class SearchRepositoryImpl<T, I extends Serializable> extends SimpleJpaRe
     }
 
     private SearchResult<T> getSearchResult(String text, int limit, String[] fields) {
-        SearchSession searchSession = Search.session(entityManager);
+        var searchSession = Search.session(entityManager);
 
         return searchSession
                 .search(getDomainClass())

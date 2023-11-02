@@ -151,7 +151,7 @@ public class PlaylistController extends CommonController {
         log.debug("Startar createPack för instrument id {} ", id);
 
         var instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id).orElseThrow();
-        try (InputStream is = converterService.assemble(playlist, instrument)) {
+        try (var inputStream = converterService.assemble(playlist, instrument)) {
             var headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=playlist.pdf");
 
@@ -159,7 +159,7 @@ public class PlaylistController extends CommonController {
                     .ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .body(new InputStreamResource(is));
+                    .body(new InputStreamResource(inputStream));
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
