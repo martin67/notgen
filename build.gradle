@@ -85,6 +85,6 @@ dependencies {
     implementation 'org.hibernate.search:hibernate-search-backend-lucene:6.2.2.Final'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'org.seleniumhq.selenium:selenium-java:4.14.1'
-    testImplementation 'io.github.bonigarcia:webdrivermanager:5.6.0'
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.5.3'
 }
