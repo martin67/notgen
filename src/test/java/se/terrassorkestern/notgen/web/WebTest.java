@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = NotgenApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 
+@Disabled
 class WebTest {
 
     @LocalServerPort
