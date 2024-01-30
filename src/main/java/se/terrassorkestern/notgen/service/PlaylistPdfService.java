@@ -58,7 +58,7 @@ public class PlaylistPdfService {
             float ypos;
             if (playlist.getComment() != null) {
                 ypos = drawMultiLineText(playlist.getComment(), 75, 740, 475,
-                        page, contents, commentFont, 10, 15) - 20;
+                        contents, commentFont, 10, 15) - 20;
             } else {
                 ypos = 750;
             }
@@ -118,14 +118,13 @@ public class PlaylistPdfService {
      * @param x             The position on the x-axis.
      * @param y             The position on the y-axis.
      * @param allowedWidth  The maximum allowed width of the whole text (e.g. the width of the page - a defined margin).
-     * @param page          The page for the text.
      * @param contentStream The content stream to set the text properties and write the text.
      * @param font          The font used to write the text.
      * @param fontSize      The font size used to write the text.
      * @param lineHeight    The line height of the font (typically 1.2 * fontSize or 1.5 * fontSize).
      * @throws IOException File error
      */
-    private float drawMultiLineText(String text, int x, int y, int allowedWidth, PDPage page, PDPageContentStream contentStream, PDFont font, int fontSize, int lineHeight) throws IOException {
+    private float drawMultiLineText(String text, int x, int y, int allowedWidth, PDPageContentStream contentStream, PDFont font, int fontSize, int lineHeight) throws IOException {
 
         List<String> lines = new ArrayList<>();
 

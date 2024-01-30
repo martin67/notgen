@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import se.terrassorkestern.notgen.model.Link;
+
 import se.terrassorkestern.notgen.repository.LinkRepository;
 import se.terrassorkestern.notgen.service.StatisticsService;
 
