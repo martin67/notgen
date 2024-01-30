@@ -2,9 +2,7 @@ package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.batch.item.ItemProcessor;
@@ -23,7 +21,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
