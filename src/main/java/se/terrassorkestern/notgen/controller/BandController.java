@@ -39,7 +39,7 @@ public class BandController {
 
     @GetMapping("/edit")
     public String edit(@RequestParam("id") UUID id, Model model) {
-        Band band = bandRepository.findById(id)
+        var band = bandRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Band %s not found", id)));
         model.addAttribute("band", band);
         return VIEW_BAND_EDIT;
@@ -53,7 +53,7 @@ public class BandController {
 
     @GetMapping("/delete")
     public String delete(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
-        Band band = bandRepository.findById(id)
+        var band = bandRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Band %s not found", id)));
         log.info("Tar bort band {} [{}]", band.getName(), band.getId());
         bandRepository.delete(band);

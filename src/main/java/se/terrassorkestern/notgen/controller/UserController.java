@@ -3,7 +3,6 @@ package se.terrassorkestern.notgen.controller;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import se.terrassorkestern.notgen.exceptions.NotFoundException;
 import se.terrassorkestern.notgen.exceptions.UserAlreadyExistAuthenticationException;
 import se.terrassorkestern.notgen.model.ActiveBand;
-import se.terrassorkestern.notgen.model.Band;
 import se.terrassorkestern.notgen.model.User;
 import se.terrassorkestern.notgen.repository.BandRepository;
 import se.terrassorkestern.notgen.repository.RoleRepository;
@@ -67,7 +65,7 @@ public class UserController extends CommonController {
 
     @GetMapping("/create")
     public String create(Model model) {
-        List<Band> bands = bandRepository.findAll();
+        var bands = bandRepository.findAll();
         model.addAttribute("user", new UserFormData());
         model.addAttribute("roles", roleRepository.findAll());
         model.addAttribute("bands", bands);
@@ -78,7 +76,7 @@ public class UserController extends CommonController {
     public String edit(Model model, @RequestParam(value = "id", required = false) UUID id) {
 
         User user;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
         // If id == null, then it's the user who is editing his own profile
         if (id == null) {
             user = ((UserPrincipal) authentication.getPrincipal()).getUser();
@@ -92,7 +90,7 @@ public class UserController extends CommonController {
                 return "redirect:/";
             }
         }
-        UserFormData userFormData = new UserFormData(user);
+        var userFormData = new UserFormData(user);
         model.addAttribute("user", userFormData);
         model.addAttribute("roles", roleRepository.findAll());
         model.addAttribute("bands", bandRepository.findAll());
@@ -110,7 +108,7 @@ public class UserController extends CommonController {
         boolean adminEdit = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .contains(new SimpleGrantedAuthority("EDIT_USER"));
 
-        User user = userRepository.findById(userFormData.getId()).orElseGet(() -> {
+        var user = userRepository.findById(userFormData.getId()).orElseGet(() -> {
             // new user
             // check that username & email is not used
             if (userRepository.findByUsername(userFormData.getUsername()).isPresent()) {
@@ -119,7 +117,7 @@ public class UserController extends CommonController {
             if (userRepository.findByEmail(userFormData.getEmail()).isPresent()) {
                 throw new UserAlreadyExistAuthenticationException("email " + userFormData.getEmail() + " already exist");
             }
-            User u = new User();
+            var u = new User();
             u.setUsername(userFormData.getUsername());
             u.setEmail(userFormData.getEmail());
             u.setProvider(AuthProvider.local);
@@ -139,7 +137,7 @@ public class UserController extends CommonController {
                 user.setEmail(userFormData.getEmail());
             }
 
-            if (userFormData.getPassword().length() > 0) {
+            if (!userFormData.getPassword().isEmpty()) {
                 user.setPassword(passwordEncoder.encode(userFormData.getPassword()));
                 log.info("Lösenord: {}", userFormData.getPassword());
             }
@@ -163,7 +161,7 @@ public class UserController extends CommonController {
         userRepository.save(user);
 
         // if the user saved is the current user -> update the principal
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (user.getId() == userPrincipal.getId()) {
             userPrincipal.updateUser(user);
         }
@@ -179,7 +177,7 @@ public class UserController extends CommonController {
     @GetMapping("/delete")
     @PreAuthorize("hasAuthority('EDIT_USER')")
     public String delete(@RequestParam("id") UUID id) {
-        User user = getUser(id);
+        var user = getUser(id);
         log.info("Tar bort användare {} [{}]", user.getUsername(), user.getId());
         userRepository.delete(user);
         return REDIRECT_USER_LIST;

@@ -7,7 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -29,7 +28,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -72,9 +70,9 @@ public class PlaylistController extends CommonController {
 
     @GetMapping("/view")
     public String view(@RequestParam("id") UUID id, Model model) {
-        Playlist playlist = getPlaylist(id);
+        var playlist = getPlaylist(id);
         model.addAttribute(ATTRIBUTE_ONE_PLAYLIST, playlist);
-        List<Instrument> sortedInstruments = playlist.getSetting().getInstruments().stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
+        var sortedInstruments = playlist.getSetting().getInstruments().stream().sorted(Comparator.comparing(Instrument::getSortOrder)).toList();
         model.addAttribute(ATTRIBUTE_INSTRUMENTS, sortedInstruments);
         return VIEW_PLAYLIST_VIEW;
     }
@@ -99,7 +97,7 @@ public class PlaylistController extends CommonController {
 
     @GetMapping("/delete")
     public String playlistDelete(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
-        Playlist playlist = getPlaylist(id);
+        var playlist = getPlaylist(id);
         log.info("Tar bort låtlista {} [{}]", playlist.getName(), playlist.getId());
         playlistRepository.delete(playlist);
         sessionStatus.setComplete();
@@ -108,9 +106,9 @@ public class PlaylistController extends CommonController {
 
     @GetMapping("/copy")
     public String playlistCopy(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
-        Playlist playlist = getPlaylist(id);
+        var playlist = getPlaylist(id);
         log.info("Kopierar låtlista {} [{}]", playlist.getName(), playlist.getId());
-        Playlist newPlaylist = playlist.copy();
+        var newPlaylist = playlist.copy();
         playlistRepository.save(newPlaylist);
         sessionStatus.setComplete();
         return REDIRECT_PLAYLIST_LIST;
@@ -121,7 +119,7 @@ public class PlaylistController extends CommonController {
         if (errors.hasErrors()) {
             return VIEW_PLAYLIST_EDIT;
         }
-        Authentication user = SecurityContextHolder.getContext().getAuthentication();
+        var user = SecurityContextHolder.getContext().getAuthentication();
         if (user.getAuthorities().contains(new SimpleGrantedAuthority("EDIT_PLAYLIST"))) {
             log.info("Sparar låtlista {} [{}]", playlist.getName(), playlist.getId());
             playlist.setBand(activeBand.getBand());
@@ -133,7 +131,7 @@ public class PlaylistController extends CommonController {
 
     @PostMapping(value = "/save", params = {"addRow"})
     public String addRow(@ModelAttribute("playlist") Playlist playlist) {
-        PlaylistEntry playlistEntry = new PlaylistEntry();
+        var playlistEntry = new PlaylistEntry();
         playlistEntry.setSortOrder(playlist.getPlaylistEntries().size() + 1);
         playlist.getPlaylistEntries().add(playlistEntry);
         return VIEW_PLAYLIST_EDIT;
@@ -149,12 +147,12 @@ public class PlaylistController extends CommonController {
     @PostMapping(value = "/save", params = {"createPack"})
     public ResponseEntity<InputStreamResource> createPack(@ModelAttribute("playlist") Playlist playlist,
                                                           @RequestParam String instrumentId) {
-        UUID id = UUID.fromString(instrumentId);
+        var id = UUID.fromString(instrumentId);
         log.debug("Startar createPack för instrument id {} ", id);
 
-        Instrument instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id).orElseThrow();
+        var instrument = instrumentRepository.findByBandAndId(activeBand.getBand(), id).orElseThrow();
         try (InputStream is = converterService.assemble(playlist, instrument)) {
-            HttpHeaders headers = new HttpHeaders();
+            var headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=playlist.pdf");
 
             return ResponseEntity
@@ -170,7 +168,7 @@ public class PlaylistController extends CommonController {
 
     @GetMapping(value = "/createPdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> playlistCreatePdf(@RequestParam("id") UUID id) {
-        Playlist playlist = getPlaylist(id);
+        var playlist = getPlaylist(id);
         ByteArrayInputStream bis;
         try {
             bis = playlistPdfService.create(playlist);
@@ -178,7 +176,7 @@ public class PlaylistController extends CommonController {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
 
-        HttpHeaders headers = new HttpHeaders();
+        var headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=playlist.pdf");
 
         return ResponseEntity

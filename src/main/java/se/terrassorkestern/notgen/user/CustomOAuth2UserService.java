@@ -19,7 +19,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
+        var oAuth2User = super.loadUser(oAuth2UserRequest);
 
         try {
             return commonOAuth2UserService.processOAuth2User(oAuth2UserRequest, oAuth2User);

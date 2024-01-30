@@ -54,7 +54,7 @@ public class SettingController extends CommonController {
     @GetMapping("/delete")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
     public String settingDelete(@RequestParam("id") UUID id, SessionStatus sessionStatus) {
-        Setting setting = getSetting(id);
+        var setting = getSetting(id);
         log.info("Tar bort sättning {} [{}]", setting.getName(), setting.getId());
         settingRepository.delete(setting);
         sessionStatus.setComplete();

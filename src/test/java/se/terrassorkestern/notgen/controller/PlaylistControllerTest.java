@@ -69,16 +69,16 @@ class PlaylistControllerTest {
 
     @BeforeEach
     void initTest() throws IOException {
-        Band band = new Band("The band", "The test band");
+        var band = new Band("The band", "The test band");
         sax = new Instrument(band, "Altsax", "asx", 1);
-        Setting setting = new Setting(band, "Test setting");
+        var setting = new Setting(band, "Test setting");
         setting.getInstruments().add(sax);
         playlist = new Playlist(band, "Test playlist", "Test comment", LocalDate.now(), setting);
-        PlaylistEntry playlistEntry = new PlaylistEntry(1, "my text", false, "my comment");
+        var playlistEntry = new PlaylistEntry(1, "my text", false, "my comment");
         playlist.getPlaylistEntries().add(playlistEntry);
 
-        Playlist bar = new Playlist(band, "Second playlist", "A comment", LocalDate.now(), setting);
-        List<Playlist> allPlaylists = List.of(playlist, bar);
+        var bar = new Playlist(band, "Second playlist", "A comment", LocalDate.now(), setting);
+        var allPlaylists = List.of(playlist, bar);
 
         given(activeBand.getBand()).willReturn(band);
         given(playlistRepository.findByBandOrderByDateDesc(band)).willReturn(allPlaylists);

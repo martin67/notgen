@@ -5,16 +5,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.stereotype.Service;
-import se.terrassorkestern.notgen.model.Arrangement;
-import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.Score;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -102,19 +102,19 @@ public class SongOcrService {
         // Build your OCR:
 
         // Extraction text with English language
-        String ocrURL = "https://www.ocrwebservice.com/restservices/processDocument?gettext=true&language=swedish&newline=1";
+        var ocrURL = "https://www.ocrwebservice.com/restservices/processDocument?gettext=true&language=swedish&newline=1";
 
         // Full path to uploaded document
-        Instrument song = instrumentRepository.getReferenceById(UUID.fromString(songIds));
-        Path tempDir = storageService.createTempDir();
-        Arrangement arrangement = score.getDefaultArrangement();
-        Path path = storageService.downloadArrangementPart(arrangement, song, tempDir);
+        var song = instrumentRepository.getReferenceById(UUID.fromString(songIds));
+        var tempDir = storageService.createTempDir();
+        var arrangement = score.getDefaultArrangement();
+        var path = storageService.downloadArrangementPart(arrangement, song, tempDir);
 
         byte[] fileContent = Files.readAllBytes(path);
 
-        URL url = new URL(ocrURL);
+        var url = new URL(ocrURL);
 
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        var connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);
         connection.setDoInput(true);
         connection.setRequestMethod("POST");
@@ -123,7 +123,7 @@ public class SongOcrService {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", Integer.toString(fileContent.length));
 
-        OutputStream stream = connection.getOutputStream();
+        var stream = connection.getOutputStream();
 
         // Send POST request
         stream.write(fileContent);
@@ -147,9 +147,9 @@ public class SongOcrService {
             log.error("OCR Error Message: Unauthorized request");
         } else {
             // Error occurred
-            String jsonResponse = getResponseToString(connection.getErrorStream());
+            var jsonResponse = getResponseToString(connection.getErrorStream());
 
-            JsonParser parser = JsonParserFactory.getJsonParser();
+            var parser = JsonParserFactory.getJsonParser();
             Map<String, Object> jsonObj = parser.parseMap(jsonResponse);
 
             // Error message
@@ -162,10 +162,10 @@ public class SongOcrService {
     }
 
     private static String getResponseToString(InputStream inputStream) throws IOException {
-        InputStreamReader responseStream = new InputStreamReader(inputStream);
+        var responseStream = new InputStreamReader(inputStream);
 
-        BufferedReader br = new BufferedReader(responseStream);
-        StringBuilder strBuff = new StringBuilder();
+        var br = new BufferedReader(responseStream);
+        var strBuff = new StringBuilder();
         String s;
         while ((s = br.readLine()) != null) {
             strBuff.append(s);

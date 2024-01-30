@@ -23,10 +23,7 @@ import se.terrassorkestern.notgen.service.StorageService;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -75,7 +72,7 @@ public class ScoreController extends CommonController {
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('EDIT_SONG')")
     public String delete(@PathVariable("id") UUID id, SessionStatus sessionStatus) {
-        Score score = getScore(id);
+        var score = getScore(id);
         log.info("Tar bort låt {} [{}]", score.getTitle(), score.getId());
         scoreRepository.delete(score);
         sessionStatus.setComplete();
@@ -84,7 +81,7 @@ public class ScoreController extends CommonController {
 
     @GetMapping("/view/{id}")
     public String view(@PathVariable("id") UUID id, Model model) {
-        Score score = getScore(id);
+        var score = getScore(id);
         model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
         model.addAttribute(ATTRIBUTE_ALL_INSTRUMENTS, getInstruments());
         model.addAttribute("settings", getSettings());
@@ -112,8 +109,8 @@ public class ScoreController extends CommonController {
 
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") UUID id, Model model) {
-        Score score = getScore(id);
-        Arrangement arrangement = score.getDefaultArrangement();
+        var score = getScore(id);
+        var arrangement = score.getDefaultArrangement();
         // Check if the score has a song instrument. Only one for now
         if (arrangement != null && enableOcr) {
             UUID songId = UUID.fromString(ocrSongIds);
@@ -128,18 +125,18 @@ public class ScoreController extends CommonController {
 
     @GetMapping("/create")
     public String create(Model model) {
-        Score score = new Score();
+        var score = new Score();
         score.setBand(activeBand.getBand());
-        Arrangement arrangement = new Arrangement();
+        var arrangement = new Arrangement();
         score.addArrangement(arrangement);
         score.setDefaultArrangement(arrangement);
 
         // Fyll på med standardinstrumenten så går det lite fortare att editera...
         List<Instrument> preloadedInstruments;
         if (activeBand.getBand().getStandardSetting() != null) {
-            Setting standardSetting = getSetting(activeBand.getBand().getStandardSetting().getId());
+            var standardSetting = getSetting(activeBand.getBand().getStandardSetting().getId());
             preloadedInstruments = new ArrayList<>(standardSetting.getInstruments());
-            preloadedInstruments.sort(Comparator.comparing(Instrument::getSortOrder));
+            preloadedInstruments.sort(null);
         } else {
             preloadedInstruments = getInstruments();
         }
@@ -171,7 +168,7 @@ public class ScoreController extends CommonController {
 
     @PostMapping(value = "/submit", params = {"addArrangement"})
     public String addArrangement(@ModelAttribute("score") Score score) {
-        Arrangement arrangement = new Arrangement();
+        var arrangement = new Arrangement();
         score.addArrangement(arrangement);
         return VIEW_SCORE_EDIT;
     }
@@ -179,7 +176,7 @@ public class ScoreController extends CommonController {
     @PostMapping(value = "/submit", params = {"deleteArrangement"})
     public String deleteArrangement(@ModelAttribute("score") Score score,
                                     @RequestParam("deleteArrangement") String arrangementId) {
-        Arrangement arrangement = score.getArrangement(arrangementId);
+        var arrangement = score.getArrangement(arrangementId);
         score.removeArrangement(arrangement);
         return VIEW_SCORE_EDIT;
     }
@@ -187,7 +184,7 @@ public class ScoreController extends CommonController {
     @PostMapping(value = "/submit", params = {"addArrangementPart"})
     public String addArrangementPart(@ModelAttribute("score") Score score,
                                      @RequestParam("addArrangementPart") String arrangementId) {
-        Arrangement arrangement = score.getArrangement(arrangementId);
+        var arrangement = score.getArrangement(arrangementId);
         arrangement.addArrangementPart(new ArrangementPart());
         return VIEW_SCORE_EDIT;
     }
@@ -195,7 +192,7 @@ public class ScoreController extends CommonController {
     @PostMapping(value = "/submit", params = {"deleteArrangementPart"})
     public String deleteArrangementPart(@ModelAttribute("score") Score score,
                                         @RequestParam("deleteArrangementPart") String arrangementPartAndIndex) {
-        Arrangement arrangement = score.getArrangement(arrangementPartAndIndex.substring(0, 36));
+        var arrangement = score.getArrangement(arrangementPartAndIndex.substring(0, 36));
         int rowIndex = Integer.parseInt(arrangementPartAndIndex.substring(37));
         // A bit of a kludge. Need to get record n of a sorted set.
         ArrangementPart arrangementPart = null;
@@ -219,7 +216,7 @@ public class ScoreController extends CommonController {
                          @RequestParam("file_type") NgFileType fileType,
                          @RequestParam(name = "file_name", required = false) String fileName) {
         log.info("upload: {}, score id: {}, type: {}, name: {}", file.getOriginalFilename(), score.getId(), fileType, fileName);
-        NgFile ngFile = storageService.uploadFile(file);
+        var ngFile = storageService.uploadFile(file);
         ngFile.setType(fileType);
         if (fileName != null) {
             ngFile.setName(fileName);
@@ -232,9 +229,9 @@ public class ScoreController extends CommonController {
     @PreAuthorize("hasAuthority('EDIT_SONG')")
     public ResponseEntity<InputStreamResource> downloadFile(@ModelAttribute("score") Score score,
                                                             @RequestParam("file_id") UUID fileId) {
-        NgFile file = score.getFile(fileId);
+        var file = score.getFile(fileId);
         log.info("download: {}, file id: {}", file.getOriginalFilename(), file.getId());
-        HttpHeaders responseHeaders = new HttpHeaders();
+        var responseHeaders = new HttpHeaders();
         responseHeaders.setContentDisposition(
                 ContentDisposition
                         .attachment()
@@ -250,7 +247,7 @@ public class ScoreController extends CommonController {
     @PreAuthorize("hasAuthority('EDIT_SONG')")
     public ResponseEntity<InputStreamResource> viewFile(@ModelAttribute("score") Score score,
                                                         @RequestParam("file_id") UUID fileId) {
-        NgFile file = score.getFile(fileId);
+        var file = score.getFile(fileId);
         log.info("view: {}, file id: {}", file.getOriginalFilename(), file.getId());
         return ResponseEntity.ok()
                 .contentType(file.getContentType())

@@ -25,13 +25,13 @@ class ScoreRepositoryIntegrationTest {
     @Test
     void whenFindByTitle_thenReturnSong() {
         // given
-        Score score1 = new Score();
+        var score1 = new Score();
         score1.setTitle("Testsång");
         entityManager.persist(score1);
         entityManager.flush();
 
         // when
-        Score found = scoreRepository.findByTitle(score1.getTitle()).get(0);
+        var found = scoreRepository.findByTitle(score1.getTitle()).get(0);
 
         // then
         assertThat(found.getTitle())

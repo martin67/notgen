@@ -46,14 +46,14 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public Path downloadArrangement(Arrangement arrangement, Path location) throws IOException {
-        String filename = arrangement.getFile().getFilename();
+        var filename = arrangement.getFile().getFilename();
         return Files.copy(inputDir.resolve(filename), location.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
     public Path downloadArrangementPart(Arrangement arrangement, Instrument instrument, Path location) throws IOException {
-        Path source = getArrangementPartPath(arrangement, instrument);
-        Path destination = location.resolve(arrangement.getId() + "-" + instrument.getId() + ".pdf");
+        var source = getArrangementPartPath(arrangement, instrument);
+        var destination = location.resolve(arrangement.getId() + "-" + instrument.getId() + ".pdf");
         return Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
     }
 
@@ -61,7 +61,7 @@ public class LocalStorage implements BackendStorage {
     public boolean isArrangementGenerated(Arrangement arrangement) {
         boolean allPartsGenerated = true;
 
-        for (ArrangementPart arrangementPart : arrangement.getArrangementParts()) {
+        for (var arrangementPart : arrangement.getArrangementParts()) {
             if (!Files.exists(getArrangementPartPath(arrangementPart))) {
                 allPartsGenerated = false;
             }
@@ -78,9 +78,9 @@ public class LocalStorage implements BackendStorage {
             throw new StorageException("No file name set");
         }
 
-        try (InputStream inputStream = file.getInputStream()) {
-            NgFile ngFile = new NgFile();
-            String extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
+        try (var inputStream = file.getInputStream()) {
+            var ngFile = new NgFile();
+            var extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
             ngFile.setFilename(extension);
             Files.copy(inputStream, inputDir.resolve(ngFile.getFilename()), StandardCopyOption.REPLACE_EXISTING);
             return ngFile;
@@ -122,20 +122,20 @@ public class LocalStorage implements BackendStorage {
     public void uploadArrangementPart(ArrangementPart arrangementPart, Path source) throws IOException {
         // ArrangementParts are stored in the hierarchy  score / arrangement / arrangementPart
         // The arrangement part filename is the instrument UUID value
-        Path destination = getArrangementPartPath(arrangementPart);
+        var destination = getArrangementPartPath(arrangementPart);
         Files.createDirectories(destination.getParent());
         Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
     public OutputStream getCoverOutputStream(Arrangement arrangement) throws IOException {
-        Path outputPath = staticDir.resolve(getCoverName(arrangement));
+        var outputPath = staticDir.resolve(getCoverName(arrangement));
         return Files.newOutputStream(outputPath);
     }
 
     @Override
     public OutputStream getThumbnailOutputStream(Arrangement arrangement) throws IOException {
-        Path outputPath = staticDir.resolve(getThumbnailName(arrangement));
+        var outputPath = staticDir.resolve(getThumbnailName(arrangement));
         return Files.newOutputStream(outputPath);
     }
 

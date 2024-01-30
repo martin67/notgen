@@ -2,7 +2,6 @@ package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -12,7 +11,6 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Playlist;
-import se.terrassorkestern.notgen.model.PlaylistEntry;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,24 +30,24 @@ public class PlaylistPdfService {
 
     public ByteArrayInputStream create(Playlist playlist) throws IOException {
 
-        PDDocument doc = new PDDocument();
-        PDDocumentInformation pdd = doc.getDocumentInformation();
+        var doc = new PDDocument();
+        var pdd = doc.getDocumentInformation();
         pdd.setAuthor(activeBand.getBand().getName());
         pdd.setTitle(playlist.getName() + " " + playlist.getDate().toString());
         pdd.setSubject("Låtlista");
 
         // (x,y) 0,0 is at lower left corner, 595,841 at top right (A4)
-        PDPage page = new PDPage(PDRectangle.A4);
+        var page = new PDPage(PDRectangle.A4);
         doc.addPage(page);
 
         // Create a new font object selecting one of the PDF base fonts
-        PDFont titleFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-        PDFont commentFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
-        PDFont songFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
-        PDFont songFontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-        PDFont songCommentFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+        var titleFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        var commentFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
+        var songFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+        var songFontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        var songCommentFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
 
-        try (PDPageContentStream contents = new PDPageContentStream(doc, page)) {
+        try (var contents = new PDPageContentStream(doc, page)) {
 
             contents.beginText();
             contents.setFont(titleFont, 16);
@@ -64,7 +62,7 @@ public class PlaylistPdfService {
             } else {
                 ypos = 750;
             }
-            for (PlaylistEntry playlistEntry : playlist.getPlaylistEntries()) {
+            for (var playlistEntry : playlist.getPlaylistEntries()) {
                 contents.beginText();
 
                 if (playlistEntry.isBold()) {
@@ -100,7 +98,7 @@ public class PlaylistPdfService {
             }
         }
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        var byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             doc.save(byteArrayOutputStream);
         } catch (IOException e) {
@@ -131,15 +129,15 @@ public class PlaylistPdfService {
 
         List<String> lines = new ArrayList<>();
 
-        StringBuilder myLine = new StringBuilder();
+        var myLine = new StringBuilder();
 
         // get all words from the text
         // keep in mind that words are separated by spaces -> "Lorem ipsum!!!!:)" -> words
         // are "Lorem" and "ipsum!!!!:)"
         String[] words = text.split(" ");
-        for (String word : words) {
+        for (var word : words) {
 
-            if (myLine.length() > 0) {
+            if (!myLine.isEmpty()) {
                 myLine.append(" ");
             }
 
@@ -160,7 +158,7 @@ public class PlaylistPdfService {
         // add the rest to lines
         lines.add(myLine.toString());
 
-        for (String line : lines) {
+        for (var line : lines) {
             contentStream.beginText();
             contentStream.setFont(font, fontSize);
             contentStream.newLineAtOffset(x, y);

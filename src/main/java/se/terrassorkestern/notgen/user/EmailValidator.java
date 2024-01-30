@@ -3,7 +3,6 @@ package se.terrassorkestern.notgen.user;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -23,8 +22,8 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
     }
 
     public boolean validateEmail(String email) {
-        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-        Matcher matcher = pattern.matcher(email);
+        var pattern = Pattern.compile(EMAIL_PATTERN);
+        var matcher = pattern.matcher(email);
         return matcher.matches();
     }
 }

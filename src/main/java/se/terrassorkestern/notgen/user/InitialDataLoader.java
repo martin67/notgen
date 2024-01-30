@@ -57,10 +57,10 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
-        User adminUser = userRepository.findByUsername("admin").orElseGet(() -> {
+        var adminUser = userRepository.findByUsername("admin").orElseGet(() -> {
             log.info("Creating initial user admin with admin rights");
 
-            Role superAdmin = createRoleIfNotFound(ROLE_SUPERADMIN, "Super admin", List.of(
+            var superAdmin = createRoleIfNotFound(ROLE_SUPERADMIN, "Super admin", List.of(
                     createPrivilegeIfNotFound(PRIVILEGE_EDIT_BAND),
                     createPrivilegeIfNotFound(PRIVILEGE_EDIT_SONG),
                     createPrivilegeIfNotFound(PRIVILEGE_EDIT_INSTRUMENT),
@@ -78,22 +78,22 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
                     createPrivilegeIfNotFound(PRIVILEGE_EDIT_PLAYLIST)));
             createRoleIfNotFound(ROLE_GUEST, "Guest", List.of());
 
-            User u = new User();
-            u.setUsername("admin");
-            u.setFullName("Administrator");
-            u.setDisplayName("The Admin");
-            u.setEmail("admin@admin");
-            u.setPassword(passwordEncoder.encode("password"));
-            u.setRole(superAdmin);
-            u.setEnabled(true);
-            u.setProvider(AuthProvider.local);
-            userRepository.save(u);
-            return u;
+            var user = new User();
+            user.setUsername("admin");
+            user.setFullName("Administrator");
+            user.setDisplayName("The Admin");
+            user.setEmail("admin@admin");
+            user.setPassword(passwordEncoder.encode("password"));
+            user.setRole(superAdmin);
+            user.setEnabled(true);
+            user.setProvider(AuthProvider.local);
+            userRepository.save(user);
+            return user;
         });
 
         if (bandRepository.findByName("Terrassorkestern").isEmpty()) {
             log.info("Creating initial band");
-            Band band = new Band();
+            var band = new Band();
             band.setName("Terrassorkestern");
             bandRepository.save(band);
 
@@ -110,7 +110,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     }
 
     private Privilege createPrivilegeIfNotFound(String name) {
-        Privilege privilege = privilegeRepository.findByName(name);
+        var privilege = privilegeRepository.findByName(name);
         if (privilege == null) {
             privilege = new Privilege(name);
             privilegeRepository.save(privilege);
@@ -119,7 +119,7 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     }
 
     private Role createRoleIfNotFound(String name, String displayName, Collection<Privilege> privileges) {
-        Role role = roleRepository.findByName(name);
+        var role = roleRepository.findByName(name);
         if (role == null) {
             role = new Role(name, displayName);
             role.setPrivileges(privileges);

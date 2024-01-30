@@ -12,7 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import se.terrassorkestern.notgen.model.*;
+import se.terrassorkestern.notgen.model.ActiveBand;
+import se.terrassorkestern.notgen.model.Arrangement;
+import se.terrassorkestern.notgen.model.Instrument;
+import se.terrassorkestern.notgen.model.Setting;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.repository.SettingRepository;
@@ -20,7 +23,6 @@ import se.terrassorkestern.notgen.service.ConverterService;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -54,7 +56,7 @@ public class PrintController extends CommonController {
             instrument = getInstrument(id);
         }
 
-        List<Score> scores = scoreRepository.findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(instrument);
+        var scores = scoreRepository.findByDefaultArrangement_ArrangementPartsInstrumentOrderByTitle(instrument);
 
         model.addAttribute("scores", scores);
         model.addAttribute("instruments", getInstruments());
@@ -72,7 +74,7 @@ public class PrintController extends CommonController {
             setting = getSetting(id);
         }
 
-        List<Score> scores = scoreRepository.findByDefaultArrangement_ArrangementParts_InstrumentInOrderByTitleAsc(setting.getInstruments());
+        var scores = scoreRepository.findByDefaultArrangement_ArrangementParts_InstrumentInOrderByTitleAsc(setting.getInstruments());
 
         model.addAttribute("scores", scores);
         model.addAttribute("settings", getSettings());
@@ -84,11 +86,11 @@ public class PrintController extends CommonController {
     @PreAuthorize("hasAuthority('PRINT_SCORE')")
     public ResponseEntity<InputStreamResource> printArrangementPart(@RequestParam(name = "instrument_id") UUID instrumentId,
                                                                     @RequestParam(name = "score_id") UUID scoreId) {
-        Score score = getScore(scoreId);
-        Instrument instrument = getInstrument(instrumentId);
+        var score = getScore(scoreId);
+        var instrument = getInstrument(instrumentId);
 
         try (InputStream is = converterService.assemble(score, instrument)) {
-            HttpHeaders headers = new HttpHeaders();
+            var headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), instrument.getShortName()));
             return ResponseEntity
                     .ok()
@@ -105,8 +107,8 @@ public class PrintController extends CommonController {
     public ResponseEntity<InputStreamResource> printArrangement(@RequestParam(name = "score_id") UUID scoreId,
                                                                 @RequestParam(name = "arrangement_id", required = false) UUID arrangementId,
                                                                 @RequestParam(name = "instrument_id") UUID instrumentId) {
-        Score score = getScore(scoreId);
-        Instrument instrument = getInstrument(instrumentId);
+        var score = getScore(scoreId);
+        var instrument = getInstrument(instrumentId);
         Arrangement arrangement;
         if (arrangementId == null) {
             arrangement = score.getDefaultArrangement();
@@ -118,7 +120,7 @@ public class PrintController extends CommonController {
         }
 
         try (InputStream is = converterService.assemble(arrangement, instrument)) {
-            HttpHeaders headers = new HttpHeaders();
+            var headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), instrument.getShortName()));
             return ResponseEntity
                     .ok()
@@ -135,11 +137,11 @@ public class PrintController extends CommonController {
     public ResponseEntity<InputStreamResource> printScore(@RequestParam(name = "setting_id") UUID settingId,
                                                           @RequestParam(name = "score_id") UUID scoreId) {
 
-        Score score = getScore(scoreId);
-        Setting setting = getSetting(settingId);
+        var score = getScore(scoreId);
+        var setting = getSetting(settingId);
 
         try (InputStream is = converterService.assemble(score, setting)) {
-            HttpHeaders headers = new HttpHeaders();
+            var headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(score.getTitle(), setting.getName()));
 
             return ResponseEntity
@@ -157,11 +159,11 @@ public class PrintController extends CommonController {
     @PreAuthorize("hasAuthority('PRINT_SCORE')")
     public ResponseEntity<InputStreamResource> printPlaylist(@RequestParam(name = "playlist_id") UUID playlistId,
                                                              @RequestParam(name = "instrument_id") UUID instrumentId) {
-        Playlist playlist = getPlaylist(playlistId);
-        Instrument instrument = getInstrument(instrumentId);
+        var playlist = getPlaylist(playlistId);
+        var instrument = getInstrument(instrumentId);
 
         try (InputStream is = converterService.assemble(playlist, instrument)) {
-            HttpHeaders headers = new HttpHeaders();
+            var headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, createContentDisposition(playlist.getName(), instrument.getShortName()));
 
             return ResponseEntity
