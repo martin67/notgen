@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,29 +31,29 @@ public class AdminService {
     public void export(OutputStream outputStream) throws IOException, SQLException {
         var format = CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').build();
 
-        try (ZipOutputStream zos = new ZipOutputStream(outputStream);
+        try (var zipOutputStream = new ZipOutputStream(outputStream);
              var conn = dataSource.getConnection()) {
 
             var sb = "Database dump created: " + LocalDateTime.now() +
                     "\nDatabase type:         " + conn.getMetaData().getDatabaseProductName() +
                     "\nDatabase url:          " + conn.getMetaData().getURL();
             var infoEntry = new ZipEntry("info.txt");
-            zos.putNextEntry(infoEntry);
-            zos.write(sb.getBytes());
-            zos.closeEntry();
+            zipOutputStream.putNextEntry(infoEntry);
+            zipOutputStream.write(sb.getBytes());
+            zipOutputStream.closeEntry();
 
             for (String table : tables) {
                 var filename = table + ".csv";
                 var entry = new ZipEntry(filename); // create a zip entry and add it to ZipOutputStream
-                zos.putNextEntry(entry);
+                zipOutputStream.putNextEntry(entry);
                 var sql = "select * from " + table;
-                var csvPrinter = new CSVPrinter(new OutputStreamWriter(zos), format);  // There is no need for staging the CSV on filesystem or reading bytes into memory. Directly write bytes to the output stream.
-                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                    var rs = pstmt.executeQuery();
-                    csvPrinter.printRecords(rs, true);
+                var csvPrinter = new CSVPrinter(new OutputStreamWriter(zipOutputStream), format);  // There is no need for staging the CSV on filesystem or reading bytes into memory. Directly write bytes to the output stream.
+                try (var preparedStatement = conn.prepareStatement(sql)) {
+                    var resultSet = preparedStatement.executeQuery();
+                    csvPrinter.printRecords(resultSet, true);
                     csvPrinter.flush(); // flush the writer. Very important!
                 }
-                zos.closeEntry(); // close the entry. Note : we are not closing the zos just yet as we need to add more files to our ZIP
+                zipOutputStream.closeEntry(); // close the entry. Note : we are not closing the zos just yet as we need to add more files to our ZIP
             }
         }
     }

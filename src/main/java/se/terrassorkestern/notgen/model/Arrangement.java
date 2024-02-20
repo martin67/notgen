@@ -52,7 +52,7 @@ public class Arrangement {
 
     public List<Instrument> getInstruments() {
         List<Instrument> result = new ArrayList<>();
-        for (ArrangementPart arrangementPart : arrangementParts) {
+        for (var arrangementPart : arrangementParts) {
             result.add(arrangementPart.getInstrument());
         }
         return result;

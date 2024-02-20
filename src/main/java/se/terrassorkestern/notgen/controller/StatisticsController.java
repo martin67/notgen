@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import se.terrassorkestern.notgen.model.Link;
+
 import se.terrassorkestern.notgen.repository.LinkRepository;
 import se.terrassorkestern.notgen.service.StatisticsService;
 
@@ -63,7 +63,7 @@ public class StatisticsController {
         //List<Link> links = entityManager.createQuery("select * from link").getResultList();
         var links = linkRepository.findByOrderByName();
         Map<String, List<String>> linksAndSongs = new HashMap<>();
-        for (Link link : links) {
+        for (var link : links) {
             linksAndSongs.putIfAbsent(link.getName(), new ArrayList<>());
             var ls = linksAndSongs.get(link.getName());
             ls.add(link.getScore().getTitle());

@@ -92,7 +92,7 @@ public class StatisticsService {
                 values.add(score.getPublisher());
                 values.add(score.getComment());
                 for (var instrument : allInstruments) {
-                    if (arrangement.getInstruments().contains(instrument)) {
+                    if (arrangement != null && arrangement.getInstruments().contains(instrument)) {
                         values.add("X");
                     } else {
                         values.add("");

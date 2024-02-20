@@ -2,9 +2,7 @@ package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.batch.item.ItemProcessor;
@@ -23,7 +21,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -136,13 +133,13 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         switch (com.google.common.io.Files.getFileExtension(downloadedScore.getFileName().toString().toLowerCase())) {
             case "zip" -> storageService.extractZip(downloadedScore, tmpDir);
             case "pdf" -> {
-                try (PDDocument document = Loader.loadPDF(downloadedScore.toFile())) {
+                try (var document = Loader.loadPDF(downloadedScore.toFile())) {
                     var list = document.getPages();
                     int i = 100;
                     for (var page : list) {
                         var pdResources = page.getResources();
 
-                        for (COSName name : pdResources.getXObjectNames()) {
+                        for (var name : pdResources.getXObjectNames()) {
                             var o = pdResources.getXObject(name);
                             if (o instanceof PDImageXObject image) {
                                 var filename = tmpDir + File.separator + "extracted-image-" + i;
@@ -164,7 +161,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         // Exclude source file (zip or pdf)
         List<Path> extractedFilesList;
 
-        try (Stream<Path> paths = Files.list(tmpDir)) {
+        try (var paths = Files.list(tmpDir)) {
             extractedFilesList = paths
                     .filter(Files::isRegularFile)
                     .filter(p -> (p.toString().toLowerCase().endsWith(".png") || p.toString().toLowerCase().endsWith(".jpg")))
@@ -221,7 +218,7 @@ public class ConverterService implements ItemProcessor<Score, Score> {
         var instruments = List.of(instrument);
 
         for (var playlistEntry : playlist.getPlaylistEntries()) {
-            List<Score> scoresFound = scoreRepository.findByTitle(playlistEntry.getText());
+            var scoresFound = scoreRepository.findByTitle(playlistEntry.getText());
             if (scoresFound != null && !scoresFound.isEmpty()) {
                 if (scoresFound.size() > 1) {
                     log.warn("Multiple scores for playlist entry {}", playlistEntry.getText());

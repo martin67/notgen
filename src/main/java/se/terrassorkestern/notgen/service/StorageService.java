@@ -123,8 +123,12 @@ public class StorageService {
 
     public Path replaceExtension(Path path, String newExtension) {
         var parent = path.getParent();
-        var fileName = path.getFileName().toString();
-        return parent.resolve(com.google.common.io.Files.getNameWithoutExtension(fileName) + newExtension);
+        var newFileName = com.google.common.io.Files.getNameWithoutExtension(path.getFileName().toString()) + newExtension;
+        if (parent == null) {
+            return Path.of(newFileName);
+        } else {
+            return parent.resolve(newFileName);
+        }
     }
 
     public OutputStream getCoverOutputStream(Arrangement arrangement) throws IOException {
@@ -144,11 +148,11 @@ public class StorageService {
                     log.warn("zip {} contains a directory {}", zipFile, zipEntry.getName());
                 } else {
                     // if the entry is a file, extracts it
-                    try (var bos = new BufferedOutputStream(new FileOutputStream(dir.resolve(zipEntry.getName()).toFile()))) {
+                    try (var bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(dir.resolve(zipEntry.getName()).toFile()))) {
                         byte[] bytesIn = new byte[BUFFER_SIZE];
                         int read;
                         while ((read = zipInputStream.read(bytesIn)) != -1) {
-                            bos.write(bytesIn, 0, read);
+                            bufferedOutputStream.write(bytesIn, 0, read);
                         }
                     }
                 }

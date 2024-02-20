@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.mapper.orm.Search;
-import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
@@ -38,7 +37,7 @@ public class SearchRepositoryImpl<T, I extends Serializable> extends SimpleJpaRe
     }
 
     private SearchResult<T> getSearchResult(String text, int limit, String[] fields) {
-        SearchSession searchSession = Search.session(entityManager);
+        var searchSession = Search.session(entityManager);
 
         return searchSession
                 .search(getDomainClass())

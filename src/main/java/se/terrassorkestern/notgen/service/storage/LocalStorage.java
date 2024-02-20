@@ -1,23 +1,29 @@
 package se.terrassorkestern.notgen.service.storage;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
+
 import se.terrassorkestern.notgen.exceptions.StorageException;
 import se.terrassorkestern.notgen.model.Arrangement;
 import se.terrassorkestern.notgen.model.ArrangementPart;
 import se.terrassorkestern.notgen.model.Instrument;
 import se.terrassorkestern.notgen.model.NgFile;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Storage on local disk.
@@ -146,7 +152,7 @@ public class LocalStorage implements BackendStorage {
 
     @Override
     public Set<String> listInputDirectory() throws IOException {
-        try (Stream<Path> stream = Files.list(inputDir)) {
+        try (var stream = Files.list(inputDir)) {
             return stream
                     .filter(file -> !Files.isDirectory(file))
                     .map(Path::getFileName)

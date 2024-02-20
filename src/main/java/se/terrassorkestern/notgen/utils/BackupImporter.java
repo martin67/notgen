@@ -4,21 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static se.terrassorkestern.notgen.service.AdminService.tables;
@@ -61,29 +56,29 @@ public class BackupImporter {
 
         List<String> reverseTables = new ArrayList<>(tables);
         Collections.reverse(reverseTables);
-        try (Connection conn = DriverManager.getConnection(database, username, password)) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("alter table score drop constraint score_arrangement_id_fk; ");
+        try (var connection = DriverManager.getConnection(database, username, password)) {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.append("alter table score drop constraint score_arrangement_id_fk; ");
             for (String table : reverseTables) {
-                sb.append(String.format("delete from %s; ", table));
+                stringBuilder.append(String.format("delete from %s; ", table));
             }
-            log.trace("SQL: {}", sb);
-            try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
-                pstmt.execute();
+            log.trace("SQL: {}", stringBuilder);
+            try (var preparedStatement = connection.prepareStatement(stringBuilder.toString())) {
+                preparedStatement.execute();
             }
 
             // import
 
-            try (ZipFile zipFile = new ZipFile(filename)) {
-                CSVFormat format = CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').setHeader().build();
+            try (var zipFile = new ZipFile(filename)) {
+                var format = CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').setHeader().build();
                 for (String table : tables) {
                     log.debug("Reading table: {}", table);
-                    ZipEntry zipEntry = zipFile.getEntry(table + ".csv");
-                    Reader reader = new InputStreamReader(zipFile.getInputStream(zipEntry), StandardCharsets.UTF_8);
-                    CSVParser csvParser = new CSVParser(reader, format);
-                    for (CSVRecord csvRecord : csvParser.getRecords()) {
-                        StringBuilder keys = new StringBuilder();
-                        StringBuilder values = new StringBuilder();
+                    var zipEntry = zipFile.getEntry(table + ".csv");
+                    var reader = new InputStreamReader(zipFile.getInputStream(zipEntry), StandardCharsets.UTF_8);
+                    var csvParser = new CSVParser(reader, format);
+                    for (var csvRecord : csvParser.getRecords()) {
+                        var keys = new StringBuilder();
+                        var values = new StringBuilder();
                         for (Map.Entry<String, String> entry : csvRecord.toMap().entrySet()) {
                             if (!entry.getValue().isEmpty()) {
                                 keys.append(entry.getKey()).append(", ");
@@ -94,18 +89,18 @@ public class BackupImporter {
                         values.delete(values.length() - 2, values.length());
                         String sql = String.format("INSERT INTO %s (%s) VALUES (%s)", table, keys, values);
                         log.trace("sql: {}", sql);
-                        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                            pstmt.execute();
+                        try (var preparedStatement = connection.prepareStatement(sql)) {
+                            preparedStatement.execute();
                         }
                     }
                 }
 
             }
-            sb = new StringBuilder();
-            sb.append("alter table score add constraint score_arrangement_id_fk" +
+            stringBuilder = new StringBuilder();
+            stringBuilder.append("alter table score add constraint score_arrangement_id_fk" +
                     "        foreign key (default_arrangement_id) references arrangement;");
-            try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
-                pstmt.execute();
+            try (var preparedStatement = connection.prepareStatement(stringBuilder.toString())) {
+                preparedStatement.execute();
             }
         }
     }

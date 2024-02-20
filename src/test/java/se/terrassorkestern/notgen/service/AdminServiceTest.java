@@ -1,14 +1,9 @@
 package se.terrassorkestern.notgen.service;
 
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import se.terrassorkestern.notgen.repository.InstrumentRepository;
-import se.terrassorkestern.notgen.repository.ScoreRepository;
-import se.terrassorkestern.notgen.repository.SettingRepository;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,19 +12,13 @@ import java.sql.SQLException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @Slf4j
 @SpringBootTest
-@Transactional
-@Tag("manual")
 class AdminServiceTest {
     @Autowired
-    AdminService adminService;
-    @Autowired
-    ScoreRepository scoreRepository;
-    @Autowired
-    InstrumentRepository instrumentRepository;
-    @Autowired
-    SettingRepository settingRepository;
+    private AdminService adminService;
 
     @Test
     void exportData() throws IOException, SQLException {
@@ -38,9 +27,12 @@ class AdminServiceTest {
 
         try (var zipInputStream = new ZipInputStream(new ByteArrayInputStream(outputStream.toByteArray()))) {
             ZipEntry zipEntry;
+            int numberOfEntries = 0;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 log.info("Namn: {}", zipEntry.getName());
+                numberOfEntries++;
             }
+            assertThat(numberOfEntries).isEqualTo(AdminService.tables.size() + 1);
         }
     }
 }

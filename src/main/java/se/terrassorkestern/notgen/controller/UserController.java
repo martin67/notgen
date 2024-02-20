@@ -51,7 +51,7 @@ public class UserController extends CommonController {
         List<User> bandUsers = new ArrayList<>();
         List<User> otherUsers = new ArrayList<>();
 
-        for (User user : userRepository.findAll()) {
+        for (var user : userRepository.findAll()) {
             if (user.isMemberOf(activeBand.getBand())) {
                 bandUsers.add(user);
             } else {

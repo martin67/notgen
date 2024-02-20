@@ -113,7 +113,7 @@ public class ScoreController extends CommonController {
         var arrangement = score.getDefaultArrangement();
         // Check if the score has a song instrument. Only one for now
         if (arrangement != null && enableOcr) {
-            UUID songId = UUID.fromString(ocrSongIds);
+            var songId = UUID.fromString(ocrSongIds);
             model.addAttribute("doSongOcr",
                     arrangement.getInstruments().stream().anyMatch(instrument -> instrument.getId().equals(songId)) ? "true" : "false");
         }
@@ -140,7 +140,7 @@ public class ScoreController extends CommonController {
         } else {
             preloadedInstruments = getInstruments();
         }
-        for (Instrument instrument : preloadedInstruments) {
+        for (var instrument : preloadedInstruments) {
             arrangement.addArrangementPart(new ArrangementPart(arrangement, instrument));
         }
         model.addAttribute(ATTRIBUTE_ONE_SCORE, score);
@@ -197,7 +197,7 @@ public class ScoreController extends CommonController {
         // A bit of a kludge. Need to get record n of a sorted set.
         ArrangementPart arrangementPart = null;
         int counter = 0;
-        for (ArrangementPart ap : arrangement.getArrangementParts()) {
+        for (var ap : arrangement.getArrangementParts()) {
             if (rowIndex == counter) {
                 arrangementPart = ap;
                 break;
@@ -264,7 +264,7 @@ public class ScoreController extends CommonController {
         if (linkId.equals(NULL_UUID)) {
             score.addLink(new Link(linkUri, linkType, linkName, linkComment));
         } else {
-            Link link = score.getLink(linkId);
+            var link = score.getLink(linkId);
             link.setName(linkName);
             link.setUri(URI.create(linkUri));
             link.setType(linkType);

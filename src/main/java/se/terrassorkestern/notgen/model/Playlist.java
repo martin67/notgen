@@ -51,15 +51,15 @@ public class Playlist extends Auditable<String> {
     }
 
     public Playlist copy() {
-        Playlist newPlaylist = new Playlist();
+        var newPlaylist = new Playlist();
 
         newPlaylist.setName("Kopia av " + this.getName());
         newPlaylist.setDate(this.getDate());
         newPlaylist.setComment(this.getComment());
         newPlaylist.setBand(this.getBand());
         newPlaylist.setSetting(this.getSetting());
-        for (PlaylistEntry playlistEntry : this.getPlaylistEntries()) {
-            PlaylistEntry newPlaylistEntry = new PlaylistEntry();
+        for (var playlistEntry : this.getPlaylistEntries()) {
+            var newPlaylistEntry = new PlaylistEntry();
             newPlaylistEntry.setText(playlistEntry.getText());
             newPlaylistEntry.setBold(playlistEntry.isBold());
             newPlaylistEntry.setComment(playlistEntry.getComment());
