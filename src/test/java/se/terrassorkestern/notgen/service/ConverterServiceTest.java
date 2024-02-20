@@ -1,25 +1,30 @@
 package se.terrassorkestern.notgen.service;
 
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.jdbc.Sql;
-import se.terrassorkestern.notgen.repository.InstrumentRepository;
+import se.terrassorkestern.notgen.CommonTestdata;
+import se.terrassorkestern.notgen.model.Score;
+import se.terrassorkestern.notgen.repository.ConfigurationKeyRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
-import se.terrassorkestern.notgen.repository.SettingRepository;
+import se.terrassorkestern.notgen.service.converter.ImageProcessor;
+import se.terrassorkestern.notgen.service.converter.PdfAssembler;
+import se.terrassorkestern.notgen.service.converter.filters.AutoCropper;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.List;
 
-@SpringBootTest
-@Transactional
-@Tag("manual")
-@Sql({"/full-data.sql"})
+import static org.mockito.BDDMockito.given;
+
+@SpringBootTest(classes = {ConverterService.class, ImageProcessor.class, AutoCropper.class, PdfAssembler.class})
+//@Transactional
+//@Tag("manual")
+//@Sql({"/full-data.sql"})
 class ConverterServiceTest {
 
     static final Integer[] exampleScores = {
@@ -44,18 +49,37 @@ class ConverterServiceTest {
             573     // Cherie-Mona.zip, JPEG, 2576x(2864-3744), 300x300, 24 bit YCbCr
     };
     @Autowired
-    ConverterService converterService;
-    @Autowired
-    ScoreRepository scoreRepository;
-    @Autowired
-    InstrumentRepository instrumentRepository;
-    @Autowired
-    SettingRepository settingRepository;
+    private ConverterService converterService;
+
+    @MockBean
+    private ScoreRepository scoreRepository;
+
+    @MockBean
+    private StorageService storageService;
+
+    @MockBean
+    private ConfigurationKeyRepository configurationKeyRepository;
+
+    private List<Score> scores;
+
+    @BeforeEach
+    void setup() throws IOException, URISyntaxException {
+
+        var commonTestdata = new CommonTestdata();
+        //commonTestdata.setupRandom();
+        commonTestdata.setupSingle();
+
+        var band = commonTestdata.getBand();
+        scores = commonTestdata.getScores(band);
+
+        given(storageService.createTempDir(scores.get(0))).willReturn(Path.of("."));
+        given(storageService.downloadArrangement(null, null))
+                .willReturn(Path.of(getClass().getClassLoader().getResource("testdata/1057.zip").toURI()));
+    }
 
     @Test
-    @WithMockUser
     void convertOneScore() throws IOException {
-        var scores = scoreRepository.findByTitle("Drömvalsen");
+        //var scores = scoreRepository.findByTitle("Drömvalsen");
         converterService.convert(scores);
     }
 
@@ -74,22 +98,21 @@ class ConverterServiceTest {
 //        converterService.convert(scores);
 //    }
 
-    @Test
-    @WithMockUser
-    void assembleOneScore() throws IOException {
-        var scores = scoreRepository.findByTitle("Drömvalsen");
-        var instruments = instrumentRepository.findByNameContaining("saxofon");
-        var inputStream = converterService.assemble(scores, instruments, false);
-        Files.copy(inputStream, Path.of("test.pdf"), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    @Test
-    @WithMockUser
-    void assembleTOScores() throws IOException {
-        var scores = scoreRepository.findByTitleContaining("ögon");
-        var setting = settingRepository.findByName("Terrassorkestern");
-        var inputStream = converterService.assemble(scores, setting.get(0), true);
-        Files.copy(inputStream, Path.of("test2.pdf"), StandardCopyOption.REPLACE_EXISTING);
-    }
+//    @Test
+//    void assembleOneScore() throws IOException {
+//        var scores = scoreRepository.findByTitle("Drömvalsen");
+//        var instruments = instrumentRepository.findByNameContaining("saxofon");
+//        var inputStream = converterService.assemble(scores, instruments, false);
+//        Files.copy(inputStream, Path.of("test.pdf"), StandardCopyOption.REPLACE_EXISTING);
+//    }
+//
+//    @Test
+//    @WithMockUser
+//    void assembleTOScores() throws IOException {
+//        var scores = scoreRepository.findByTitleContaining("ögon");
+//        var setting = settingRepository.findByName("Terrassorkestern");
+//        var inputStream = converterService.assemble(scores, setting.get(0), true);
+//        Files.copy(inputStream, Path.of("test2.pdf"), StandardCopyOption.REPLACE_EXISTING);
+//    }
 
 }

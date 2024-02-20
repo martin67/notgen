@@ -123,8 +123,12 @@ public class StorageService {
 
     public Path replaceExtension(Path path, String newExtension) {
         var parent = path.getParent();
-        var fileName = path.getFileName().toString();
-        return parent.resolve(com.google.common.io.Files.getNameWithoutExtension(fileName) + newExtension);
+        var newFileName = com.google.common.io.Files.getNameWithoutExtension(path.getFileName().toString()) + newExtension;
+        if (parent == null) {
+            return Path.of(newFileName);
+        } else {
+            return parent.resolve(newFileName);
+        }
     }
 
     public OutputStream getCoverOutputStream(Arrangement arrangement) throws IOException {
