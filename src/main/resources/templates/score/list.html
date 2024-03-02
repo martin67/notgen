@@ -10,7 +10,7 @@
 
 <div class="container">
     <br>
-    <table class="table table-bordered table-striped table-hover table-sm" aria-label="Score list">
+    <table class="table table-bordered table-striped table-hover table-sm mb-2" aria-label="Score list" id="score_table">
         <thead>
         <tr>
             <th scope="col">Namn</th>
@@ -22,7 +22,7 @@
         <tr class="clickable-row" th:each="score : ${scores}" data-th-data-link="@{view/{id}(id=${score.id})}">
             <td th:text="${score.title}"></td>
             <td th:text="${score.genre}"></td>
-            <td><span th:if="${score.isLinksPresent()}" class="bi-music-note-beamed"></span></td>
+            <td class="text-center"><span th:if="${score.isLinksPresent()}" class="bi-music-note-beamed"></span></td>
         </tr>
         </tbody>
     </table>
@@ -49,4 +49,14 @@
     });
 </script>
 
+<script>
+    var table = new DataTable('#score_table', {
+        layout: {
+
+        },
+        language: {
+            url: '//cdn.datatables.net/plug-ins/2.0.1/i18n/sv-SE.json',
+        },
+    });
+</script>
 </html>

@@ -58,7 +58,8 @@ public class BackupImporter {
         Collections.reverse(reverseTables);
         try (var connection = DriverManager.getConnection(database, username, password)) {
             var stringBuilder = new StringBuilder();
-            stringBuilder.append("alter table score drop constraint score_arrangement_id_fk; ");
+            stringBuilder.append("alter table score drop constraint FKBOB86IKE5BMSGWAA3F32VH5IU; ");
+            stringBuilder.append("alter table band drop constraint FKN16NLPQBH7VBU988KVDS1PY1H; ");
             for (String table : reverseTables) {
                 stringBuilder.append(String.format("delete from %s; ", table));
             }
@@ -97,8 +98,10 @@ public class BackupImporter {
 
             }
             stringBuilder = new StringBuilder();
-            stringBuilder.append("alter table score add constraint score_arrangement_id_fk" +
-                    "        foreign key (default_arrangement_id) references arrangement;");
+            stringBuilder.append("alter table score add constraint FKBOB86IKE5BMSGWAA3F32VH5IU" +
+                    "        foreign key (default_arrangement_id) references arrangement; ");
+            stringBuilder.append("alter table band add constraint FKN16NLPQBH7VBU988KVDS1PY1H" +
+                    "        foreign key (standard_setting_id) references setting; ");
             try (var preparedStatement = connection.prepareStatement(stringBuilder.toString())) {
                 preparedStatement.execute();
             }
