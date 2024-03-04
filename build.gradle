@@ -72,7 +72,7 @@ dependencies {
     implementation 'com.microsoft.sqlserver:mssql-jdbc:12.3.0.jre17-preview'
     implementation 'com.h2database:h2:2.2.224'
     implementation 'com.google.guava:guava:33.0.0-jre'
-    implementation 'com.azure.spring:spring-cloud-azure-dependencies:5.9.1'
+    implementation 'com.azure.spring:spring-cloud-azure-dependencies:5.10.0'
     implementation 'com.azure.spring:spring-cloud-azure-starter-storage:5.9.1'
     implementation 'com.azure.spring:spring-cloud-azure-starter-keyvault:5.9.1'
     implementation 'commons-cli:commons-cli:1.6.0'
