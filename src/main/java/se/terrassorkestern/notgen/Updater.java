@@ -21,7 +21,7 @@ public class Updater {
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("********* Updater start");
         var st = List.of(ScoreType.values());
-        log.info("st: {}", st.size());
+        log.info("Score types: {}", st.size());
         log.info("********* Updater end");
     }
 }
