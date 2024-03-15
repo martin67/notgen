@@ -10,7 +10,7 @@
 
 <div class="container">
     <h1>Låtlistor</h1>
-    <table class="table table-bordered table-striped table-hover table-sm" aria-label="Playlist list">
+    <table class="table table-bordered table-striped table-hover table-sm mb-3" aria-label="Playlist list" id="playlists">
         <thead>
         <tr>
             <th th:text="#{name}">name</th>
@@ -47,5 +47,13 @@
         });
     });
 </script>
-
+<script>
+    var table = new DataTable('#playlists', {
+        paging: false,
+        info: false,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/2.0.1/i18n/sv-SE.json',
+        },
+    });
+</script>
 </html>

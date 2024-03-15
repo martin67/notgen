@@ -173,7 +173,7 @@ public class StorageService {
 
         // Remove the excess. These are files that are removed or uploaded but not saved.
         if (diff.size() > 100) {
-            log.warn("Not deleting 100+ files!");
+            log.warn("Not deleting {} files!", diff.size());
             return;
         }
 

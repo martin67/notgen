@@ -34,37 +34,38 @@
     <form role="form" th:action="@{/playlist/save}" th:object="${playlist}" th:method="post" id="editPlaylist">
         <input type="hidden" th:field="*{id}" th:value="${playlist.id}"/>
 
-        <div class="form-floating mb-3">
+        <div class="mb-3">
+            <label class="form-label" for="name" th:text="#{name}">name</label>
             <input type="text" class="form-control" th:field="*{name}" th:value="${playlist.name}" id="name"/>
             <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
-            <label for="name" th:text="#{name}">name</label>
         </div>
 
-        <div class="form-floating mb-3">
+        <div class="mb-3">
+            <label class="form-label" for="setting" th:text="#{setting}">setting</label>
             <select class="form-control" id="setting" th:field="*{setting}">
                 <option th:each="s : ${settings}" th:value="${s.id}" th:text="${s.name}">bla</option>
             </select>
-            <label for="setting" th:text="#{setting}">setting</label>
         </div>
 
-        <div class="form-floating mb-3">
+        <div class="mb-3">
+            <label class="form-label" for="date" th:text="#{date}">date</label>
             <input type="date" class="form-control" th:field="*{date}" th:value="${playlist.date}" id="date"/>
             <span class="text-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</span>
-            <label for="date" th:text="#{date}">date</label>
         </div>
 
-        <div class="form-floating mb-3">
+        <div class="mb-3">
+            <label class="form-label" for="comment" th:text="#{comment}">comment</label>
             <textarea class="form-control" th:field="*{comment}" th:value="${playlist.comment}"
                       id="comment"></textarea>
-            <label for="comment" th:text="#{comment}">comment</label>
         </div>
 
         <div class="row">
             <div class="form-group col">
                 <h2><label>Låtar</label></h2>
-                <table class="table table-bordered table-sm" aria-label="songs">
+                <table class="table table-bordered table-sm" aria-label="songs" id="playlists">
                     <thead>
                     <tr>
+                        <th>sortOrder</th>
                         <th scope="col">Låt</th>
                         <th scope="col">Fet</th>
                         <th scope="col">Kommentar</th>
@@ -74,6 +75,11 @@
                     <tbody>
 
                     <tr th:each="playlistEntry,rowStat : ${playlist.playlistEntries}">
+                        <td>
+                            <input
+                                    class="form-control" th:field="*{playlistEntries[__${rowStat.index}__].sortOrder}"
+                                    th:value="${playlistEntry.sortOrder}"/>
+                        </td>
                         <td>
                             <div id="prefetch">
                                 <input type="text" class="form-control form-control-sm typeahead" autocomplete="off"
@@ -94,9 +100,6 @@
                                    th:value="${playlistEntry.comment}"/>
                         </td>
                         <td class="align-middle">
-                            <input type="hidden"
-                                   class="form-control" th:field="*{playlistEntries[__${rowStat.index}__].sortOrder}"
-                                   th:value="${playlistEntry.sortOrder}"/>
                             <button sec:authorize="hasAuthority('EDIT_PLAYLIST')"
                                     class="btn btn-sm btn-danger icon-save"
                                     type="submit" name="deleteRow" th:value="${rowStat.index}"><i class="bi-trash"></i>
@@ -139,7 +142,7 @@
         var scores = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
-            prefetch: '../score/scores.json'
+            prefetch: '../score/edit/scores.json'
         });
 
         $('#prefetch .typeahead').typeahead({
@@ -154,19 +157,26 @@
 
 
 </script>
-
 <script>
-    $(function () {
-        $("table tbody").sortable({
-            update: function (event, ui) {
-                $(this).children().each(function (index) {
-                    $(this).find('td').last().find('input').val(index + 1)
-                });
-            }
-        });
+    var table = new DataTable('#playlists', {
+        columns: [
+            {data: 'sortOrder',
+                render: function(data, type) {
+                    return (type == 'sort' ? data : data);
+                }},
+            {data: 'Låt'},
+            {data: 'Fet'},
+            {data: 'Kommentar'},
+            {data: 'knapp'}
+        ],
+        paging: false,
+        info: false,
+        searching: false,
+        rowReorder: {dataSrc: 'sortOrder'},
+        language: {
+            url: '//cdn.datatables.net/plug-ins/2.0.1/i18n/sv-SE.json',
+        },
     });
-
-
 </script>
 
 </body>
