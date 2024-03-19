@@ -8,8 +8,6 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:sa}
     password: ${SPRING_DATASOURCE_PASSWORD:sa}
   jpa:
-    properties:
-      hibernate.dialect: org.hibernate.dialect.H2Dialect
     generate-ddl: true
     # show-sql: true    # See all sql queries
   thymeleaf:

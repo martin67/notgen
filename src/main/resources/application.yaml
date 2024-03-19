@@ -16,6 +16,7 @@ spring:
             type: lucene
             analysis.configurer: se.terrassorkestern.notgen.index.AnalysisConfig
             directory.root: ./build/index
+            lucene_version: LATEST
     open-in-view: true
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -40,9 +41,9 @@ spring:
   cloud:
     azure:
       storage:
-        account-name: ${AZURE_STORAGE_ACCOUNT_NAME}
+        account-name: ${AZURE_STORAGE_ACCOUNT_NAME:notset}
         account-key: ${AZURE_STORAGE_ACCOUNT_KEY}
-        endpoint: https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${AZURE_STORAGE_ACCOUNT_NAME}
+        endpoint: https://${AZURE_STORAGE_ACCOUNT_NAME:notset}.blob.core.windows.net/${AZURE_STORAGE_ACCOUNT_NAME:notset}
   batch:
     jdbc:
       initialize-schema: always
@@ -65,8 +66,8 @@ se.terrassorkestern.notgen:
   ocr:
     enable: true
     songids: BF0D7BFF-8683-7B40-868E-155140E595F1
-    username: ${OCR_USERNAME}
-    license: ${OCR_LICENSE}
+    username: ${OCR_USERNAME:notset}
+    license: ${OCR_LICENSE:notset}
   storage:
     type: local
     input: /var/lib/notgen/input
