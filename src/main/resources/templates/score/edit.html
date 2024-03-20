@@ -195,11 +195,10 @@
                             </tr>
                             </tbody>
                         </table>
-                        <hr>
                         <div class="row">
                             <div class="col">
                                 <button sec:authorize="hasAuthority('EDIT_SONG')"
-                                        class="btn btn-primary btn-sm mb-2"
+                                        class="btn btn-primary btn-sm"
                                         type="submit" name="addArrangementPart" th:value="${arr.getId()}">Lägg till
                                     instrument
                                 </button>
@@ -208,8 +207,29 @@
                                     Ta bort arrangemang
                                 </button>
                             </div>
+                        </div>
+                        <hr>
+                        <div class="row">
                             <div class="col">
-                                <label class="form-select-label">Filkoppling
+                                <div th:id="prefetch-arrangers">
+                                    <label class="form-label">Arrangör
+                                        <input type="text" class="form-control typeahead"
+                                               autocomplete="off"
+                                               th:field="*{arrangements[__${arrStat.index}__].arranger}"
+                                               th:value="${arr.arranger}" placeholder="arr"/>
+                                    </label>
+                                </div>
+                                <div th:id="prefetch-publishers">
+                                    <label class="form-label">Förlag
+                                        <input type="text" class="form-control typeahead"
+                                               autocomplete="off"
+                                               th:field="*{arrangements[__${arrStat.index}__].publisher}"
+                                               th:value="${arr.publisher}"/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Filkoppling
                                     <select class="form-select-sm"
                                             th:field="*{arrangements[__${arrStat.index}__].file}">
                                         <option label="-- No Value Selected --" value=""></option>
@@ -218,7 +238,7 @@
                                                 th:text="${ngf.getDisplayName()}"/>
                                     </select>
                                 </label>
-                                <label class="form-select-label">Scanningsklass
+                                <label class="form-label">Scanningsklass
                                     <select class="form-select-sm"
                                             th:field="*{arrangements[__${arrStat.index}__].scoreType}">
                                         <option th:each="st : ${T(se.terrassorkestern.notgen.model.ScoreType).values()}"

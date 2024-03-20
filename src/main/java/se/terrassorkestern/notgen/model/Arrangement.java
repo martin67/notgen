@@ -15,6 +15,7 @@ public class Arrangement {
     @ManyToOne(fetch = FetchType.LAZY)
     private Score score;
     private String arranger;
+    private String publisher;
     private String name;
     @Lob
     private String comment;
