@@ -11,7 +11,7 @@
 <script type="text/javascript">
     function gotopage(selval) {
         let value = selval.options[selval.selectedIndex].value;
-        window.location.href = "instrument?id=" + value;
+        window.location.href = "instrument?id=" + encodeURIComponent(value);
     }
 </script>
 

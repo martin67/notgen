@@ -12,7 +12,7 @@
     function setPrintButton() {
         let setting_id = document.getElementById("setting").value;
         let score_id = /*[[${score.id}]]*/ 'bla';
-        document.getElementById("print-button").href = "/print/score?score_id=" + score_id + "&setting_id=" + setting_id;
+        document.getElementById("print-button").href = "/print/score?score_id=" + encodeURIComponent(score_id) + "&setting_id=" + encodeURIComponent(setting_id);
     }
 </script>
 

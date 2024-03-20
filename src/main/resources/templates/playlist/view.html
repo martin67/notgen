@@ -12,7 +12,7 @@
     function setPrintButton() {
         let instrument_id = document.getElementById("instrument").value;
         let playlist_id = /*[[${playlist.id}]]*/ 'bla';
-        document.getElementById("print-button").href = "/print/playlist?playlist_id=" + playlist_id + "&instrument_id=" + instrument_id;
+        document.getElementById("print-button").href = "/print/playlist?playlist_id=" + encodeURIComponent(playlist_id) + "&instrument_id=" + encodeURIComponent(instrument_id);
     }
 </script>
 
