@@ -59,6 +59,10 @@ public class Arrangement {
         return result;
     }
 
+    public Optional<ArrangementPart> getArrangementPart(Instrument instrument)  {
+        return arrangementParts.stream().filter(arrangementPart -> arrangementPart.getInstrument() == instrument).findFirst();
+    }
+
     public String getConfig(String key, String defaultValue) {
         return configurations.stream()
                 .filter(c -> c.getKey().getToken().equals(key))

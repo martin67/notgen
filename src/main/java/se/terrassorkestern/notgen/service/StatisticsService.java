@@ -5,7 +5,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import se.terrassorkestern.notgen.model.Statistics;
+import se.terrassorkestern.notgen.model.*;
 import se.terrassorkestern.notgen.repository.InstrumentRepository;
 import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
@@ -13,7 +13,10 @@ import se.terrassorkestern.notgen.repository.ScoreRepository;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -66,10 +69,36 @@ public class StatisticsService {
 
     public void writeFullScoresToCsv(Writer writer) {
         var scores = scoreRepository.findByOrderByTitle();
-        var headers = new ArrayList<>(List.of(SCORE_HEADERS));
-        var allInstruments = instrumentRepository.findByOrderBySortOrder();
+        writeFullScoresToCsv(writer, scores);
+    }
 
-        for (var instrument : allInstruments) {
+    public void writeFullScoresToCsv(Writer writer, Playlist playlist) {
+        List<Score> scores = new ArrayList<>();
+        for (var playlistEntry : playlist.getPlaylistEntries()) {
+            var scoresFound = scoreRepository.findByTitle(playlistEntry.getText());
+            if (scoresFound != null && !scoresFound.isEmpty()) {
+                if (scoresFound.size() > 1) {
+                    log.warn("Multiple scores for playlist entry {}", playlistEntry.getText());
+                }
+                scores.add(scoresFound.get(0));
+            }
+        }
+        writeFullScoresToCsv(writer, scores);
+    }
+
+    private void writeFullScoresToCsv(Writer writer, List<Score> scores) {
+        var headers = new ArrayList<>(List.of(SCORE_HEADERS));
+
+        // Needed for hibernate, otherwise the scores.stream will return empty instruments...
+        instrumentRepository.findAll();
+
+        var allUsedInstruments = scores.stream()
+                .map(Score::getDefaultArrangement)
+                .flatMap(arr -> arr.getInstruments().stream())
+                .collect(Collectors.toSet())
+                .stream().sorted().toList();
+
+        for (var instrument : allUsedInstruments) {
             headers.add(instrument.getName());
         }
         String[] header = new String[headers.size()];
@@ -80,7 +109,6 @@ public class StatisticsService {
 
         try (var csvPrinter = new CSVPrinter(writer, csvFormat)) {
             for (var score : scores) {
-                var arrangement = score.getDefaultArrangement();
                 List<String> values = new ArrayList<>();
                 values.add(score.getTitle());
                 values.add(score.getSubTitle());
@@ -91,11 +119,16 @@ public class StatisticsService {
                 values.add(score.getArranger());
                 values.add(score.getPublisher());
                 values.add(score.getComment());
-                for (var instrument : allInstruments) {
-                    if (arrangement != null && arrangement.getInstruments().contains(instrument)) {
-                        values.add("X");
-                    } else {
-                        values.add("");
+
+                var arrangement = score.getDefaultArrangement();
+                if (arrangement != null) {
+                    for (var instrument : allUsedInstruments) {
+                        var ap = arrangement.getArrangementPart(instrument);
+                        if (ap.isPresent()) {
+                            values.add("X" + (ap.get().getComment() == null || ap.get().getComment().isEmpty() ? "" : " (" + ap.get().getComment() + ")"));
+                        } else {
+                            values.add("");
+                        }
                     }
                 }
                 csvPrinter.printRecord(values);
