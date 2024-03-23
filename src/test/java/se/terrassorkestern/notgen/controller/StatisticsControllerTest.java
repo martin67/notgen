@@ -19,6 +19,7 @@ import se.terrassorkestern.notgen.configuration.SecurityConfig;
 import se.terrassorkestern.notgen.model.ActiveBand;
 import se.terrassorkestern.notgen.model.Statistics;
 import se.terrassorkestern.notgen.repository.LinkRepository;
+import se.terrassorkestern.notgen.repository.PlaylistRepository;
 import se.terrassorkestern.notgen.repository.UserRepository;
 import se.terrassorkestern.notgen.service.StatisticsService;
 import se.terrassorkestern.notgen.user.CustomOAuth2UserService;
@@ -47,6 +48,8 @@ class StatisticsControllerTest {
     private UserRepository userRepository;
     @MockBean
     private LinkRepository linkRepository;
+    @MockBean
+    private PlaylistRepository playlistRepository;
     @MockBean
     private EntityManager entityManager;
     @MockBean
