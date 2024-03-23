@@ -126,6 +126,9 @@
                 </select>
             </div>
         </div>
+        <div class="col-auto" sec:authorize="hasAuthority('PRINT_SCORE')">
+        <a class="btn btn-secondary" th:href="@{/statistics/fullplaylist(id=${playlist.id})}">Detaljer</a>
+        </div>
     </div>
 </div>
 
