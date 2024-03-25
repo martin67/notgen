@@ -111,7 +111,7 @@ public class StatisticsService {
                 values.add(score.getTitle());
                 values.add(score.getSubTitle());
                 values.add(score.getGenre());
-                values.add(String.valueOf(score.getYear()));
+                values.add(score.getYear() == null ? "" : String.valueOf(score.getYear()));
                 values.add(score.getComposer());
                 values.add(score.getAuthor());
                 values.add(score.getArranger());
