@@ -87,16 +87,13 @@ public class PdfAssembler {
                 var contents = new PDPageContentStream(doc, page);
                 var mediaBox = page.getMediaBox();
                 float leftMargin;
-                float rightMargin;
 
                 if (isRightPage(arrangementPart.getLength(), pageIndex)) {
                     leftMargin = margin;
-                    rightMargin = 0;
                 } else {
                     leftMargin = 0;
-                    rightMargin = margin;
                 }
-                contents.drawImage(pdImage, 0 + leftMargin, 0, mediaBox.getWidth() - rightMargin, mediaBox.getHeight());
+                contents.drawImage(pdImage, leftMargin, 0, mediaBox.getWidth() - margin, mediaBox.getHeight());
                 contents.beginText();
                 contents.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE), 5);
                 contents.setNonStrokingColor(Color.DARK_GRAY);
