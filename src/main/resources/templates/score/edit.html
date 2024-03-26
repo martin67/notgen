@@ -103,19 +103,6 @@
                        th:field="*{author}"
                        th:value="${score.author}"/>
             </div>
-
-            <div class="mb-3" id="prefetch-arrangers">
-                <label class="form-label" for="arranger">Arrangör</label>
-                <input type="text" class="form-control typeahead" id="arranger" autocomplete="off"
-                       th:field="*{arranger}"
-                       th:value="${score.arranger}" placeholder="arr"/>
-            </div>
-            <div class="mb-3" id="prefetch-publishers">
-                <label class="form-label" for="publisher">Förlag</label>
-                <input type="text" class="form-control typeahead" id="publisher" autocomplete="off"
-                       th:field="*{publisher}"
-                       th:value="${score.publisher}"/>
-            </div>
             <div class="mb-3">
                 <label class="form-label" for="comment">Kommentar</label>
                 <textarea class="form-control" rows="4" id="comment" th:field="*{comment}"
