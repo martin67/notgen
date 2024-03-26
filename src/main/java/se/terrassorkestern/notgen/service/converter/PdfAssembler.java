@@ -27,6 +27,9 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Service
 public class PdfAssembler {
+    private static final float POINTS_PER_INCH = 72;
+    /** user space units per millimeter */
+    private static final float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
 
     private final StorageService storageService;
 
@@ -63,8 +66,11 @@ public class PdfAssembler {
             pdd.setCreator("Terrassorkesterns notgenerator 3.0");
             pdd.setModificationDate(Calendar.getInstance());
 
+            int pageIndex = 0;
             for (int i = arrangementPart.getPage(); i < (arrangementPart.getPage() + arrangementPart.getLength()); i++) {
                 var page = new PDPage(PDRectangle.A4);
+                var margin = 20 * POINTS_PER_MM;
+                pageIndex++;
                 doc.addPage(page);
                 // Logic: PDF will be extracted to jpg-files
                 //        ZIP will be extracted to jpg-files, but then image processed to png
@@ -80,7 +86,17 @@ public class PdfAssembler {
                 var pdImage = PDImageXObject.createFromFile(image.toString(), doc);
                 var contents = new PDPageContentStream(doc, page);
                 var mediaBox = page.getMediaBox();
-                contents.drawImage(pdImage, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());
+                float leftMargin;
+                float rightMargin;
+
+                if (isRightPage(arrangementPart.getLength(), pageIndex)) {
+                    leftMargin = margin;
+                    rightMargin = 0;
+                } else {
+                    leftMargin = 0;
+                    rightMargin = margin;
+                }
+                contents.drawImage(pdImage, 0 + leftMargin, 0, mediaBox.getWidth() - rightMargin, mediaBox.getHeight());
                 contents.beginText();
                 contents.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE), 5);
                 contents.setNonStrokingColor(Color.DARK_GRAY);
@@ -96,5 +112,21 @@ public class PdfAssembler {
             log.error("Ooopsie", e);
         }
         return CompletableFuture.completedFuture(path);
+    }
+
+    private boolean isRightPage(int numberOfPages, int pageIndex) {
+        // Om det är jämt antal sidor i arrangementPart så skall första sidan ha marginalen till höger. Är det
+        // udda antal sidor skall första vara till vänster. Därefter alternera
+        // Antal sidor per stämma   Aktuell sida
+        //   1                         1              => högersida
+        //   jämn                      jämn           => högersida
+        //   jämn                      udda           => vänstersida
+        //   udda                      jämn           => högersida
+        //   udda                      udda           => vänstersida
+        if (numberOfPages == 1 && pageIndex == 1) {
+            return true;
+        } else {
+            return (pageIndex % 2 == 0);
+        }
     }
 }
