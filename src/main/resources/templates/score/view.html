@@ -60,14 +60,6 @@
                     <td>Författare</td>
                     <td th:text="${score.author}"></td>
                 </tr>
-                <tr th:if="${score.arranger}" th:unless="${score.arranger.isEmpty()}">
-                    <td>Arrangör</td>
-                    <td th:text="${score.arranger}"></td>
-                </tr>
-                <tr th:if="${score.publisher}" th:unless="${score.publisher.isEmpty()}">
-                    <td>Förlag</td>
-                    <td th:text="${score.publisher}"></td>
-                </tr>
                 <tr th:if="${score.comment}" th:unless="${score.comment.isEmpty()}">
                     <td>Kommentar</td>
                     <td th:text="${score.comment}"></td>
@@ -84,8 +76,12 @@
 
     <!-- Arrangement -->
     <div class="row mb-3 border pt-2 px-2" th:unless="${score.getArrangements().isEmpty()}">
-        <h3>Sättning</h3>
+        <h3>Arrangemang</h3>
         <div th:if="${score.getArrangements().size() == 1}">
+            <div class="row border">
+                <div class="col">Arrangör: <span th:text="${score.getArrangements().get(0).getArranger()}"></span></div>
+                <div class="col">Förlag: <span th:text="${score.getArrangements().get(0).getPublisher()}"></span></div>
+            </div>
             <table class="table table-sm table-borderless table-striped" aria-label="Arrangements">
                 <thead>
                 <tr>
