@@ -28,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class PdfAssembler {
     private static final float POINTS_PER_INCH = 72;
-    /** user space units per millimeter */
     private static final float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
 
     private final StorageService storageService;
@@ -42,6 +41,13 @@ public class PdfAssembler {
         var score = arrangementPart.getArrangement().getScore();
         var path = Path.of(tmpDir.toString(), Files.getNameWithoutExtension(score.getTitle()).replaceAll("\\W+", "")
                 + " - " + arrangementPart.getInstrument().getName() + ".pdf");
+        // Skall marginalerna justeras?
+        float margin;
+        if (arrangementPart.getArrangement().isAdjustMargins()) {
+            margin = 20 * POINTS_PER_MM;
+        } else {
+            margin = 0;
+        }
         log.debug("Creating separate score ({}) {}", arrangementPart.getLength(), path);
 
         try (var doc = new PDDocument()) {
@@ -69,7 +75,6 @@ public class PdfAssembler {
             int pageIndex = 0;
             for (int i = arrangementPart.getPage(); i < (arrangementPart.getPage() + arrangementPart.getLength()); i++) {
                 var page = new PDPage(PDRectangle.A4);
-                var margin = 20 * POINTS_PER_MM;
                 pageIndex++;
                 doc.addPage(page);
                 // Logic: PDF will be extracted to jpg-files
@@ -86,8 +91,8 @@ public class PdfAssembler {
                 var pdImage = PDImageXObject.createFromFile(image.toString(), doc);
                 var contents = new PDPageContentStream(doc, page);
                 var mediaBox = page.getMediaBox();
-                float leftMargin;
 
+                float leftMargin;
                 if (isRightPage(arrangementPart.getLength(), pageIndex)) {
                     leftMargin = margin;
                 } else {

@@ -23,6 +23,7 @@ public class Arrangement {
     private NgFile file;
     private ScoreType scoreType;
     private boolean cover = false;
+    private boolean adjustMargins = true;
     private String archiveLocation;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "item_id", referencedColumnName = "id")

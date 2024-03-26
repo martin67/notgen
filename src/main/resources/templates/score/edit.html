@@ -241,6 +241,12 @@
                                            th:value="${arr.cover}"/>
                                     <label for="cover" class="form-check-label">Har omslag</label>
                                 </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="adjustMargins"
+                                           th:field="*{arrangements[__${arrStat.index}__].adjustMargins}"
+                                           th:value="${arr.adjustMargins}"/>
+                                    <label for="adjustMargins" class="form-check-label">Justera marginaler för hålslag</label>
+                                </div>
                                 <div>
                                     <table class="table table-sm" aria-label="Configurations">
                                         <thead>
