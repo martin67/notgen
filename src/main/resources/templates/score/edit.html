@@ -20,21 +20,19 @@
 <div th:replace="~{fragments/general :: header}"></div>
 
 <!-- Modal confirm score delete -->
-<div class="modal" id="deleteModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Ta bort låt</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-dbs-ismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Vill du verkligen ta bort denna låt?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                <a class="btn btn-danger" th:href="@{/score/delete(id=${score.id})}">Ta bort</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                <a class="btn btn-danger" th:href="@{/score/delete/{id}(id=${score.id})}">Ta bort</a>
             </div>
         </div>
     </div>
@@ -245,7 +243,8 @@
                                     <input class="form-check-input" type="checkbox" id="adjustMargins"
                                            th:field="*{arrangements[__${arrStat.index}__].adjustMargins}"
                                            th:value="${arr.adjustMargins}"/>
-                                    <label for="adjustMargins" class="form-check-label">Justera marginaler för hålslag</label>
+                                    <label for="adjustMargins" class="form-check-label">Justera marginaler för
+                                        hålslag</label>
                                 </div>
                                 <div>
                                     <table class="table table-sm" aria-label="Configurations">
@@ -462,7 +461,7 @@
             <div class="col-sm-10">
                 <a class="btn btn-secondary me-2" th:href="@{/score/view/{id}(id=${score.id})}">Avbryt</a>
                 <button sec:authorize="hasAuthority('EDIT_SONG')" type="button" class="btn btn-danger me-2"
-                        data-toggle="modal" data-target="#deleteModal">Ta bort
+                        data-bs-toggle="modal" data-bs-target="#deleteModal">Ta bort
                 </button>
                 <input sec:authorize="hasAuthority('EDIT_SONG')" type="submit" class="btn btn-primary"
                        name="save"
