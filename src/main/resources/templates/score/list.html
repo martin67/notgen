@@ -20,7 +20,7 @@
         </thead>
         <tbody>
         <tr class="clickable-row" th:each="score : ${scores}" data-th-data-link="@{view/{id}(id=${score.id})}">
-            <td th:text="${score.title}"></td>
+            <td th:utext="${score.title + (score.getArrangements().size() > 1 ? '    <b>x' + score.getArrangements().size() + '</b>' : '')}"></td>
             <td th:text="${score.genre}"></td>
             <td class="text-center"><span th:if="${score.isLinksPresent()}" class="bi-music-note-beamed"></span></td>
         </tr>

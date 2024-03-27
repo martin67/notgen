@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.imaging.ImageReadException;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -12,6 +13,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import se.terrassorkestern.notgen.repository.ScoreRepository;
 import se.terrassorkestern.notgen.service.AdminService;
 import se.terrassorkestern.notgen.service.ImageDataExtractor;
@@ -47,9 +49,15 @@ public class AdminController extends CommonController {
     }
 
     @GetMapping("/noteCreate")
-    public String create() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public String create(@RequestParam("restart") boolean restart) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         // Run with Spring batch as the job will take a long time
-        jobLauncher.run(job, new JobParameters());
+        if (restart) {
+            jobLauncher.run(job, new JobParametersBuilder()
+                    .addLong("timestamp", System.currentTimeMillis())
+                    .toJobParameters());
+        } else {
+            jobLauncher.run(job, new JobParameters());
+        }
         return REDIRECT_ADMIN;
     }
 

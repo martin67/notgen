@@ -137,8 +137,10 @@ public class ImageProcessor {
     }
 
     private BufferedImage autoCrop(BufferedImage image, Path tmpDir, String basename, Arrangement arrangement) throws IOException {
-        int detectionRadius = arrangement.getConfig(AutoCropper.CONFIG_AUTOCROPPER_DETECTION_RADIUS, 2);
-        double tolerance = arrangement.getConfig(AutoCropper.CONFIG_AUTOCROPPER_DETECTION_RADIUS, 0.30);
+        //int detectionRadius = arrangement.getConfig(AutoCropper.CONFIG_AUTOCROPPER_DETECTION_RADIUS, 2);
+        int detectionRadius = 2;
+        //double tolerance = arrangement.getConfig(AutoCropper.CONFIG_AUTOCROPPER_DETECTION_RADIUS, 0.30);
+        double tolerance = 0.30;
         log.debug("Detection radius: {}, tolerance: {}", detectionRadius, tolerance);
         var nextImage = autoCropper.crop(image, detectionRadius, tolerance, false);
         if (log.isTraceEnabled()) {

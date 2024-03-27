@@ -20,7 +20,8 @@
     </ul>
 
     <br>
-    <a href="/admin/noteCreate" class="btn btn-info" role="button">Skapa alla noter</a>
+    <a th:href="@{/admin/noteCreate(restart=true)}" class="btn btn-info" role="button">Skapa alla noter</a>
+    <a th:href="@{/admin/noteCreate(restart=false)}" class="btn btn-info" role="button">Skapa alla noter (fortsätt)</a>
     <a href="/admin/imageExtract" class="btn btn-info" role="button">Uppdatera imagedata</a>
     <a href="/admin/export" class="btn btn-info" role="button">Exportera databasen</a>
 </div>

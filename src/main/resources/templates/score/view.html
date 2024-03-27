@@ -19,14 +19,16 @@
 <div class="container">
     <h1 th:text="${score.title}"/>
 
-    <figure class="text-center">
-        <a th:href="@{${score.getCoverPath()}}"><img class="figure-img img-fluid rounded"
-                                                     th:src="@{${score.getThumbnailPath()}}"
-                                                     th:alt="${score.title}"/></a>
-    </figure>
+    <div class="row">
+        <figure class="text-center">
+            <a th:href="@{${score.getCoverPath()}}"><img class="figure-img img-fluid rounded"
+                                                         th:src="@{${score.getThumbnailPath()}}"
+                                                         th:alt="${score.title}"/></a>
+        </figure>
+    </div>
 
     <!-- General info -->
-    <div class="row mb-3 border p-2">
+    <div class="row mb-3 border rounded-1 p-2">
         <div class="col">
             <table class="table table-borderless table-sm mb-0" aria-label="General info">
                 <thead>
@@ -75,12 +77,13 @@
     </div>
 
     <!-- Arrangement -->
-    <div class="row mb-3 border pt-2 px-2" th:unless="${score.getArrangements().isEmpty()}">
+    <div class="row mb-3 border rounded-1 pt-2 px-2" th:unless="${score.getArrangements().isEmpty()}">
         <h3>Arrangemang</h3>
         <div th:if="${score.getArrangements().size() == 1}">
-            <div class="row border">
-                <div class="col">Arrangör: <span th:text="${score.getArrangements().get(0).getArranger()}"></span></div>
-                <div class="col">Förlag: <span th:text="${score.getArrangements().get(0).getPublisher()}"></span></div>
+            <div class="row border rounded-1 bg-success bg-opacity-25">
+                <div class="col">Arrangör:<br> <span th:text="${score.getArrangements().get(0).getArranger()}"></span></div>
+                <div class="col">Förlag:<br> <span th:text="${score.getArrangements().get(0).getPublisher()}"></span></div>
+                <div class="col">Kommentar:<br> <span th:text="${score.getArrangements().get(0).getComment()}"></span></div>
             </div>
             <table class="table table-sm table-borderless table-striped" aria-label="Arrangements">
                 <thead>
@@ -120,6 +123,12 @@
                      th:each="arr, i : ${score.getArrangements()}">
                     <div class="alert alert-info" th:text="${arr.getComment()}"
                          th:if="${arr.getComment()}"/>
+                    <div class="row border rounded-1 bg-success bg-opacity-25">
+                        <div class="col">Arrangör:<br> <span th:text="${arr.getArranger()}"></span></div>
+                        <div class="col">Förlag:<br> <span th:text="${arr.getPublisher()}"></span></div>
+                        <div class="col">Kommentar:<br> <span th:text="${arr.getComment()}"></span></div>
+                    </div>
+
                     <table class="table table-sm table-borderless table-striped" aria-label="Arrangements">
                         <thead>
                         <tr>
@@ -141,7 +150,7 @@
     </div>
 
     <!-- Media links -->
-    <div class="row mb-3 border p-2"
+    <div class="row mb-3 border rounded-1 p-2"
          th:if="${score.getLinks}" th:unless="${score.getLinks.isEmpty()}">
         <div class="col">
             <h3>Media</h3>
@@ -165,7 +174,7 @@
     </div>
 
     <!-- Song text -->
-    <div class="row mb-3 border p-2" th:if="${score.text}" th:unless="${score.text.isEmpty()}">
+    <div class="row mb-3 border rounded-1 p-2" th:if="${score.text}" th:unless="${score.text.isEmpty()}">
         <div class="col">
             <h3>Text</h3>
             <div class="height-auto overflow-auto" style="white-space:pre"
@@ -174,7 +183,7 @@
     </div>
 
     <!-- Files -->
-    <div class="row mb-3 border p-2" sec:authorize="hasAuthority('EDIT_SONG')"
+    <div class="row mb-3 border rounded-1 p-2" sec:authorize="hasAuthority('EDIT_SONG')"
          th:if="${score.files}" th:unless="${score.files.isEmpty()}">
         <div class="col">
             <h3>Filer</h3>
