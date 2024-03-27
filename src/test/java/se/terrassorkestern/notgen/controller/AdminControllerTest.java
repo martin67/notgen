@@ -92,7 +92,7 @@ class AdminControllerTest {
     @DisplayName("Convert all scores")
     @WithMockUser(roles = "ADMIN")
     void create() throws Exception {
-        mvc.perform(get("/admin/noteCreate"))
+        mvc.perform(get("/admin/noteCreate?restart=true"))
                 .andExpect(status().is3xxRedirection());
     }
 
