@@ -161,6 +161,27 @@ public class ScoreController extends CommonController {
         if (!score.getArrangements().isEmpty()) {
             score.setDefaultArrangement(score.getArrangements().get(defaultArrangementIndex));
         }
+
+        // Hantera sångstämma kontra inlagd sångtext
+        var song = getInstruments().stream().filter(Instrument::isSong).findFirst();
+        // Kolla först om bandet har en sångstämma överhuvudtaget
+        if (song.isPresent()) {
+            for (var arrangement : score.getArrangements()) {
+                var songPart = arrangement.getArrangementPart(song.get());
+                // Om det inte längre finns någon text så ta bort ev. fejkad sångentry
+                if (score.getText().isEmpty() && songPart.isPresent() && songPart.get().getPage() == 0) {
+                    arrangement.removeArrangementPart(songPart.get());
+                    // Lägg till en fejkad sång om det finns text men ingen riktig sång
+                    // Den fejkade texten har sida 0
+                } else if (!score.getText().isEmpty() && songPart.isEmpty()) {
+                    var arrangementPart = new ArrangementPart(arrangement, song.get());
+                    arrangementPart.setPage(0);
+                    arrangementPart.setLength(0);
+                    arrangement.addArrangementPart(arrangementPart);
+                }
+            }
+        }
+
         scoreRepository.save(score);
         sessionStatus.setComplete();
         return REDIRECT_SCORE_LIST;
