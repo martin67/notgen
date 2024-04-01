@@ -73,40 +73,89 @@ public class PdfAssembler {
             pdd.setModificationDate(Calendar.getInstance());
 
             int pageIndex = 0;
-            for (int i = arrangementPart.getPage(); i < (arrangementPart.getPage() + arrangementPart.getLength()); i++) {
-                var page = new PDPage(PDRectangle.A4);
-                pageIndex++;
-                doc.addPage(page);
-                // Logic: PDF will be extracted to jpg-files
-                //        ZIP will be extracted to jpg-files, but then image processed to png
-                // They will have the same basename. So the logic is to take the png first if it exists
-                Path image;
-                var pngPath = storageService.replaceExtension(extractedFilesList.get(i - 1), ".png");
-                var jpgPath = storageService.replaceExtension(extractedFilesList.get(i - 1), ".jpg");
-                if (pngPath.toFile().exists()) {
-                    image = pngPath;
-                } else {
-                    image = jpgPath;
-                }
-                var pdImage = PDImageXObject.createFromFile(image.toString(), doc);
-                var contents = new PDPageContentStream(doc, page);
-                var mediaBox = page.getMediaBox();
+            if (arrangementPart.getPage() > 0 && arrangementPart.getLength() > 0) {
+                for (int i = arrangementPart.getPage(); i < (arrangementPart.getPage() + arrangementPart.getLength()); i++) {
+                    var page = new PDPage(PDRectangle.A4);
+                    pageIndex++;
+                    doc.addPage(page);
+                    // Logic: PDF will be extracted to jpg-files
+                    //        ZIP will be extracted to jpg-files, but then image processed to png
+                    // They will have the same basename. So the logic is to take the png first if it exists
+                    Path image;
+                    var pngPath = storageService.replaceExtension(extractedFilesList.get(i - 1), ".png");
+                    var jpgPath = storageService.replaceExtension(extractedFilesList.get(i - 1), ".jpg");
+                    if (pngPath.toFile().exists()) {
+                        image = pngPath;
+                    } else {
+                        image = jpgPath;
+                    }
+                    var pdImage = PDImageXObject.createFromFile(image.toString(), doc);
+                    var contents = new PDPageContentStream(doc, page);
+                    var mediaBox = page.getMediaBox();
 
-                float leftMargin;
-                if (isRightPage(arrangementPart.getLength(), pageIndex)) {
-                    leftMargin = margin;
-                } else {
-                    leftMargin = 0;
+                    float leftMargin;
+                    if (isRightPage(arrangementPart.getLength(), pageIndex)) {
+                        leftMargin = margin;
+                    } else {
+                        leftMargin = 0;
+                    }
+                    contents.drawImage(pdImage, leftMargin, 0, mediaBox.getWidth() - margin, mediaBox.getHeight());
+                    contents.beginText();
+                    contents.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE), 5);
+                    contents.setNonStrokingColor(Color.DARK_GRAY);
+                    contents.newLineAtOffset(495, 5);
+                    contents.showText("Godhetsfullt inscannad av Terrassorkestern");
+                    contents.endText();
+                    contents.close();
                 }
-                contents.drawImage(pdImage, leftMargin, 0, mediaBox.getWidth() - margin, mediaBox.getHeight());
+            }
+
+            if (arrangementPart.getInstrument().isSong()
+                    && arrangementPart.getArrangement().getScore().getText() != null
+                    && !arrangementPart.getArrangement().getScore().getText().isEmpty()) {
+                log.info("Skapa text");
+                var page = new PDPage(PDRectangle.A4);
+                doc.addPage(page);
+                var contents = new PDPageContentStream(doc, page);
                 contents.beginText();
-                contents.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE), 5);
-                contents.setNonStrokingColor(Color.DARK_GRAY);
-                contents.newLineAtOffset(495, 5);
-                contents.showText("Godhetsfullt inscannad av Terrassorkestern");
+                contents.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 18);
+                contents.newLineAtOffset(76, 780);
+                contents.showText(score.getTitle());
+                contents.endText();
+                contents.close();
+//
+                contents = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.APPEND, true, true);
+                contents.setFont(new PDType1Font(Standard14Fonts.FontName.TIMES_ROMAN), 12);
+                contents.setLeading(18);
+                contents.beginText();
+                contents.newLineAtOffset(76, 750);
+                String[] text = score.getText().split("[\r\n]");
+
+                int printedLines = 0;
+                for (String row : text) {
+                    if (printedLines > 73) {
+                        contents.endText();
+                        contents.close();
+                        page = new PDPage(PDRectangle.A4);
+                        doc.addPage(page);
+                        contents = new PDPageContentStream(doc, page);
+                        contents.setFont(new PDType1Font(Standard14Fonts.FontName.TIMES_ROMAN), 12);
+                        contents.setLeading(18);
+                        contents.beginText();
+                        contents.newLineAtOffset(76, 780);
+                        printedLines = 0;
+                    }
+                    if (row.isEmpty()) {
+                        contents.newLine();
+                    } else {
+                        contents.showText(row);
+                    }
+                    printedLines++;
+                }
                 contents.endText();
                 contents.close();
             }
+
             doc.save(path.toFile());
             log.debug("Saving: {}", path);
             storageService.uploadArrangementPart(arrangementPart, path);

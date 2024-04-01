@@ -3,12 +3,14 @@ package se.terrassorkestern.notgen.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
 @Entity
 @Getter
 @Setter
+@Slf4j
 public class Arrangement {
     @Id
     private UUID id;
@@ -28,6 +30,8 @@ public class Arrangement {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "item_id", referencedColumnName = "id")
     private List<Configuration> configurations;
+    @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SortedSet<ArrangementPart> arrangementParts = new TreeSet<>();
 
     public Arrangement() {
         this.id = UUID.randomUUID();
@@ -38,9 +42,6 @@ public class Arrangement {
         this.id = UUID.randomUUID();
         this.name = name;
     }
-
-    @OneToMany(mappedBy = "arrangement", cascade = CascadeType.ALL, orphanRemoval = true)
-    private SortedSet<ArrangementPart> arrangementParts = new TreeSet<>();
 
     public void addArrangementPart(ArrangementPart arrangementPart) {
         arrangementParts.add(arrangementPart);
@@ -60,8 +61,8 @@ public class Arrangement {
         return result;
     }
 
-    public Optional<ArrangementPart> getArrangementPart(Instrument instrument)  {
-        return arrangementParts.stream().filter(arrangementPart -> arrangementPart.getInstrument() == instrument).findFirst();
+    public Optional<ArrangementPart> getArrangementPart(Instrument instrument) {
+        return arrangementParts.stream().filter(arrangementPart -> arrangementPart.getInstrument().equals(instrument)).findFirst();
     }
 
     public String getConfig(String key, String defaultValue) {

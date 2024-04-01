@@ -29,6 +29,7 @@ public class Instrument implements Comparable<Instrument> {
     private String shortName;
     @NotNull(message = "Sorteringsordning måste anges")
     private int sortOrder;
+    private boolean song = false;
 
     @ManyToMany(mappedBy = "instruments")
     private Set<Setting> settings = new HashSet<>();
