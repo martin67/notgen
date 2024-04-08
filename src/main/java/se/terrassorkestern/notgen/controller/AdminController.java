@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.imaging.ImageReadException;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -62,7 +61,7 @@ public class AdminController extends CommonController {
     }
 
     @GetMapping("/imageExtract")
-    public String extract() throws IOException, ImageReadException {
+    public String extract() throws IOException {
         imageDataExtractor.extract(scoreRepository.findAll());
         return REDIRECT_ADMIN;
     }

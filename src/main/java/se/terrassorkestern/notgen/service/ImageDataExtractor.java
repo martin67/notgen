@@ -1,7 +1,6 @@
 package se.terrassorkestern.notgen.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.imaging.ImageReadException;
 import org.springframework.stereotype.Service;
 import se.terrassorkestern.notgen.model.Imagedata;
 import se.terrassorkestern.notgen.model.Score;
@@ -27,7 +26,7 @@ public class ImageDataExtractor {
         this.imagedataRepository = imagedataRepository;
     }
 
-    public void extract(List<Score> scores) throws IOException, ImageReadException {
+    public void extract(List<Score> scores) throws IOException {
 
         for (var score : scores) {
             for (var arrangement : score.getArrangements())
