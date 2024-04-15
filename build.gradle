@@ -85,7 +85,7 @@ dependencies {
     implementation 'org.apache.pdfbox:pdfbox:3.0.2'
     implementation 'org.apache.pdfbox:jbig2-imageio:3.0.4'
     implementation 'net.imagej:ij:1.54i'
-    implementation 'org.hibernate.search:hibernate-search-mapper-orm:7.1.0.Final'
+    implementation 'org.hibernate.search:hibernate-search-mapper-orm:7.1.1.Final'
     implementation 'org.hibernate.search:hibernate-search-backend-lucene:7.1.0.Final'
     implementation 'org.apache.lucene:lucene-backward-codecs:9.10.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
