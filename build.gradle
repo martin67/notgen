@@ -71,7 +71,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-    implementation 'com.mysql:mysql-connector-j:8.3.0'
+    implementation 'com.mysql:mysql-connector-j:9.0.0'
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
     implementation 'com.microsoft.sqlserver:mssql-jdbc:12.3.0.jre17-preview'
     implementation 'com.h2database:h2:2.2.224'
